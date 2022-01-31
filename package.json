@@ -17,6 +17,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "proxy": "https://api.bikehopper.staging.techlabor.org",
   "eslintConfig": {
     "extends": [
       "react-app",
