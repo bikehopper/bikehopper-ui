@@ -1,7 +1,5 @@
 class BikeHopperClient {
   async getRoute(options) {
-    console.debug('BikeHopperClient.getRoute...');
-
     const profile = options.profile || 'bike2';
     const optimize = options.optimize || false;
     const pointsEncoded = options.pointsEncoded || false;

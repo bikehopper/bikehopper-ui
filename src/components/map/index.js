@@ -1,14 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Polyline } from 'react-leaflet';
-import './index.css';
+import React, { useState, useEffect, useRef } from 'react';
+import { MapContainer, TileLayer, Marker, LayerGroup, Polyline } from 'react-leaflet';
 import { BikeHopperClient } from '../../lib/bikehopperClient';
+import './index.css';
 
 const bikeHopperClient = new BikeHopperClient();
-
-function enableMarker(demoRoute, setDemoRoute, markerIndex) {
-  demoRoute[markerIndex][2] = true;
-  setDemoRoute(demoRoute);
-}
 
 function Map() {
   const [centerPosition] = useState([37.7400, -122.4194]);
@@ -16,12 +11,24 @@ function Map() {
     [37.736540, -122.420980, false],
     [37.760450, -122.508930, false]
   ]);
+  const demoRouteRef = useRef(demoRoute);
   const [lines, setLines] = useState([]);
+  const [toggle, setToggle] = useState(false);
 
+  // Adds markers on a delay to be snazzy
   useEffect(() => {
-    enableMarker(demoRoute, setDemoRoute, 0);
-    enableMarker(demoRoute, setDemoRoute, 1);
-  }, [demoRoute, setDemoRoute]);
+    setTimeout(() => {
+      const updatedRoute = [...demoRouteRef.current];
+      updatedRoute[0][2] = true;
+      setDemoRoute(updatedRoute);
+    }, 2000);
+    setTimeout(() => {
+      const updatedRoute = [...demoRouteRef.current];
+      updatedRoute[1][2] = true;
+      setDemoRoute(updatedRoute);
+      setToggle(true);
+    }, 4000);
+  }, [demoRouteRef, setDemoRoute]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -29,20 +36,19 @@ function Map() {
 
     bikeHopperClient.getRoute({
       points:[
-        demoRoute[0].slice(0,2),
-        demoRoute[1].slice(0,2)
+        demoRouteRef.current[0].slice(0,2),
+        demoRouteRef.current[1].slice(0,2)
       ],
-      optimize: false,
+      optimize: true,
       pointsEncoded: false,
       signal
     })
-    .then(route => {
-      console.log('useeffect 2 settingLines...', setLines, route);
-      setLines(route.paths.map((p => p.points.coordinates)));
-    });
+    .then(route => route.paths)
+    .then(paths => paths.map((p => p.points.coordinates.map(crd => crd.slice(0,2).reverse()))))
+    .then(setLines);
 
     return () => controller.abort();
-  }, [demoRoute, setLines]);
+  }, [setLines]);
 
   return (
     <MapContainer center={centerPosition} zoom={12} scrollWheelZoom={false}>
@@ -51,9 +57,10 @@ function Map() {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      <Polyline color={'red'} positions={[demoRoute[0].slice(0,2), demoRoute[1].slice(0,2)]} />
-
-      {lines.map((item, idx) => <Polyline key={'p'+idx} color={'lime'} positions={item} />)}
+      <LayerGroup>
+        {toggle && <Polyline key={`plineofsight`} color={'red'} positions={[demoRouteRef.current[0].slice(0,2), demoRouteRef.current[1].slice(0,2)]} />}
+        {toggle && lines.map((line, idx) => <Polyline key={`p${idx}`} color={'green'} positions={line} /> )}
+      </LayerGroup>
 
       {demoRoute.filter(i => i[2]).map((item, idx) => (
         <Marker key={'m'+idx} position={[item[0],item[1]]}></Marker>
