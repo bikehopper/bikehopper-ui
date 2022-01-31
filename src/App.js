@@ -9,7 +9,7 @@ function GraphhopperProfiles() {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    fetch("/v1/info")
+    fetch(`${process.env.REACT_APP_BIKEHOPPER_DOMAIN}/v1/info`)
       .then(res => res.json())
       .then(
         (result) => {
