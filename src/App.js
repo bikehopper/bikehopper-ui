@@ -1,7 +1,6 @@
-import logo from './logo.svg';
 import './App.css';
 import React, { useState, useEffect } from 'react';
-
+import { Map } from './components/map/index';
 
 function GraphhopperProfiles() {
   const [error, setError] = useState(null);
@@ -46,21 +45,9 @@ function GraphhopperProfiles() {
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <GraphhopperProfiles></GraphhopperProfiles>
-      </header>
+      <div className="map-container">
+        <Map></Map>
+      </div>
     </div>
   );
 }
