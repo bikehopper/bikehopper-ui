@@ -1,5 +1,7 @@
 class BikeHopperClient {
   async getRoute(options) {
+    console.debug('BikeHopperClient.getRoute...');
+
     const profile = options.profile || 'bike2';
     const optimize = options.optimize || false;
     const pointsEncoded = options.pointsEncoded || false;
@@ -7,9 +9,11 @@ class BikeHopperClient {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
-      }
+      },
+      signal: options.signal
     })
-      .then(res => res.json());
+    .then(res => res.json());
+
     return route;
   }
 }
