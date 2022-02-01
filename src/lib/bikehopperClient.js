@@ -16,4 +16,4 @@ class BikeHopperClient {
   }
 }
 
-export {BikeHopperClient};
+export { BikeHopperClient };
