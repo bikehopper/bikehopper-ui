@@ -16,7 +16,7 @@ const bikeHopperClient = new BikeHopperClient();
 
 const POINTS = [
   [-122.420980, 37.736540],
-  [-122.508930, 37.760450]
+  [-122.508930, 37.760450],
 ];
 
 class Root extends Component {
