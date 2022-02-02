@@ -24,8 +24,8 @@ class Root extends Component {
     super(props);
     this.state = {
       viewport: {
-        latitude: 37.8,
-        longitude: -122.4,
+        latitude: (POINTS[0][1] + POINTS[1][1]) / 2,
+        longitude: (POINTS[0][0] + POINTS[1][0]) / 2,
         zoom: 12,
         bearing: 0,
         pitch: 0
