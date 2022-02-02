@@ -10,7 +10,8 @@ import MarkerSVG from './components/MarkerSVG';
 import './index.css';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
-const MAPBOX_TOKEN = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA'; // Set your mapbox token here
+// restricted public token that is safe to share
+const MAPBOX_TOKEN = 'pk.eyJ1IjoiMmpoazNicjJqZXF1IiwiYSI6ImNrejUzM2hxeDBobWYycG8wdzlpb3ppcjUifQ.dgo6QQyOJykr-m-2epbgGw';
 
 const bikeHopperClient = new BikeHopperClient();
 
