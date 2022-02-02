@@ -33,6 +33,10 @@ class Root extends Component {
     };
   }
 
+  _handleViewportChange = (viewport) => {
+    this.setState({viewport});
+  }
+
   render() {
     const layerStyle = {
       id: 'point',
@@ -48,10 +52,9 @@ class Root extends Component {
         width="100vw"
         height="100vh"
         mapStyle="mapbox://styles/mapbox/dark-v9"
-        onViewportChange={viewport => this.setState({ viewport })}
+        onViewportChange={this._handleViewportChange}
         mapboxApiAccessToken={MAPBOX_TOKEN}
       >
-
         {this.state.lines && <Source id="my-data" type="geojson" data={turf.lineString(this.state.lines[0])}>
           <Layer {...layerStyle} />
         </Source>}
@@ -71,9 +74,9 @@ class Root extends Component {
       optimize: true,
       pointsEncoded: false,
     })
-      .then(route => route.paths)
-      .then(paths => paths.map((p => p.points.coordinates)))
-      .then(lines => this.setState({ lines }));
+    .then(route => {
+      this.setState({lines: route.paths.map(path => path.points.coordinates)});
+    });
   }
 }
 
