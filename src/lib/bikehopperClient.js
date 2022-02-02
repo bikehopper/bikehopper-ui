@@ -10,7 +10,7 @@ class BikeHopperClient {
       },
       signal: options.signal
     })
-    .then(res => res.json());
+      .then(res => res.json());
 
     return route;
   }
