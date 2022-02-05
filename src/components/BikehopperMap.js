@@ -99,7 +99,7 @@ class BikehopperMap extends Component {
           {...this.state.viewport}
           width="100vw"
           height="100vh"
-          mapStyle="mapbox://styles/mapbox/dark-v9"
+          mapStyle="mapbox://styles/mapbox/light-v9"
           onViewportChange={this._handleViewportChange}
           mapboxApiAccessToken={this.props.mapboxApiAccessToken}
         >
