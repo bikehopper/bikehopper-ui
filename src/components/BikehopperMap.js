@@ -101,7 +101,7 @@ class BikehopperMap extends Component {
           height="100vh"
           mapStyle="mapbox://styles/mapbox/light-v9"
           onViewportChange={this._handleViewportChange}
-          mapboxApiAccessToken={this.props.mapboxApiAccessToken}
+          mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
         >
           {this.state.lines && <Source type="geojson" data={turf.lineString(this.state.lines[0])}>
             <Layer {...layerStyle} />

@@ -5,12 +5,9 @@ import BikehopperMap from './components/BikehopperMap';
 
 import './index.css';
 
-// restricted public token that is safe to share
-const MAPBOX_TOKEN = 'pk.eyJ1IjoiMmpoazNicjJqZXF1IiwiYSI6ImNrejUzM2hxeDBobWYycG8wdzlpb3ppcjUifQ.dgo6QQyOJykr-m-2epbgGw';
-
 function Root() {
   return (
-    <BikehopperMap mapboxApiAccessToken={MAPBOX_TOKEN} />
+    <BikehopperMap />
   );
 }
 
