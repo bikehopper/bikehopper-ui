@@ -1,19 +1,13 @@
 import * as React from 'react';
 import { render } from 'react-dom';
 import reportWebVitals from './reportWebVitals';
-import BikehopperMap from './components/BikehopperMap';
+import App from './components/App';
 
 import './index.css';
 
-function Root() {
-  return (
-    <BikehopperMap />
-  );
-}
-
 render(
   <React.StrictMode>
-    <Root />
+    <App />
   </React.StrictMode>,
   document.getElementById('root')
 );
