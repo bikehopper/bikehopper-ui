@@ -13,3 +13,23 @@ export async function getRoute({
 
   return route.json();
 }
+
+export async function geocode(placeString, {
+  zoom = 12,
+  lat,
+  lon,
+  limit = 1,
+  signal,
+}) {
+  let url = `${process.env.REACT_APP_BIKEHOPPER_DOMAIN}/v2/geocode?q=${encodeURIComponent(placeString)}&limit=${limit}`;
+  if (lat != null && lon != null)
+    url += `&lat=${lat}&lon=${lon}&zoom=${zoom}`;
+
+  const geocoding = await fetch(url, {
+    method: 'GET',
+    headers: {'Content-Type': 'application/json'},
+    signal,
+  });
+
+  return geocoding.json();
+}
