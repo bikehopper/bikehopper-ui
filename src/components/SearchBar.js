@@ -6,6 +6,7 @@ export default class SearchBar extends React.Component {
     this.state = {
       value: '',
     };
+    this.placeholder = props.placeholder;
   }
 
   _handleChange = (event) => {
@@ -23,7 +24,7 @@ export default class SearchBar extends React.Component {
     return (
       <form onSubmit={this._handleSubmit}>
         <label>
-          <input style={style} type='text' placeholder='enter longitude, latitude' onChange={this._handleChange} />
+          <input style={style} type='text' placeholder={this.placeholder} onChange={this._handleChange} />
         </label>
         <input type="submit" value="Submit" />
       </form>

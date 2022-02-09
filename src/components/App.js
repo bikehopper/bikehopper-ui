@@ -9,10 +9,7 @@ function App() {
   const [endPoint, setEndPoint] = useState(null);
   const [route, setRoute] = useState(null);
 
-  const handlePointSearch = (searchString) => {
-    // Accept start point first, then end point
-    const setterToUse = !startPoint ? setStartPoint : setEndPoint;
-
+  const handleSearch = (searchString, setFunc) => {
     if (searchString.match(/^\s*-?\d*\.\d*\s*,\s*-?\d*\.\d*\s*$/)) {
       // Looks like we were given a lon-lat pair, e.g. -122.4, 37.8
       let point = searchString.split(',')?.slice(0, 2)?.map(s => s.trim());
@@ -23,7 +20,7 @@ function App() {
         if (isNaN(Number(point[i]))) return;
         point[i] = Number(point[i]);
       }
-      setterToUse(point);
+      setFunc(point);
     } else {
       // It doesn't look like a lon-lat pair. Probably address or place name. Geocode it.
       const opts = {
@@ -37,7 +34,7 @@ function App() {
           // TODO: show error message (or maybe try to use results that are not points, somehow)
           return;
         }
-        setterToUse(result.features[0].geometry.coordinates);
+        setFunc(result.features[0].geometry.coordinates);
       });
     }
   };
@@ -58,11 +55,12 @@ function App() {
         pointsEncoded: false,
       })
         .then(fetchedRoute => {
+          console.log(fetchedRoute);
+          if (!fetchedRoute) return;
           setRoute({
-            paths: fetchedRoute.paths.map(path => path.points.coordinates),
+            paths: fetchedRoute.paths,
             startPoint,
             endPoint,
-            bboxes: fetchedRoute.paths.map(path => path.bbox)
           });
         });
     }
@@ -72,12 +70,13 @@ function App() {
 
   return (
     <div>
-      <SearchBar onSubmit={handlePointSearch} position='absolute' />
+      <SearchBar onSubmit={(s) => handleSearch(s, setStartPoint)} placeholder='Start (enter longitude, latitude)' position='absolute' />
+      <p>to</p>
+      <SearchBar onSubmit={(s) => handleSearch(s, setEndPoint)} placeholder='End (enter longitude, latitude)' position='absolute' />
       <BikehopperMap
         startPoint={startPoint}
         endPoint={endPoint}
-        routeCoords={route && route.paths[0]}
-        bbox={route && route.bboxes[0]}
+        path={route && route.paths[0]}
         onStartPointDrag={(evt) => setStartPoint(evt.lngLat)}
         onEndPointDrag={(evt) => setEndPoint(evt.lngLat)}
       />

@@ -8,7 +8,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 
 function BikehopperMap(props) {
   // the callbacks contain event.lngLat for the point, which can replace startPoint/endPoint
-  const { startPoint, endPoint, routeCoords, bbox, onStartPointDrag, onEndPointDrag } = props;
+  const { startPoint, endPoint, path, onStartPointDrag, onEndPointDrag } = props;
   const mapRef = React.useRef();
 
   const [viewport, setViewport] = useState({
@@ -22,25 +22,24 @@ function BikehopperMap(props) {
 
   const centerOnBbox = () => {
     const map = mapRef.current.getMap();
-    if (!bbox) return;
+    if (!path || !path.bbox) return;
 
-    const [minx, miny, maxx, maxy] = bbox;
+    const [minx, miny, maxx, maxy] = path.bbox;
     const { center: { lng, lat }, zoom } = map.cameraForBounds([[minx, miny], [maxx, maxy]], {
       padding: 40
     });
     setViewport({ latitude: lat, longitude: lng, zoom, bearing: 0, pitch: 0 });
   }
 
-  React.useEffect(centerOnBbox, [bbox])
+  React.useEffect(centerOnBbox, [path])
 
-  const layerStyle = {
-    id: 'line',
+  const legStyle = (leg) => ({
     type: 'line',
     paint: {
       'line-width': 3,
-      'line-color': '#007cbf'
+      'line-color': '#' + (leg["route_color"] || '007cbf')
     }
-  };
+  });
 
   return (
     <MapGL
@@ -52,31 +51,38 @@ function BikehopperMap(props) {
       onViewportChange={setViewport}
       mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
     >
-      {routeCoords && <Source type="geojson" data={turf.lineString(routeCoords)}>
-        <Layer {...layerStyle} />
-      </Source>}
-      {startPoint && <Marker
-        id='startMarker'
-        longitude={startPoint[0]}
-        latitude={startPoint[1]}
-        draggable={true}
-        onDragEnd={onStartPointDrag}
-        offsetLeft={-13}
-        offsetTop={-39}
-      >
-        <MarkerSVG />
-      </Marker>}
-      {endPoint && <Marker
-        id='endMarker'
-        longitude={endPoint[0]}
-        latitude={endPoint[1]}
-        draggable={true}
-        onDragEnd={onEndPointDrag}
-        offsetLeft={-13}
-        offsetTop={-39}
-      >
-        <MarkerSVG />
-      </Marker>}
+      {path && path.legs.map((leg, index) => (
+        <Source key={"source" + index} type="geojson" data={turf.lineString(leg.geometry.coordinates)} >
+          <Layer key={"layer" + index} {...legStyle(leg)} />
+        </Source>
+      ))
+      }
+      {
+        startPoint && <Marker
+          id='startMarker'
+          longitude={startPoint[0]}
+          latitude={startPoint[1]}
+          draggable={true}
+          onDragEnd={onStartPointDrag}
+          offsetLeft={-13}
+          offsetTop={-39}
+        >
+          <MarkerSVG />
+        </Marker>
+      }
+      {
+        endPoint && <Marker
+          id='endMarker'
+          longitude={endPoint[0]}
+          latitude={endPoint[1]}
+          draggable={true}
+          onDragEnd={onEndPointDrag}
+          offsetLeft={-13}
+          offsetTop={-39}
+        >
+          <MarkerSVG />
+        </Marker>
+      }
     </MapGL >
   );
 }
