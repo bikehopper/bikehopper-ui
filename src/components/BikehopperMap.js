@@ -8,7 +8,8 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 
 function BikehopperMap(props) {
   // the callbacks contain event.lngLat for the point, which can replace startPoint/endPoint
-  const {startPoint, endPoint, routeCoords, onStartPointDrag, onEndPointDrag} = props;
+  const { startPoint, endPoint, routeCoords, bbox, onStartPointDrag, onEndPointDrag } = props;
+  const mapRef = React.useRef();
 
   const [viewport, setViewport] = useState({
     // hardcode San Francisco view for now
@@ -18,6 +19,19 @@ function BikehopperMap(props) {
     bearing: 0,
     pitch: 0,
   });
+
+  const centerOnBbox = () => {
+    const map = mapRef.current.getMap();
+    if (!bbox) return;
+
+    const [minx, miny, maxx, maxy] = bbox;
+    const { center: { lng, lat }, zoom } = map.cameraForBounds([[minx, miny], [maxx, maxy]], {
+      padding: 40
+    });
+    setViewport({ latitude: lat, longitude: lng, zoom, bearing: 0, pitch: 0 });
+  }
+
+  React.useEffect(centerOnBbox, [bbox])
 
   const layerStyle = {
     id: 'line',
@@ -31,6 +45,7 @@ function BikehopperMap(props) {
   return (
     <MapGL
       {...viewport}
+      ref={mapRef}
       width="100vw"
       height="100vh"
       mapStyle="mapbox://styles/mapbox/light-v9"

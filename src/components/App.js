@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import { geocode, getRoute } from '../lib/BikehopperClient';
 import BikehopperMap from './BikehopperMap';
 import SearchBar from './SearchBar';
@@ -62,6 +62,7 @@ function App() {
             paths: fetchedRoute.paths.map(path => path.points.coordinates),
             startPoint,
             endPoint,
+            bboxes: fetchedRoute.paths.map(path => path.bbox)
           });
         });
     }
@@ -76,6 +77,7 @@ function App() {
         startPoint={startPoint}
         endPoint={endPoint}
         routeCoords={route && route.paths[0]}
+        bbox={route && route.bboxes[0]}
         onStartPointDrag={(evt) => setStartPoint(evt.lngLat)}
         onEndPointDrag={(evt) => setEndPoint(evt.lngLat)}
       />
