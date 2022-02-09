@@ -1,22 +1,13 @@
 import * as React from 'react';
 import { render } from 'react-dom';
 import reportWebVitals from './reportWebVitals';
-import BikehopperMap from './components/BikehopperMap';
+import App from './components/App';
 
 import './index.css';
 
-// restricted public token that is safe to share
-const MAPBOX_TOKEN = 'pk.eyJ1IjoiMmpoazNicjJqZXF1IiwiYSI6ImNrejUzM2hxeDBobWYycG8wdzlpb3ppcjUifQ.dgo6QQyOJykr-m-2epbgGw';
-
-function Root() {
-  return (
-    <BikehopperMap mapboxApiAccessToken={MAPBOX_TOKEN} />
-  );
-}
-
 render(
   <React.StrictMode>
-    <Root />
+    <App />
   </React.StrictMode>,
   document.getElementById('root')
 );
