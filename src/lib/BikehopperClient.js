@@ -5,7 +5,7 @@ export async function getRoute({
   points,
   signal,
 }) {
-  const route = await fetch(`${process.env.REACT_APP_BIKEHOPPER_DOMAIN}/v1/route-pt?point=${points[0]}&point=${points[1]}&locale=en-US&pt.earliest_departure_time=${encodeURIComponent(new Date().toISOString())}&elevation=true&profile=${profile}&use_miles=false&selected_detail=Elevation&layer=OpenStreetMap&points_encoded=${pointsEncoded}`, {
+  const route = await fetch(`${process.env.REACT_APP_BIKEHOPPER_DOMAIN}/v1/graphhopper/route-pt?point=${points[0]}&point=${points[1]}&locale=en-US&pt.earliest_departure_time=${encodeURIComponent(new Date().toISOString())}&elevation=true&profile=${profile}&use_miles=false&selected_detail=Elevation&layer=OpenStreetMap&points_encoded=${pointsEncoded}`, {
     method: 'GET',
     headers: {'Content-Type': 'application/json'},
     signal,
@@ -21,7 +21,7 @@ export async function geocode(placeString, {
   limit = 1,
   signal,
 }) {
-  let url = `${process.env.REACT_APP_BIKEHOPPER_DOMAIN}/v2/geocode?q=${encodeURIComponent(placeString)}&limit=${limit}`;
+  let url = `${process.env.REACT_APP_BIKEHOPPER_DOMAIN}/v1/photon/geocode?q=${encodeURIComponent(placeString)}&limit=${limit}`;
   if (lat != null && lon != null)
     url += `&lat=${lat}&lon=${lon}&zoom=${zoom}`;
 
