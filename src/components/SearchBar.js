@@ -27,10 +27,10 @@ export default class SearchBar extends React.Component {
     };
     return (
       <form onSubmit={this._handleSubmit}>
-        <label for='start'>Start</label>
-        <input style={style} id='start' type='text' autofocus required placeholder='from' onChange={this._setStart} />
-        <label for='end'>End</label>
-        <input style={style} id='end' type='text' required placeholder='to' onChange={this._setEnd} />
+        <label>Start</label>
+        <input style={style} type='text' autoFocus required placeholder='from' onChange={this._setStart} />
+        <label>End</label>
+        <input style={style} type='text' required placeholder='to' onChange={this._setEnd} />
         <input type="submit" value="Submit" />
       </form>
     );

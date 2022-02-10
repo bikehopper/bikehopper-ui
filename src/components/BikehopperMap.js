@@ -33,13 +33,15 @@ function BikehopperMap(props) {
 
   React.useEffect(centerOnBbox, [path])
 
-  const legStyle = (leg) => ({
+  const feats = path && turf.featureCollection(path.legs.map(leg => turf.lineString(leg.geometry.coordinates, { 'route_color': leg['route_color'] })))
+
+  const legStyle = {
     type: 'line',
     paint: {
       'line-width': 3,
-      'line-color': '#' + (leg["route_color"] || '007cbf')
+      'line-color': ['to-color', ['concat', '#', ['coalesce', ['get', 'route_color'], '007cbf']]]
     }
-  });
+  };
 
   return (
     <MapGL
@@ -51,11 +53,9 @@ function BikehopperMap(props) {
       onViewportChange={setViewport}
       mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
     >
-      {path && path.legs.map((leg, index) => (
-        <Source key={"source" + index} type="geojson" data={turf.lineString(leg.geometry.coordinates)} >
-          <Layer key={"layer" + index} {...legStyle(leg)} />
-        </Source>
-      ))
+      {feats && <Source key="routeSource" type="geojson" data={feats} >
+        <Layer key="routeLayer" {...legStyle} />
+      </Source>
       }
       {
         startPoint && <Marker
