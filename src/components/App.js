@@ -78,7 +78,7 @@ function App() {
       <BikehopperMap
         startPoint={startPoint}
         endPoint={endPoint}
-        path={route && route.paths[0]}
+        route={route}
         onStartPointDrag={(evt) => setStartPoint(evt.lngLat)}
         onEndPointDrag={(evt) => setEndPoint(evt.lngLat)}
       />
