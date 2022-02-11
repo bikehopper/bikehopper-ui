@@ -42,6 +42,10 @@ function App() {
     }
   };
 
+  const lngLatToCoords = (lngLat) => [lngLat.lng, lngLat.lat];
+  const handleStartPointDrag = (evt) => setStartPoint(lngLatToCoords(evt.lngLat));
+  const handleEndPointDrag = (evt) => setEndPoint(lngLatToCoords(evt.lngLat));
+
   const fetchRoute = () => {
     if (!startPoint || !endPoint) {
       if (route) setRoute(null);
@@ -78,8 +82,8 @@ function App() {
         endPoint={endPoint}
         routeCoords={route && route.paths[0]}
         bbox={route && route.bboxes[0]}
-        onStartPointDrag={(evt) => setStartPoint(evt.lngLat)}
-        onEndPointDrag={(evt) => setEndPoint(evt.lngLat)}
+        onStartPointDrag={handleStartPointDrag}
+        onEndPointDrag={handleEndPointDrag}
       />
     </div>
   );
