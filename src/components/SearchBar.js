@@ -4,10 +4,9 @@ export default class SearchBar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      start: undefined,
-      end: undefined,
+      start: '',
+      end: '',
     };
-    this.placeholder = props.placeholder;
   }
 
   _setStart = (event) => {

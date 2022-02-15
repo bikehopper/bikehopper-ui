@@ -22,15 +22,14 @@ function BikehopperMap(props) {
     pitch: 0,
   });
 
-  const noPaths = () => !route || !route.paths || route.paths.length === 0;
   const centerOnBbox = () => {
     const map = mapRef.current.getMap();
-    if (noPaths()) return;
+    if (!route || !route.paths || route.paths.length === 0) return;
 
-    let  [minx, miny, maxx, maxy] = route.paths[0].bbox;
+    let [minx, miny, maxx, maxy] = route.paths[0].bbox;
     //merge bboxes across all paths
-    for(const path of route.paths) {
-      const  [currMinX, currMinY, currMaxX, currMaxY] = path.bbox;
+    for (const path of route.paths) {
+      const [currMinX, currMinY, currMaxX, currMaxY] = path.bbox;
       if (currMinX < minx) minx = currMinX;
       if (currMinY < miny) miny = currMinY;
       if (currMaxX > maxx) maxx = currMaxX;
@@ -43,21 +42,19 @@ function BikehopperMap(props) {
     setViewport({ latitude: lat, longitude: lng, zoom, bearing: 0, pitch: 0 });
   }
 
-  const generateGeojson = () => {
-    if (noPaths()) return null;
-
-    return turf.featureCollection(route.paths.map((path, index) => {
+  let routeFeatures = null;
+  if (route?.paths?.length > 0) {
+    routeFeatures = turf.featureCollection(route.paths.map((path, index) => {
       return path.legs.map((leg => {
         const feature = turf.lineString(leg.geometry.coordinates, { 'route_color': leg['route_color'], 'path_index': index });
         return feature;
       }));
     }).flat());
-  };
-  const feats = generateGeojson();
+  }
 
   const legColor = () => {
     return ['to-color', ['case',
-    ['==', ['get', 'path_index'], activePath], 
+      ['==', ['get', 'path_index'], activePath],
       // When path_index === activePath use the color
       ['concat', '#', ['coalesce', ['get', 'route_color'], '007cbf']],
       // Else fallback to grey
@@ -72,10 +69,10 @@ function BikehopperMap(props) {
         map.setPaintProperty('routeLayer', 'line-color', legColor());
         map.setLayoutProperty('routeLayer', 'line-sort-key',
           ['case',
-            ['==', ['get', 'path_index'], activePath], 
-                9999,
+            ['==', ['get', 'path_index'], activePath],
+            9999,
             0
-        ]);
+          ]);
       }
     });
   };
@@ -109,7 +106,7 @@ function BikehopperMap(props) {
       }}
       mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
     >
-      <Source id="routeSource" type="geojson" data={feats} >
+      <Source id="routeSource" type="geojson" data={routeFeatures} >
         <Layer {...legStyle} />
       </Source>
       {
