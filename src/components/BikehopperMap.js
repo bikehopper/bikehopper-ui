@@ -6,6 +6,34 @@ import MarkerSVG from './MarkerSVG';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
 
+const legColor = (activePath) => {
+  return [
+    'case',
+    [
+      '==',
+      [
+        'get',
+        'path_index'
+      ],
+      activePath
+    ],
+    // active paths are route_color or royalblue
+    [
+      'to-color',
+      [
+        'get',
+        'route_color'
+      ],
+      'royalblue'
+    ],
+    // inactive paths are darkgray
+    [
+      'to-color',
+      'darkgray'
+    ]
+  ];
+};
+
 function BikehopperMap(props) {
   // the callbacks contain event.lngLat for the point, which can replace startPoint/endPoint
   const { startPoint, endPoint, route, onStartPointDrag, onEndPointDrag } = props;
@@ -22,7 +50,9 @@ function BikehopperMap(props) {
     pitch: 0,
   });
 
-  const centerOnBbox = () => {
+
+  // center viewport on route paths
+  React.useEffect(() => {
     const map = mapRef.current.getMap();
     if (!route || !route.paths || route.paths.length === 0) return;
 
@@ -40,33 +70,14 @@ function BikehopperMap(props) {
       padding: 40
     });
     setViewport({ latitude: lat, longitude: lng, zoom, bearing: 0, pitch: 0 });
-  }
+  }, [route]);
 
-  let routeFeatures = null;
-  if (route?.paths?.length > 0) {
-    routeFeatures = turf.featureCollection(route.paths.map((path, index) => {
-      return path.legs.map((leg => {
-        const feature = turf.lineString(leg.geometry.coordinates, { 'route_color': leg['route_color'], 'path_index': index });
-        return feature;
-      }));
-    }).flat());
-  }
-
-  const legColor = () => {
-    return ['to-color', ['case',
-      ['==', ['get', 'path_index'], activePath],
-      // When path_index === activePath use the color
-      ['concat', '#', ['coalesce', ['get', 'route_color'], '007cbf']],
-      // Else fallback to grey
-      '#BDB8B7'
-    ]];
-  };
-
-  const updateActivePathOnMap = () => {
+  // highlight the active path on the map
+  React.useEffect(() => {
     const map = mapRef.current.getMap();
     map.on('idle', () => {
       if (map.getLayer('routeLayer')) {
-        map.setPaintProperty('routeLayer', 'line-color', legColor());
+        map.setPaintProperty('routeLayer', 'line-color', legColor(activePath));
         map.setLayoutProperty('routeLayer', 'line-sort-key',
           ['case',
             ['==', ['get', 'path_index'], activePath],
@@ -75,17 +86,31 @@ function BikehopperMap(props) {
           ]);
       }
     });
-  };
+  }, [activePath]);
 
-  React.useEffect(centerOnBbox, [route]);
-  React.useEffect(updateActivePathOnMap, [activePath]);
+  let routeFeatures = null;
+  if (route?.paths?.length > 0) {
+    routeFeatures = turf.featureCollection(route.paths.map((path, index) => {
+      return path.legs.map((leg => {
+        const feature = turf.lineString(leg.geometry.coordinates, { 'route_color': '#' + leg['route_color'], 'path_index': index });
+        return feature;
+      }));
+    }).flat());
+  }
 
   const legStyle = {
     id: "routeLayer",
     type: 'line',
     paint: {
       'line-width': 3,
-      'line-color': legColor()
+      'line-color': legColor(activePath)
+    }
+  };
+
+  const onPathClick = (evt) => {
+    if (evt.features && evt.features.length > 0) {
+      const feature = evt.features[0];
+      setActivePath(feature.properties['path_index']);
     }
   };
 
@@ -98,12 +123,7 @@ function BikehopperMap(props) {
       mapStyle="mapbox://styles/mapbox/light-v9"
       onViewportChange={setViewport}
       interactiveLayerIds={["routeLayer"]}
-      onClick={(evt) => {
-        if (evt.features && evt.features.length > 0) {
-          const feature = evt.features[0];
-          setActivePath(feature.properties['path_index']);
-        }
-      }}
+      onClick={onPathClick}
       mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
     >
       <Source id="routeSource" type="geojson" data={routeFeatures} >
