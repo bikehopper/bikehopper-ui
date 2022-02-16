@@ -6,34 +6,6 @@ import MarkerSVG from './MarkerSVG';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
 
-const legColor = (activePath) => {
-  return [
-    'case',
-    [
-      '==',
-      [
-        'get',
-        'path_index'
-      ],
-      activePath
-    ],
-    // active paths are route_color or royalblue
-    [
-      'to-color',
-      [
-        'get',
-        'route_color'
-      ],
-      'royalblue'
-    ],
-    // inactive paths are darkgray
-    [
-      'to-color',
-      'darkgray'
-    ]
-  ];
-};
-
 function BikehopperMap(props) {
   // the callbacks contain event.lngLat for the point, which can replace startPoint/endPoint
   const { startPoint, endPoint, route, onStartPointDrag, onEndPointDrag } = props;
@@ -50,38 +22,40 @@ function BikehopperMap(props) {
     pitch: 0,
   };
 
+  const handleRouteClick = (evt) => {
+    if (evt.features?.length) {
+      setActivePath(evt.features[0].properties['path_index']);
+    }
+  };
 
   // center viewport on route paths
   useEffect(() => {
-    if (!mapRef.current) return;
-    const map = mapRef.current;
-    if (!route || !route.paths || route.paths.length === 0) return;
+    const map = mapRef.current?.getMap();
+    if (!map || !route?.paths?.length) return;
 
-    let [minx, miny, maxx, maxy] = route.paths[0].bbox;
-    //merge bboxes across all paths
-    for (const path of route.paths) {
-      const [currMinX, currMinY, currMaxX, currMaxY] = path.bbox;
-      if (currMinX < minx) minx = currMinX;
-      if (currMinY < miny) miny = currMinY;
-      if (currMaxX > maxx) maxx = currMaxX;
-      if (currMaxY > maxy) maxy = currMaxY;
-    }
+    // merge all bboxes
+    const bboxes = route.paths.map(path => path.bbox);
+    const [minx, miny, maxx, maxy] = bboxes.reduce((acc, cur) => [
+      Math.min(acc[0], cur[0]), // minx
+      Math.min(acc[1], cur[1]), // miny
+      Math.max(acc[2], cur[2]), // maxx
+      Math.max(acc[3], cur[3]), // maxy
+    ]);
 
-    // const { center: { lng, lat }, zoom } = map.cameraForBounds([[minx, miny], [maxx, maxy]], {
-    //   padding: 40
-    // });
-    // setViewport({ latitude: lat, longitude: lng, zoom, bearing: 0, pitch: 0 });
-    map.fitBounds([[minx, miny], [maxx, maxy]], { padding: 40 });
+    map.fitBounds([[minx, miny], [maxx, maxy]], {
+      padding: 40
+    });
   }, [route]);
 
   // highlight the active path on the map
   useEffect(() => {
-    if (!mapRef.current) return;
-    const map = mapRef.current;
+    const map = mapRef.current?.getMap();
+    if (!map) return;
     map.on('idle', () => {
       if (map.getLayer('routeLayer')) {
-        map.getMap().setPaintProperty('routeLayer', 'line-color', legColor(activePath));
-        map.getMap().setLayoutProperty('routeLayer', 'line-sort-key',
+        // XXX Can we remove this and rely on React? We also pass this color reactively below
+        map.setPaintProperty('routeLayer', 'line-color', getLegColorStyle(activePath));
+        map.setLayoutProperty('routeLayer', 'line-sort-key',
           ['case',
             ['==', ['get', 'path_index'], activePath],
             9999,
@@ -93,27 +67,27 @@ function BikehopperMap(props) {
 
   let routeFeatures = null;
   if (route?.paths?.length > 0) {
-    routeFeatures = turf.featureCollection(route.paths.map((path, index) => {
-      return path.legs.map((leg => {
-        const feature = turf.lineString(leg.geometry.coordinates, { 'route_color': '#' + leg['route_color'], 'path_index': index });
-        return feature;
-      }));
-    }).flat());
+    routeFeatures = turf.featureCollection(
+      route.paths.map((path, index) =>
+          path.legs.map(leg =>
+              turf.lineString(
+                leg.geometry.coordinates,
+                {
+                  route_color: '#' + leg['route_color'],
+                  path_index: index,
+                }
+              )
+          )
+      ).flat()
+    );
   }
 
   const legStyle = {
-    id: "routeLayer",
+    id: 'routeLayer',
     type: 'line',
     paint: {
       'line-width': 3,
-      'line-color': legColor(activePath)
-    }
-  };
-
-  const onPathClick = (evt) => {
-    if (evt.features && evt.features.length > 0) {
-      const feature = evt.features[0];
-      setActivePath(feature.properties['path_index']);
+      'line-color': getLegColorStyle(activePath),
     }
   };
 
@@ -126,10 +100,9 @@ function BikehopperMap(props) {
         height: '100vh',
       }}
       mapStyle="mapbox://styles/mapbox/light-v9"
-      // onViewportChange={setViewport}
-      interactiveLayerIds={["routeLayer"]}
-      onClick={onPathClick}
       mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
+      interactiveLayerIds={['routeLayer']}
+      onClick={handleRouteClick}
     >
       <Source id="routeSource" type="geojson" data={routeFeatures} >
         <Layer {...legStyle} />
@@ -162,6 +135,34 @@ function BikehopperMap(props) {
       }
     </MapGL >
   );
+}
+
+function getLegColorStyle(indexOfActivePath) {
+  return [
+    'case',
+    [
+      '==',
+      [
+        'get',
+        'path_index',
+      ],
+      indexOfActivePath
+    ],
+    // for active path use the route color from GTFS or fallback to blue
+    [
+      'to-color',
+      [
+        'get',
+        'route_color'
+      ],
+      'royalblue'
+    ],
+    // inactive paths are darkgray
+    [
+      'to-color',
+      'darkgray'
+    ]
+  ];
 }
 
 export default BikehopperMap;
