@@ -47,37 +47,19 @@ function BikehopperMap(props) {
     });
   }, [route]);
 
-  // highlight the active path on the map
-  useEffect(() => {
-    const map = mapRef.current?.getMap();
-    if (!map) return;
-    map.on('idle', () => {
-      if (map.getLayer('routeLayer')) {
-        // XXX Can we remove this and rely on React? We also pass this color reactively below
-        map.setPaintProperty('routeLayer', 'line-color', getLegColorStyle(activePath));
-        map.setLayoutProperty('routeLayer', 'line-sort-key',
-          ['case',
-            ['==', ['get', 'path_index'], activePath],
-            9999,
-            0
-          ]);
-      }
-    });
-  }, [activePath]);
-
   let routeFeatures = null;
   if (route?.paths?.length > 0) {
     routeFeatures = turf.featureCollection(
       route.paths.map((path, index) =>
-          path.legs.map(leg =>
-              turf.lineString(
-                leg.geometry.coordinates,
-                {
-                  route_color: '#' + leg['route_color'],
-                  path_index: index,
-                }
-              )
+        path.legs.map(leg =>
+          turf.lineString(
+            leg.geometry.coordinates,
+            {
+              route_color: '#' + leg['route_color'],
+              path_index: index,
+            }
           )
+        )
       ).flat()
     );
   }
@@ -85,6 +67,9 @@ function BikehopperMap(props) {
   const legStyle = {
     id: 'routeLayer',
     type: 'line',
+    layout: {
+      'line-sort-key': getLegSortKey(activePath)
+    },
     paint: {
       'line-width': 3,
       'line-color': getLegColorStyle(activePath),
@@ -104,7 +89,7 @@ function BikehopperMap(props) {
       interactiveLayerIds={['routeLayer']}
       onClick={handleRouteClick}
     >
-      <Source id="routeSource" type="geojson" data={routeFeatures} >
+      <Source id="routeSource" type="geojson" data={routeFeatures}>
         <Layer {...legStyle} />
       </Source>
       {
@@ -136,6 +121,21 @@ function BikehopperMap(props) {
     </MapGL>
   );
 }
+
+function getLegSortKey(indexOfActivePath) {
+  return [
+    'case',
+    [
+      '==',
+      [
+        'get', 'path_index'
+      ],
+      indexOfActivePath
+    ],
+    9999,
+    0
+  ];
+};
 
 function getLegColorStyle(indexOfActivePath) {
   return [
