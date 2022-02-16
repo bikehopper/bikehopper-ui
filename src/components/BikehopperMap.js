@@ -53,7 +53,6 @@ function BikehopperMap(props) {
 
   // center viewport on route paths
   useEffect(() => {
-    console.log(mapRef);
     if (!mapRef.current) return;
     const map = mapRef.current;
     if (!route || !route.paths || route.paths.length === 0) return;
