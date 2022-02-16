@@ -1,45 +1,54 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
+import {
+  useSearchParams,
+} from 'react-router-dom';
 import { geocode, getRoute } from '../lib/BikehopperClient';
 import BikehopperMap from './BikehopperMap';
 import SearchBar from './SearchBar';
 
+function stringToCoordinate(s) {
+  if (!s || !s.length) return;
+  if (!s.match(/^\s*-?\d*\.\d*\s*,\s*-?\d*\.\d*\s*$/)) return;
+  // Looks like we were given a lon-lat pair, e.g. -122.4, 37.8
+  let point = s.split(',')?.slice(0, 2)?.map(part => part.trim());
+
+  if (!point || !point.length) return;
+
+  for (const i in point) {
+    if (isNaN(Number(point[i]))) return;
+    point[i] = Number(point[i]);
+  }
+  return point;
+}
+
 function App() {
-  const [startPoint, setStartPoint] = useState(null);
-  const [endPoint, setEndPoint] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [startPoint, setStartPoint] = useState(stringToCoordinate(searchParams.get('start')) || null);
+  const [endPoint, setEndPoint] = useState(stringToCoordinate(searchParams.get('end')) || null);
   const [route, setRoute] = useState(null);
 
-  const handlePointSearch = (searchString) => {
-    // Accept start point first, then end point
-    const setterToUse = !startPoint ? setStartPoint : setEndPoint;
-
-    if (searchString.match(/^\s*-?\d*\.\d*\s*,\s*-?\d*\.\d*\s*$/)) {
-      // Looks like we were given a lon-lat pair, e.g. -122.4, 37.8
-      let point = searchString.split(',')?.slice(0, 2)?.map(s => s.trim());
-
-      if (!point || !point.length) return;
-
-      for (const i in point) {
-        if (isNaN(Number(point[i]))) return;
-        point[i] = Number(point[i]);
+  const _handleGeocodeSearch = async (searchString) => {
+    const maybePoint = stringToCoordinate(searchString);
+    if (maybePoint) return maybePoint;
+    const opts = {
+      // XXX oops, I want to use the viewport of the map here, but I put that state in
+      // a subcomponent...
+      lon: -122.4,
+      lat: 37.8,
+    };
+    return geocode(searchString, opts).then(result => {
+      if (result.type !== 'FeatureCollection' || result.features[0].geometry.type !== 'Point') {
+        // TODO: show error message (or maybe try to use results that are not points, somehow)
+        console.error(`geocode returned something other than a Point or FeatureCollection`);
+        return;
       }
-      setterToUse(point);
-    } else {
-      // It doesn't look like a lon-lat pair. Probably address or place name. Geocode it.
-      const opts = {
-        // XXX oops, I want to use the viewport of the map here, but I put that state in
-        // a subcomponent...
-        lon: -122.4,
-        lat: 37.8,
-      };
-      geocode(searchString, opts).then(result => {
-        if (result.type !== 'FeatureCollection' || result.features[0].geometry.type !== 'Point') {
-          // TODO: show error message (or maybe try to use results that are not points, somehow)
-          return;
-        }
-        setterToUse(result.features[0].geometry.coordinates);
-      });
-    }
+      return result.features[0].geometry.coordinates;
+    });
+  }
+  const handleSearch = async ({ start, end }) => {
+    await _handleGeocodeSearch(start).then(p => p && setStartPoint(p));
+    await _handleGeocodeSearch(end).then(p => p && setEndPoint(p));
   };
 
   const lngLatToCoords = (lngLat) => [lngLat.lng, lngLat.lat];
@@ -62,26 +71,31 @@ function App() {
         pointsEncoded: false,
       })
         .then(fetchedRoute => {
+          if (!fetchedRoute) return;
           setRoute({
-            paths: fetchedRoute.paths.map(path => path.points.coordinates),
+            paths: fetchedRoute.paths,
             startPoint,
             endPoint,
-            bboxes: fetchedRoute.paths.map(path => path.bbox)
           });
         });
     }
   };
 
   useEffect(fetchRoute, [startPoint, endPoint, route]);
+  useEffect(() => {
+    const params = {};
+    if (startPoint) params.startPoint = startPoint.join(',');
+    if (endPoint) params.endPoint = endPoint.join(',');
+    setSearchParams(params, { replace: true })
+  }, [startPoint, endPoint, setSearchParams]);
 
   return (
     <div>
-      <SearchBar onSubmit={handlePointSearch} position='absolute' />
+      <SearchBar onSubmit={handleSearch} position='absolute' />
       <BikehopperMap
         startPoint={startPoint}
         endPoint={endPoint}
-        routeCoords={route && route.paths[0]}
-        bbox={route && route.bboxes[0]}
+        route={route}
         onStartPointDrag={handleStartPointDrag}
         onEndPointDrag={handleEndPointDrag}
       />
