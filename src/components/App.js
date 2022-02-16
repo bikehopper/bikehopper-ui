@@ -38,7 +38,7 @@ function App() {
       lat: 37.8,
     };
     return geocode(searchString, opts).then(result => {
-      if (result.type !== 'FeatureCollection' || result.features[0].geometry.type !== 'Point') {
+      if (result.type !== 'FeatureCollection' || !result.features?.length || result.features[0].geometry.type !== 'Point') {
         // TODO: show error message (or maybe try to use results that are not points, somehow)
         console.error(`geocode returned something other than a Point or FeatureCollection`);
         return;
