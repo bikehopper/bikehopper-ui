@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import * as turf from '@turf/helpers';
 import MapGL, { Layer, Marker, Source } from 'react-map-gl';
 import MarkerSVG from './MarkerSVG';
@@ -41,19 +41,21 @@ function BikehopperMap(props) {
   const mapRef = React.useRef();
   const [activePath, setActivePath] = useState(0);
 
-  const [viewport, setViewport] = useState({
+  const initialViewState = {
     // hardcode San Francisco view for now
     latitude: 37.75117670681911,
     longitude: -122.44574920654225,
     zoom: 12,
     bearing: 0,
     pitch: 0,
-  });
+  };
 
 
   // center viewport on route paths
-  React.useEffect(() => {
-    const map = mapRef.current.getMap();
+  useEffect(() => {
+    console.log(mapRef);
+    if (!mapRef.current) return;
+    const map = mapRef.current;
     if (!route || !route.paths || route.paths.length === 0) return;
 
     let [minx, miny, maxx, maxy] = route.paths[0].bbox;
@@ -66,19 +68,21 @@ function BikehopperMap(props) {
       if (currMaxY > maxy) maxy = currMaxY;
     }
 
-    const { center: { lng, lat }, zoom } = map.cameraForBounds([[minx, miny], [maxx, maxy]], {
-      padding: 40
-    });
-    setViewport({ latitude: lat, longitude: lng, zoom, bearing: 0, pitch: 0 });
+    // const { center: { lng, lat }, zoom } = map.cameraForBounds([[minx, miny], [maxx, maxy]], {
+    //   padding: 40
+    // });
+    // setViewport({ latitude: lat, longitude: lng, zoom, bearing: 0, pitch: 0 });
+    map.fitBounds([[minx, miny], [maxx, maxy]], { padding: 40 });
   }, [route]);
 
   // highlight the active path on the map
-  React.useEffect(() => {
-    const map = mapRef.current.getMap();
+  useEffect(() => {
+    if (!mapRef.current) return;
+    const map = mapRef.current;
     map.on('idle', () => {
       if (map.getLayer('routeLayer')) {
-        map.setPaintProperty('routeLayer', 'line-color', legColor(activePath));
-        map.setLayoutProperty('routeLayer', 'line-sort-key',
+        map.getMap().setPaintProperty('routeLayer', 'line-color', legColor(activePath));
+        map.getMap().setLayoutProperty('routeLayer', 'line-sort-key',
           ['case',
             ['==', ['get', 'path_index'], activePath],
             9999,
@@ -116,15 +120,17 @@ function BikehopperMap(props) {
 
   return (
     <MapGL
-      {...viewport}
+      initialViewState={initialViewState}
       ref={mapRef}
-      width="100vw"
-      height="100vh"
+      style={{
+        width: '100vw',
+        height: '100vh',
+      }}
       mapStyle="mapbox://styles/mapbox/light-v9"
-      onViewportChange={setViewport}
+      // onViewportChange={setViewport}
       interactiveLayerIds={["routeLayer"]}
       onClick={onPathClick}
-      mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
+      mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
     >
       <Source id="routeSource" type="geojson" data={routeFeatures} >
         <Layer {...legStyle} />

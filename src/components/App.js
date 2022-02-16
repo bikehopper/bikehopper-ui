@@ -51,6 +51,10 @@ function App() {
     await _handleGeocodeSearch(end).then(p => p && setEndPoint(p));
   };
 
+  const lngLatToCoords = (lngLat) => [lngLat.lng, lngLat.lat];
+  const handleStartPointDrag = (evt) => setStartPoint(lngLatToCoords(evt.lngLat));
+  const handleEndPointDrag = (evt) => setEndPoint(lngLatToCoords(evt.lngLat));
+
   const fetchRoute = () => {
     if (!startPoint || !endPoint) {
       if (route) setRoute(null);
@@ -79,8 +83,11 @@ function App() {
 
   useEffect(fetchRoute, [startPoint, endPoint, route]);
   useEffect(() => {
-    setSearchParams({ start: startPoint && startPoint.join(','), end: endPoint && endPoint.join(',') }, { replace: true })
-  }, [startPoint, endPoint]);
+    const params = {};
+    if (startPoint) params.startPoint = startPoint.join(',');
+    if (endPoint) params.endPoint = endPoint.join(',');
+    setSearchParams(params, { replace: true })
+  }, [startPoint, endPoint, setSearchParams]);
 
   return (
     <div>
@@ -89,8 +96,8 @@ function App() {
         startPoint={startPoint}
         endPoint={endPoint}
         route={route}
-        onStartPointDrag={({ lngLat }) => setStartPoint(lngLat)}
-        onEndPointDrag={({ lngLat }) => setEndPoint(lngLat)}
+        onStartPointDrag={handleStartPointDrag}
+        onEndPointDrag={handleEndPointDrag}
       />
     </div>
   );
