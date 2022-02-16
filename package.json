@@ -68,7 +68,7 @@
     "build": "node scripts/build.js",
     "test": "node scripts/test.js"
   },
-  "proxy": "https://api.bikehopper.staging.techlabor.org",
+  "proxy": "https://api-bikehopper-staging.techlabor.org",
   "eslintConfig": {
     "extends": [
       "react-app",
