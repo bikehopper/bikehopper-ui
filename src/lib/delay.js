@@ -4,4 +4,4 @@ function delay(time) {
   });
 }
 
-export {delay}
+export { delay };
