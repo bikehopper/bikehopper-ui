@@ -11,6 +11,7 @@ import MapGL, {
 import MarkerSVG from './MarkerSVG';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
+import './BikehopperMap.css';
 
 function BikehopperMap(props) {
   // the callbacks contain event.lngLat for the point, which can replace startPoint/endPoint
@@ -117,56 +118,60 @@ function BikehopperMap(props) {
   };
 
   return (
-    <MapGL
-      initialViewState={initialViewState}
-      ref={mapRef}
-      style={{
-        width: '100vw',
-        height: '100vh',
-      }}
-      mapStyle="mapbox://styles/mapbox/light-v9"
-      mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
-      interactiveLayerIds={['routeLayer']}
-      onClick={handleRouteClick}
-    >
-      <GeolocateControl ref={geolocateControlRef} />
-      <NavigationControl
-        showZoom={false}
-        style={{ ...navigationControlStyle }}
-      />
-      <Source id="routeSource" type="geojson" data={routeFeatures}>
-        <Layer {...legStyle} />
-      </Source>
-      <Source id="routeLabels" type="geojson" data={routeFeatures}>
-        <Layer {...routeLabelStyle} />
-      </Source>
-      {startPoint && (
-        <Marker
-          id="startMarker"
-          longitude={startPoint[0]}
-          latitude={startPoint[1]}
-          draggable={true}
-          onDragEnd={onStartPointDrag}
-          offsetLeft={-13}
-          offsetTop={-39}
-        >
-          <MarkerSVG fillColor="#2fa7cc" />
-        </Marker>
-      )}
-      {endPoint && (
-        <Marker
-          id="endMarker"
-          longitude={endPoint[0]}
-          latitude={endPoint[1]}
-          draggable={true}
-          onDragEnd={onEndPointDrag}
-          offsetLeft={-13}
-          offsetTop={-39}
-        >
-          <MarkerSVG fillColor="#ea526f" />
-        </Marker>
-      )}
-    </MapGL>
+    <div className="BikehopperMap">
+      <MapGL
+        initialViewState={initialViewState}
+        ref={mapRef}
+        style={{
+          // expand to fill parent container div
+          // this is because MapGL does not have a className prop
+          width: '100%',
+          height: '100%',
+        }}
+        mapStyle="mapbox://styles/mapbox/light-v9"
+        mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
+        interactiveLayerIds={['routeLayer']}
+        onClick={handleRouteClick}
+      >
+        <GeolocateControl ref={geolocateControlRef} />
+        <NavigationControl
+          showZoom={false}
+          style={{ ...navigationControlStyle }}
+        />
+        <Source id="routeSource" type="geojson" data={routeFeatures}>
+          <Layer {...legStyle} />
+        </Source>
+        <Source id="routeLabels" type="geojson" data={routeFeatures}>
+          <Layer {...routeLabelStyle} />
+        </Source>
+        {startPoint && (
+          <Marker
+            id="startMarker"
+            longitude={startPoint[0]}
+            latitude={startPoint[1]}
+            draggable={true}
+            onDragEnd={onStartPointDrag}
+            offsetLeft={-13}
+            offsetTop={-39}
+          >
+            <MarkerSVG fillColor="#2fa7cc" />
+          </Marker>
+        )}
+        {endPoint && (
+          <Marker
+            id="endMarker"
+            longitude={endPoint[0]}
+            latitude={endPoint[1]}
+            draggable={true}
+            onDragEnd={onEndPointDrag}
+            offsetLeft={-13}
+            offsetTop={-39}
+          >
+            <MarkerSVG fillColor="#ea526f" />
+          </Marker>
+        )}
+      </MapGL>
+    </div>
   );
 }
 
