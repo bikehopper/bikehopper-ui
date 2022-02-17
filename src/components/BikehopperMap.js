@@ -40,7 +40,7 @@ function BikehopperMap(props) {
       Math.min(acc[0], cur[0]), // minx
       Math.min(acc[1], cur[1]), // miny
       Math.max(acc[2], cur[2]), // maxx
-      Math.max(acc[3], cur[3]) // maxy
+      Math.max(acc[3], cur[3]), // maxy
     ]);
 
     map.fitBounds(
