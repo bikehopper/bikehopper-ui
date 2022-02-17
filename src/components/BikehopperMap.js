@@ -84,14 +84,15 @@ function BikehopperMap(props) {
     },
   };
 
-  const midpointStyle = {
-    id: 'midpointLayer',
+  const routeLabelStyle = {
+    id: 'routeLabelLayer',
     type: 'symbol',
     layout: {
-      'symbol-sort-key': getMidpointSortKey(activePath),
+      'symbol-sort-key': getLabelSortKey(activePath),
       'symbol-placement': 'line-center',
       'text-size': 16,
-      'text-field': getMidpointTextField(),
+      'text-field': getLabelTextField(),
+      'text-ignore-placement': true,
     },
     paint: {
       'text-color': getLegColorStyle(activePath),
@@ -116,8 +117,8 @@ function BikehopperMap(props) {
       <Source id="routeSource" type="geojson" data={routeFeatures}>
         <Layer {...legStyle} />
       </Source>
-      <Source id="midpointSymbols" type="geojson" data={routeFeatures}>
-        <Layer {...midpointStyle} />
+      <Source id="routeLabels" type="geojson" data={routeFeatures}>
+        <Layer {...routeLabelStyle} />
       </Source>
       {startPoint && (
         <Marker
@@ -153,8 +154,8 @@ function getLegSortKey(indexOfActivePath) {
   return ['case', ['==', ['get', 'path_index'], indexOfActivePath], 9999, 0];
 }
 
-function getMidpointSortKey(indexOfActivePath) {
-  return ['case', ['==', ['get', 'path_index'], indexOfActivePath], 0, 9999];
+function getLabelSortKey(indexOfActivePath) {
+  return ['case', ['==', ['get', 'path_index'], indexOfActivePath], 9999, 0];
 }
 
 function getLegColorStyle(indexOfActivePath) {
@@ -168,7 +169,7 @@ function getLegColorStyle(indexOfActivePath) {
   ];
 }
 
-function getMidpointTextField() {
+function getLabelTextField() {
   const text = [
     'case',
     ['==', ['get', 'type'], 'bike2'],
