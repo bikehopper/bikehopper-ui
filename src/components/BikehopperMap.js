@@ -7,7 +7,6 @@ import MapGL, {
   Source,
   GeolocateControl,
   NavigationControl,
-  ScaleControl,
 } from 'react-map-gl';
 import MarkerSVG from './MarkerSVG';
 
@@ -27,7 +26,7 @@ function BikehopperMap(props) {
     latitude: 37.75117670681911,
     longitude: -122.44574920654225,
     zoom: 12,
-    bearing: 0,
+    bearing: 1,
     pitch: 0,
   };
 
@@ -94,6 +93,10 @@ function BikehopperMap(props) {
     },
   };
 
+  const navigationControlStyle = () => ({
+    visibility: mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden',
+  });
+
   return (
     <MapGL
       initialViewState={initialViewState}
@@ -108,10 +111,9 @@ function BikehopperMap(props) {
       onClick={handleRouteClick}
     >
       <GeolocateControl ref={geolocateControlRef} />
-      <NavigationControl />
-      <ScaleControl
-        unit="imperial"
-        style={{ 'background-color': 'transparent' }}
+      <NavigationControl
+        showZoom={false}
+        style={{ ...navigationControlStyle() }}
       />
       <Source id="routeSource" type="geojson" data={routeFeatures}>
         <Layer {...legStyle} />
