@@ -1,7 +1,13 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import * as turf from '@turf/helpers';
-import MapGL, { Layer, Marker, Source } from 'react-map-gl';
+import MapGL, {
+  Layer,
+  Marker,
+  Source,
+  GeolocateControl,
+  NavigationControl,
+} from 'react-map-gl';
 import MarkerSVG from './MarkerSVG';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -12,6 +18,7 @@ function BikehopperMap(props) {
     props;
 
   const mapRef = React.useRef();
+  const geolocateControlRef = React.useRef();
   const [activePath, setActivePath] = useState(0);
 
   const initialViewState = {
@@ -28,6 +35,10 @@ function BikehopperMap(props) {
       setActivePath(evt.features[0].properties['path_index']);
     }
   };
+
+  useEffect(() => {
+    geolocateControlRef.current?.trigger();
+  }, []);
 
   // center viewport on route paths
   useEffect(() => {
@@ -84,6 +95,10 @@ function BikehopperMap(props) {
     },
   };
 
+  const navigationControlStyle = {
+    visibility: mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden',
+  };
+
   const routeLabelStyle = {
     id: 'routeLabelLayer',
     type: 'symbol',
@@ -114,6 +129,11 @@ function BikehopperMap(props) {
       interactiveLayerIds={['routeLayer']}
       onClick={handleRouteClick}
     >
+      <GeolocateControl ref={geolocateControlRef} />
+      <NavigationControl
+        showZoom={false}
+        style={{ ...navigationControlStyle }}
+      />
       <Source id="routeSource" type="geojson" data={routeFeatures}>
         <Layer {...legStyle} />
       </Source>
