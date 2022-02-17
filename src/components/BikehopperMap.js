@@ -61,8 +61,10 @@ function BikehopperMap(props) {
         .map((path, index) =>
           path.legs.map((leg) =>
             turf.lineString(leg.geometry.coordinates, {
-              route_color: '#' + leg['route_color'],
+              route_color: '#' + leg.route_color,
               path_index: index,
+              type: leg.type,
+              route_name: leg.route_name,
             }),
           ),
         )
@@ -82,6 +84,23 @@ function BikehopperMap(props) {
     },
   };
 
+  const routeLabelStyle = {
+    id: 'routeLabelLayer',
+    type: 'symbol',
+    layout: {
+      'symbol-sort-key': getLabelSortKey(activePath),
+      'symbol-placement': 'line-center',
+      'text-size': 16,
+      'text-field': getLabelTextField(),
+      'text-ignore-placement': true,
+    },
+    paint: {
+      'text-color': getLegColorStyle(activePath),
+      'text-halo-color': 'white',
+      'text-halo-width': 2,
+    },
+  };
+
   return (
     <MapGL
       initialViewState={initialViewState}
@@ -97,6 +116,9 @@ function BikehopperMap(props) {
     >
       <Source id="routeSource" type="geojson" data={routeFeatures}>
         <Layer {...legStyle} />
+      </Source>
+      <Source id="routeLabels" type="geojson" data={routeFeatures}>
+        <Layer {...routeLabelStyle} />
       </Source>
       {startPoint && (
         <Marker
@@ -132,6 +154,10 @@ function getLegSortKey(indexOfActivePath) {
   return ['case', ['==', ['get', 'path_index'], indexOfActivePath], 9999, 0];
 }
 
+function getLabelSortKey(indexOfActivePath) {
+  return ['case', ['==', ['get', 'path_index'], indexOfActivePath], 9999, 0];
+}
+
 function getLegColorStyle(indexOfActivePath) {
   return [
     'case',
@@ -141,6 +167,18 @@ function getLegColorStyle(indexOfActivePath) {
     // inactive paths are darkgray
     ['to-color', 'darkgray'],
   ];
+}
+
+function getLabelTextField() {
+  const text = [
+    'case',
+    ['==', ['get', 'type'], 'bike2'],
+    'bike',
+    ['has', 'route_name'],
+    ['get', 'route_name'],
+    'unknown',
+  ];
+  return ['format', text];
 }
 
 export default BikehopperMap;
