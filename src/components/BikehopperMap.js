@@ -61,8 +61,10 @@ function BikehopperMap(props) {
         .map((path, index) =>
           path.legs.map((leg) =>
             turf.lineString(leg.geometry.coordinates, {
-              route_color: '#' + leg['route_color'],
+              route_color: '#' + leg.route_color,
               path_index: index,
+              type: leg.type,
+              route_name: leg.route_name,
             }),
           ),
         )
@@ -82,6 +84,22 @@ function BikehopperMap(props) {
     },
   };
 
+  const midpointStyle = {
+    id: 'midpointLayer',
+    type: 'symbol',
+    layout: {
+      'symbol-sort-key': getMidpointSortKey(activePath),
+      'symbol-placement': 'line-center',
+      'text-size': 16,
+      'text-field': getMidpointTextField(),
+    },
+    paint: {
+      'text-color': getLegColorStyle(activePath),
+      'text-halo-color': 'white',
+      'text-halo-width': 2,
+    },
+  };
+
   return (
     <MapGL
       initialViewState={initialViewState}
@@ -97,6 +115,9 @@ function BikehopperMap(props) {
     >
       <Source id="routeSource" type="geojson" data={routeFeatures}>
         <Layer {...legStyle} />
+      </Source>
+      <Source id="midpointSymbols" type="geojson" data={routeFeatures}>
+        <Layer {...midpointStyle} />
       </Source>
       {startPoint && (
         <Marker
@@ -132,6 +153,10 @@ function getLegSortKey(indexOfActivePath) {
   return ['case', ['==', ['get', 'path_index'], indexOfActivePath], 9999, 0];
 }
 
+function getMidpointSortKey(indexOfActivePath) {
+  return ['case', ['==', ['get', 'path_index'], indexOfActivePath], 0, 9999];
+}
+
 function getLegColorStyle(indexOfActivePath) {
   return [
     'case',
@@ -141,6 +166,18 @@ function getLegColorStyle(indexOfActivePath) {
     // inactive paths are darkgray
     ['to-color', 'darkgray'],
   ];
+}
+
+function getMidpointTextField() {
+  const text = [
+    'case',
+    ['==', ['get', 'type'], 'bike2'],
+    'bike',
+    ['has', 'route_name'],
+    ['get', 'route_name'],
+    'unknown',
+  ];
+  return ['format', text];
 }
 
 export default BikehopperMap;
