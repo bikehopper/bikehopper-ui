@@ -8,7 +8,8 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 
 function BikehopperMap(props) {
   // the callbacks contain event.lngLat for the point, which can replace startPoint/endPoint
-  const { startPoint, endPoint, route, onStartPointDrag, onEndPointDrag } = props;
+  const { startPoint, endPoint, route, onStartPointDrag, onEndPointDrag } =
+    props;
 
   const mapRef = React.useRef();
   const [activePath, setActivePath] = useState(0);
@@ -34,7 +35,7 @@ function BikehopperMap(props) {
     if (!map || !route?.paths?.length) return;
 
     // merge all bboxes
-    const bboxes = route.paths.map(path => path.bbox);
+    const bboxes = route.paths.map((path) => path.bbox);
     const [minx, miny, maxx, maxy] = bboxes.reduce((acc, cur) => [
       Math.min(acc[0], cur[0]), // minx
       Math.min(acc[1], cur[1]), // miny
@@ -42,25 +43,30 @@ function BikehopperMap(props) {
       Math.max(acc[3], cur[3]), // maxy
     ]);
 
-    map.fitBounds([[minx, miny], [maxx, maxy]], {
-      padding: 40
-    });
+    map.fitBounds(
+      [
+        [minx, miny],
+        [maxx, maxy],
+      ],
+      {
+        padding: 40,
+      },
+    );
   }, [route]);
 
   let routeFeatures = null;
   if (route?.paths?.length > 0) {
     routeFeatures = turf.featureCollection(
-      route.paths.map((path, index) =>
-        path.legs.map(leg =>
-          turf.lineString(
-            leg.geometry.coordinates,
-            {
+      route.paths
+        .map((path, index) =>
+          path.legs.map((leg) =>
+            turf.lineString(leg.geometry.coordinates, {
               route_color: '#' + leg['route_color'],
               path_index: index,
-            }
-          )
+            }),
+          ),
         )
-      ).flat()
+        .flat(),
     );
   }
 
@@ -68,12 +74,12 @@ function BikehopperMap(props) {
     id: 'routeLayer',
     type: 'line',
     layout: {
-      'line-sort-key': getLegSortKey(activePath)
+      'line-sort-key': getLegSortKey(activePath),
     },
     paint: {
       'line-width': 3,
       'line-color': getLegColorStyle(activePath),
-    }
+    },
   };
 
   return (
@@ -92,9 +98,9 @@ function BikehopperMap(props) {
       <Source id="routeSource" type="geojson" data={routeFeatures}>
         <Layer {...legStyle} />
       </Source>
-      {
-        startPoint && <Marker
-          id='startMarker'
+      {startPoint && (
+        <Marker
+          id="startMarker"
           longitude={startPoint[0]}
           latitude={startPoint[1]}
           draggable={true}
@@ -104,10 +110,10 @@ function BikehopperMap(props) {
         >
           <MarkerSVG fillColor="#2fa7cc" />
         </Marker>
-      }
-      {
-        endPoint && <Marker
-          id='endMarker'
+      )}
+      {endPoint && (
+        <Marker
+          id="endMarker"
           longitude={endPoint[0]}
           latitude={endPoint[1]}
           draggable={true}
@@ -117,51 +123,23 @@ function BikehopperMap(props) {
         >
           <MarkerSVG fillColor="#ea526f" />
         </Marker>
-      }
+      )}
     </MapGL>
   );
 }
 
 function getLegSortKey(indexOfActivePath) {
-  return [
-    'case',
-    [
-      '==',
-      [
-        'get', 'path_index'
-      ],
-      indexOfActivePath
-    ],
-    9999,
-    0
-  ];
-};
+  return ['case', ['==', ['get', 'path_index'], indexOfActivePath], 9999, 0];
+}
 
 function getLegColorStyle(indexOfActivePath) {
   return [
     'case',
-    [
-      '==',
-      [
-        'get',
-        'path_index',
-      ],
-      indexOfActivePath
-    ],
+    ['==', ['get', 'path_index'], indexOfActivePath],
     // for active path use the route color from GTFS or fallback to blue
-    [
-      'to-color',
-      [
-        'get',
-        'route_color'
-      ],
-      'royalblue'
-    ],
+    ['to-color', ['get', 'route_color'], 'royalblue'],
     // inactive paths are darkgray
-    [
-      'to-color',
-      'darkgray'
-    ]
+    ['to-color', 'darkgray'],
   ];
 }
 
