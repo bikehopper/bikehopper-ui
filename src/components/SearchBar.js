@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import './SearchBar.css';
+
 export default class SearchBar extends React.Component {
   constructor(props) {
     super(props);
@@ -21,28 +23,20 @@ export default class SearchBar extends React.Component {
   };
 
   render() {
-    const style = {
-      width: '20rem',
-      background: '#F2F1F9',
-      border: 'none',
-      padding: '0.5rem',
-    };
     return (
       <form onSubmit={this._handleSubmit}>
         <label>Start</label>
         <input
-          style={style}
+          className="SearchBar_input"
           type="text"
           autoFocus
-          required
           placeholder="from"
           onChange={this._setStart}
         />
         <label>End</label>
         <input
-          style={style}
+          className="SearchBar_input"
           type="text"
-          required
           placeholder="to"
           onChange={this._setEnd}
         />
