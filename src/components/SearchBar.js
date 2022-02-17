@@ -27,23 +27,33 @@ export default class SearchBar extends React.Component {
       border: 'none',
       padding: '0.5rem',
     };
+    const visuallyhidden = {
+      border: 0,
+      clip: 'rect(0 0 0 0)',
+      height: '1px',
+      margin: '-1px',
+      overflow: 'hidden',
+      padding: 0,
+      position: 'absolute',
+      width: '1px',
+    };
     return (
       <form onSubmit={this._handleSubmit}>
-        <label>Start</label>
+        <label style={visuallyhidden}>Start</label>
         <input
           style={style}
           type="text"
           autoFocus
           required
-          placeholder="from"
+          placeholder="Start"
           onChange={this._setStart}
         />
-        <label>End</label>
+        <label style={visuallyhidden}>End</label>
         <input
           style={style}
           type="text"
           required
-          placeholder="to"
+          placeholder="End"
           onChange={this._setEnd}
         />
         <input type="submit" value="Submit" />
