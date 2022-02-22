@@ -20,7 +20,7 @@ export function routeToGeoJSON(route) {
 
       // Add a LineString feature for the leg
       const legFeature = turf.lineString(leg.geometry.coordinates, {
-        route_color: '#' + leg['route_color'],
+        route_color: leg['route_color'] ? '#' + leg['route_color'] : null,
         path_index: pathIdx,
         is_transition: false,
       });
@@ -38,6 +38,7 @@ export function routeToGeoJSON(route) {
             path_idx: pathIdx,
             is_transition: true,
           },
+          resolution: 1000,
         });
         features.push(transitionFeature);
       }
@@ -47,9 +48,15 @@ export function routeToGeoJSON(route) {
   return turf.featureCollection(features);
 }
 
-export function curveBetween(start, end, properties) {
+/**
+ * Generates a curve feature between `start` and `end`., with a specified launch angle `angle`.
+ * @param {*} start
+ * @param {*} end
+ * @param {*} options
+ * @param {*} angle  In degrees, defaults to 30
+ */
+export function curveBetween(start, end, options, angle = 30) {
   const D = distance(start, end) / 2;
-  const angle = 30;
   const R = D / Math.cos((angle * Math.PI) / 180);
   const rotated = transformRotate(turf.lineString([start, end]), angle, {
     pivot: start,
@@ -57,9 +64,11 @@ export function curveBetween(start, end, properties) {
   const sliced = lineSliceAlong(rotated, 0, R);
 
   return bezierSpline(
-    turf.lineString(
-      [sliced.geometry.coordinates[0], sliced.geometry.coordinates[1], end],
-      properties,
-    ),
+    turf.lineString([
+      sliced.geometry.coordinates[0],
+      sliced.geometry.coordinates[1],
+      end,
+    ]),
+    options,
   );
 }

@@ -59,12 +59,27 @@ function BikehopperMap(props) {
   const legStyle = {
     id: 'routeLayer',
     type: 'line',
+    filter: ['!', ['to-boolean', ['get', 'is_transition']]],
     layout: {
       'line-sort-key': getLegSortKey(activePath),
     },
     paint: {
       'line-width': 3,
       'line-color': getLegColorStyle(activePath),
+    },
+  };
+
+  const transitionStyle = {
+    id: 'transitionLayer',
+    type: 'line',
+    filter: ['to-boolean', ['get', 'is_transition']],
+    layout: {
+      'line-sort-key': getLegSortKey(activePath),
+    },
+    paint: {
+      'line-width': 3,
+      'line-color': 'darkgray',
+      'line-dasharray': [1, 1],
     },
   };
 
@@ -78,11 +93,12 @@ function BikehopperMap(props) {
       }}
       mapStyle="mapbox://styles/mapbox/light-v9"
       mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
-      interactiveLayerIds={['routeLayer']}
+      interactiveLayerIds={['routeLayer', 'transitionLayer']}
       onClick={handleRouteClick}
     >
       <Source id="routeSource" type="geojson" data={features}>
         <Layer {...legStyle} />
+        <Layer {...transitionStyle} />
       </Source>
       {startPoint && (
         <Marker
