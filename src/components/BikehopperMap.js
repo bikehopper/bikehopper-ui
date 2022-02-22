@@ -102,6 +102,7 @@ function BikehopperMap(props) {
   const routeLabelStyle = {
     id: 'routeLabelLayer',
     type: 'symbol',
+    filter: ['!', ['to-boolean', ['get', 'is_transition']]],
     layout: {
       'symbol-sort-key': getLabelSortKey(activePath),
       'symbol-placement': 'line-center',
@@ -129,7 +130,11 @@ function BikehopperMap(props) {
         }}
         mapStyle="mapbox://styles/mapbox/light-v9"
         mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
-        interactiveLayerIds={['routeLayer', 'transitionLayer']}
+        interactiveLayerIds={[
+          'routeLayer',
+          'transitionLayer',
+          'routeLabelLayer',
+        ]}
         onClick={handleRouteClick}
       >
         <GeolocateControl ref={geolocateControlRef} />
