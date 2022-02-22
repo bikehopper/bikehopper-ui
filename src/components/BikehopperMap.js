@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import * as turf from '@turf/helpers';
+import { routeToGeoJSON } from '../lib/geometry';
 import MapGL, {
   Layer,
   Marker,
@@ -66,33 +66,32 @@ function BikehopperMap(props) {
     );
   }, [route]);
 
-  let routeFeatures = null;
-  if (route?.paths?.length > 0) {
-    routeFeatures = turf.featureCollection(
-      route.paths
-        .map((path, index) =>
-          path.legs.map((leg) =>
-            turf.lineString(leg.geometry.coordinates, {
-              route_color: '#' + leg.route_color,
-              path_index: index,
-              type: leg.type,
-              route_name: leg.route_name,
-            }),
-          ),
-        )
-        .flat(),
-    );
-  }
+  const features = routeToGeoJSON(route);
 
   const legStyle = {
     id: 'routeLayer',
     type: 'line',
+    filter: ['!', ['to-boolean', ['get', 'is_transition']]],
     layout: {
       'line-sort-key': getLegSortKey(activePath),
     },
     paint: {
       'line-width': 3,
       'line-color': getLegColorStyle(activePath),
+    },
+  };
+
+  const transitionStyle = {
+    id: 'transitionLayer',
+    type: 'line',
+    filter: ['to-boolean', ['get', 'is_transition']],
+    layout: {
+      'line-sort-key': getLegSortKey(activePath),
+    },
+    paint: {
+      'line-width': 3,
+      'line-color': 'darkgray',
+      'line-dasharray': [1, 1],
     },
   };
 
@@ -103,6 +102,7 @@ function BikehopperMap(props) {
   const routeLabelStyle = {
     id: 'routeLabelLayer',
     type: 'symbol',
+    filter: ['!', ['to-boolean', ['get', 'is_transition']]],
     layout: {
       'symbol-sort-key': getLabelSortKey(activePath),
       'symbol-placement': 'line-center',
@@ -130,7 +130,11 @@ function BikehopperMap(props) {
         }}
         mapStyle="mapbox://styles/mapbox/light-v9"
         mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
-        interactiveLayerIds={['routeLayer']}
+        interactiveLayerIds={[
+          'routeLayer',
+          'transitionLayer',
+          'routeLabelLayer',
+        ]}
         onClick={handleRouteClick}
       >
         <GeolocateControl ref={geolocateControlRef} />
@@ -138,10 +142,10 @@ function BikehopperMap(props) {
           showZoom={false}
           style={{ ...navigationControlStyle }}
         />
-        <Source id="routeSource" type="geojson" data={routeFeatures}>
+
+        <Source id="routeSource" type="geojson" data={features}>
           <Layer {...legStyle} />
-        </Source>
-        <Source id="routeLabels" type="geojson" data={routeFeatures}>
+          <Layer {...transitionStyle} />
           <Layer {...routeLabelStyle} />
         </Source>
         {startPoint && (
