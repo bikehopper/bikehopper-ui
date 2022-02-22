@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import * as turf from '@turf/helpers';
-import greatCircle from '@turf/great-circle';
+import { routeToGeoJSON } from '../lib/geometry';
 import MapGL, { Layer, Marker, Source } from 'react-map-gl';
 import MarkerSVG from './MarkerSVG';
 
@@ -55,42 +54,12 @@ function BikehopperMap(props) {
     );
   }, [route]);
 
-  const legTransitionHop = (leg, nextLeg) => {
-    if (!leg || !nextLeg) return [];
-
-    const start = turf.point(
-      leg.geometry.coordinates[leg.geometry.coordinates.length - 1],
-    );
-    const end = turf.point(nextLeg.geometry.coordinates[0]);
-    return greatCircle(start, end);
-  };
-
-  let routeFeatures = null;
-  let transitionFeatures = null;
-  if (route?.paths?.length > 0) {
-    routeFeatures = turf.featureCollection(
-      route.paths
-        .map((path, index) =>
-          path.legs.map((leg, legIndex) => {
-            if (!transitionFeatures) transitionFeatures = [];
-            transitionFeatures.push(
-              legTransitionHop(leg, path.legs[legIndex + 1]),
-            );
-            return turf.lineString(leg.geometry.coordinates, {
-              route_color: '#' + leg['route_color'],
-              path_index: index,
-            });
-          }),
-        )
-        .flat(),
-    );
-    transitionFeatures =
-      transitionFeatures && turf.featureCollection(transitionFeatures);
-  }
+  const features = routeToGeoJSON(route);
 
   const legStyle = {
     id: 'routeLayer',
     type: 'line',
+    filter: ['!', ['to-boolean', ['get', 'is_transition']]],
     layout: {
       'line-sort-key': getLegSortKey(activePath),
     },
@@ -99,9 +68,11 @@ function BikehopperMap(props) {
       'line-color': getLegColorStyle(activePath),
     },
   };
+
   const transitionStyle = {
     id: 'transitionLayer',
     type: 'line',
+    filter: ['to-boolean', ['get', 'is_transition']],
     layout: {
       'line-sort-key': getLegSortKey(activePath),
     },
@@ -122,13 +93,11 @@ function BikehopperMap(props) {
       }}
       mapStyle="mapbox://styles/mapbox/light-v9"
       mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
-      interactiveLayerIds={['routeLayer']}
+      interactiveLayerIds={['routeLayer', 'transitionLayer']}
       onClick={handleRouteClick}
     >
-      <Source id="routeSource" type="geojson" data={routeFeatures}>
+      <Source id="routeSource" type="geojson" data={features}>
         <Layer {...legStyle} />
-      </Source>
-      <Source id="transitionSource" type="geojson" data={transitionFeatures}>
         <Layer {...transitionStyle} />
       </Source>
       {startPoint && (
