@@ -1,10 +1,17 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { routeToGeoJSON } from '../lib/geometry';
-import MapGL, { Layer, Marker, Source } from 'react-map-gl';
+import MapGL, {
+  Layer,
+  Marker,
+  Source,
+  GeolocateControl,
+  NavigationControl,
+} from 'react-map-gl';
 import MarkerSVG from './MarkerSVG';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
+import './BikehopperMap.css';
 
 function BikehopperMap(props) {
   // the callbacks contain event.lngLat for the point, which can replace startPoint/endPoint
@@ -12,6 +19,7 @@ function BikehopperMap(props) {
     props;
 
   const mapRef = React.useRef();
+  const geolocateControlRef = React.useRef();
   const [activePath, setActivePath] = useState(0);
 
   const initialViewState = {
@@ -28,6 +36,10 @@ function BikehopperMap(props) {
       setActivePath(evt.features[0].properties['path_index']);
     }
   };
+
+  useEffect(() => {
+    geolocateControlRef.current?.trigger();
+  }, []);
 
   // center viewport on route paths
   useEffect(() => {
@@ -83,54 +95,90 @@ function BikehopperMap(props) {
     },
   };
 
+  const navigationControlStyle = {
+    visibility: mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden',
+  };
+
+  const routeLabelStyle = {
+    id: 'routeLabelLayer',
+    type: 'symbol',
+    layout: {
+      'symbol-sort-key': getLabelSortKey(activePath),
+      'symbol-placement': 'line-center',
+      'text-size': 16,
+      'text-field': getLabelTextField(),
+      'text-ignore-placement': true,
+    },
+    paint: {
+      'text-color': getLegColorStyle(activePath),
+      'text-halo-color': 'white',
+      'text-halo-width': 2,
+    },
+  };
+
   return (
-    <MapGL
-      initialViewState={initialViewState}
-      ref={mapRef}
-      style={{
-        width: '100vw',
-        height: '100vh',
-      }}
-      mapStyle="mapbox://styles/mapbox/light-v9"
-      mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
-      interactiveLayerIds={['routeLayer', 'transitionLayer']}
-      onClick={handleRouteClick}
-    >
-      <Source id="routeSource" type="geojson" data={features}>
-        <Layer {...legStyle} />
-        <Layer {...transitionStyle} />
-      </Source>
-      {startPoint && (
-        <Marker
-          id="startMarker"
-          longitude={startPoint[0]}
-          latitude={startPoint[1]}
-          draggable={true}
-          onDragEnd={onStartPointDrag}
-          offsetLeft={-13}
-          offsetTop={-39}
-        >
-          <MarkerSVG fillColor="#2fa7cc" />
-        </Marker>
-      )}
-      {endPoint && (
-        <Marker
-          id="endMarker"
-          longitude={endPoint[0]}
-          latitude={endPoint[1]}
-          draggable={true}
-          onDragEnd={onEndPointDrag}
-          offsetLeft={-13}
-          offsetTop={-39}
-        >
-          <MarkerSVG fillColor="#ea526f" />
-        </Marker>
-      )}
-    </MapGL>
+    <div className="BikehopperMap">
+      <MapGL
+        initialViewState={initialViewState}
+        ref={mapRef}
+        style={{
+          // expand to fill parent container div
+          // this is because MapGL does not have a className prop
+          width: '100%',
+          height: '100%',
+        }}
+        mapStyle="mapbox://styles/mapbox/light-v9"
+        mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
+        interactiveLayerIds={['routeLayer', 'transitionLayer']}
+        onClick={handleRouteClick}
+      >
+        <GeolocateControl ref={geolocateControlRef} />
+        <NavigationControl
+          showZoom={false}
+          style={{ ...navigationControlStyle }}
+        />
+
+        <Source id="routeSource" type="geojson" data={features}>
+          <Layer {...legStyle} />
+          <Layer {...transitionStyle} />
+          <Layer {...routeLabelStyle} />
+        </Source>
+        {startPoint && (
+          <Marker
+            id="startMarker"
+            longitude={startPoint[0]}
+            latitude={startPoint[1]}
+            draggable={true}
+            onDragEnd={onStartPointDrag}
+            offsetLeft={-13}
+            offsetTop={-39}
+          >
+            <MarkerSVG fillColor="#2fa7cc" />
+          </Marker>
+        )}
+        {endPoint && (
+          <Marker
+            id="endMarker"
+            longitude={endPoint[0]}
+            latitude={endPoint[1]}
+            draggable={true}
+            onDragEnd={onEndPointDrag}
+            offsetLeft={-13}
+            offsetTop={-39}
+          >
+            <MarkerSVG fillColor="#ea526f" />
+          </Marker>
+        )}
+      </MapGL>
+    </div>
   );
 }
 
 function getLegSortKey(indexOfActivePath) {
+  return ['case', ['==', ['get', 'path_index'], indexOfActivePath], 9999, 0];
+}
+
+function getLabelSortKey(indexOfActivePath) {
   return ['case', ['==', ['get', 'path_index'], indexOfActivePath], 9999, 0];
 }
 
@@ -143,6 +191,18 @@ function getLegColorStyle(indexOfActivePath) {
     // inactive paths are darkgray
     ['to-color', 'darkgray'],
   ];
+}
+
+function getLabelTextField() {
+  const text = [
+    'case',
+    ['==', ['get', 'type'], 'bike2'],
+    'bike',
+    ['has', 'route_name'],
+    ['get', 'route_name'],
+    'unknown',
+  ];
+  return ['format', text];
 }
 
 export default BikehopperMap;

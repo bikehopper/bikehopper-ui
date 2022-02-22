@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import './SearchBar.css';
+
 export default class SearchBar extends React.Component {
   constructor(props) {
     super(props);
@@ -15,38 +17,39 @@ export default class SearchBar extends React.Component {
   _setEnd = (event) => {
     this.setState({ end: event.target.value });
   };
+  _handleStartKeyPress = (evt) => {
+    if (evt.key === 'Enter' && this.state.end.length > 0)
+      this._handleSubmit(evt);
+  };
+  _handleEndKeyPress = (evt) => {
+    if (evt.key === 'Enter' && this.state.start.length > 0)
+      this._handleSubmit(evt);
+  };
   _handleSubmit = (event) => {
     event.preventDefault();
     this.props.onSubmit(this.state);
   };
 
   render() {
-    const style = {
-      width: '20rem',
-      background: '#F2F1F9',
-      border: 'none',
-      padding: '0.5rem',
-    };
     return (
-      <form onSubmit={this._handleSubmit}>
-        <label>Start</label>
+      <form className="SearchBar" onSubmit={this._handleSubmit}>
         <input
-          style={style}
+          aria-label="Starting location"
+          className="SearchBar_input"
           type="text"
           autoFocus
-          required
           placeholder="from"
           onChange={this._setStart}
+          onKeyPress={this._handleStartKeyPress}
         />
-        <label>End</label>
         <input
-          style={style}
+          aria-label="Ending location"
+          className="SearchBar_input"
           type="text"
-          required
           placeholder="to"
           onChange={this._setEnd}
+          onKeyPress={this._handleEndKeyPress}
         />
-        <input type="submit" value="Submit" />
       </form>
     );
   }

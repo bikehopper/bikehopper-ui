@@ -5,6 +5,8 @@ import { geocode, getRoute } from '../lib/BikehopperClient';
 import BikehopperMap from './BikehopperMap';
 import SearchBar from './SearchBar';
 
+import './App.css';
+
 function stringToCoordinate(s) {
   if (!s || !s.length) return;
   if (!s.match(/^\s*-?\d*\.\d*\s*,\s*-?\d*\.\d*\s*$/)) return;
@@ -105,7 +107,7 @@ function App() {
   }, [startPoint, endPoint, setSearchParams]);
 
   return (
-    <div>
+    <div className="App">
       <SearchBar onSubmit={handleSearch} position="absolute" />
       <BikehopperMap
         startPoint={startPoint}

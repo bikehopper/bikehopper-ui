@@ -20,7 +20,9 @@ export function routeToGeoJSON(route) {
 
       // Add a LineString feature for the leg
       const legFeature = turf.lineString(leg.geometry.coordinates, {
-        route_color: leg['route_color'] ? '#' + leg['route_color'] : null,
+        route_color: leg.route_color ? '#' + leg.route_color : null,
+        route_name: leg.route_name,
+        type: leg.type,
         path_index: pathIdx,
         is_transition: false,
       });

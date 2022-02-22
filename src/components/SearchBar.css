@@ -1,0 +1,18 @@
+.SearchBar {
+  background-color: #5aaa0a;
+  padding: 20px 25px;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+}
+
+.SearchBar_input {
+  background-color: #def0cc;
+  border: none;
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.SearchBar_input:not(:last-child) {
+  margin-bottom: 25px;
+}
