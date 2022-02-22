@@ -27,12 +27,16 @@ export async function getRoute({
 
 export async function geocode(
   placeString,
-  { zoom = 12, lat, lon, limit = 1, signal },
+  { limit = 1, format = 'geojson', signal },
 ) {
   let url = `${
     process.env.REACT_APP_BIKEHOPPER_DOMAIN
-  }/v1/photon/geocode?q=${encodeURIComponent(placeString)}&limit=${limit}`;
-  if (lat != null && lon != null) url += `&lat=${lat}&lon=${lon}&zoom=${zoom}`;
+  }/v1/nominatim/search?q=${encodeURIComponent(
+    placeString,
+  )}&limit=${limit}&format=${format}`;
+  // This is a Photon pattern not supported by Nominatim. We need to move
+  // to bounding box lat,lng,lat,lng instead of lat,lng,zoom.
+  // if (lat != null && lon != null) url += `&lat=${lat}&lon=${lon}&zoom=${zoom}`;
 
   const geocoding = await fetch(url, {
     method: 'GET',
