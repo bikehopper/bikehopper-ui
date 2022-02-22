@@ -44,24 +44,33 @@ function App() {
       lon: -122.4,
       lat: 37.8,
     };
-    return geocode(searchString, opts).then((result) => {
-      if (
-        result.type !== 'FeatureCollection' ||
-        !result.features?.length ||
-        result.features[0].geometry.type !== 'Point'
-      ) {
-        // TODO: show error message (or maybe try to use results that are not points, somehow)
-        console.error(
-          `geocode returned something other than a Point or FeatureCollection`,
-        );
-        return;
-      }
-      return result.features[0].geometry.coordinates;
-    });
+    const result = await geocode(searchString, opts);
+    if (
+      result.type !== 'FeatureCollection' ||
+      !result.features?.length ||
+      result.features[0].geometry.type !== 'Point'
+    ) {
+      // TODO: show error message (or maybe try to use results that are not points, somehow)
+      console.error(
+        `geocode returned something other than a Point or FeatureCollection`,
+      );
+      return;
+    }
+    return result.features[0].geometry.coordinates;
   };
   const handleSearch = async ({ start, end }) => {
-    await _handleGeocodeSearch(start).then((p) => p && setStartPoint(p));
-    await _handleGeocodeSearch(end).then((p) => p && setEndPoint(p));
+    const geocodeStartPromise = _handleGeocodeSearch(start);
+    const geocodeEndPromise = _handleGeocodeSearch(end);
+
+    const geocodeResultsRaw = await Promise.allSettled([
+      geocodeStartPromise,
+      geocodeEndPromise,
+    ]);
+    const results = geocodeResultsRaw
+      .filter(({ status }) => status === 'fulfilled')
+      .map(({ value }) => value);
+
+    await Promise.all([setStartPoint(results[0]), setEndPoint(results[1])]);
   };
 
   const lngLatToCoords = (lngLat) => [lngLat.lng, lngLat.lat];
