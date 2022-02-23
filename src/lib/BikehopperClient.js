@@ -6,9 +6,7 @@ export async function fetchRoute({
   signal,
 }) {
   const route = await fetch(
-    `${process.env.REACT_APP_BIKEHOPPER_DOMAIN}/v1/graphhopper/route-pt?point=${
-      points[0]
-    }&point=${
+    `${getRequestHost()}/v1/graphhopper/route-pt?point=${points[0]}&point=${
       points[1]
     }&locale=en-US&pt.earliest_departure_time=${encodeURIComponent(
       new Date().toISOString(),
@@ -30,7 +28,7 @@ export async function geocode(
   { limit = 1, format = 'geojson', signal },
 ) {
   const url = `${
-    process.env.REACT_APP_BIKEHOPPER_DOMAIN
+    getRequestHost()
   }/v1/nominatim/search?q=${encodeURIComponent(
     placeString,
   )}&limit=${limit}&format=${format}`;
@@ -50,4 +48,10 @@ export async function geocode(
   if (!geocoding.ok) throw new Error(geocoding.statusText);
 
   return geocoding.json();
+}
+
+function getRequestHost() {
+  if (process.env.NODE_ENV === 'development')
+    return window.location.protocol + '//' + window.location.host;
+  return process.env.REACT_APP_BIKEHOPPER_DOMAIN;
 }
