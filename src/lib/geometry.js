@@ -42,7 +42,7 @@ export function routeToGeoJSON(route) {
           },
           resolution: 1000,
         });
-        features.push(transitionFeature);
+        if (transitionFeature) features.push(transitionFeature);
       }
     }
   }
@@ -59,6 +59,8 @@ export function routeToGeoJSON(route) {
  */
 export function curveBetween(start, end, options, angle = 30) {
   const D = distance(start, end) / 2;
+  if (D < 1e-10) return null;
+
   const R = D / Math.cos((angle * Math.PI) / 180);
   const rotated = transformRotate(turf.lineString([start, end]), angle, {
     pivot: start,
