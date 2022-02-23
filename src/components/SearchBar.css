@@ -9,10 +9,21 @@
 .SearchBar_input {
   background-color: #def0cc;
   border: none;
-  padding: 12px;
+  padding: 12px 12px 12px 40px;
   border-radius: 12px;
+  width: 100%;
 }
 
-.SearchBar_input:not(:last-child) {
+.SearchBar_inputContainer:not(:last-child) {
   margin-bottom: 25px;
+}
+
+.SearchBar_inputContainer {
+  position: relative;
+}
+
+.SearchBar_icon {
+  position: absolute;
+  top: 8px;
+  left: 8px;
 }

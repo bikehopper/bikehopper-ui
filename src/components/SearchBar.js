@@ -1,4 +1,7 @@
 import * as React from 'react';
+import Icon from './Icon';
+
+import { ReactComponent as Pin } from 'iconoir/icons/pin-alt.svg';
 
 import './SearchBar.css';
 
@@ -31,25 +34,37 @@ export default class SearchBar extends React.Component {
   };
 
   render() {
+    // status: realizing I can't put the pin-alt icon as a child of <input> so I need
+    // a wrapper element.
     return (
       <form className="SearchBar" onSubmit={this._handleSubmit}>
-        <input
-          aria-label="Starting location"
-          className="SearchBar_input"
-          type="text"
-          autoFocus
-          placeholder="from"
-          onChange={this._setStart}
-          onKeyPress={this._handleStartKeyPress}
-        />
-        <input
-          aria-label="Ending location"
-          className="SearchBar_input"
-          type="text"
-          placeholder="to"
-          onChange={this._setEnd}
-          onKeyPress={this._handleEndKeyPress}
-        />
+        <span className="SearchBar_inputContainer">
+          <Icon className="SearchBar_icon">
+            <Pin />
+          </Icon>
+          <input
+            aria-label="Starting location"
+            className="SearchBar_input"
+            type="text"
+            autoFocus
+            placeholder="from"
+            onChange={this._setStart}
+            onKeyPress={this._handleStartKeyPress}
+          />
+        </span>
+        <span className="SearchBar_inputContainer">
+          <Icon className="SearchBar_icon">
+            <Pin />
+          </Icon>
+          <input
+            aria-label="Ending location"
+            className="SearchBar_input"
+            type="text"
+            placeholder="to"
+            onChange={this._setEnd}
+            onKeyPress={this._handleEndKeyPress}
+          />
+        </span>
       </form>
     );
   }
