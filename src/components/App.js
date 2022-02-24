@@ -4,39 +4,22 @@ import { useSearchParams } from 'react-router-dom';
 import { geocode, getRoute } from '../lib/BikehopperClient';
 import BikehopperMap from './BikehopperMap';
 import SearchBar from './SearchBar';
+import parseLngLatString from '../lib/parseLngLatString';
 
 import './App.css';
-
-function stringToCoordinate(s) {
-  if (!s || !s.length) return;
-  if (!s.match(/^\s*-?\d*\.\d*\s*,\s*-?\d*\.\d*\s*$/)) return;
-  // Looks like we were given a lon-lat pair, e.g. -122.4, 37.8
-  let point = s
-    .split(',')
-    ?.slice(0, 2)
-    ?.map((part) => part.trim());
-
-  if (!point || !point.length) return;
-
-  for (const i in point) {
-    if (isNaN(Number(point[i]))) return;
-    point[i] = Number(point[i]);
-  }
-  return point;
-}
 
 function App() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [startPoint, setStartPoint] = useState(
-    stringToCoordinate(searchParams.get('start')) || null,
+    parseLngLatString(searchParams.get('start')) || null,
   );
   const [endPoint, setEndPoint] = useState(
-    stringToCoordinate(searchParams.get('end')) || null,
+    parseLngLatString(searchParams.get('end')) || null,
   );
   const [route, setRoute] = useState(null);
 
   const _handleGeocodeSearch = async (searchString) => {
-    const maybePoint = stringToCoordinate(searchString);
+    const maybePoint = parseLngLatString(searchString);
     if (maybePoint) return maybePoint;
     const opts = {
       // XXX oops, I want to use the viewport of the map here, but I put that state in
