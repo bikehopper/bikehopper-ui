@@ -31,6 +31,7 @@ export default class SearchBar extends React.Component {
   _handleSubmit = (event) => {
     event.preventDefault();
     this.props.onSubmit(this.state);
+    event.target.blur();
   };
 
   render() {
