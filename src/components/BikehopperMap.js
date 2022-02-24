@@ -68,19 +68,6 @@ function BikehopperMap(props) {
 
   const features = routeToGeoJSON(route);
 
-  const legStyle = {
-    id: 'routeLayer',
-    type: 'line',
-    filter: ['!', ['to-boolean', ['get', 'is_transition']]],
-    layout: {
-      'line-sort-key': getLegSortKey(activePath),
-    },
-    paint: {
-      'line-width': 3,
-      'line-color': getLegColorStyle(activePath),
-    },
-  };
-
   const transitionStyle = {
     id: 'transitionLayer',
     type: 'line',
@@ -111,7 +98,7 @@ function BikehopperMap(props) {
       'text-ignore-placement': true,
     },
     paint: {
-      'text-color': getLegColorStyle(activePath),
+      'text-color': getLegColorStyle(activePath, true),
       'text-halo-color': 'white',
       'text-halo-width': 2,
     },
@@ -144,7 +131,8 @@ function BikehopperMap(props) {
         />
 
         <Source id="routeSource" type="geojson" data={features}>
-          <Layer {...legStyle} />
+          <Layer {...getLegStyle('routeOutlineLayer', 7, activePath, true)} />
+          <Layer {...getLegStyle('routeLayer', 4, activePath)} />
           <Layer {...transitionStyle} />
           <Layer {...routeLabelStyle} />
         </Source>
@@ -179,6 +167,22 @@ function BikehopperMap(props) {
   );
 }
 
+function getLegStyle(layerId, lineWidth, activePath, darken) {
+  return {
+    id: layerId,
+    type: 'line',
+    filter: ['!', ['to-boolean', ['get', 'is_transition']]],
+    layout: {
+      'line-cap': 'round',
+      'line-sort-key': getLegSortKey(activePath),
+    },
+    paint: {
+      'line-width': lineWidth,
+      'line-color': getLegColorStyle(activePath, darken),
+    },
+  };
+}
+
 function getLegSortKey(indexOfActivePath) {
   return ['case', ['==', ['get', 'path_index'], indexOfActivePath], 9999, 0];
 }
@@ -187,12 +191,16 @@ function getLabelSortKey(indexOfActivePath) {
   return ['case', ['==', ['get', 'path_index'], indexOfActivePath], 9999, 0];
 }
 
-function getLegColorStyle(indexOfActivePath) {
+function getLegColorStyle(indexOfActivePath, darken = false) {
   return [
     'case',
     ['==', ['get', 'path_index'], indexOfActivePath],
     // for active path use the route color from GTFS or fallback to blue
-    ['to-color', ['get', 'route_color'], 'royalblue'],
+    [
+      'to-color',
+      ['get', darken ? 'dark_route_color' : 'route_color'],
+      'royalblue',
+    ],
     // inactive paths are darkgray
     ['to-color', 'darkgray'],
   ];

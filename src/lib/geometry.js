@@ -3,6 +3,7 @@ import transformRotate from '@turf/transform-rotate';
 import bezierSpline from '@turf/bezier-spline';
 import distance from '@turf/distance';
 import lineSliceAlong from '@turf/line-slice-along';
+import { darkenLegColor } from './colors.js';
 
 export function routeToGeoJSON(route) {
   if (!(route?.paths?.length > 0)) return null;
@@ -20,7 +21,8 @@ export function routeToGeoJSON(route) {
 
       // Add a LineString feature for the leg
       const legFeature = turf.lineString(leg.geometry.coordinates, {
-        route_color: leg.route_color ? '#' + leg.route_color : null,
+        route_color: darkenLegColor(leg.route_color, 0.2),
+        dark_route_color: darkenLegColor(leg.route_color, 0.6),
         route_name: leg.route_name,
         type: leg.type,
         path_index: pathIdx,
