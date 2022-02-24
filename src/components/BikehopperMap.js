@@ -89,13 +89,17 @@ function BikehopperMap(props) {
   const routeLabelStyle = {
     id: 'routeLabelLayer',
     type: 'symbol',
-    filter: ['!', ['to-boolean', ['get', 'is_transition']]],
+    filter: [
+      'all',
+      ['==', ['get', 'path_index'], activePath],
+      ['!', ['to-boolean', ['get', 'is_transition']]],
+    ],
     layout: {
       'symbol-sort-key': getLabelSortKey(activePath),
       'symbol-placement': 'line-center',
       'text-size': 16,
       'text-field': getLabelTextField(),
-      'text-ignore-placement': true,
+      'text-allow-overlap': true,
     },
     paint: {
       'text-color': 'white',
@@ -138,10 +142,18 @@ function BikehopperMap(props) {
               'black',
               24,
               true,
+              0.5,
             )}
           />
           <Layer
-            {...getLegOutlineStyle('routeOutline', activePath, 'white', 8)}
+            {...getLegOutlineStyle(
+              'routeOutline',
+              activePath,
+              'white',
+              8,
+              false,
+              1,
+            )}
           />
           <Layer {...getLegStyle(activePath)} />
           <Layer {...transitionStyle} />
@@ -194,7 +206,14 @@ function getLegStyle(activePath) {
   };
 }
 
-function getLegOutlineStyle(layerId, activePath, lineColor, lineWidth, blur) {
+function getLegOutlineStyle(
+  layerId,
+  activePath,
+  lineColor,
+  lineWidth,
+  blur,
+  opacity,
+) {
   return {
     id: layerId,
     type: 'line',
@@ -210,6 +229,7 @@ function getLegOutlineStyle(layerId, activePath, lineColor, lineWidth, blur) {
       'line-width': lineWidth,
       'line-color': lineColor,
       'line-blur': blur ? 30 : 0,
+      'line-opacity': opacity,
     },
   };
 }
