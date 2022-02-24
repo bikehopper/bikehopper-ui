@@ -27,3 +27,8 @@
   top: 8px;
   left: 8px;
 }
+
+.SearchBar_input:focus {
+  background-color: #fff;
+  outline: #ffd18e solid 2px; /* FIXME: would look better INSIDE the input */
+}
