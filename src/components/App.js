@@ -80,9 +80,9 @@ function App() {
         optimize: true,
         pointsEncoded: false,
       }).then((fetchedRoute) => {
-        if (!fetchedRoute) return;
+        const paths = fetchedRoute?.paths.length ? fetchedRoute.paths : null;
         setRoute({
-          paths: fetchedRoute.paths,
+          paths,
           startPoint,
           endPoint,
         });
