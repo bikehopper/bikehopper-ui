@@ -1,4 +1,4 @@
-export async function getRoute({
+export async function fetchRoute({
   profile = 'pt',
   optimize = false,
   pointsEncoded = false,

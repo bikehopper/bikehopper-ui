@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { geocode, getRoute } from '../lib/BikehopperClient';
+import * as BikehopperClient from '../lib/BikehopperClient';
 import BikehopperMap from './BikehopperMap';
 import SearchBar from './SearchBar';
 import parseLngLatString from '../lib/parseLngLatString';
@@ -27,7 +27,7 @@ function App() {
       lon: -122.4,
       lat: 37.8,
     };
-    const result = await geocode(searchString, opts);
+    const result = await BikehopperClient.geocode(searchString, opts);
     if (
       result.type !== 'FeatureCollection' ||
       !result.features?.length ||
@@ -61,7 +61,7 @@ function App() {
     setStartPoint(lngLatToCoords(evt.lngLat));
   const handleEndPointDrag = (evt) => setEndPoint(lngLatToCoords(evt.lngLat));
 
-  const fetchRoute = () => {
+  const updateRoute = () => {
     if (!startPoint || !endPoint) {
       if (route) setRoute(null);
     } else {
@@ -73,9 +73,7 @@ function App() {
       )
         return;
 
-      // XXX confusing that getRoute and setRoute sound symmetrical but are instead
-      // an API call and a component state setter respectively; improve names somehow
-      getRoute({
+      BikehopperClient.fetchRoute({
         points: [startPoint, endPoint].map((crd) => crd.slice(0, 2).reverse()),
         optimize: true,
         pointsEncoded: false,
@@ -90,7 +88,7 @@ function App() {
     }
   };
 
-  useEffect(fetchRoute, [startPoint, endPoint, route]);
+  useEffect(updateRoute, [startPoint, endPoint, route]);
   useEffect(() => {
     const params = {};
     if (startPoint) params.startPoint = startPoint.join(',');
