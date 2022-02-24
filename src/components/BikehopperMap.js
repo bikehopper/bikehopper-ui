@@ -98,8 +98,8 @@ function BikehopperMap(props) {
       'text-ignore-placement': true,
     },
     paint: {
-      'text-color': getLegColorStyle(activePath, true),
-      'text-halo-color': 'white',
+      'text-color': 'white',
+      'text-halo-color': getLegColorStyle(activePath),
       'text-halo-width': 2,
     },
   };
@@ -115,7 +115,7 @@ function BikehopperMap(props) {
           width: '100%',
           height: '100%',
         }}
-        mapStyle="mapbox://styles/mapbox/light-v9"
+        mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
         interactiveLayerIds={[
           'routeLayer',
@@ -131,8 +131,19 @@ function BikehopperMap(props) {
         />
 
         <Source id="routeSource" type="geojson" data={features}>
-          <Layer {...getLegStyle('routeOutlineLayer', 7, activePath, true)} />
-          <Layer {...getLegStyle('routeLayer', 4, activePath)} />
+          <Layer
+            {...getLegOutlineStyle(
+              'routeDropShadow',
+              activePath,
+              'black',
+              24,
+              true,
+            )}
+          />
+          <Layer
+            {...getLegOutlineStyle('routeOutline', activePath, 'white', 8)}
+          />
+          <Layer {...getLegStyle(activePath)} />
           <Layer {...transitionStyle} />
           <Layer {...routeLabelStyle} />
         </Source>
@@ -167,9 +178,9 @@ function BikehopperMap(props) {
   );
 }
 
-function getLegStyle(layerId, lineWidth, activePath, darken) {
+function getLegStyle(activePath) {
   return {
-    id: layerId,
+    id: 'routeLayer',
     type: 'line',
     filter: ['!', ['to-boolean', ['get', 'is_transition']]],
     layout: {
@@ -177,8 +188,28 @@ function getLegStyle(layerId, lineWidth, activePath, darken) {
       'line-sort-key': getLegSortKey(activePath),
     },
     paint: {
+      'line-width': ['case', ['==', ['get', 'type'], 'bike2'], 4, 5],
+      'line-color': getLegColorStyle(activePath),
+    },
+  };
+}
+
+function getLegOutlineStyle(layerId, activePath, lineColor, lineWidth, blur) {
+  return {
+    id: layerId,
+    type: 'line',
+    filter: [
+      'all',
+      ['==', ['get', 'path_index'], activePath],
+      ['!', ['to-boolean', ['get', 'is_transition']]],
+    ],
+    layout: {
+      'line-cap': 'round',
+    },
+    paint: {
       'line-width': lineWidth,
-      'line-color': getLegColorStyle(activePath, darken),
+      'line-color': lineColor,
+      'line-blur': blur ? 30 : 0,
     },
   };
 }
@@ -191,16 +222,12 @@ function getLabelSortKey(indexOfActivePath) {
   return ['case', ['==', ['get', 'path_index'], indexOfActivePath], 9999, 0];
 }
 
-function getLegColorStyle(indexOfActivePath, darken = false) {
+function getLegColorStyle(indexOfActivePath) {
   return [
     'case',
     ['==', ['get', 'path_index'], indexOfActivePath],
     // for active path use the route color from GTFS or fallback to blue
-    [
-      'to-color',
-      ['get', darken ? 'dark_route_color' : 'route_color'],
-      'royalblue',
-    ],
+    ['to-color', ['get', 'route_color'], '#5aaa0a'],
     // inactive paths are darkgray
     ['to-color', 'darkgray'],
   ];
