@@ -35,8 +35,6 @@ export default class SearchBar extends React.Component {
   };
 
   render() {
-    // status: realizing I can't put the pin-alt icon as a child of <input> so I need
-    // a wrapper element.
     return (
       <form className="SearchBar" onSubmit={this._handleSubmit}>
         <span className="SearchBar_inputContainer">
@@ -47,7 +45,6 @@ export default class SearchBar extends React.Component {
             aria-label="Starting location"
             className="SearchBar_input"
             type="text"
-            autoFocus
             placeholder="from"
             onChange={this._setStart}
             onKeyPress={this._handleStartKeyPress}
