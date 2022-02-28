@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { routeToGeoJSON } from '../lib/geometry';
 import MapGL, {
   Layer,
   Marker,
@@ -8,6 +7,8 @@ import MapGL, {
   GeolocateControl,
   NavigationControl,
 } from 'react-map-gl';
+import { routeToGeoJSON } from '../lib/geometry';
+import { DEFAULT_VIEWPORT } from '../features/viewport';
 import MarkerSVG from './MarkerSVG';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -21,15 +22,6 @@ function BikehopperMap(props) {
   const mapRef = React.useRef();
   const geolocateControlRef = React.useRef();
   const [activePath, setActivePath] = useState(0);
-
-  const initialViewState = {
-    // hardcode San Francisco view for now
-    latitude: 37.75117670681911,
-    longitude: -122.44574920654225,
-    zoom: 12,
-    bearing: 0,
-    pitch: 0,
-  };
 
   const handleRouteClick = (evt) => {
     if (evt.features?.length) {
@@ -111,7 +103,7 @@ function BikehopperMap(props) {
   return (
     <div className="BikehopperMap">
       <MapGL
-        initialViewState={initialViewState}
+        initialViewState={DEFAULT_VIEWPORT}
         ref={mapRef}
         style={{
           // expand to fill parent container div

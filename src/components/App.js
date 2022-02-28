@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import * as BikehopperClient from '../lib/BikehopperClient';
 import BikehopperMap from './BikehopperMap';
 import SearchBar from './SearchBar';
@@ -8,6 +9,7 @@ import parseLngLatString from '../lib/parseLngLatString';
 import './App.css';
 
 function App() {
+  const storeState = useSelector((state) => state);
   const [startPoint, setStartPoint] = useState(null);
   const [endPoint, setEndPoint] = useState(null);
   const [route, setRoute] = useState(null);
