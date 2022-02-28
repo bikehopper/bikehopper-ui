@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import MapGL, {
   Layer,
   Marker,
@@ -8,13 +9,14 @@ import MapGL, {
   NavigationControl,
 } from 'react-map-gl';
 import { routeToGeoJSON } from '../lib/geometry';
-import { DEFAULT_VIEWPORT } from '../features/viewport';
+import { DEFAULT_VIEWPORT, mapMoved } from '../features/viewport';
 import MarkerSVG from './MarkerSVG';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './BikehopperMap.css';
 
 function BikehopperMap(props) {
+  const dispatch = useDispatch();
   // the callbacks contain event.lngLat for the point, which can replace startPoint/endPoint
   const { startPoint, endPoint, route, onStartPointDrag, onEndPointDrag } =
     props;
@@ -57,6 +59,10 @@ function BikehopperMap(props) {
       },
     );
   }, [route]);
+
+  const handleMoveEnd = (evt) => {
+    dispatch(mapMoved(evt.viewState));
+  };
 
   const features = routeToGeoJSON(route);
 
@@ -119,6 +125,7 @@ function BikehopperMap(props) {
           'routeLabelLayer',
         ]}
         onClick={handleRouteClick}
+        onMoveEnd={handleMoveEnd}
       >
         <GeolocateControl ref={geolocateControlRef} />
         <NavigationControl

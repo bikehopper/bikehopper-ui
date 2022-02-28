@@ -11,6 +11,8 @@
 
 export const DEFAULT_VIEWPORT = {
   // hardcode San Francisco view for now
+  // TODO: The initial viewport should be specified in terms of a bounding box,
+  // so it isn't dependent on screen size how much of SF you see.
   latitude: 37.75117670681911,
   longitude: -122.44574920654225,
   zoom: 12,
