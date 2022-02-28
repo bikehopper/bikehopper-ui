@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import * as BikehopperClient from '../lib/BikehopperClient';
 import BikehopperMap from './BikehopperMap';
 import SearchBar from './SearchBar';
@@ -9,13 +8,8 @@ import parseLngLatString from '../lib/parseLngLatString';
 import './App.css';
 
 function App() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [startPoint, setStartPoint] = useState(
-    parseLngLatString(searchParams.get('start')) || null,
-  );
-  const [endPoint, setEndPoint] = useState(
-    parseLngLatString(searchParams.get('end')) || null,
-  );
+  const [startPoint, setStartPoint] = useState(null);
+  const [endPoint, setEndPoint] = useState(null);
   const [route, setRoute] = useState(null);
 
   const _handleGeocodeSearch = async (searchString) => {
@@ -89,12 +83,6 @@ function App() {
   };
 
   useEffect(updateRoute, [startPoint, endPoint, route]);
-  useEffect(() => {
-    const params = {};
-    if (startPoint) params.startPoint = startPoint.join(',');
-    if (endPoint) params.endPoint = endPoint.join(',');
-    setSearchParams(params, { replace: true });
-  }, [startPoint, endPoint, setSearchParams]);
 
   return (
     <div className="App">
