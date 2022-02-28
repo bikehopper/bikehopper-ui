@@ -5,6 +5,7 @@ import * as BikehopperClient from '../lib/BikehopperClient';
 import BikehopperMap from './BikehopperMap';
 import SearchBar from './SearchBar';
 import parseLngLatString from '../lib/parseLngLatString';
+import lngLatToCoords from '../lib/lngLatToCoords';
 
 import './App.css';
 
@@ -52,7 +53,6 @@ function App() {
     await Promise.all([setStartPoint(results[0]), setEndPoint(results[1])]);
   };
 
-  const lngLatToCoords = (lngLat) => [lngLat.lng, lngLat.lat];
   const handleStartPointDrag = (evt) =>
     setStartPoint(lngLatToCoords(evt.lngLat));
   const handleEndPointDrag = (evt) => setEndPoint(lngLatToCoords(evt.lngLat));
