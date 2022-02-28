@@ -98,7 +98,7 @@ function App() {
 
   return (
     <div className="App">
-      <SearchBar onSubmit={handleSearch} position="absolute" />
+      <SearchBar onSubmit={handleSearch} />
       <BikehopperMap
         startPoint={startPoint}
         endPoint={endPoint}
