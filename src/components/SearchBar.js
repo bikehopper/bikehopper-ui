@@ -5,65 +5,60 @@ import { ReactComponent as Pin } from 'iconoir/icons/pin-alt.svg';
 
 import './SearchBar.css';
 
-export default class SearchBar extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      start: '',
-      end: '',
-    };
-  }
+export default function SearchBar(props) {
+  const [start, setStart] = React.useState('');
+  const [end, setEnd] = React.useState('');
 
-  _setStart = (event) => {
-    this.setState({ start: event.target.value });
+  const handleStartChange = (evt) => {
+    setStart(evt.target.value);
   };
-  _setEnd = (event) => {
-    this.setState({ end: event.target.value });
+
+  const handleEndChange = (evt) => {
+    setEnd(evt.target.value);
   };
-  _handleStartKeyPress = (evt) => {
-    if (evt.key === 'Enter' && this.state.end.length > 0)
-      this._handleSubmit(evt);
-  };
-  _handleEndKeyPress = (evt) => {
-    if (evt.key === 'Enter' && this.state.start.length > 0)
-      this._handleSubmit(evt);
-  };
-  _handleSubmit = (event) => {
+
+  const handleSubmit = (event) => {
     event.preventDefault();
-    this.props.onSubmit(this.state);
+    props.onSubmit({ start, end });
     event.target.blur();
   };
 
-  render() {
-    return (
-      <form className="SearchBar" onSubmit={this._handleSubmit}>
-        <span className="SearchBar_inputContainer">
-          <Icon className="SearchBar_icon">
-            <Pin />
-          </Icon>
-          <input
-            aria-label="Starting location"
-            className="SearchBar_input"
-            type="text"
-            placeholder="from"
-            onChange={this._setStart}
-            onKeyPress={this._handleStartKeyPress}
-          />
-        </span>
-        <span className="SearchBar_inputContainer">
-          <Icon className="SearchBar_icon">
-            <Pin />
-          </Icon>
-          <input
-            aria-label="Ending location"
-            className="SearchBar_input"
-            type="text"
-            placeholder="to"
-            onChange={this._setEnd}
-            onKeyPress={this._handleEndKeyPress}
-          />
-        </span>
-      </form>
-    );
-  }
+  const handleStartKeyPress = (evt) => {
+    if (evt.key === 'Enter' && end.length > 0) handleSubmit(evt);
+  };
+
+  const handleEndKeyPress = (evt) => {
+    if (evt.key === 'Enter' && start.length > 0) handleSubmit(evt);
+  };
+
+  return (
+    <form className="SearchBar" onSubmit={handleSubmit}>
+      <span className="SearchBar_inputContainer">
+        <Icon className="SearchBar_icon">
+          <Pin />
+        </Icon>
+        <input
+          aria-label="Starting location"
+          className="SearchBar_input"
+          type="text"
+          placeholder="from"
+          onChange={handleStartChange}
+          onKeyPress={handleStartKeyPress}
+        />
+      </span>
+      <span className="SearchBar_inputContainer">
+        <Icon className="SearchBar_icon">
+          <Pin />
+        </Icon>
+        <input
+          aria-label="Ending location"
+          className="SearchBar_input"
+          type="text"
+          placeholder="to"
+          onChange={handleEndChange}
+          onKeyPress={handleEndKeyPress}
+        />
+      </span>
+    </form>
+  );
 }
