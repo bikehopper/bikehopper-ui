@@ -1,20 +1,27 @@
 import * as React from 'react';
+import { useDispatch } from 'react-redux';
 import Icon from './Icon';
+import { locationTyped } from '../features/geocoding';
 
 import { ReactComponent as Pin } from 'iconoir/icons/pin-alt.svg';
 
 import './SearchBar.css';
 
 export default function SearchBar(props) {
+  const dispatch = useDispatch();
   const [start, setStart] = React.useState('');
   const [end, setEnd] = React.useState('');
 
   const handleStartChange = (evt) => {
-    setStart(evt.target.value);
+    const text = evt.target.value;
+    setStart(text);
+    dispatch(locationTyped(text));
   };
 
   const handleEndChange = (evt) => {
-    setEnd(evt.target.value);
+    const text = evt.target.value;
+    setEnd(text);
+    dispatch(locationTyped(text));
   };
 
   const handleSubmit = (event) => {
