@@ -4,8 +4,6 @@ import { useSelector } from 'react-redux';
 import * as BikehopperClient from '../lib/BikehopperClient';
 import BikehopperMap from './BikehopperMap';
 import SearchBar from './SearchBar';
-import parseLngLatString from '../lib/parseLngLatString';
-import lngLatToCoords from '../lib/lngLatToCoords';
 
 import './App.css';
 
@@ -15,47 +13,14 @@ function App() {
   const [endPoint, setEndPoint] = useState(null);
   const [route, setRoute] = useState(null);
 
-  const _handleGeocodeSearch = async (searchString) => {
-    const maybePoint = parseLngLatString(searchString);
-    if (maybePoint) return maybePoint;
-    const opts = {
-      // XXX oops, I want to use the viewport of the map here, but I put that state in
-      // a subcomponent...
-      lon: -122.4,
-      lat: 37.8,
-    };
-    const result = await BikehopperClient.geocode(searchString, opts);
-    if (
-      result.type !== 'FeatureCollection' ||
-      !result.features?.length ||
-      result.features[0].geometry.type !== 'Point'
-    ) {
-      // TODO: show error message (or maybe try to use results that are not points, somehow)
-      console.error(
-        `geocode returned something other than a Point or FeatureCollection`,
-      );
-      return;
-    }
-    return result.features[0].geometry.coordinates;
+  const handleStartPointDrag = (evt) => {
+    // TODO: Restore dragging support
+    //setStartPoint(lngLatToCoords(evt.lngLat));
   };
-  const handleSearch = async ({ start, end }) => {
-    const geocodeStartPromise = _handleGeocodeSearch(start);
-    const geocodeEndPromise = _handleGeocodeSearch(end);
-
-    const geocodeResultsRaw = await Promise.allSettled([
-      geocodeStartPromise,
-      geocodeEndPromise,
-    ]);
-    const results = geocodeResultsRaw
-      .filter(({ status }) => status === 'fulfilled')
-      .map(({ value }) => value);
-
-    await Promise.all([setStartPoint(results[0]), setEndPoint(results[1])]);
+  const handleEndPointDrag = (evt) => {
+    // TODO: Restore dragging support
+    //setEndPoint(lngLatToCoords(evt.lngLat));
   };
-
-  const handleStartPointDrag = (evt) =>
-    setStartPoint(lngLatToCoords(evt.lngLat));
-  const handleEndPointDrag = (evt) => setEndPoint(lngLatToCoords(evt.lngLat));
 
   const updateRoute = () => {
     if (!startPoint || !endPoint) {
@@ -88,7 +53,7 @@ function App() {
 
   return (
     <div className="App">
-      <SearchBar onSubmit={handleSearch} />
+      <SearchBar />
       <BikehopperMap
         startPoint={startPoint}
         endPoint={endPoint}
