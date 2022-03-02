@@ -56,7 +56,7 @@ export function locationTyped(text, key) {
     dispatch({
       type: 'geocode_attempted',
       text,
-      time: new Date(),
+      time: Date.now(),
     });
 
     let result;
@@ -67,7 +67,7 @@ export function locationTyped(text, key) {
         type: 'geocode_failed',
         text,
         failureType: 'network error',
-        time: new Date(),
+        time: Date.now(),
       });
       return;
     }
@@ -77,7 +77,7 @@ export function locationTyped(text, key) {
         type: 'geocode_failed',
         text,
         failureType: 'not a FeatureCollection',
-        time: new Date(),
+        time: Date.now(),
       });
       return;
     }
@@ -91,7 +91,7 @@ export function locationTyped(text, key) {
         type: 'geocode_failed',
         text,
         failureType: 'no points found',
-        time: new Date(),
+        time: Date.now(),
       });
       return;
     }
@@ -100,7 +100,7 @@ export function locationTyped(text, key) {
       type: 'geocode_succeeded',
       text,
       features: resultPoints,
-      time: new Date(),
+      time: Date.now(),
     });
   };
 }
