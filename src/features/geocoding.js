@@ -3,32 +3,34 @@ import * as BikehopperClient from '../lib/BikehopperClient';
 import delay from '../lib/delay';
 
 const DEFAULT_STATE = {
-  cache: new Map(), // maps strings to geocoded results
+  // maps location strings to geocoded results.
+  // all location strings are prefixed with '@' to avoid collisions w built-in attributes.
+  cache: {},
 };
 
 export function geocodingReducer(state = DEFAULT_STATE, action) {
   switch (action.type) {
     case 'geocode_attempted':
       return produce(state, (draft) => {
-        draft.cache.set(action.text, {
+        draft.cache['@' + action.text] = {
           status: 'fetching',
           time: action.time,
-        });
+        };
       });
     case 'geocode_failed':
       return produce(state, (draft) => {
-        draft.cache.set(action.text, {
+        draft.cache['@' + action.text] = {
           status: 'failed',
           time: action.time,
-        });
+        };
       });
     case 'geocode_succeeded':
       return produce(state, (draft) => {
-        draft.cache.set(action.text, {
+        draft.cache['@' + action.text] = {
           status: 'succeeded',
           time: action.time,
           features: action.features,
-        });
+        };
       });
     default:
       return state;

@@ -12,10 +12,7 @@ const rootReducer = combineReducers({
   viewport: viewportReducer,
 });
 
-const enhancedCompose =
-  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-    serialize: true,
-  }) || compose;
+const enhancedCompose = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore(
   rootReducer,

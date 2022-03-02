@@ -2,14 +2,11 @@ import * as React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { enableMapSet } from 'immer';
 import reportWebVitals from './reportWebVitals';
 import App from './components/App';
 import store from './store';
 
 import './index.css';
-
-enableMapSet();
 
 render(
   <React.StrictMode>
