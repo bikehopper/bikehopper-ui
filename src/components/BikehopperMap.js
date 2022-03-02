@@ -68,19 +68,6 @@ function BikehopperMap(props) {
 
   const features = routeToGeoJSON(route);
 
-  const legStyle = {
-    id: 'routeLayer',
-    type: 'line',
-    filter: ['!', ['to-boolean', ['get', 'is_transition']]],
-    layout: {
-      'line-sort-key': getLegSortKey(activePath),
-    },
-    paint: {
-      'line-width': 3,
-      'line-color': getLegColorStyle(activePath),
-    },
-  };
-
   const transitionStyle = {
     id: 'transitionLayer',
     type: 'line',
@@ -102,17 +89,21 @@ function BikehopperMap(props) {
   const routeLabelStyle = {
     id: 'routeLabelLayer',
     type: 'symbol',
-    filter: ['!', ['to-boolean', ['get', 'is_transition']]],
+    filter: [
+      'all',
+      ['==', ['get', 'path_index'], activePath],
+      ['!', ['to-boolean', ['get', 'is_transition']]],
+    ],
     layout: {
       'symbol-sort-key': getLabelSortKey(activePath),
       'symbol-placement': 'line-center',
       'text-size': 16,
       'text-field': getLabelTextField(),
-      'text-ignore-placement': true,
+      'text-allow-overlap': true,
     },
     paint: {
-      'text-color': getLegColorStyle(activePath),
-      'text-halo-color': 'white',
+      'text-color': 'white',
+      'text-halo-color': getLegColorStyle(activePath),
       'text-halo-width': 2,
     },
   };
@@ -128,7 +119,7 @@ function BikehopperMap(props) {
           width: '100%',
           height: '100%',
         }}
-        mapStyle="mapbox://styles/mapbox/light-v9"
+        mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
         interactiveLayerIds={[
           'routeLayer',
@@ -144,7 +135,27 @@ function BikehopperMap(props) {
         />
 
         <Source id="routeSource" type="geojson" data={features}>
-          <Layer {...legStyle} />
+          <Layer
+            {...getLegOutlineStyle(
+              'routeDropShadow',
+              activePath,
+              'black',
+              24,
+              true,
+              0.5,
+            )}
+          />
+          <Layer
+            {...getLegOutlineStyle(
+              'routeOutline',
+              activePath,
+              'white',
+              8,
+              false,
+              1,
+            )}
+          />
+          <Layer {...getLegStyle(activePath)} />
           <Layer {...transitionStyle} />
           <Layer {...routeLabelStyle} />
         </Source>
@@ -179,6 +190,50 @@ function BikehopperMap(props) {
   );
 }
 
+function getLegStyle(activePath) {
+  return {
+    id: 'routeLayer',
+    type: 'line',
+    filter: ['!', ['to-boolean', ['get', 'is_transition']]],
+    layout: {
+      'line-cap': 'round',
+      'line-sort-key': getLegSortKey(activePath),
+    },
+    paint: {
+      'line-width': ['case', ['==', ['get', 'type'], 'bike2'], 4, 5],
+      'line-color': getLegColorStyle(activePath),
+    },
+  };
+}
+
+function getLegOutlineStyle(
+  layerId,
+  activePath,
+  lineColor,
+  lineWidth,
+  blur,
+  opacity,
+) {
+  return {
+    id: layerId,
+    type: 'line',
+    filter: [
+      'all',
+      ['==', ['get', 'path_index'], activePath],
+      ['!', ['to-boolean', ['get', 'is_transition']]],
+    ],
+    layout: {
+      'line-cap': 'round',
+    },
+    paint: {
+      'line-width': lineWidth,
+      'line-color': lineColor,
+      'line-blur': blur ? 30 : 0,
+      'line-opacity': opacity,
+    },
+  };
+}
+
 function getLegSortKey(indexOfActivePath) {
   return ['case', ['==', ['get', 'path_index'], indexOfActivePath], 9999, 0];
 }
@@ -192,7 +247,7 @@ function getLegColorStyle(indexOfActivePath) {
     'case',
     ['==', ['get', 'path_index'], indexOfActivePath],
     // for active path use the route color from GTFS or fallback to blue
-    ['to-color', ['get', 'route_color'], 'royalblue'],
+    ['to-color', ['get', 'route_color'], '#5aaa0a'],
     // inactive paths are darkgray
     ['to-color', 'darkgray'],
   ];
