@@ -76,3 +76,32 @@ export function curveBetween(start, end, options, angle = 30) {
     options,
   );
 }
+
+export function cycleways(route) {
+  if (!(route?.paths?.length > 0)) return null;
+
+  const features = [];
+
+  for (const path of route.paths) {
+    if (!path.details) continue;
+
+    for (const segment of path.details?.cycleway) {
+      const [start, end, type] = segment;
+      if (type === 'other') continue;
+      const line = path.points.coordinates?.slice(start, end);
+
+      if (line?.length > 1)
+        features.push(turf.lineString(line, { cycleway: type }));
+    }
+    for (const segment of path.details?.road_class) {
+      const [start, end, type] = segment;
+      if (type !== 'cycleway') continue;
+      const line = path.points.coordinates?.slice(start, end);
+
+      if (line?.length > 1)
+        features.push(turf.lineString(line, { cycleway: type }));
+    }
+  }
+
+  return turf.featureCollection(features);
+}

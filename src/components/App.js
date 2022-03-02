@@ -96,6 +96,7 @@ function App() {
         points: [startPoint, endPoint].map((crd) => crd.slice(0, 2).reverse()),
         optimize: true,
         pointsEncoded: false,
+        details: ['cycleway', 'road_class'],
       }).then((fetchedRoute) => {
         if (!fetchedRoute) return;
         setRoute({
