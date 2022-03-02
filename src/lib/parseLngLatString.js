@@ -1,17 +1,19 @@
+// Parse a string representing a lng-lat pair, such as "-122.4, 37.8", or
+// return null if the passed string cannot be parsed as valid coordinates.
 export default function parseLngLatString(s) {
-  if (!s || !s.length) return;
-  if (!s.match(/^\s*-?\d*\.\d*\s*,\s*-?\d*\.\d*\s*$/)) return;
-  // Looks like we were given a lon-lat pair, e.g. -122.4, 37.8
-  let point = s
-    .split(',')
-    ?.slice(0, 2)
-    ?.map((part) => part.trim());
+  const points = s.split(',').map((part) => Number(part.trim()));
 
-  if (!point || !point.length) return;
-
-  for (const i in point) {
-    if (isNaN(Number(point[i]))) return;
-    point[i] = Number(point[i]);
+  if (
+    points.length !== 2 ||
+    Number.isNaN(points[0]) ||
+    points[0] < -180 ||
+    points[0] > 180 ||
+    Number.isNaN(points[1]) ||
+    points[1] < -90 ||
+    points[1] > 90
+  ) {
+    return null;
   }
-  return point;
+
+  return points;
 }
