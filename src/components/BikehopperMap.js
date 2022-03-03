@@ -8,7 +8,7 @@ import MapGL, {
   GeolocateControl,
   NavigationControl,
 } from 'react-map-gl';
-import { routesToGeoJSON } from '../lib/geometry';
+import { routesToGeoJSON, EMPTY_GEOJSON } from '../lib/geometry';
 import { DEFAULT_VIEWPORT, mapMoved } from '../features/viewport';
 import MarkerSVG from './MarkerSVG';
 
@@ -63,7 +63,7 @@ function BikehopperMap(props) {
     dispatch(mapMoved(evt.viewState));
   };
 
-  const features = routes ? routesToGeoJSON(routes) : null;
+  const features = routes ? routesToGeoJSON(routes) : EMPTY_GEOJSON;
 
   const transitionStyle = {
     id: 'transitionLayer',
