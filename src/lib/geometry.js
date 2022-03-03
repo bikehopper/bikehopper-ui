@@ -37,12 +37,58 @@ export function routeToGeoJSON(route) {
         const transitionFeature = curveBetween(start, end, {
           properties: {
             route_color: 'darkgray',
-            path_idx: pathIdx,
+            path_index: pathIdx,
             is_transition: true,
           },
           resolution: 1000,
         });
         if (transitionFeature) features.push(transitionFeature);
+      }
+
+      // Add detail features for cycleway quality
+      if (leg.details?.cycleway) {
+        const cycleway_features = [];
+        for (const segment of leg.details?.cycleway) {
+          const [start, end, type] = segment;
+          if (type === 'other') continue;
+
+          const line = leg.geometry.coordinates?.slice(start, end);
+
+          if (line?.length < 2) continue;
+
+          cycleway_features.push(
+            turf.lineString(line, {
+              route_color:
+                type === 'lane' ? 'yellow' : type === 'yes' ? 'orange' : 'red',
+              route_name: type,
+              path_index: pathIdx,
+              is_transition: false,
+            }),
+          );
+        }
+        features.push(...cycleway_features);
+      }
+      if (leg.details?.road_class) {
+        const road_class_segments = leg.details?.road_class.filter(
+          ([, , value]) => value === 'cycleway',
+        );
+        const road_class_features = [];
+        for (const [start, end] of road_class_segments) {
+          const line = leg.geometry.coordinates?.slice(start, end);
+
+          if (line?.length < 2) continue;
+
+          road_class_features.push(
+            turf.lineString(line, {
+              route_color: 'green',
+              route_name: 'fully dedicated',
+              path_index: pathIdx,
+              is_transition: false,
+            }),
+          );
+        }
+
+        features.push(...road_class_features);
       }
     }
   }
@@ -75,33 +121,4 @@ export function curveBetween(start, end, options, angle = 30) {
     ]),
     options,
   );
-}
-
-export function cycleways(route) {
-  if (!(route?.paths?.length > 0)) return null;
-
-  const features = [];
-
-  for (const path of route.paths) {
-    if (!path.details) continue;
-
-    for (const segment of path.details?.cycleway) {
-      const [start, end, type] = segment;
-      if (type === 'other') continue;
-      const line = path.points.coordinates?.slice(start, end);
-
-      if (line?.length > 1)
-        features.push(turf.lineString(line, { cycleway: type }));
-    }
-    for (const segment of path.details?.road_class) {
-      const [start, end, type] = segment;
-      if (type !== 'cycleway') continue;
-      const line = path.points.coordinates?.slice(start, end);
-
-      if (line?.length > 1)
-        features.push(turf.lineString(line, { cycleway: type }));
-    }
-  }
-
-  return turf.featureCollection(features);
 }

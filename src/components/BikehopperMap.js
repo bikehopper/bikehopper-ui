@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { routeToGeoJSON, cycleways } from '../lib/geometry';
+import { routeToGeoJSON } from '../lib/geometry';
 import MapGL, {
   Layer,
   Marker,
@@ -67,7 +67,6 @@ function BikehopperMap(props) {
   }, [route]);
 
   const features = routeToGeoJSON(route);
-  const cyclewayFeatures = cycleways(route);
 
   const legStyle = {
     id: 'routeLayer',
@@ -118,24 +117,6 @@ function BikehopperMap(props) {
     },
   };
 
-  const cyclewayStyle = {
-    id: 'cyclewayLayer',
-    type: 'symbol',
-    filter: ['has', 'cycleway'],
-    layout: {
-      'symbol-sort-key': getLabelSortKey(activePath),
-      'symbol-placement': 'line-center',
-      'text-size': 24,
-      'text-field': ['get', 'cycleway'],
-      'text-ignore-placement': true,
-    },
-    paint: {
-      'text-color': getLegColorStyle(activePath),
-      'text-halo-color': 'white',
-      'text-halo-width': 2,
-    },
-  };
-
   return (
     <div className="BikehopperMap">
       <MapGL
@@ -166,9 +147,6 @@ function BikehopperMap(props) {
           <Layer {...legStyle} />
           <Layer {...transitionStyle} />
           <Layer {...routeLabelStyle} />
-        </Source>
-        <Source id="cyclewaySource" type="geojson" data={cyclewayFeatures}>
-          <Layer {...cyclewayStyle} />
         </Source>
         {startPoint && (
           <Marker
@@ -214,7 +192,7 @@ function getLegColorStyle(indexOfActivePath) {
     'case',
     ['==', ['get', 'path_index'], indexOfActivePath],
     // for active path use the route color from GTFS or fallback to blue
-    ['to-color', ['get', 'route_color'], 'royalblue'],
+    ['to-color', ['get', 'route_color'], 'red'],
     // inactive paths are darkgray
     ['to-color', 'darkgray'],
   ];
@@ -224,10 +202,10 @@ function getLabelTextField() {
   const text = [
     'case',
     ['==', ['get', 'type'], 'bike2'],
-    'bike',
+    '',
     ['has', 'route_name'],
     ['get', 'route_name'],
-    'unknown',
+    '',
   ];
   return ['format', text];
 }
