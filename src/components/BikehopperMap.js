@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { routeToGeoJSON } from '../lib/geometry';
+import { useDispatch } from 'react-redux';
 import MapGL, {
   Layer,
   Marker,
@@ -8,28 +8,21 @@ import MapGL, {
   GeolocateControl,
   NavigationControl,
 } from 'react-map-gl';
+import { routesToGeoJSON } from '../lib/geometry';
+import { DEFAULT_VIEWPORT, mapMoved } from '../features/viewport';
 import MarkerSVG from './MarkerSVG';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './BikehopperMap.css';
 
 function BikehopperMap(props) {
-  // the callbacks contain event.lngLat for the point, which can replace startPoint/endPoint
-  const { startPoint, endPoint, route, onStartPointDrag, onEndPointDrag } =
+  const dispatch = useDispatch();
+  const { startCoords, endCoords, routes, onStartPointDrag, onEndPointDrag } =
     props;
 
   const mapRef = React.useRef();
   const geolocateControlRef = React.useRef();
   const [activePath, setActivePath] = useState(0);
-
-  const initialViewState = {
-    // hardcode San Francisco view for now
-    latitude: 37.75117670681911,
-    longitude: -122.44574920654225,
-    zoom: 12,
-    bearing: 0,
-    pitch: 0,
-  };
 
   const handleRouteClick = (evt) => {
     if (evt.features?.length) {
@@ -44,10 +37,10 @@ function BikehopperMap(props) {
   // center viewport on route paths
   useEffect(() => {
     const map = mapRef.current?.getMap();
-    if (!map || !route?.paths?.length) return;
+    if (!map || !routes?.length) return;
 
     // merge all bboxes
-    const bboxes = route.paths.map((path) => path.bbox);
+    const bboxes = routes.map((path) => path.bbox);
     const [minx, miny, maxx, maxy] = bboxes.reduce((acc, cur) => [
       Math.min(acc[0], cur[0]), // minx
       Math.min(acc[1], cur[1]), // miny
@@ -64,9 +57,13 @@ function BikehopperMap(props) {
         padding: 40,
       },
     );
-  }, [route]);
+  }, [routes]);
 
-  const features = routeToGeoJSON(route);
+  const handleMoveEnd = (evt) => {
+    dispatch(mapMoved(evt.viewState));
+  };
+
+  const features = routes ? routesToGeoJSON(routes) : null;
 
   const transitionStyle = {
     id: 'transitionLayer',
@@ -111,7 +108,7 @@ function BikehopperMap(props) {
   return (
     <div className="BikehopperMap">
       <MapGL
-        initialViewState={initialViewState}
+        initialViewState={DEFAULT_VIEWPORT}
         ref={mapRef}
         style={{
           // expand to fill parent container div
@@ -127,6 +124,7 @@ function BikehopperMap(props) {
           'routeLabelLayer',
         ]}
         onClick={handleRouteClick}
+        onMoveEnd={handleMoveEnd}
       >
         <GeolocateControl ref={geolocateControlRef} />
         <NavigationControl
@@ -159,11 +157,11 @@ function BikehopperMap(props) {
           <Layer {...transitionStyle} />
           <Layer {...routeLabelStyle} />
         </Source>
-        {startPoint && (
+        {startCoords && (
           <Marker
             id="startMarker"
-            longitude={startPoint[0]}
-            latitude={startPoint[1]}
+            longitude={startCoords[0]}
+            latitude={startCoords[1]}
             draggable={true}
             onDragEnd={onStartPointDrag}
             offsetLeft={-13}
@@ -172,11 +170,11 @@ function BikehopperMap(props) {
             <MarkerSVG fillColor="#2fa7cc" />
           </Marker>
         )}
-        {endPoint && (
+        {endCoords && (
           <Marker
             id="endMarker"
-            longitude={endPoint[0]}
-            latitude={endPoint[1]}
+            longitude={endCoords[0]}
+            latitude={endCoords[1]}
             draggable={true}
             onDragEnd={onEndPointDrag}
             offsetLeft={-13}

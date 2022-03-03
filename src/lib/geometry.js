@@ -5,11 +5,8 @@ import distance from '@turf/distance';
 import lineSliceAlong from '@turf/line-slice-along';
 import { darkenLegColor } from './colors.js';
 
-export function routeToGeoJSON(route) {
-  if (!(route?.paths?.length > 0)) return null;
-
+export function routesToGeoJSON(paths) {
   const features = [];
-  const paths = route.paths;
 
   // For-each path
   for (let pathIdx = 0; pathIdx < paths.length; pathIdx++) {
