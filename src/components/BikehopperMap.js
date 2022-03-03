@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import MapGL, {
   Layer,
   Marker,
@@ -10,6 +10,7 @@ import MapGL, {
 } from 'react-map-gl';
 import { routesToGeoJSON, EMPTY_GEOJSON } from '../lib/geometry';
 import { DEFAULT_VIEWPORT, mapMoved } from '../features/viewport';
+import { routeClicked } from '../features/routes';
 import MarkerSVG from './MarkerSVG';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -22,11 +23,12 @@ function BikehopperMap(props) {
 
   const mapRef = React.useRef();
   const geolocateControlRef = React.useRef();
-  const [activePath, setActivePath] = useState(0);
+
+  const activePath = useSelector((state) => state.routes.activeRoute);
 
   const handleRouteClick = (evt) => {
     if (evt.features?.length) {
-      setActivePath(evt.features[0].properties['path_index']);
+      dispatch(routeClicked(evt.features[0].properties.path_index));
     }
   };
 
