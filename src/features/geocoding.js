@@ -45,13 +45,19 @@ const _LOCATION_TYPED_ACTION_LAST_TEXT_FOR_KEY = {};
 // The user has typed some text representing a location (which may be
 // incomplete). That's our cue to try geocoding it. The key is used to
 // debounce, e.g. 'start' vs 'end' location.
-export function locationTyped(text, key) {
-  return async function locationTypedThunk(dispatch, getState) {
+export function geocodeTypedLocation(text, key, { possiblyIncomplete } = {}) {
+  return async function geocodeTypedLocationThunk(dispatch, getState) {
+    text = text.trim();
+    if (text === '') return;
+
     _LOCATION_TYPED_ACTION_LAST_TEXT_FOR_KEY[key] = text;
 
-    // Debounce
-    await delay(700);
-    if (_LOCATION_TYPED_ACTION_LAST_TEXT_FOR_KEY[key] !== text) return;
+    if (possiblyIncomplete) {
+      // This is functioning as an autocomplete: we don't know for sure if the
+      // user is done typing. Therefore, debounce.
+      await delay(700);
+      if (_LOCATION_TYPED_ACTION_LAST_TEXT_FOR_KEY[key] !== text) return;
+    }
 
     dispatch({
       type: 'geocode_attempted',

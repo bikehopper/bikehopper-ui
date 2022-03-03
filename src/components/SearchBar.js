@@ -1,7 +1,11 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import Icon from './Icon';
-import { locationTyped } from '../features/geocoding';
+import { geocodeTypedLocation } from '../features/geocoding';
+import {
+  locationInputFocused,
+  locationsSubmitted,
+} from '../features/locations';
 
 import { ReactComponent as Pin } from 'iconoir/icons/pin-alt.svg';
 
@@ -15,19 +19,23 @@ export default function SearchBar(props) {
   const handleStartChange = (evt) => {
     const text = evt.target.value;
     setStart(text);
-    dispatch(locationTyped(text));
+    dispatch(geocodeTypedLocation(text, 'start', { possiblyIncomplete: true }));
   };
 
   const handleEndChange = (evt) => {
     const text = evt.target.value;
     setEnd(text);
-    dispatch(locationTyped(text));
+    dispatch(geocodeTypedLocation(text, 'end', { possiblyIncomplete: true }));
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    props.onSubmit({ start, end });
     event.target.blur();
+    dispatch(locationsSubmitted(start, end));
+  };
+
+  const handleFocus = (event) => {
+    dispatch(locationInputFocused());
   };
 
   const handleStartKeyPress = (evt) => {
@@ -50,6 +58,7 @@ export default function SearchBar(props) {
           type="text"
           placeholder="from"
           onChange={handleStartChange}
+          onFocus={handleFocus}
           onKeyPress={handleStartKeyPress}
         />
       </span>
@@ -63,6 +72,7 @@ export default function SearchBar(props) {
           type="text"
           placeholder="to"
           onChange={handleEndChange}
+          onFocus={handleFocus}
           onKeyPress={handleEndKeyPress}
         />
       </span>
