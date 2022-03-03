@@ -69,10 +69,12 @@ export function locationsSubmitted(startText, endText) {
       endPoint,
     });
 
-    await fetchRoute(
-      startPoint.geometry.coordinates,
-      endPoint.geometry.coordinates,
-    )(dispatch, getState);
+    if (startPoint && endPoint) {
+      await fetchRoute(
+        startPoint.geometry.coordinates,
+        endPoint.geometry.coordinates,
+      )(dispatch, getState);
+    }
   };
 }
 
