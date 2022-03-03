@@ -13,6 +13,7 @@ const DEFAULT_STATE = {
 };
 
 function _coordsEqual(a, b) {
+  if (!a || !b) return a === b; // handle null input
   return a[0] === b[0] && a[1] === b[1];
 }
 
@@ -27,6 +28,28 @@ export function routesReducer(state = DEFAULT_STATE, action) {
             null;
         draft.routeStatus = 'none';
       });
+    case 'locations_set':
+      // clear routes if new start and/or end point differ from the routes we have
+      if (
+        state.routes &&
+        !(
+          _coordsEqual(
+            state.routeStartCoords,
+            action.startPoint?.geometry?.coordinates,
+          ) &&
+          _coordsEqual(
+            state.routeEndCoords,
+            action.endPoint?.geometry?.coordinates,
+          )
+        )
+      ) {
+        return produce(state, (draft) => {
+          draft.routes = draft.activeRoute = null;
+          draft.routeStatus = 'none';
+        });
+      } else {
+        return state;
+      }
     case 'route_fetch_attempted':
       return produce(state, (draft) => {
         draft.routes = draft.activeRoute = null;
