@@ -8,7 +8,7 @@ import MapGL, {
   GeolocateControl,
   NavigationControl,
 } from 'react-map-gl';
-import { routeToGeoJSON } from '../lib/geometry';
+import { routesToGeoJSON } from '../lib/geometry';
 import { DEFAULT_VIEWPORT, mapMoved } from '../features/viewport';
 import MarkerSVG from './MarkerSVG';
 
@@ -17,8 +17,7 @@ import './BikehopperMap.css';
 
 function BikehopperMap(props) {
   const dispatch = useDispatch();
-  // the callbacks contain event.lngLat for the point, which can replace startPoint/endPoint
-  const { startPoint, endPoint, route, onStartPointDrag, onEndPointDrag } =
+  const { startCoords, endCoords, routes, onStartPointDrag, onEndPointDrag } =
     props;
 
   const mapRef = React.useRef();
@@ -38,10 +37,10 @@ function BikehopperMap(props) {
   // center viewport on route paths
   useEffect(() => {
     const map = mapRef.current?.getMap();
-    if (!map || !route?.paths?.length) return;
+    if (!map || !routes?.length) return;
 
     // merge all bboxes
-    const bboxes = route.paths.map((path) => path.bbox);
+    const bboxes = routes.map((path) => path.bbox);
     const [minx, miny, maxx, maxy] = bboxes.reduce((acc, cur) => [
       Math.min(acc[0], cur[0]), // minx
       Math.min(acc[1], cur[1]), // miny
@@ -58,13 +57,13 @@ function BikehopperMap(props) {
         padding: 40,
       },
     );
-  }, [route]);
+  }, [routes]);
 
   const handleMoveEnd = (evt) => {
     dispatch(mapMoved(evt.viewState));
   };
 
-  const features = routeToGeoJSON(route);
+  const features = routes ? routesToGeoJSON(routes) : null;
 
   const transitionStyle = {
     id: 'transitionLayer',
@@ -158,11 +157,11 @@ function BikehopperMap(props) {
           <Layer {...transitionStyle} />
           <Layer {...routeLabelStyle} />
         </Source>
-        {startPoint && (
+        {startCoords && (
           <Marker
             id="startMarker"
-            longitude={startPoint[0]}
-            latitude={startPoint[1]}
+            longitude={startCoords[0]}
+            latitude={startCoords[1]}
             draggable={true}
             onDragEnd={onStartPointDrag}
             offsetLeft={-13}
@@ -171,11 +170,11 @@ function BikehopperMap(props) {
             <MarkerSVG fillColor="#2fa7cc" />
           </Marker>
         )}
-        {endPoint && (
+        {endCoords && (
           <Marker
             id="endMarker"
-            longitude={endPoint[0]}
-            latitude={endPoint[1]}
+            longitude={endCoords[0]}
+            latitude={endCoords[1]}
             draggable={true}
             onDragEnd={onEndPointDrag}
             offsetLeft={-13}

@@ -24,20 +24,13 @@ function App() {
     //setEndPoint(lngLatToCoords(evt.lngLat));
   };
 
-  // TODO improve the naming/structure of BikehopperMap props to avoid this
-  // conversion layer. Doing this to prevent conflicts as others work in
-  // BikehopperMap.
-  const routeForBikehopperMap = { paths: routes };
-  const startPointForBikehopperMap = startPoint?.geometry.coordinates;
-  const endPointForBikehopperMap = endPoint?.geometry.coordinates;
-
   return (
     <div className="App">
       <SearchBar />
       <BikehopperMap
-        startPoint={startPointForBikehopperMap}
-        endPoint={endPointForBikehopperMap}
-        route={routeForBikehopperMap}
+        startCoords={startPoint?.geometry.coordinates}
+        endCoords={endPoint?.geometry.coordinates}
+        routes={routes}
         onStartPointDrag={handleStartPointDrag}
         onEndPointDrag={handleEndPointDrag}
       />
