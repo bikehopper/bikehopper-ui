@@ -59,7 +59,7 @@ export function routeToGeoJSON(route) {
           cycleway_features.push(
             turf.lineString(line, {
               route_color:
-                type === 'lane' ? 'yellow' : type === 'yes' ? 'orange' : 'red',
+                type === 'lane' ? 'yellow' : type !== 'no' ? 'orange' : 'red',
               route_name: type,
               path_index: pathIdx,
               is_transition: false,
