@@ -11,6 +11,7 @@ import MapGL, {
 import { routesToGeoJSON } from '../lib/geometry';
 import { DEFAULT_VIEWPORT, mapMoved } from '../features/viewport';
 import MarkerSVG from './MarkerSVG';
+import { EMPTY_GEOJSON } from '../lib/constants';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './BikehopperMap.css';
@@ -63,7 +64,7 @@ function BikehopperMap(props) {
     dispatch(mapMoved(evt.viewState));
   };
 
-  const features = routes ? routesToGeoJSON(routes) : null;
+  const features = routes ? routesToGeoJSON(routes) : EMPTY_GEOJSON;
 
   const transitionStyle = {
     id: 'transitionLayer',
