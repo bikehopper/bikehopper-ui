@@ -8,10 +8,9 @@ import MapGL, {
   GeolocateControl,
   NavigationControl,
 } from 'react-map-gl';
-import { routesToGeoJSON } from '../lib/geometry';
+import { routesToGeoJSON, EMPTY_GEOJSON } from '../lib/geometry';
 import { DEFAULT_VIEWPORT, mapMoved } from '../features/viewport';
 import MarkerSVG from './MarkerSVG';
-import { EMPTY_GEOJSON } from '../lib/constants';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './BikehopperMap.css';
