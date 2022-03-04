@@ -63,19 +63,53 @@ export function locationsSubmitted(startText, endText) {
       promiseResult.status === 'fulfilled' ? promiseResult.value : null,
     );
 
-    dispatch({
-      type: 'locations_set',
+    await _setLocationsAndMaybeFetchRoute(
+      dispatch,
+      getState,
       startPoint,
       endPoint,
-    });
-
-    if (startPoint && endPoint) {
-      await fetchRoute(
-        startPoint.geometry.coordinates,
-        endPoint.geometry.coordinates,
-      )(dispatch, getState);
-    }
+    );
   };
+}
+
+export function locationDragged(startOrEnd, coords) {
+  return async function locationDraggedThunk(dispatch, getState) {
+    let { startPoint, endPoint } = getState().locations;
+
+    // This might be a sign that the data format should change... turning a raw
+    // pair of coords into something that looks as if we got it from Nominatim.
+    const pointFromCoords = { geometry: { coordinates: coords } };
+
+    if (startOrEnd === 'start') startPoint = pointFromCoords;
+    else endPoint = pointFromCoords;
+
+    await _setLocationsAndMaybeFetchRoute(
+      dispatch,
+      getState,
+      startPoint,
+      endPoint,
+    );
+  };
+}
+
+async function _setLocationsAndMaybeFetchRoute(
+  dispatch,
+  getState,
+  startPoint,
+  endPoint,
+) {
+  dispatch({
+    type: 'locations_set',
+    startPoint,
+    endPoint,
+  });
+
+  if (startPoint && endPoint) {
+    await fetchRoute(
+      startPoint.geometry.coordinates,
+      endPoint.geometry.coordinates,
+    )(dispatch, getState);
+  }
 }
 
 export function locationInputFocused() {

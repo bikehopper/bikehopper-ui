@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import MapGL, {
   Layer,
   Marker,
@@ -9,27 +9,49 @@ import MapGL, {
   NavigationControl,
 } from 'react-map-gl';
 import { routesToGeoJSON, EMPTY_GEOJSON } from '../lib/geometry';
-import { DEFAULT_VIEWPORT, mapMoved } from '../features/viewport';
+import lngLatToCoords from '../lib/lngLatToCoords';
+import { locationDragged } from '../features/locations';
 import { routeClicked } from '../features/routes';
+import { DEFAULT_VIEWPORT, mapMoved } from '../features/viewport';
 import MarkerSVG from './MarkerSVG';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './BikehopperMap.css';
 
 function BikehopperMap(props) {
-  const dispatch = useDispatch();
-  const { startCoords, endCoords, routes, onStartPointDrag, onEndPointDrag } =
-    props;
-
   const mapRef = React.useRef();
   const geolocateControlRef = React.useRef();
 
-  const activePath = useSelector((state) => state.routes.activeRoute);
+  const dispatch = useDispatch();
+  const { startPoint, endPoint, routes, activePath } = useSelector(
+    (state) => ({
+      startPoint: state.locations.startPoint,
+      endPoint: state.locations.endPoint,
+      routes: state.routes.routes,
+      activePath: state.routes.activeRoute,
+    }),
+    shallowEqual,
+  );
+
+  const startCoords = startPoint?.geometry?.coordinates;
+  const endCoords = endPoint?.geometry?.coordinates;
 
   const handleRouteClick = (evt) => {
     if (evt.features?.length) {
       dispatch(routeClicked(evt.features[0].properties.path_index));
     }
+  };
+
+  const handleMoveEnd = (evt) => {
+    dispatch(mapMoved(evt.viewState));
+  };
+
+  const handleStartPointDrag = (evt) => {
+    dispatch(locationDragged('start', lngLatToCoords(evt.lngLat)));
+  };
+
+  const handleEndPointDrag = (evt) => {
+    dispatch(locationDragged('end', lngLatToCoords(evt.lngLat)));
   };
 
   useEffect(() => {
@@ -60,10 +82,6 @@ function BikehopperMap(props) {
       },
     );
   }, [routes]);
-
-  const handleMoveEnd = (evt) => {
-    dispatch(mapMoved(evt.viewState));
-  };
 
   const features = routes ? routesToGeoJSON(routes) : EMPTY_GEOJSON;
 
@@ -165,7 +183,7 @@ function BikehopperMap(props) {
             longitude={startCoords[0]}
             latitude={startCoords[1]}
             draggable={true}
-            onDragEnd={onStartPointDrag}
+            onDragEnd={handleStartPointDrag}
             offsetLeft={-13}
             offsetTop={-39}
           >
@@ -178,7 +196,7 @@ function BikehopperMap(props) {
             longitude={endCoords[0]}
             latitude={endCoords[1]}
             draggable={true}
-            onDragEnd={onEndPointDrag}
+            onDragEnd={handleEndPointDrag}
             offsetLeft={-13}
             offsetTop={-39}
           >

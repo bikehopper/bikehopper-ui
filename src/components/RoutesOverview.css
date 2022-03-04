@@ -1,0 +1,21 @@
+.RoutesOverview {
+  display: flex;
+  flex-flow: column;
+}
+
+.RoutesOverview_routeSelected {
+  font-weight: bold;
+}
+
+.RoutesOverview_routeLegs {
+  padding-left: 0;
+}
+
+.RoutesOverview_leg {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.RoutesOverview_timeEstimate {
+  margin: 0;
+}
