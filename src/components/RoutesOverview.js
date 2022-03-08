@@ -2,6 +2,10 @@ import * as React from 'react';
 import classnames from 'classnames';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { routeClicked } from '../features/routes';
+import Icon from './Icon';
+import RouteLeg from './RouteLeg';
+
+import { ReactComponent as NavArrowRight } from 'iconoir/icons/nav-arrow-right.svg';
 
 import './RoutesOverview.css';
 
@@ -31,10 +35,30 @@ export default function RoutesOverview(props) {
             onClick={handleRouteClick.bind(null, index)}
           >
             <ul className="RoutesOverview_routeLegs">
-              {route.legs.map((leg) => (
-                <li className="RoutesOverview_leg">
-                  {leg.type === 'pt' ? leg.route_name : 'Bike'}
-                </li>
+              {route.legs.map((leg, index) => (
+                <>
+                  {index > 0 && (
+                    <li className="RoutesOverview_legSeparator">
+                      <Icon>
+                        <NavArrowRight />
+                      </Icon>
+                    </li>
+                  )}
+                  <li className="RoutesOverview_leg">
+                    <RouteLeg
+                      type={leg.type}
+                      routeName={leg.route_name}
+                      routeColor={leg.route_color}
+                      agencyName={leg.agency_name}
+                      duration={
+                        /* hide duration if route has only one leg */
+                        route.legs.length > 1 &&
+                        new Date(leg.arrival_time) -
+                          new Date(leg.departure_time)
+                      }
+                    />
+                  </li>
+                </>
               ))}
             </ul>
             <p className="RoutesOverview_timeEstimate">

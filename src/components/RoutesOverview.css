@@ -3,17 +3,49 @@
   flex-flow: column;
 }
 
+.RoutesOverview_list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.RoutesOverview_route {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.RoutesOverview_route:not(:last-child) {
+  padding-bottom: 14px;
+  border-bottom: 1px solid #c4c4c4;
+  margin-bottom: 14px;
+}
+
 .RoutesOverview_routeSelected {
   font-weight: bold;
 }
 
+.RoutesOverview_timeEstimate {
+  align-self: center;
+}
+
 .RoutesOverview_routeLegs {
   padding-left: 0;
+  display: flex;
+  flex-direction: row;
+}
+
+.RoutesOverview_leg,
+.RoutesOverview_legSeparator {
+  display: inline-block;
+  margin-right: 10px;
 }
 
 .RoutesOverview_leg {
-  display: inline-block;
-  margin-right: 10px;
+  align-self: end;
+}
+
+.RoutesOverview_legSeparator {
+  align-self: center;
 }
 
 .RoutesOverview_timeEstimate {
