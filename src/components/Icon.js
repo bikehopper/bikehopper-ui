@@ -1,4 +1,5 @@
 import * as React from 'react';
+import classnames from 'classnames';
 
 import './Icon.css';
 
@@ -8,9 +9,15 @@ import './Icon.css';
 // For accessibility put an aria-label="..." attribute on the parent element
 
 export default function Icon(props) {
-  const classes = 'Icon' + (props.className ? ' ' + props.className : '');
   return (
-    <span aria-hidden="true" className={classes}>
+    <span
+      aria-hidden="true"
+      className={classnames({
+        Icon: true,
+        Icon_flipHorizontally: props.flipHorizontally,
+        [props.className]: !!props.className,
+      })}
+    >
       {props.children}
     </span>
   );
