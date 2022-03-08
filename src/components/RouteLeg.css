@@ -1,0 +1,13 @@
+.RouteLeg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.RouteLeg_transitMode {
+  padding: 4px;
+}
+
+.RouteLeg_duration {
+  font-size: 12px;
+}
