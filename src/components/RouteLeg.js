@@ -11,7 +11,7 @@ export default function RouteLeg(props) {
 
   if (props.type === 'bike2') {
     mode = (
-      <Icon flipHorizontally={true}>
+      <Icon flipHorizontally={true} label="Bike">
         <Bicycle width={ICON_SIZE} height={ICON_SIZE} />
       </Icon>
     );
