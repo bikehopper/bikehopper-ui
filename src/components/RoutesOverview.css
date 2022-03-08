@@ -46,6 +46,7 @@
 
 .RoutesOverview_legSeparator {
   align-self: center;
+  margin-bottom: 12px; /* line up with bike icons / route names */
 }
 
 .RoutesOverview_timeEstimate {
