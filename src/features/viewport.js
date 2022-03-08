@@ -9,16 +9,29 @@
 // In other words, just to make it super clear: the map itself never moves
 // around in (direct) response to the state in this reducer, only vice versa.
 
-export const DEFAULT_VIEWPORT = {
-  // hardcode San Francisco view for now
-  // TODO: The initial viewport should be specified in terms of a bounding box,
-  // so it isn't dependent on screen size how much of SF you see.
-  latitude: 37.75117670681911,
-  longitude: -122.44574920654225,
-  zoom: 12,
-  bearing: 0,
-  pitch: 0,
-};
+import geoViewport from '@mapbox/geo-viewport';
+
+const BAY_AREA_BOUNDS = [
+  -122.597652,
+  37.330751,
+  -121.669687,
+  37.858476,
+]
+
+const MAPBOX_VT_SIZE = 512;
+
+function viewportForScreen(screenDims) {
+  const viewport = geoViewport.viewport(BAY_AREA_BOUNDS, screenDims, 0, 14, MAPBOX_VT_SIZE);
+  return {
+    latitude: viewport.center[1],
+    longitude: viewport.center[0],
+    zoom: viewport.zoom ,
+    bearing: 0,
+    pitch: 0,
+  };
+}
+
+export const DEFAULT_VIEWPORT = viewportForScreen([window.innerWidth, window.innerHeight]);
 
 const DEFAULT_STATE = { ...DEFAULT_VIEWPORT };
 
