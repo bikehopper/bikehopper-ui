@@ -27,19 +27,26 @@ export async function fetchRoute({
 
 export async function geocode(
   placeString,
-  { limit = 1, format = 'geojson', signal },
+  {
+    limit = 1,
+    latitude,
+    longitude,
+    zoom = 12,
+    lang = 'en',
+    locationBias = '0.1',
+    signal,
+  },
 ) {
-  const url = `${
+  let url = `${
     process.env.REACT_APP_BIKEHOPPER_DOMAIN
-  }/v1/nominatim/search?q=${encodeURIComponent(
+  }/v1/photon/geocode?q=${encodeURIComponent(
     placeString,
-  )}&limit=${limit}&format=${format}`;
+  )}&lang=${lang}&limit=${limit}`;
 
-  // We might want to support bounding the results based on the map viewport,
-  // prioritizing closer results, etc., but this is not straightforward in the
-  // Nominatim search API. You can only give Nominatim a *strict* bounding box,
-  // in which case it absolutely will not return anything outside that box, or
-  // (as we do now) get results from everywhere with no proximity weighting.
+  if (latitude != null && longitude != null) {
+    zoom = Math.round(zoom); // Photon doesn't accept float zoom values
+    url += `&lat=${latitude}&lon=${longitude}&zoom=${zoom}&location_bias_scale=${locationBias}`;
+  }
 
   const geocoding = await fetch(url, {
     method: 'GET',
