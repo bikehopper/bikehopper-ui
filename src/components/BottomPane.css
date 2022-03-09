@@ -1,6 +1,6 @@
 .BottomPane {
   background-color: white;
-  padding: 20px 25px;
+  padding: 12px 24px;
   display: flex;
   flex-flow: column;
 }
