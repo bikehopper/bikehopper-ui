@@ -6,7 +6,7 @@ export function formatInterval(milliseconds) {
   let hours = Math.floor(minutes / 60);
   minutes -= hours * 60;
   if (hours < 24) {
-    return `${hours}h ${minutes}m`;
+    return minutes === 0 ? `${hours}h` : `${hours}h ${minutes}m`;
   }
   let days = Math.floor(hours / 24);
   hours -= days * 24;
@@ -14,5 +14,5 @@ export function formatInterval(milliseconds) {
     // add one to hours to make sure to always overestimate time
     hours += 1;
   }
-  return `${days}d ${hours}h`;
+  return hours === 0 ? `${days}d` : `${days}d ${hours}m`;
 }

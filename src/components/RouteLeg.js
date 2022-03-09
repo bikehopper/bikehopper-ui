@@ -32,7 +32,6 @@ export default function RouteLeg(props) {
     );
   }
 
-  // only show leg time if duration is supplied, else hide.
   return (
     <div className="RouteLeg">
       {mode}
