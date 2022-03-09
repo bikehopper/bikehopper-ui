@@ -2,6 +2,8 @@ import produce from 'immer';
 import * as BikehopperClient from '../lib/BikehopperClient';
 import delay from '../lib/delay';
 
+const GEOCODE_RESULT_LIMIT = 5;
+
 const DEFAULT_STATE = {
   // maps location strings to geocoded results.
   // all location strings are prefixed with '@' to avoid collisions w built-in attributes.
@@ -73,6 +75,7 @@ export function geocodeTypedLocation(text, key, { possiblyIncomplete } = {}) {
         latitude,
         longitude,
         zoom,
+        limit: GEOCODE_RESULT_LIMIT,
       });
     } catch (e) {
       dispatch({
@@ -115,4 +118,32 @@ export function geocodeTypedLocation(text, key, { possiblyIncomplete } = {}) {
       time: Date.now(),
     });
   };
+}
+
+// Utilities
+
+// Describe a place from its Photon GeoJSON result hash.
+// (If we were to switch back to Nominatim, parts of this would change)
+export function describePlace(feature) {
+  if (!feature || feature.type !== 'Feature' || !feature.properties)
+    return 'Point';
+
+  const {
+    name = '',
+    housenumber,
+    street = '',
+    city = '',
+    postcode = '',
+  } = feature.properties;
+
+  const description = [
+    name,
+    housenumber != null ? housenumber + ' ' + street : street,
+    city,
+    postcode,
+  ]
+    .filter((segment) => !!segment)
+    .join(', ');
+
+  return description || 'Point';
 }

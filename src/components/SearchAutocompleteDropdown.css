@@ -1,0 +1,25 @@
+.SearchAutocompleteDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 3; /* to be in front of geolocate control */
+  width: 100%;
+}
+
+.SearchAutocompleteDropdown_place {
+  font-size: 13px;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+}
+
+.SearchAutocompleteDropdown_icon {
+  margin: 0 8px;
+  top: 2px;
+  /* FIXME: the 2px top overrides a 4px default in Icon.css, maybe that default
+   * shouldn't exist */
+}
+
+.SearchAutocompleteDropdown_placeDescription {
+  vertical-align: middle;
+}

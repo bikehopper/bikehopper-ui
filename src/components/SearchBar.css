@@ -4,6 +4,7 @@
   display: flex;
   flex-flow: column;
   align-items: stretch;
+  position: relative;
 }
 
 .SearchBar_input {
@@ -12,9 +13,10 @@
   padding: 12px 12px 12px 40px;
   border-radius: 12px;
   width: 100%;
+  font-size: 13px;
 }
 
-.SearchBar_inputContainer:not(:last-child) {
+.SearchBar_inputContainer:first-child {
   margin-bottom: 25px;
 }
 
