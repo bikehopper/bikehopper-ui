@@ -101,6 +101,8 @@ export function routesReducer(state = DEFAULT_STATE, action) {
 
 // Actions
 
+let _routeNonce = 10000000;
+
 export function fetchRoute(startCoords, endCoords) {
   return async function fetchRouteThunk(dispatch, getState) {
     if (!startCoords || !endCoords) {
@@ -145,6 +147,10 @@ export function fetchRoute(startCoords, endCoords) {
         failureType: 'no route found',
       });
       return;
+    }
+
+    for (const path of paths) {
+      path.nonce = ++_routeNonce;
     }
 
     dispatch({
