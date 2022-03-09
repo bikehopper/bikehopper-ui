@@ -2,6 +2,7 @@ import * as React from 'react';
 import classnames from 'classnames';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { routeClicked } from '../features/routes';
+import { formatInterval } from '../lib/time';
 import Icon from './Icon';
 import RouteLeg from './RouteLeg';
 
@@ -62,7 +63,7 @@ export default function RoutesOverview(props) {
               ))}
             </ul>
             <p className="RoutesOverview_timeEstimate">
-              {Math.round(route.time / 1000 / 60) + ' min'}
+              {formatInterval(route.time)}
             </p>
           </li>
         ))}
