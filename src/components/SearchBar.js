@@ -60,7 +60,7 @@ export default function SearchBar(props) {
   };
 
   const handleFocus = (which, event) => {
-    dispatch(locationInputFocused());
+    dispatch(locationInputFocused(which));
     setFocusedInput(which);
   };
 
