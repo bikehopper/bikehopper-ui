@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useLayoutEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import MapGL, {
   Layer,
@@ -13,10 +13,13 @@ import lngLatToCoords from '../lib/lngLatToCoords';
 import { locationDragged } from '../features/locations';
 import { routeClicked } from '../features/routes';
 import { DEFAULT_VIEWPORT, mapMoved } from '../features/viewport';
+import useResizeObserver from '../hooks/useResizeObserver';
 import MarkerSVG from './MarkerSVG';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './BikehopperMap.css';
+
+const ZOOM_PADDING = 40;
 
 function BikehopperMap(props) {
   const mapRef = React.useRef();
@@ -58,8 +61,14 @@ function BikehopperMap(props) {
     geolocateControlRef.current?.trigger();
   }, []);
 
+  const resizeRef = useResizeObserver(
+    useCallback(([width, height]) => {
+      if (mapRef.current) mapRef.current.resize();
+    }, []),
+  );
+
   // center viewport on route paths
-  useEffect(() => {
+  useLayoutEffect(() => {
     const map = mapRef.current?.getMap();
     if (!map || !routes?.length) return;
 
@@ -72,13 +81,23 @@ function BikehopperMap(props) {
       Math.max(acc[3], cur[3]), // maxy
     ]);
 
+    // Before centering the map, we must resize the map, because on mobile,
+    // showing the bottom pane with the routes overview will have resized the
+    // map's container.
+    //
+    // This does result in an unnecessary, second resize call from the resize
+    // observer above. Alas, there's no obvious way to make the resize observer
+    // fire before this, and we need that observer to handle resizes that
+    // happen for other reasons (device orientation change, desktop browser
+    // window resize, etc).
+    map.resize();
     map.fitBounds(
       [
         [minx, miny],
         [maxx, maxy],
       ],
       {
-        padding: 40,
+        padding: ZOOM_PADDING,
       },
     );
   }, [routes]);
@@ -126,7 +145,7 @@ function BikehopperMap(props) {
   };
 
   return (
-    <div className="BikehopperMap">
+    <div className="BikehopperMap" ref={resizeRef}>
       <MapGL
         initialViewState={DEFAULT_VIEWPORT}
         ref={mapRef}
