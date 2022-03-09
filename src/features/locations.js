@@ -3,11 +3,20 @@ import { geocodeTypedLocation } from './geocoding';
 import { fetchRoute } from './routes';
 import * as turf from '@turf/helpers';
 
+export const LocationSourceType = {
+  None: 'none',
+  Geocoded: 'geocoded',
+  Marker: 'marker_drag',
+  UserGeolocation: 'user_geolocation',
+};
+
 const DEFAULT_STATE = {
   isEditingLocations: false,
   userPoint: null,
   startPoint: null,
+  startSource: LocationSourceType.None,
   endPoint: null,
+  endSource: LocationSourceType.None,
 };
 
 export function locationsReducer(state = DEFAULT_STATE, action) {
@@ -15,7 +24,9 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
     case 'locations_set':
       return produce(state, (draft) => {
         draft.startPoint = action.startPoint;
+        draft.startSource = action.startSource;
         draft.endPoint = action.endPoint;
+        draft.endSource = action.endSource;
         if (action.startPoint && action.endPoint)
           draft.isEditingLocations = false;
       });
@@ -71,27 +82,36 @@ export function locationsSubmitted(startText, endText) {
       dispatch,
       getState,
       startPoint,
+      LocationSourceType.Geocoded,
       endPoint,
+      LocationSourceType.Geocoded,
     );
   };
 }
 
 export function locationDragged(startOrEnd, coords) {
   return async function locationDraggedThunk(dispatch, getState) {
-    let { startPoint, endPoint } = getState().locations;
+    let { startPoint, endPoint, startSource, endSource } = getState().locations;
 
     // This might be a sign that the data format should change... turning a raw
     // pair of coords into something that looks as if we got it from Nominatim.
     const pointFromCoords = { geometry: { coordinates: coords } };
 
-    if (startOrEnd === 'start') startPoint = pointFromCoords;
-    else endPoint = pointFromCoords;
+    if (startOrEnd === 'start') {
+      startPoint = pointFromCoords;
+      startSource = LocationSourceType.Marker;
+    } else {
+      endPoint = pointFromCoords;
+      endSource = LocationSourceType.Marker;
+    }
 
     await _setLocationsAndMaybeFetchRoute(
       dispatch,
       getState,
       startPoint,
+      startSource,
       endPoint,
+      endSource,
     );
   };
 }
@@ -100,12 +120,16 @@ async function _setLocationsAndMaybeFetchRoute(
   dispatch,
   getState,
   startPoint,
+  startSource,
   endPoint,
+  endSource,
 ) {
   dispatch({
     type: 'locations_set',
     startPoint,
+    startSource,
     endPoint,
+    endSource,
   });
 
   if (startPoint && endPoint) {
