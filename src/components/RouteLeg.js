@@ -2,6 +2,7 @@ import * as React from 'react';
 import Color from 'color';
 import Icon from './Icon';
 import { ReactComponent as Bicycle } from 'iconoir/icons/bicycle.svg';
+import { formatInterval } from '../lib/time';
 
 import './RouteLeg.css';
 
@@ -31,13 +32,14 @@ export default function RouteLeg(props) {
     );
   }
 
-  // Compute number of minutes on this leg, but only if duration is supplied, else hide.
-  const minutes = props.duration && Math.round(props.duration / 1000 / 60);
-
   return (
     <div className="RouteLeg">
       {mode}
-      {minutes && <span className="RouteLeg_duration">{minutes} min</span>}
+      {props.duration && (
+        <span className="RouteLeg_duration">
+          {formatInterval(props.duration)}
+        </span>
+      )}
     </div>
   );
 }
