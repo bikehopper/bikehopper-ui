@@ -33,7 +33,12 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
     case 'location_input_focused':
       return { ...state, isEditingLocations: true };
     case 'geolocation_set':
-      return { ...state, userPoint: turf.point(action.coords) };
+      const point = turf.point(action.coords);
+      return produce(state, (draft) => {
+        draft.startPoint = point;
+        draft.startSource = LocationSourceType.UserGeolocation;
+        draft.userPoint = point;
+      });
     default:
       return state;
   }

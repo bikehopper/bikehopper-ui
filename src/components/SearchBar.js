@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './Icon';
 import SearchAutocompleteDropdown from './SearchAutocompleteDropdown';
 import { geocodeTypedLocation } from '../features/geocoding';
 import {
   locationInputFocused,
   locationsSubmitted,
+  LocationSourceType,
 } from '../features/locations';
 import { ReactComponent as Pin } from 'iconoir/icons/pin-alt.svg';
 
@@ -16,6 +17,29 @@ export default function SearchBar(props) {
   const [start, setStart] = React.useState('');
   const [end, setEnd] = React.useState('');
   const [focusedInput, setFocusedInput] = React.useState(null); // can be 'start' or 'end'
+
+  const { startSource, endSource, userPoint } = useSelector(
+    (state) => ({
+      startSource: state.locations.startSource,
+      endSource: state.locations.endSource,
+      userPoint: state.routes.userPoint,
+    }),
+    shallowEqual,
+  );
+
+  const getDisplayText = function (source, curr) {
+    switch (source) {
+      case LocationSourceType.UserGeolocation:
+        return 'Current Location';
+      case LocationSourceType.Marker:
+        return 'Custom';
+      default:
+        return curr;
+    }
+  };
+
+  const displayedStart = getDisplayText(startSource, start);
+  const displayedEnd = getDisplayText(endSource, end);
 
   const handleStartChange = (evt) => {
     const text = evt.target.value;
@@ -63,6 +87,7 @@ export default function SearchBar(props) {
           className="SearchBar_input"
           type="text"
           placeholder="from"
+          value={displayedStart}
           onChange={handleStartChange}
           onFocus={handleFocus.bind(null, 'start')}
           onBlur={handleBlur.bind(null, 'start')}
@@ -78,6 +103,7 @@ export default function SearchBar(props) {
           className="SearchBar_input"
           type="text"
           placeholder="to"
+          value={displayedEnd}
           onChange={handleEndChange}
           onFocus={handleFocus.bind(null, 'end')}
           onBlur={handleBlur.bind(null, 'end')}
