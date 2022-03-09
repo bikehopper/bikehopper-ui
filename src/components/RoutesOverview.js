@@ -1,10 +1,11 @@
 import * as React from 'react';
-import classnames from 'classnames';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { routeClicked } from '../features/routes';
 import { formatInterval } from '../lib/time';
 import Icon from './Icon';
 import RouteLeg from './RouteLeg';
+import SelectionList from './SelectionList';
+import SelectionListItem from './SelectionListItem';
 
 import { ReactComponent as NavArrowRight } from 'iconoir/icons/nav-arrow-right.svg';
 
@@ -25,13 +26,11 @@ export default function RoutesOverview(props) {
   };
 
   return (
-    <ul className="RoutesOverview">
+    <SelectionList>
       {routes.map((route, index) => (
-        <li
-          className={classnames({
-            RoutesOverview_route: true,
-            RoutesOverview_routeSelected: activeRoute === index,
-          })}
+        <SelectionListItem
+          className="RoutesOverview_route"
+          active={activeRoute === index}
           onClick={handleRouteClick.bind(null, index)}
         >
           <ul className="RoutesOverview_routeLegs">
@@ -63,8 +62,8 @@ export default function RoutesOverview(props) {
           <p className="RoutesOverview_timeEstimate">
             {formatInterval(route.time)}
           </p>
-        </li>
+        </SelectionListItem>
       ))}
-    </ul>
+    </SelectionList>
   );
 }
