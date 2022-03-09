@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import Icon from './Icon';
+import SearchAutocompleteDropdown from './SearchAutocompleteDropdown';
 import { geocodeTypedLocation } from '../features/geocoding';
 import {
   locationInputFocused,
   locationsSubmitted,
 } from '../features/locations';
-
 import { ReactComponent as Pin } from 'iconoir/icons/pin-alt.svg';
 
 import './SearchBar.css';
@@ -15,6 +15,7 @@ export default function SearchBar(props) {
   const dispatch = useDispatch();
   const [start, setStart] = React.useState('');
   const [end, setEnd] = React.useState('');
+  const [focusedInput, setFocusedInput] = React.useState(null); // can be 'start' or 'end'
 
   const handleStartChange = (evt) => {
     const text = evt.target.value;
@@ -34,8 +35,13 @@ export default function SearchBar(props) {
     dispatch(locationsSubmitted(start, end));
   };
 
-  const handleFocus = (event) => {
+  const handleFocus = (which, event) => {
     dispatch(locationInputFocused());
+    setFocusedInput(which);
+  };
+
+  const handleBlur = (which, event) => {
+    setFocusedInput(null);
   };
 
   const handleStartKeyPress = (evt) => {
@@ -58,7 +64,8 @@ export default function SearchBar(props) {
           type="text"
           placeholder="from"
           onChange={handleStartChange}
-          onFocus={handleFocus}
+          onFocus={handleFocus.bind(null, 'start')}
+          onBlur={handleBlur.bind(null, 'start')}
           onKeyPress={handleStartKeyPress}
         />
       </span>
@@ -72,10 +79,16 @@ export default function SearchBar(props) {
           type="text"
           placeholder="to"
           onChange={handleEndChange}
-          onFocus={handleFocus}
+          onFocus={handleFocus.bind(null, 'end')}
+          onBlur={handleBlur.bind(null, 'end')}
           onKeyPress={handleEndKeyPress}
         />
       </span>
+      {focusedInput && (
+        <SearchAutocompleteDropdown
+          text={focusedInput === 'start' ? start : end}
+        />
+      )}
     </form>
   );
 }
