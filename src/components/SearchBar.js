@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './Icon';
 import { geocodeTypedLocation } from '../features/geocoding';
 import {
   locationInputFocused,
   locationsSubmitted,
+  LocationSourceType,
 } from '../features/locations';
 
 import { ReactComponent as Pin } from 'iconoir/icons/pin-alt.svg';
@@ -15,6 +16,29 @@ export default function SearchBar(props) {
   const dispatch = useDispatch();
   const [start, setStart] = React.useState('');
   const [end, setEnd] = React.useState('');
+
+  const { startSource, endSource, userPoint } = useSelector(
+    (state) => ({
+      startSource: state.locations.startSource,
+      endSource: state.locations.endSource,
+      userPoint: state.routes.userPoint,
+    }),
+    shallowEqual,
+  );
+
+  const getDisplayText = function (source, curr) {
+    switch (source) {
+      case LocationSourceType.UserGeolocation:
+        return 'Current Location';
+      case LocationSourceType.Marker:
+        return 'Custom';
+      default:
+        return curr;
+    }
+  };
+
+  const displayedStart = getDisplayText(startSource, start);
+  const displayedEnd = getDisplayText(endSource, end);
 
   const handleStartChange = (evt) => {
     const text = evt.target.value;
@@ -57,6 +81,7 @@ export default function SearchBar(props) {
           className="SearchBar_input"
           type="text"
           placeholder="from"
+          value={displayedStart}
           onChange={handleStartChange}
           onFocus={handleFocus}
           onKeyPress={handleStartKeyPress}
@@ -71,6 +96,7 @@ export default function SearchBar(props) {
           className="SearchBar_input"
           type="text"
           placeholder="to"
+          value={displayedEnd}
           onChange={handleEndChange}
           onFocus={handleFocus}
           onKeyPress={handleEndKeyPress}
