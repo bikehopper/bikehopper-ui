@@ -31,7 +31,10 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
           draft.isEditingLocations = false;
       });
     case 'location_input_focused':
-      return { ...state, isEditingLocations: true };
+      return produce(state, (draft) => {
+        draft.isEditingLocations = true;
+        draft[`${action.startOrEnd}Source`] = LocationSourceType.None;
+      });
     case 'geolocation_set':
       const point = turf.point(action.coords);
       return produce(state, (draft) => {
@@ -145,9 +148,10 @@ async function _setLocationsAndMaybeFetchRoute(
   }
 }
 
-export function locationInputFocused() {
+export function locationInputFocused(startOrEnd) {
   return {
     type: 'location_input_focused',
+    startOrEnd,
   };
 }
 

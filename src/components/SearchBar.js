@@ -58,8 +58,10 @@ export default function SearchBar(props) {
     dispatch(locationsSubmitted(start, end));
   };
 
-  const handleFocus = (event) => {
-    dispatch(locationInputFocused());
+  const handleFocus = (startOrEnd) => {
+    return (evt) => {
+      dispatch(locationInputFocused(startOrEnd));
+    };
   };
 
   const handleStartKeyPress = (evt) => {
@@ -83,7 +85,7 @@ export default function SearchBar(props) {
           placeholder="from"
           value={displayedStart}
           onChange={handleStartChange}
-          onFocus={handleFocus}
+          onFocus={handleFocus('start')}
           onKeyPress={handleStartKeyPress}
         />
       </span>
@@ -98,7 +100,7 @@ export default function SearchBar(props) {
           placeholder="to"
           value={displayedEnd}
           onChange={handleEndChange}
-          onFocus={handleFocus}
+          onFocus={handleFocus('end')}
           onKeyPress={handleEndKeyPress}
         />
       </span>
