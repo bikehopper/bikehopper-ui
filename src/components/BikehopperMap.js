@@ -14,7 +14,7 @@ import {
   BIKEABLE_HIGHWAYS,
 } from '../lib/geometry';
 import lngLatToCoords from '../lib/lngLatToCoords';
-import { locationDragged } from '../features/locations';
+import { locationDragged, userLocationUpdated } from '../features/locations';
 import { routeClicked } from '../features/routes';
 import { DEFAULT_VIEWPORT, mapMoved } from '../features/viewport';
 import useResizeObserver from '../hooks/useResizeObserver';
@@ -27,6 +27,7 @@ const ZOOM_PADDING = 40;
 
 function BikehopperMap(props) {
   const mapRef = React.useRef();
+  const geolocateControlRef = React.useRef();
 
   const dispatch = useDispatch();
   const { startPoint, endPoint, routes, activePath } = useSelector(
@@ -65,6 +66,10 @@ function BikehopperMap(props) {
       if (mapRef.current) mapRef.current.resize();
     }, []),
   );
+
+  const handleGeolocatonUpdate = (evt) => {
+    dispatch(userLocationUpdated(evt));
+  };
 
   // center viewport on route paths
   useLayoutEffect(() => {
@@ -145,7 +150,11 @@ function BikehopperMap(props) {
         onClick={handleRouteClick}
         onMoveEnd={handleMoveEnd}
       >
-        <GeolocateControl />
+        <GeolocateControl
+          ref={geolocateControlRef}
+          trackUserLocation={true}
+          onGeolocate={handleGeolocatonUpdate}
+        />
         <NavigationControl
           showZoom={false}
           style={{ ...navigationControlStyle }}
