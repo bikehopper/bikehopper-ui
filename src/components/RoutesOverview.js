@@ -32,10 +32,11 @@ export default function RoutesOverview(props) {
           className="RoutesOverview_route"
           active={activeRoute === index}
           onClick={handleRouteClick.bind(null, index)}
+          key={route.nonce}
         >
           <ul className="RoutesOverview_routeLegs">
             {route.legs.map((leg, index) => (
-              <>
+              <React.Fragment key={route.nonce + ':' + index}>
                 {index > 0 && (
                   <li className="RoutesOverview_legSeparator">
                     <Icon>
@@ -56,7 +57,7 @@ export default function RoutesOverview(props) {
                     }
                   />
                 </li>
-              </>
+              </React.Fragment>
             ))}
           </ul>
           <p className="RoutesOverview_timeEstimate">

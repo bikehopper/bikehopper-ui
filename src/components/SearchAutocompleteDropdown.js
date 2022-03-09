@@ -21,7 +21,10 @@ export default function SearchAutocompleteDropdown(props) {
   return (
     <SelectionList className="SearchAutocompleteDropdown">
       {features.map((feature) => (
-        <SelectionListItem className="SearchAutocompleteDropdown_place">
+        <SelectionListItem
+          className="SearchAutocompleteDropdown_place"
+          key={feature.properties.osm_id + ':' + feature.properties.type}
+        >
           <Icon className="SearchAutocompleteDropdown_icon">
             <Pin />
           </Icon>
