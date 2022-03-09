@@ -1,25 +1,7 @@
-.RoutesOverview {
-  display: flex;
-  flex-flow: column;
-  list-style-type: none;
-  padding-left: 0;
-  margin: 4px 0;
-}
-
 .RoutesOverview_route {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-}
-
-.RoutesOverview_route:not(:last-child) {
-  padding-bottom: 14px;
-  border-bottom: 1px solid #c4c4c4;
-  margin-bottom: 14px;
-}
-
-.RoutesOverview_routeSelected {
-  font-weight: bold;
 }
 
 .RoutesOverview_timeEstimate {
