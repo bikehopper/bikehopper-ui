@@ -65,9 +65,15 @@ export function geocodeTypedLocation(text, key, { possiblyIncomplete } = {}) {
       time: Date.now(),
     });
 
+    const { latitude, longitude, zoom } = getState().viewport;
+
     let result;
     try {
-      result = await BikehopperClient.geocode(text, {});
+      result = await BikehopperClient.geocode(text, {
+        latitude,
+        longitude,
+        zoom,
+      });
     } catch (e) {
       dispatch({
         type: 'geocode_failed',
