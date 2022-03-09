@@ -1,9 +1,11 @@
 import produce from 'immer';
 import { geocodeTypedLocation } from './geocoding';
 import { fetchRoute } from './routes';
+import * as turf from '@turf/helpers';
 
 const DEFAULT_STATE = {
   isEditingLocations: false,
+  userPoint: null,
   startPoint: null,
   endPoint: null,
 };
@@ -19,6 +21,8 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
       });
     case 'location_input_focused':
       return { ...state, isEditingLocations: true };
+    case 'geolocation_set':
+      return { ...state, userPoint: turf.point(action.coords) };
     default:
       return state;
   }
@@ -115,5 +119,12 @@ async function _setLocationsAndMaybeFetchRoute(
 export function locationInputFocused() {
   return {
     type: 'location_input_focused',
+  };
+}
+
+export function userLocationUpdated(evt) {
+  return {
+    type: 'geolocation_set',
+    coords: [evt.coords.longitude, evt.coords.latitude],
   };
 }

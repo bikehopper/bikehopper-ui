@@ -10,7 +10,7 @@ import MapGL, {
 } from 'react-map-gl';
 import { routesToGeoJSON, EMPTY_GEOJSON } from '../lib/geometry';
 import lngLatToCoords from '../lib/lngLatToCoords';
-import { locationDragged } from '../features/locations';
+import { locationDragged, userLocationUpdated } from '../features/locations';
 import { routeClicked } from '../features/routes';
 import { DEFAULT_VIEWPORT, mapMoved } from '../features/viewport';
 import MarkerSVG from './MarkerSVG';
@@ -52,6 +52,10 @@ function BikehopperMap(props) {
 
   const handleEndPointDrag = (evt) => {
     dispatch(locationDragged('end', lngLatToCoords(evt.lngLat)));
+  };
+
+  const handleGeolocatonUpdate = (evt) => {
+    dispatch(userLocationUpdated(evt));
   };
 
   useEffect(() => {
@@ -146,7 +150,11 @@ function BikehopperMap(props) {
         onClick={handleRouteClick}
         onMoveEnd={handleMoveEnd}
       >
-        <GeolocateControl ref={geolocateControlRef} />
+        <GeolocateControl
+          ref={geolocateControlRef}
+          trackUserLocation={true}
+          onGeolocate={handleGeolocatonUpdate}
+        />
         <NavigationControl
           showZoom={false}
           style={{ ...navigationControlStyle }}
