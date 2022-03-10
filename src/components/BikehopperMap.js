@@ -23,7 +23,6 @@ const ZOOM_PADDING = 40;
 
 function BikehopperMap(props) {
   const mapRef = React.useRef();
-  const geolocateControlRef = React.useRef();
 
   const dispatch = useDispatch();
   const { startPoint, endPoint, routes, activePath } = useSelector(
@@ -56,10 +55,6 @@ function BikehopperMap(props) {
   const handleEndPointDrag = (evt) => {
     dispatch(locationDragged('end', lngLatToCoords(evt.lngLat)));
   };
-
-  useEffect(() => {
-    geolocateControlRef.current?.trigger();
-  }, []);
 
   const resizeRef = useResizeObserver(
     useCallback(([width, height]) => {
@@ -165,7 +160,7 @@ function BikehopperMap(props) {
         onClick={handleRouteClick}
         onMoveEnd={handleMoveEnd}
       >
-        <GeolocateControl ref={geolocateControlRef} />
+        <GeolocateControl />
         <NavigationControl
           showZoom={false}
           style={{ ...navigationControlStyle }}
