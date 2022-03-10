@@ -101,7 +101,7 @@ export function routesReducer(state = DEFAULT_STATE, action) {
 
 // Actions
 
-let _routeNonce = 10000000;
+let _routeNonce = 10000000; // For assigning a unique ID to each route fetched in a session
 
 export function fetchRoute(startCoords, endCoords) {
   return async function fetchRouteThunk(dispatch, getState) {
