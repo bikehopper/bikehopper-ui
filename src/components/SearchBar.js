@@ -17,17 +17,19 @@ export default function SearchBar(props) {
   const [start, setStart] = React.useState('');
   const [end, setEnd] = React.useState('');
 
-  const { startSource, endSource, userPoint } = useSelector(
+  const { startState, endState, userPoint } = useSelector(
     (state) => ({
-      startSource: state.locations.startSource,
-      endSource: state.locations.endSource,
+      startState: state.locations.start,
+      endState: state.locations.end,
       userPoint: state.routes.userPoint,
     }),
     shallowEqual,
   );
 
-  const getDisplayText = function (source, curr) {
-    switch (source) {
+  const getDisplayText = function (state, curr) {
+    if (state.editing) return curr;
+
+    switch (state.source) {
       case LocationSourceType.UserGeolocation:
         return 'Current Location';
       case LocationSourceType.Marker:
@@ -37,8 +39,8 @@ export default function SearchBar(props) {
     }
   };
 
-  const displayedStart = getDisplayText(startSource, start);
-  const displayedEnd = getDisplayText(endSource, end);
+  const displayedStart = getDisplayText(startState, start);
+  const displayedEnd = getDisplayText(endState, end);
 
   const handleStartChange = (evt) => {
     const text = evt.target.value;
@@ -60,16 +62,26 @@ export default function SearchBar(props) {
 
   const handleFocus = (startOrEnd) => {
     return (evt) => {
+      // clear start and end
+      const state = startOrEnd === 'start' ? startState : endState;
+      const setter = startOrEnd === 'start' ? setStart : setEnd;
+      if (
+        state.source === LocationSourceType.Marker ||
+        state.source === LocationSourceType.UserGeolocation
+      ) {
+        setter('');
+      }
+
       dispatch(locationInputFocused(startOrEnd));
     };
   };
 
   const handleStartKeyPress = (evt) => {
-    if (evt.key === 'Enter' && end.length > 0) handleSubmit(evt);
+    if (evt.key === 'Enter') handleSubmit(evt);
   };
 
   const handleEndKeyPress = (evt) => {
-    if (evt.key === 'Enter' && start.length > 0) handleSubmit(evt);
+    if (evt.key === 'Enter') handleSubmit(evt);
   };
 
   return (

@@ -35,11 +35,11 @@ export function routesReducer(state = DEFAULT_STATE, action) {
         !(
           _coordsEqual(
             state.routeStartCoords,
-            action.startPoint?.geometry?.coordinates,
+            action.start?.point?.geometry?.coordinates,
           ) &&
           _coordsEqual(
             state.routeEndCoords,
-            action.endPoint?.geometry?.coordinates,
+            action.end?.point?.geometry?.coordinates,
           )
         )
       ) {
@@ -101,8 +101,12 @@ export function routesReducer(state = DEFAULT_STATE, action) {
 
 // Actions
 
-export function fetchRoute(startCoords, endCoords) {
+export function fetchRoute() {
   return async function fetchRouteThunk(dispatch, getState) {
+    const locationState = getState().locations;
+    const startCoords = locationState.start.point?.geometry.coordinates;
+    const endCoords = locationState.end.point?.geometry.coordinates;
+
     if (!startCoords || !endCoords) {
       dispatch({ type: 'route_cleared' });
       return;

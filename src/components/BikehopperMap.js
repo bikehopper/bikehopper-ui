@@ -10,7 +10,7 @@ import MapGL, {
 } from 'react-map-gl';
 import { routesToGeoJSON, EMPTY_GEOJSON } from '../lib/geometry';
 import lngLatToCoords from '../lib/lngLatToCoords';
-import { locationDragged, userLocationUpdated } from '../features/locations';
+import { locationDragged, userGeolocationUpdated } from '../features/locations';
 import { routeClicked } from '../features/routes';
 import { DEFAULT_VIEWPORT, mapMoved } from '../features/viewport';
 import MarkerSVG from './MarkerSVG';
@@ -25,8 +25,8 @@ function BikehopperMap(props) {
   const dispatch = useDispatch();
   const { startPoint, endPoint, routes, activePath } = useSelector(
     (state) => ({
-      startPoint: state.locations.startPoint,
-      endPoint: state.locations.endPoint,
+      startPoint: state.locations.start.point,
+      endPoint: state.locations.end.point,
       routes: state.routes.routes,
       activePath: state.routes.activeRoute,
     }),
@@ -55,7 +55,7 @@ function BikehopperMap(props) {
   };
 
   const handleGeolocatonUpdate = (evt) => {
-    dispatch(userLocationUpdated(evt));
+    dispatch(userGeolocationUpdated(evt));
   };
 
   useEffect(() => {
