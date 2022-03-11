@@ -11,35 +11,37 @@ export const LocationSourceType = {
 };
 
 const DEFAULT_STATE = {
-  isEditingLocations: false,
   userPoint: null,
-  startPoint: null,
-  startSource: LocationSourceType.None,
-  endPoint: null,
-  endSource: LocationSourceType.None,
+  start: { point: null, source: LocationSourceType.None, editing: false },
+  end: { point: null, source: LocationSourceType.None, editing: false },
 };
 
 export function locationsReducer(state = DEFAULT_STATE, action) {
   switch (action.type) {
     case 'locations_set':
       return produce(state, (draft) => {
-        draft.startPoint = action.startPoint;
-        draft.startSource = action.startSource;
-        draft.endPoint = action.endPoint;
-        draft.endSource = action.endSource;
-        if (action.startPoint && action.endPoint)
-          draft.isEditingLocations = false;
+        if (action.start) {
+          draft.start = {
+            point: action.start.point,
+            source: action.start.source,
+            editing: false,
+          };
+        }
+        if (action.end) {
+          draft.end = {
+            point: action.end.point,
+            source: action.end.source,
+            editing: false,
+          };
+        }
       });
     case 'location_input_focused':
       return produce(state, (draft) => {
-        draft.isEditingLocations = true;
-        draft[`${action.startOrEnd}Source`] = LocationSourceType.None;
+        draft[action.startOrEnd].editing = true;
       });
     case 'geolocation_set':
       const point = turf.point(action.coords);
       return produce(state, (draft) => {
-        draft.startPoint = point;
-        draft.startSource = LocationSourceType.UserGeolocation;
         draft.userPoint = point;
       });
     default:
@@ -89,63 +91,45 @@ export function locationsSubmitted(startText, endText) {
     await _setLocationsAndMaybeFetchRoute(
       dispatch,
       getState,
-      startPoint,
-      LocationSourceType.Geocoded,
-      endPoint,
-      LocationSourceType.Geocoded,
+      startPoint
+        ? { point: startPoint, source: LocationSourceType.Geocoded }
+        : null,
+      endPoint
+        ? { point: endPoint, source: LocationSourceType.Geocoded }
+        : null,
     );
   };
 }
 
 export function locationDragged(startOrEnd, coords) {
   return async function locationDraggedThunk(dispatch, getState) {
-    let { startPoint, endPoint, startSource, endSource } = getState().locations;
-
-    // This might be a sign that the data format should change... turning a raw
-    // pair of coords into something that looks as if we got it from Nominatim.
-    const pointFromCoords = { geometry: { coordinates: coords } };
+    let { start, end } = getState().locations;
+    const pointFromCoords = turf.point(coords);
 
     if (startOrEnd === 'start') {
-      startPoint = pointFromCoords;
-      startSource = LocationSourceType.Marker;
+      start = {
+        point: pointFromCoords,
+        source: LocationSourceType.Marker,
+      };
     } else {
-      endPoint = pointFromCoords;
-      endSource = LocationSourceType.Marker;
+      end = {
+        point: pointFromCoords,
+        source: LocationSourceType.Marker,
+      };
     }
 
-    await _setLocationsAndMaybeFetchRoute(
-      dispatch,
-      getState,
-      startPoint,
-      startSource,
-      endPoint,
-      endSource,
-    );
+    await _setLocationsAndMaybeFetchRoute(dispatch, getState, start, end);
   };
 }
 
-async function _setLocationsAndMaybeFetchRoute(
-  dispatch,
-  getState,
-  startPoint,
-  startSource,
-  endPoint,
-  endSource,
-) {
+async function _setLocationsAndMaybeFetchRoute(dispatch, getState, start, end) {
   dispatch({
     type: 'locations_set',
-    startPoint,
-    startSource,
-    endPoint,
-    endSource,
+    start,
+    end,
   });
 
-  if (startPoint && endPoint) {
-    await fetchRoute(
-      startPoint.geometry.coordinates,
-      endPoint.geometry.coordinates,
-    )(dispatch, getState);
-  }
+  await fetchRoute()(dispatch, getState);
 }
 
 export function locationInputFocused(startOrEnd) {
@@ -155,9 +139,24 @@ export function locationInputFocused(startOrEnd) {
   };
 }
 
-export function userLocationUpdated(evt) {
-  return {
-    type: 'geolocation_set',
-    coords: [evt.coords.longitude, evt.coords.latitude],
+export function userGeolocationUpdated(evt) {
+  return async function userGeolocationThunk(dispatch, getState) {
+    dispatch({
+      type: 'geolocation_set',
+      coords: [evt.coords.longitude, evt.coords.latitude],
+    });
+
+    let { end } = getState().locations;
+    const startPoint = turf.point([evt.coords.longitude, evt.coords.latitude]);
+
+    await _setLocationsAndMaybeFetchRoute(
+      dispatch,
+      getState,
+      {
+        point: startPoint,
+        source: LocationSourceType.UserGeolocation,
+      },
+      end,
+    );
   };
 }
