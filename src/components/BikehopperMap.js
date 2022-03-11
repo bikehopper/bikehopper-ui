@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useCallback, useEffect, useLayoutEffect } from 'react';
+import { useCallback, useLayoutEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import MapGL, {
   Layer,
