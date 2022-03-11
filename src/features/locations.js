@@ -11,7 +11,6 @@ export const LocationSourceType = {
 };
 
 const DEFAULT_STATE = {
-  userPoint: null,
   start: { point: null, source: LocationSourceType.None, editing: false },
   end: { point: null, source: LocationSourceType.None, editing: false },
 };
@@ -38,11 +37,6 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
     case 'location_input_focused':
       return produce(state, (draft) => {
         draft[action.startOrEnd].editing = true;
-      });
-    case 'geolocation_set':
-      const point = turf.point(action.coords);
-      return produce(state, (draft) => {
-        draft.userPoint = point;
       });
     default:
       return state;
@@ -136,27 +130,5 @@ export function locationInputFocused(startOrEnd) {
   return {
     type: 'location_input_focused',
     startOrEnd,
-  };
-}
-
-export function userGeolocationUpdated(evt) {
-  return async function userGeolocationThunk(dispatch, getState) {
-    dispatch({
-      type: 'geolocation_set',
-      coords: [evt.coords.longitude, evt.coords.latitude],
-    });
-
-    let { end } = getState().locations;
-    const startPoint = turf.point([evt.coords.longitude, evt.coords.latitude]);
-
-    await _setLocationsAndMaybeFetchRoute(
-      dispatch,
-      getState,
-      {
-        point: startPoint,
-        source: LocationSourceType.UserGeolocation,
-      },
-      end,
-    );
   };
 }
