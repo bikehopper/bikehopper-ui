@@ -18,11 +18,10 @@ export default function SearchBar(props) {
   const [end, setEnd] = React.useState('');
   const [focusedInput, setFocusedInput] = React.useState(null); // can be 'start' or 'end'
 
-  const { startState, endState, userPoint } = useSelector(
+  const { startState, endState } = useSelector(
     (state) => ({
       startState: state.locations.start,
       endState: state.locations.end,
-      userPoint: state.routes.userPoint,
     }),
     shallowEqual,
   );
