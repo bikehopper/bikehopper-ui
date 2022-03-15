@@ -14,20 +14,20 @@ import './SearchBar.css';
 
 export default function SearchBar(props) {
   const dispatch = useDispatch();
-  const [start, setStart] = React.useState('');
-  const [end, setEnd] = React.useState('');
+  const [startText, setStartText] = React.useState('');
+  const [endText, setEndText] = React.useState('');
   const [focusedInput, setFocusedInput] = React.useState(null); // can be 'start' or 'end'
 
-  const { startState, endState } = useSelector(
+  const { startLocation, endLocation } = useSelector(
     (state) => ({
-      startState: state.locations.start,
-      endState: state.locations.end,
+      startLocation: state.locations.start,
+      endLocation: state.locations.end,
     }),
     shallowEqual,
   );
 
-  const getDisplayText = function (state, curr) {
-    if (state.editing) return curr;
+  const getDisplayText = function (state, isFocused, curr) {
+    if (!state) return curr;
 
     switch (state.source) {
       case LocationSourceType.UserGeolocation:
@@ -39,31 +39,39 @@ export default function SearchBar(props) {
     }
   };
 
-  const displayedStart = getDisplayText(startState, start);
-  const displayedEnd = getDisplayText(endState, end);
+  const displayedStart = getDisplayText(
+    startLocation,
+    focusedInput === 'start',
+    startText,
+  );
+  const displayedEnd = getDisplayText(
+    endLocation,
+    focusedInput === 'end',
+    endText,
+  );
 
   const handleStartChange = (evt) => {
     const text = evt.target.value;
-    setStart(text);
+    setStartText(text);
     dispatch(geocodeTypedLocation(text, 'start', { possiblyIncomplete: true }));
   };
 
   const handleEndChange = (evt) => {
     const text = evt.target.value;
-    setEnd(text);
+    setEndText(text);
     dispatch(geocodeTypedLocation(text, 'end', { possiblyIncomplete: true }));
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     event.target.blur();
-    dispatch(locationsSubmitted(start, end));
+    dispatch(locationsSubmitted(startText, endText)); // FIXME
   };
 
   const handleFocus = (which, event) => {
     // clear start and end
-    const state = which === 'start' ? startState : endState;
-    const setter = which === 'start' ? setStart : setEnd;
+    const state = which === 'start' ? startLocation : endLocation;
+    const setter = which === 'start' ? setStartText : setEndText;
     if (
       state.source === LocationSourceType.Marker ||
       state.source === LocationSourceType.UserGeolocation
@@ -122,7 +130,7 @@ export default function SearchBar(props) {
       </span>
       {focusedInput && (
         <SearchAutocompleteDropdown
-          text={focusedInput === 'start' ? start : end}
+          text={focusedInput === 'start' ? startText : endText}
         />
       )}
     </form>

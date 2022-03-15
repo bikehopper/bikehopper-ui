@@ -4,15 +4,19 @@ import { fetchRoute } from './routes';
 import * as turf from '@turf/helpers';
 
 export const LocationSourceType = {
-  None: 'none',
   Geocoded: 'geocoded',
   Marker: 'marker_drag',
   UserGeolocation: 'user_geolocation',
 };
 
 const DEFAULT_STATE = {
-  start: { point: null, source: LocationSourceType.None, editing: false },
-  end: { point: null, source: LocationSourceType.None, editing: false },
+  // When set, start and end have the format: {
+  //   point: a geoJSON point,
+  //   source: a LocationSourceType,
+  // }
+  start: null,
+  end: null,
+  isEditingLocations: false,
 };
 
 export function locationsReducer(state = DEFAULT_STATE, action) {
@@ -23,20 +27,19 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
           draft.start = {
             point: action.start.point,
             source: action.start.source,
-            editing: false,
           };
         }
         if (action.end) {
           draft.end = {
             point: action.end.point,
             source: action.end.source,
-            editing: false,
           };
         }
+        draft.isEditingLocations = false;
       });
     case 'location_input_focused':
       return produce(state, (draft) => {
-        draft[action.startOrEnd].editing = true;
+        draft.isEditingLocations = true;
       });
     default:
       return state;
