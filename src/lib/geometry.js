@@ -51,7 +51,7 @@ export function routesToGeoJSON(paths) {
 
       // Add detail features for cycleway quality
       if (leg.details?.cycleway) {
-        const cycleway_features = [];
+        const cyclewayFeatures = [];
         for (const segment of leg.details?.cycleway) {
           const [start, end, type] = segment;
           if (type === 'other') continue;
@@ -60,7 +60,7 @@ export function routesToGeoJSON(paths) {
 
           if (line?.length < 2) continue;
 
-          cycleway_features.push(
+          cyclewayFeatures.push(
             turf.lineString(line, {
               label: type.replace('_', ' '),
               path_index: pathIdx,
@@ -69,19 +69,19 @@ export function routesToGeoJSON(paths) {
             }),
           );
         }
-        features.push(...cycleway_features);
+        features.push(...cyclewayFeatures);
       }
       if (leg.details?.road_class) {
-        const road_class_segments = leg.details?.road_class.filter(
+        const roadClassSegments = leg.details?.road_class.filter(
           ([, , value]) => BIKEABLE_HIGHWAYS.includes(value),
         );
-        const road_class_features = [];
-        for (const [start, end, value] of road_class_segments) {
+        const roadClassFeatures = [];
+        for (const [start, end, value] of roadClassSegments) {
           const line = leg.geometry.coordinates?.slice(start, end + 1);
 
           if (line?.length < 2) continue;
 
-          road_class_features.push(
+          roadClassFeatures.push(
             turf.lineString(line, {
               label: value,
               path_index: pathIdx,
@@ -91,7 +91,7 @@ export function routesToGeoJSON(paths) {
           );
         }
 
-        features.push(...road_class_features);
+        features.push(...roadClassFeatures);
       }
     }
   }
