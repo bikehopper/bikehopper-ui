@@ -148,9 +148,6 @@ function BikehopperMap(props) {
         />
 
         <Source id="routeSource" type="geojson" data={features}>
-          <Layer {...getTransitStyle(activePath)} />
-          <Layer {...getStandardBikeStyle(activePath)} />
-          <Layer {...getSharedLaneStyle(activePath)} />
           <Layer
             {...getLegOutlineStyle(
               'routeDropShadow',
@@ -171,10 +168,12 @@ function BikehopperMap(props) {
               1,
             )}
           />
+          <Layer {...getTransitStyle(activePath)} />
+          <Layer {...getStandardBikeStyle(activePath)} />
+          <Layer {...getSharedLaneStyle(activePath)} />
           <Layer {...transitionStyle} />
           <Layer {...getTransitLabelStyle(activePath)} />
           <Layer {...getBikeLabelStyle(activePath)} />
-          {/* <Layer {...sharedLaneStyle}/> */}
         </Source>
         {startCoords && (
           <Marker
@@ -251,7 +250,7 @@ function getSharedLaneStyle(activePath) {
     paint: {
       'line-width': 4,
       'line-color': getBikeColorStyle(activePath),
-      'line-dasharray': [1, 1],
+      'line-dasharray': [1, 2],
     },
   };
 }
@@ -315,11 +314,7 @@ function getLegOutlineStyle(
   return {
     id: layerId,
     type: 'line',
-    filter: [
-      'all',
-      ['==', ['get', 'path_index'], activePath],
-      ['!', ['to-boolean', ['get', 'is_transition']]],
-    ],
+    filter: ['==', ['get', 'path_index'], activePath],
     layout: {
       'line-cap': 'round',
     },
