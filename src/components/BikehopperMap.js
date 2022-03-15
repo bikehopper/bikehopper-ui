@@ -84,14 +84,7 @@ function BikehopperMap(props) {
   const standardBikeStyle = {
     id: 'standardBikeLayer',
     type: 'line',
-    filter: [
-      'any',
-      isCycleway(),
-      isCyclewayTrack(),
-      isCyclewayLane(),
-      isCyclewayMissing(),
-      isCyclewayNo(),
-    ],
+    filter: ['all', ['has', 'cycleway'], ['!', cyclewayIs('shared_lane')]],
     layout: {
       'line-sort-key': getPathSortKey(activePath),
     },
@@ -104,7 +97,7 @@ function BikehopperMap(props) {
   const sharedLaneStyle = {
     id: 'sharedLaneLayer',
     type: 'line',
-    filter: isCyclewaySharedLane(),
+    filter: cyclewayIs('shared_lane'),
     layout: {
       'line-sort-key': getPathSortKey(activePath),
     },
@@ -153,12 +146,7 @@ function BikehopperMap(props) {
   const bikeLabelStyle = {
     id: 'bikeLabelLayer',
     type: 'symbol',
-    filter: [
-      'all',
-      ['has', 'cycleway'],
-      ['!', isCyclewayMissing()],
-      ['!', isCyclewayNo()],
-    ],
+    filter: ['!', cyclewayIs('missing', 'no')],
     layout: {
       'symbol-sort-key': getPathSortKey(activePath),
       'symbol-placement': 'line-center',
@@ -263,14 +251,10 @@ function getBikeColorStyle(indexOfActivePath) {
     ['==', ['get', 'path_index'], indexOfActivePath],
     [
       'case',
-      isCycleway(),
+      cyclewayIs('cycleway', 'track'),
       '#006600',
-      isCyclewayTrack(),
-      '#006600',
-      isCyclewayLane(),
-      '#3e8e3e',
-      isCyclewaySharedLane(),
-      '#71c171',
+      cyclewayIs('lane', 'shared_lane'),
+      '#33cc33',
       // ...
       'royalblue',
     ],
@@ -279,28 +263,11 @@ function getBikeColorStyle(indexOfActivePath) {
   return ['to-color', color];
 }
 
-function isCycleway() {
-  return ['==', ['get', 'cycleway'], 'cycleway'];
-}
-
-function isCyclewayTrack() {
-  return ['==', ['get', 'cycleway'], 'track'];
-}
-
-function isCyclewayLane() {
-  return ['==', ['get', 'cycleway'], 'lane'];
-}
-
-function isCyclewaySharedLane() {
-  return ['==', ['get', 'cycleway'], 'shared_lane'];
-}
-
-function isCyclewayMissing() {
-  return ['==', ['get', 'cycleway'], 'missing'];
-}
-
-function isCyclewayNo() {
-  return ['==', ['get', 'cycleway'], 'no'];
+function cyclewayIs(...values) {
+  if (values?.length === 1) {
+    return ['==', ['get', 'cycleway'], values[0]];
+  }
+  return ['any', ...values.map((v) => ['==', ['get', 'cycleway'], v])];
 }
 
 function getLabelTextField() {
