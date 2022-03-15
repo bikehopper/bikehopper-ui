@@ -286,6 +286,7 @@ function getBikeLabelStyle(activePath) {
     filter: [
       'all',
       ['==', ['get', 'path_index'], activePath],
+      ['has', 'cycleway'],
       ['!', cyclewayIs('missing', 'no')],
     ],
     layout: {
