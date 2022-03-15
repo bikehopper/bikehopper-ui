@@ -22,9 +22,9 @@ export function routeToGeoJSON(route) {
       const legFeature = turf.lineString(leg.geometry.coordinates, {
         route_color: leg.route_color ? '#' + leg.route_color : null,
         route_name: leg.route_name,
+        label: leg.route_name,
         type: leg.type,
         path_index: pathIdx,
-        is_transition: false,
       });
       features.push(legFeature);
 
@@ -36,9 +36,8 @@ export function routeToGeoJSON(route) {
         const end = nextLeg.geometry.coordinates[0];
         const transitionFeature = curveBetween(start, end, {
           properties: {
-            route_color: 'darkgray',
             path_index: pathIdx,
-            is_transition: true,
+            type: leg.type,
           },
           resolution: 1000,
         });
@@ -52,17 +51,16 @@ export function routeToGeoJSON(route) {
           const [start, end, type] = segment;
           if (type === 'other') continue;
 
-          const line = leg.geometry.coordinates?.slice(start, end);
+          const line = leg.geometry.coordinates?.slice(start, end + 1);
 
           if (line?.length < 2) continue;
 
           cycleway_features.push(
             turf.lineString(line, {
-              route_color:
-                type === 'lane' ? 'yellow' : type !== 'no' ? 'orange' : 'red',
-              route_name: type,
+              label: type.replace('_', ' '),
               path_index: pathIdx,
-              is_transition: false,
+              cycleway: type,
+              type: leg.type,
             }),
           );
         }
@@ -74,16 +72,16 @@ export function routeToGeoJSON(route) {
         );
         const road_class_features = [];
         for (const [start, end] of road_class_segments) {
-          const line = leg.geometry.coordinates?.slice(start, end);
+          const line = leg.geometry.coordinates?.slice(start, end + 1);
 
           if (line?.length < 2) continue;
 
           road_class_features.push(
             turf.lineString(line, {
-              route_color: 'green',
-              route_name: 'fully dedicated',
+              label: 'bike path',
               path_index: pathIdx,
-              is_transition: false,
+              cycleway: 'cycleway',
+              type: leg.type,
             }),
           );
         }
