@@ -274,7 +274,7 @@ function getTransitLabelStyle(activePath) {
     },
     paint: {
       'text-color': 'white',
-      'text-color': getTransitColorStyle(activePath),
+      'text-halo-color': getTransitColorStyle(activePath),
       'text-halo-width': 2,
     },
   };
