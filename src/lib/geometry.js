@@ -10,7 +10,7 @@ export const EMPTY_GEOJSON = {
   features: [],
 };
 
-export const BIKEABLE_HIGHWAYS = ['cycleway', 'footway', 'pedestrian'];
+export const BIKEABLE_HIGHWAYS = ['cycleway', 'footway', 'pedestrian', 'path'];
 
 export function routesToGeoJSON(paths) {
   const features = [];
