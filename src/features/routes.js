@@ -126,6 +126,7 @@ export function fetchRoute(startCoords, endCoords) {
         ],
         optimize: true,
         pointsEncoded: false,
+        details: ['cycleway', 'road_class'],
       });
     } catch (e) {
       console.error('route fetch failed:', e);

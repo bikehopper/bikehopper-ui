@@ -10,6 +10,8 @@ export const EMPTY_GEOJSON = {
   features: [],
 };
 
+export const BIKEABLE_HIGHWAYS = ['cycleway', 'footway', 'pedestrian', 'path'];
+
 export function routesToGeoJSON(paths) {
   const features = [];
 
@@ -25,9 +27,9 @@ export function routesToGeoJSON(paths) {
       const legFeature = turf.lineString(leg.geometry.coordinates, {
         route_color: darkenLegColor(leg.route_color, 0.2),
         route_name: leg.route_name,
+        label: leg.route_name,
         type: leg.type,
         path_index: pathIdx,
-        is_transition: false,
       });
       features.push(legFeature);
 
@@ -39,13 +41,57 @@ export function routesToGeoJSON(paths) {
         const end = nextLeg.geometry.coordinates[0];
         const transitionFeature = curveBetween(start, end, {
           properties: {
-            route_color: 'darkgray',
-            path_idx: pathIdx,
-            is_transition: true,
+            path_index: pathIdx,
+            type: leg.type,
           },
           resolution: 1000,
         });
         if (transitionFeature) features.push(transitionFeature);
+      }
+
+      // Add detail features for cycleway quality
+      if (leg.details?.cycleway) {
+        const cyclewayFeatures = [];
+        for (const segment of leg.details?.cycleway) {
+          const [start, end, type] = segment;
+          if (type === 'other') continue;
+
+          const line = leg.geometry.coordinates?.slice(start, end + 1);
+
+          if (line?.length < 2) continue;
+
+          cyclewayFeatures.push(
+            turf.lineString(line, {
+              label: type.replace('_', ' '),
+              path_index: pathIdx,
+              cycleway: type,
+              type: leg.type,
+            }),
+          );
+        }
+        features.push(...cyclewayFeatures);
+      }
+      if (leg.details?.road_class) {
+        const roadClassSegments = leg.details?.road_class.filter(
+          ([, , value]) => BIKEABLE_HIGHWAYS.includes(value),
+        );
+        const roadClassFeatures = [];
+        for (const [start, end, value] of roadClassSegments) {
+          const line = leg.geometry.coordinates?.slice(start, end + 1);
+
+          if (line?.length < 2) continue;
+
+          roadClassFeatures.push(
+            turf.lineString(line, {
+              label: value,
+              path_index: pathIdx,
+              cycleway: value,
+              type: leg.type,
+            }),
+          );
+        }
+
+        features.push(...roadClassFeatures);
       }
     }
   }

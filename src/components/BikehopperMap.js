@@ -8,7 +8,11 @@ import MapGL, {
   GeolocateControl,
   NavigationControl,
 } from 'react-map-gl';
-import { routesToGeoJSON, EMPTY_GEOJSON } from '../lib/geometry';
+import {
+  routesToGeoJSON,
+  EMPTY_GEOJSON,
+  BIKEABLE_HIGHWAYS,
+} from '../lib/geometry';
 import lngLatToCoords from '../lib/lngLatToCoords';
 import { locationDragged } from '../features/locations';
 import { routeClicked } from '../features/routes';
@@ -117,28 +121,6 @@ function BikehopperMap(props) {
     visibility: mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden',
   };
 
-  const routeLabelStyle = {
-    id: 'routeLabelLayer',
-    type: 'symbol',
-    filter: [
-      'all',
-      ['==', ['get', 'path_index'], activePath],
-      ['!', ['to-boolean', ['get', 'is_transition']]],
-    ],
-    layout: {
-      'symbol-sort-key': getLabelSortKey(activePath),
-      'symbol-placement': 'line-center',
-      'text-size': 16,
-      'text-field': getLabelTextField(),
-      'text-allow-overlap': true,
-    },
-    paint: {
-      'text-color': 'white',
-      'text-halo-color': getLegColorStyle(activePath),
-      'text-halo-width': 2,
-    },
-  };
-
   return (
     <div className="BikehopperMap" ref={resizeRef}>
       <MapGL
@@ -153,9 +135,12 @@ function BikehopperMap(props) {
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
         interactiveLayerIds={[
-          'routeLayer',
+          'transitLayer',
+          'standardBikeLayer',
+          'sharedLaneLayer',
           'transitionLayer',
-          'routeLabelLayer',
+          'transitLabelLayer',
+          'bikeLabelLayer',
         ]}
         onClick={handleRouteClick}
         onMoveEnd={handleMoveEnd}
@@ -187,9 +172,12 @@ function BikehopperMap(props) {
               1,
             )}
           />
-          <Layer {...getLegStyle(activePath)} />
+          <Layer {...getTransitStyle(activePath)} />
+          <Layer {...getStandardBikeStyle(activePath)} />
+          <Layer {...getSharedLaneStyle(activePath)} />
           <Layer {...transitionStyle} />
-          <Layer {...routeLabelStyle} />
+          <Layer {...getTransitLabelStyle(activePath)} />
+          <Layer {...getBikeLabelStyle(activePath)} />
         </Source>
         {startCoords && (
           <Marker
@@ -222,18 +210,100 @@ function BikehopperMap(props) {
   );
 }
 
-function getLegStyle(activePath) {
+function getTransitStyle(activePath) {
   return {
-    id: 'routeLayer',
+    id: 'transitLayer',
     type: 'line',
-    filter: ['!', ['to-boolean', ['get', 'is_transition']]],
+    filter: ['==', ['get', 'type'], 'pt'],
     layout: {
       'line-cap': 'round',
       'line-sort-key': getLegSortKey(activePath),
     },
     paint: {
-      'line-width': ['case', ['==', ['get', 'type'], 'bike2'], 4, 5],
-      'line-color': getLegColorStyle(activePath),
+      'line-width': 5,
+      'line-color': getTransitColorStyle(activePath),
+    },
+  };
+}
+
+function getStandardBikeStyle(activePath) {
+  return {
+    id: 'standardBikeLayer',
+    type: 'line',
+    filter: ['all', ['has', 'cycleway'], ['!', cyclewayIs('shared_lane')]],
+    layout: {
+      'line-cap': 'round',
+      'line-sort-key': getLegSortKey(activePath),
+    },
+    paint: {
+      'line-width': 4,
+      'line-color': getBikeColorStyle(activePath),
+    },
+  };
+}
+
+function getSharedLaneStyle(activePath) {
+  return {
+    id: 'sharedLaneLayer',
+    type: 'line',
+    filter: cyclewayIs('shared_lane'),
+    layout: {
+      'line-cap': 'round',
+      'line-sort-key': getLegSortKey(activePath),
+    },
+    paint: {
+      'line-width': 4,
+      'line-color': getBikeColorStyle(activePath),
+      'line-dasharray': [1, 2],
+    },
+  };
+}
+
+function getTransitLabelStyle(activePath) {
+  return {
+    id: 'transitLabelLayer',
+    type: 'symbol',
+    filter: [
+      'all',
+      ['==', ['get', 'path_index'], activePath],
+      ['==', ['get', 'type'], 'pt'],
+    ],
+    layout: {
+      'symbol-sort-key': getLegSortKey(activePath),
+      'symbol-placement': 'line-center',
+      'text-size': 16,
+      'text-field': getLabelTextField(),
+      'text-allow-overlap': true,
+    },
+    paint: {
+      'text-color': 'white',
+      'text-halo-color': getTransitColorStyle(activePath),
+      'text-halo-width': 2,
+    },
+  };
+}
+
+function getBikeLabelStyle(activePath) {
+  return {
+    id: 'bikeLabelLayer',
+    type: 'symbol',
+    filter: [
+      'all',
+      ['==', ['get', 'path_index'], activePath],
+      ['has', 'cycleway'],
+      ['!', cyclewayIs('missing', 'no')],
+    ],
+    layout: {
+      'symbol-sort-key': getLegSortKey(activePath),
+      'symbol-placement': 'line-center',
+      'text-size': 16,
+      'text-field': getLabelTextField(),
+      'text-ignore-placement': true,
+    },
+    paint: {
+      'text-color': 'white',
+      'text-halo-color': getBikeColorStyle(activePath),
+      'text-halo-width': 2,
     },
   };
 }
@@ -249,11 +319,7 @@ function getLegOutlineStyle(
   return {
     id: layerId,
     type: 'line',
-    filter: [
-      'all',
-      ['==', ['get', 'path_index'], activePath],
-      ['!', ['to-boolean', ['get', 'is_transition']]],
-    ],
+    filter: ['==', ['get', 'path_index'], activePath],
     layout: {
       'line-cap': 'round',
     },
@@ -270,11 +336,7 @@ function getLegSortKey(indexOfActivePath) {
   return ['case', ['==', ['get', 'path_index'], indexOfActivePath], 9999, 0];
 }
 
-function getLabelSortKey(indexOfActivePath) {
-  return ['case', ['==', ['get', 'path_index'], indexOfActivePath], 9999, 0];
-}
-
-function getLegColorStyle(indexOfActivePath) {
+function getTransitColorStyle(indexOfActivePath) {
   return [
     'case',
     ['==', ['get', 'path_index'], indexOfActivePath],
@@ -285,16 +347,34 @@ function getLegColorStyle(indexOfActivePath) {
   ];
 }
 
-function getLabelTextField() {
-  const text = [
+function getBikeColorStyle(indexOfActivePath) {
+  const color = [
     'case',
-    ['==', ['get', 'type'], 'bike2'],
-    'bike',
-    ['has', 'route_name'],
-    ['get', 'route_name'],
-    'unknown',
+    ['==', ['get', 'path_index'], indexOfActivePath],
+    [
+      'case',
+      cyclewayIs('track', ...BIKEABLE_HIGHWAYS),
+      '#006600',
+      cyclewayIs('lane', 'shared_lane'),
+      '#33cc33',
+      // ...
+      'royalblue',
+    ],
+    'darkgray',
   ];
+  return ['to-color', color];
+}
+
+function getLabelTextField() {
+  const text = ['case', ['has', 'label'], ['get', 'label'], ''];
   return ['format', text];
+}
+
+function cyclewayIs(...values) {
+  if (values?.length === 1) {
+    return ['==', ['get', 'cycleway'], values[0]];
+  }
+  return ['any', ...values.map((v) => ['==', ['get', 'cycleway'], v])];
 }
 
 export default BikehopperMap;

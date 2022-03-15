@@ -2,9 +2,11 @@ export async function fetchRoute({
   profile = 'pt',
   optimize = false,
   pointsEncoded = false,
+  details,
   points,
   signal,
 }) {
+  const detail_param = details?.join('&details=') || '';
   const route = await fetch(
     `${process.env.REACT_APP_BIKEHOPPER_DOMAIN}/v1/graphhopper/route-pt?point=${
       points[0]
@@ -12,7 +14,7 @@ export async function fetchRoute({
       points[1]
     }&locale=en-US&pt.earliest_departure_time=${encodeURIComponent(
       new Date().toISOString(),
-    )}&elevation=true&profile=${profile}&use_miles=false&selected_detail=Elevation&layer=OpenStreetMap&points_encoded=${pointsEncoded}`,
+    )}&elevation=true&profile=${profile}&use_miles=false&selected_detail=Elevation&layer=OpenStreetMap&points_encoded=${pointsEncoded}&details=${detail_param}`,
     {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },

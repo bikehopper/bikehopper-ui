@@ -11,27 +11,31 @@
 
 import geoViewport from '@mapbox/geo-viewport';
 
-const BAY_AREA_BOUNDS = [
-  -122.597652,
-  37.330751,
-  -121.669687,
-  37.858476,
-]
+const BAY_AREA_BOUNDS = [-122.597652, 37.330751, -121.669687, 37.858476];
 
 const MAPBOX_VT_SIZE = 512;
 
 function viewportForScreen(screenDims) {
-  const viewport = geoViewport.viewport(BAY_AREA_BOUNDS, screenDims, 0, 14, MAPBOX_VT_SIZE);
+  const viewport = geoViewport.viewport(
+    BAY_AREA_BOUNDS,
+    screenDims,
+    0,
+    14,
+    MAPBOX_VT_SIZE,
+  );
   return {
     latitude: viewport.center[1],
     longitude: viewport.center[0],
-    zoom: viewport.zoom ,
+    zoom: viewport.zoom,
     bearing: 0,
     pitch: 0,
   };
 }
 
-export const DEFAULT_VIEWPORT = viewportForScreen([window.innerWidth, window.innerHeight]);
+export const DEFAULT_VIEWPORT = viewportForScreen([
+  window.innerWidth,
+  window.innerHeight,
+]);
 
 const DEFAULT_STATE = { ...DEFAULT_VIEWPORT };
 
