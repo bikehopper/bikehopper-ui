@@ -10,6 +10,8 @@ export const EMPTY_GEOJSON = {
   features: [],
 };
 
+export const BIKEABLE_HIGHWAYS = ['cycleway', 'footway', 'pedestrian'];
+
 export function routesToGeoJSON(paths) {
   const features = [];
 
@@ -71,19 +73,19 @@ export function routesToGeoJSON(paths) {
       }
       if (leg.details?.road_class) {
         const road_class_segments = leg.details?.road_class.filter(
-          ([, , value]) => value === 'cycleway',
+          ([, , value]) => BIKEABLE_HIGHWAYS.includes(value),
         );
         const road_class_features = [];
-        for (const [start, end] of road_class_segments) {
+        for (const [start, end, value] of road_class_segments) {
           const line = leg.geometry.coordinates?.slice(start, end + 1);
 
           if (line?.length < 2) continue;
 
           road_class_features.push(
             turf.lineString(line, {
-              label: 'bike path',
+              label: value,
               path_index: pathIdx,
-              cycleway: 'cycleway',
+              cycleway: value,
               type: leg.type,
             }),
           );

@@ -8,7 +8,11 @@ import MapGL, {
   GeolocateControl,
   NavigationControl,
 } from 'react-map-gl';
-import { routesToGeoJSON, EMPTY_GEOJSON } from '../lib/geometry';
+import {
+  routesToGeoJSON,
+  EMPTY_GEOJSON,
+  BIKEABLE_HIGHWAYS,
+} from '../lib/geometry';
 import lngLatToCoords from '../lib/lngLatToCoords';
 import { locationDragged } from '../features/locations';
 import { routeClicked } from '../features/routes';
@@ -349,7 +353,7 @@ function getBikeColorStyle(indexOfActivePath) {
     ['==', ['get', 'path_index'], indexOfActivePath],
     [
       'case',
-      cyclewayIs('cycleway', 'track'),
+      cyclewayIs('track', ...BIKEABLE_HIGHWAYS),
       '#006600',
       cyclewayIs('lane', 'shared_lane'),
       '#33cc33',
