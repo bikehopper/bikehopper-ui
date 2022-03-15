@@ -1,0 +1,15 @@
+.SelectionListItem {
+  padding: 14px 24px;
+}
+
+.SelectionListItem:not(:last-child) {
+  border-bottom: 1px solid #c4c4c4;
+}
+
+.SelectionListItem_active {
+  background-color: #efefef;
+}
+
+.SelectionListItem_clickable {
+  cursor: pointer;
+}

@@ -1,0 +1,36 @@
+.RoutesOverview_route {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.RoutesOverview_timeEstimate {
+  align-self: center;
+  flex-shrink: 0;
+}
+
+.RoutesOverview_routeLegs {
+  padding-left: 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.RoutesOverview_leg,
+.RoutesOverview_legSeparator {
+  display: inline-block;
+  margin-right: 4px;
+}
+
+.RoutesOverview_leg {
+  align-self: end;
+}
+
+.RoutesOverview_legSeparator {
+  align-self: center;
+  margin-bottom: 12px; /* line up with bike icons / route names */
+}
+
+.RoutesOverview_timeEstimate {
+  margin: 0;
+}

@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bikehopper-ui-deployment
+  labels:
+    app: bikehopper-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bikehopper-ui
+  template:
+    metadata:
+      labels:
+        app: bikehopper-ui
+    spec:
+      containers:
+        - name: bikehopper-ui
+          image: ghcr.io/bikehopper/bikehopper-ui@sha256:863dfc08e73af527c85d4b960ddb0bd02709cb373b50e7511922154b01a8758d
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: '64Mi'
+              cpu: '250m'
+            limits:
+              memory: '256Mi'
+              cpu: '500m'
+          readinessProbe:
+            httpGet:
+              path: /health.html
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 10
+      imagePullSecrets:
+        - name: dockerconfigjson-github-com
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bikehopper-ui-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: bikehopper-ui
+  ports:
+    - port: 80
+      protocol: TCP
+      name: http

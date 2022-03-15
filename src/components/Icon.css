@@ -3,3 +3,7 @@
   position: relative;
   top: 4px;
 }
+
+.Icon_flipHorizontally > svg {
+  transform: scale(-1, 1);
+}
