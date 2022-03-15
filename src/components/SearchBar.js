@@ -73,8 +73,9 @@ export default function SearchBar(props) {
     const state = which === 'start' ? startLocation : endLocation;
     const setter = which === 'start' ? setStartText : setEndText;
     if (
-      state.source === LocationSourceType.Marker ||
-      state.source === LocationSourceType.UserGeolocation
+      state &&
+      (state.source === LocationSourceType.Marker ||
+        state.source === LocationSourceType.UserGeolocation)
     ) {
       setter('');
     }

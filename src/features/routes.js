@@ -106,8 +106,8 @@ let _routeNonce = 10000000; // For assigning a unique ID to each route fetched i
 export function fetchRoute() {
   return async function fetchRouteThunk(dispatch, getState) {
     const locationState = getState().locations;
-    const startCoords = locationState.start.point?.geometry.coordinates;
-    const endCoords = locationState.end.point?.geometry.coordinates;
+    const startCoords = locationState.start?.point?.geometry.coordinates;
+    const endCoords = locationState.end?.point?.geometry.coordinates;
 
     if (!startCoords || !endCoords) {
       dispatch({ type: 'route_cleared' });
