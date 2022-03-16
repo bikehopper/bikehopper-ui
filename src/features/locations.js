@@ -35,7 +35,7 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
             source: action.end.source,
           };
         }
-        draft.isEditingLocations = false;
+        if (action.start && action.end) draft.isEditingLocations = false;
       });
     case 'location_input_focused':
       return produce(state, (draft) => {
@@ -129,9 +129,8 @@ async function _setLocationsAndMaybeFetchRoute(dispatch, getState, start, end) {
   await fetchRoute()(dispatch, getState);
 }
 
-export function locationInputFocused(startOrEnd) {
+export function locationInputFocused() {
   return {
     type: 'location_input_focused',
-    startOrEnd,
   };
 }

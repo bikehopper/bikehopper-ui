@@ -69,7 +69,6 @@ export default function SearchBar(props) {
   };
 
   const handleFocus = (which, event) => {
-    // clear start and end
     const state = which === 'start' ? startLocation : endLocation;
     const setter = which === 'start' ? setStartText : setEndText;
     if (
@@ -80,7 +79,7 @@ export default function SearchBar(props) {
       setter('');
     }
     setFocusedInput(which);
-    dispatch(locationInputFocused(which));
+    dispatch(locationInputFocused());
   };
 
   const handleBlur = (which, event) => {
