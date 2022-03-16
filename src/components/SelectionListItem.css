@@ -10,6 +10,13 @@
   background-color: #efefef;
 }
 
-.SelectionListItem_clickable {
-  cursor: pointer;
+.SelectionListItem_hasLinkChild {
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+}
+
+.SelectionListItem_link {
+  padding: 14px 24px;
+  flex-grow: 1;
 }
