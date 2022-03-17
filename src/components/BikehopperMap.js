@@ -31,8 +31,8 @@ function BikehopperMap(props) {
   const dispatch = useDispatch();
   const { startPoint, endPoint, routes, activePath } = useSelector(
     (state) => ({
-      startPoint: state.locations.startPoint,
-      endPoint: state.locations.endPoint,
+      startPoint: state.locations.start?.point,
+      endPoint: state.locations.end?.point,
       routes: state.routes.routes,
       activePath: state.routes.activeRoute,
     }),
@@ -145,7 +145,7 @@ function BikehopperMap(props) {
         onClick={handleRouteClick}
         onMoveEnd={handleMoveEnd}
       >
-        <GeolocateControl />
+        <GeolocateControl trackUserLocation={true} />
         <NavigationControl
           showZoom={false}
           style={{ ...navigationControlStyle }}

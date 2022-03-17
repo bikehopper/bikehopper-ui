@@ -35,16 +35,42 @@ export function routesReducer(state = DEFAULT_STATE, action) {
         !(
           _coordsEqual(
             state.routeStartCoords,
-            action.startPoint?.geometry?.coordinates,
+            action.start?.point?.geometry?.coordinates,
           ) &&
           _coordsEqual(
             state.routeEndCoords,
-            action.endPoint?.geometry?.coordinates,
+            action.end?.point?.geometry?.coordinates,
           )
         )
       ) {
         return produce(state, (draft) => {
-          draft.routes = draft.activeRoute = null;
+          draft.routes =
+            draft.routeStartCoords =
+            draft.routeEndCoords =
+            draft.activeRoute =
+              null;
+          draft.routeStatus = 'none';
+        });
+      } else {
+        return state;
+      }
+    case 'geocoded_location_selected':
+      // As above, clear route if need be
+      if (
+        state.routes &&
+        !_coordsEqual(
+          action.startOrEnd === 'start'
+            ? state.routeStartCoords
+            : state.routeEndCoords,
+          action.point.geometry.coordinates,
+        )
+      ) {
+        return produce(state, (draft) => {
+          draft.routes =
+            draft.routeStartCoords =
+            draft.routeEndCoords =
+            draft.activeRoute =
+              null;
           draft.routeStatus = 'none';
         });
       } else {

@@ -18,12 +18,17 @@ export default function SearchAutocompleteDropdown(props) {
 
   if (features.length === 0) return null;
 
+  const handleClick = (index) => {
+    props.onResultClick(features[index]);
+  };
+
   return (
     <SelectionList className="SearchAutocompleteDropdown">
-      {features.map((feature) => (
+      {features.map((feature, index) => (
         <SelectionListItem
           className="SearchAutocompleteDropdown_place"
           key={feature.properties.osm_id + ':' + feature.properties.type}
+          onClick={handleClick.bind(null, index)}
         >
           <Icon className="SearchAutocompleteDropdown_icon">
             <Pin />

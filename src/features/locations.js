@@ -1,24 +1,43 @@
 import produce from 'immer';
 import { geocodeTypedLocation } from './geocoding';
 import { fetchRoute } from './routes';
+import * as turf from '@turf/helpers';
+
+export const LocationSourceType = {
+  Geocoded: 'geocoded',
+  Marker: 'marker_drag',
+  UserGeolocation: 'user_geolocation',
+};
 
 const DEFAULT_STATE = {
+  // When set, start and end have the format: {
+  //   point: a geoJSON point,
+  //   source: a LocationSourceType,
+  // }
+  start: null,
+  end: null,
   isEditingLocations: false,
-  startPoint: null,
-  endPoint: null,
 };
 
 export function locationsReducer(state = DEFAULT_STATE, action) {
   switch (action.type) {
     case 'locations_set':
       return produce(state, (draft) => {
-        draft.startPoint = action.startPoint;
-        draft.endPoint = action.endPoint;
-        if (action.startPoint && action.endPoint)
-          draft.isEditingLocations = false;
+        draft.start = action.start;
+        draft.end = action.end;
+        if (action.start && action.end) draft.isEditingLocations = false;
       });
     case 'location_input_focused':
-      return { ...state, isEditingLocations: true };
+      return produce(state, (draft) => {
+        draft.isEditingLocations = true;
+      });
+    case 'geocoded_location_selected':
+      return produce(state, (draft) => {
+        draft[action.startOrEnd] = {
+          point: action.point,
+          source: LocationSourceType.Geocoded,
+        };
+      });
     default:
       return state;
   }
@@ -26,18 +45,24 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
 
 // Actions
 
-export function locationsSubmitted(startText, endText) {
-  // Note: may want to modify this later to accept start and/or end already
-  // being resolved to a confirmed location, possibly the current location, and
-  // so not just text.
+export function locationsSubmitted(startTextOrLocation, endTextOrLocation) {
   return async function locationsSubmittedThunk(dispatch, getState) {
     const geocodeOrUseCached = async function geocodeOrUseCached(
-      text,
+      textOrLocation,
       startOrEnd,
     ) {
+      // If it's already a point (not text), pass through
+      if (typeof textOrLocation !== 'string') return textOrLocation;
+
+      const text = textOrLocation.trim();
+
       let cacheEntry = getState().geocoding.cache['@' + text];
-      if (cacheEntry && cacheEntry.status === 'succeeded')
-        return cacheEntry.features[0];
+      if (cacheEntry && cacheEntry.status === 'succeeded') {
+        return {
+          point: cacheEntry.features[0],
+          source: LocationSourceType.Geocoded,
+        };
+      }
 
       await geocodeTypedLocation(text, startOrEnd, {
         possiblyIncomplete: false,
@@ -45,19 +70,20 @@ export function locationsSubmitted(startText, endText) {
 
       // check again if geocoding succeeded (there's no direct return value)
       cacheEntry = getState().geocoding.cache['@' + text];
-      if (cacheEntry && cacheEntry.status === 'succeeded')
-        return cacheEntry.features[0];
+      if (cacheEntry && cacheEntry.status === 'succeeded') {
+        return {
+          point: cacheEntry.features[0],
+          source: LocationSourceType.Geocoded,
+        };
+      }
 
       return null;
     };
 
-    startText = startText.trim();
-    endText = endText.trim();
-
-    const [startPoint, endPoint] = (
+    const [resultingStartLocation, resultingEndLocation] = (
       await Promise.allSettled([
-        geocodeOrUseCached(startText, 'start'),
-        geocodeOrUseCached(endText, 'end'),
+        geocodeOrUseCached(startTextOrLocation, 'start'),
+        geocodeOrUseCached(endTextOrLocation, 'end'),
       ])
     ).map((promiseResult) =>
       promiseResult.status === 'fulfilled' ? promiseResult.value : null,
@@ -66,48 +92,44 @@ export function locationsSubmitted(startText, endText) {
     await _setLocationsAndMaybeFetchRoute(
       dispatch,
       getState,
-      startPoint,
-      endPoint,
+      resultingStartLocation,
+      resultingEndLocation,
     );
   };
 }
 
 export function locationDragged(startOrEnd, coords) {
   return async function locationDraggedThunk(dispatch, getState) {
-    let { startPoint, endPoint } = getState().locations;
+    let { start, end } = getState().locations;
+    const pointFromCoords = turf.point(coords);
 
-    // This might be a sign that the data format should change... turning a raw
-    // pair of coords into something that looks as if we got it from Nominatim.
-    const pointFromCoords = { geometry: { coordinates: coords } };
+    if (startOrEnd === 'start') {
+      start = {
+        point: pointFromCoords,
+        source: LocationSourceType.Marker,
+      };
+    } else {
+      end = {
+        point: pointFromCoords,
+        source: LocationSourceType.Marker,
+      };
+    }
 
-    if (startOrEnd === 'start') startPoint = pointFromCoords;
-    else endPoint = pointFromCoords;
-
-    await _setLocationsAndMaybeFetchRoute(
-      dispatch,
-      getState,
-      startPoint,
-      endPoint,
-    );
+    await _setLocationsAndMaybeFetchRoute(dispatch, getState, start, end);
   };
 }
 
-async function _setLocationsAndMaybeFetchRoute(
-  dispatch,
-  getState,
-  startPoint,
-  endPoint,
-) {
+async function _setLocationsAndMaybeFetchRoute(dispatch, getState, start, end) {
   dispatch({
     type: 'locations_set',
-    startPoint,
-    endPoint,
+    start,
+    end,
   });
 
-  if (startPoint && endPoint) {
+  if (start && end) {
     await fetchRoute(
-      startPoint.geometry.coordinates,
-      endPoint.geometry.coordinates,
+      start.point.geometry.coordinates,
+      end.point.geometry.coordinates,
     )(dispatch, getState);
   }
 }
@@ -115,5 +137,26 @@ async function _setLocationsAndMaybeFetchRoute(
 export function locationInputFocused() {
   return {
     type: 'location_input_focused',
+  };
+}
+
+export function selectGeocodedLocation(startOrEnd, point) {
+  return async function selectGeocodedLocationThunk(dispatch, getState) {
+    dispatch({
+      type: 'geocoded_location_selected',
+      startOrEnd,
+      point,
+    });
+
+    // If this was the end point, and we have a start point, fetch the route.
+
+    if (startOrEnd !== 'end') return;
+    const startLocation = getState().locations.start;
+    if (!startLocation) return;
+
+    await _setLocationsAndMaybeFetchRoute(dispatch, getState, startLocation, {
+      point,
+      source: LocationSourceType.Geocoded,
+    });
   };
 }
