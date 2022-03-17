@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useSelector } from 'react-redux';
+import uniqBy from 'lodash/uniqBy';
 import { describePlace } from '../features/geocoding';
 import Icon from './Icon';
 import SelectionList from './SelectionList';
@@ -14,7 +15,7 @@ export default function SearchAutocompleteDropdown(props) {
   );
   if (!cacheForText || cacheForText.status !== 'succeeded') return null;
 
-  const { features } = cacheForText;
+  const features = uniqBy(cacheForText.features, 'properties.osm_id');
 
   if (features.length === 0) return null;
 
