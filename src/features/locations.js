@@ -23,23 +23,20 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
   switch (action.type) {
     case 'locations_set':
       return produce(state, (draft) => {
-        if (action.start) {
-          draft.start = {
-            point: action.start.point,
-            source: action.start.source,
-          };
-        }
-        if (action.end) {
-          draft.end = {
-            point: action.end.point,
-            source: action.end.source,
-          };
-        }
+        draft.start = action.start;
+        draft.end = action.end;
         if (action.start && action.end) draft.isEditingLocations = false;
       });
     case 'location_input_focused':
       return produce(state, (draft) => {
         draft.isEditingLocations = true;
+      });
+    case 'geocoded_location_selected':
+      return produce(state, (draft) => {
+        draft[action.startOrEnd] = {
+          point: action.point,
+          source: LocationSourceType.Geocoded,
+        };
       });
     default:
       return state;
@@ -48,18 +45,27 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
 
 // Actions
 
-export function locationsSubmitted(startText, endText) {
+export function locationsSubmitted(startTextOrLocation, endTextOrLocation) {
   // Note: may want to modify this later to accept start and/or end already
   // being resolved to a confirmed location, possibly the current location, and
   // so not just text.
   return async function locationsSubmittedThunk(dispatch, getState) {
     const geocodeOrUseCached = async function geocodeOrUseCached(
-      text,
+      textOrLocation,
       startOrEnd,
     ) {
+      // If it's already a point (not text), pass through
+      if (typeof textOrLocation !== 'string') return textOrLocation;
+
+      const text = textOrLocation.trim();
+
       let cacheEntry = getState().geocoding.cache['@' + text];
-      if (cacheEntry && cacheEntry.status === 'succeeded')
-        return cacheEntry.features[0];
+      if (cacheEntry && cacheEntry.status === 'succeeded') {
+        return {
+          point: cacheEntry.features[0],
+          source: LocationSourceType.Geocoded,
+        };
+      }
 
       await geocodeTypedLocation(text, startOrEnd, {
         possiblyIncomplete: false,
@@ -67,19 +73,20 @@ export function locationsSubmitted(startText, endText) {
 
       // check again if geocoding succeeded (there's no direct return value)
       cacheEntry = getState().geocoding.cache['@' + text];
-      if (cacheEntry && cacheEntry.status === 'succeeded')
-        return cacheEntry.features[0];
+      if (cacheEntry && cacheEntry.status === 'succeeded') {
+        return {
+          point: cacheEntry.features[0],
+          source: LocationSourceType.Geocoded,
+        };
+      }
 
       return null;
     };
 
-    startText = startText.trim();
-    endText = endText.trim();
-
-    const [startPoint, endPoint] = (
+    const [resultingStartLocation, resultingEndLocation] = (
       await Promise.allSettled([
-        geocodeOrUseCached(startText, 'start'),
-        geocodeOrUseCached(endText, 'end'),
+        geocodeOrUseCached(startTextOrLocation, 'start'),
+        geocodeOrUseCached(endTextOrLocation, 'end'),
       ])
     ).map((promiseResult) =>
       promiseResult.status === 'fulfilled' ? promiseResult.value : null,
@@ -88,12 +95,8 @@ export function locationsSubmitted(startText, endText) {
     await _setLocationsAndMaybeFetchRoute(
       dispatch,
       getState,
-      startPoint
-        ? { point: startPoint, source: LocationSourceType.Geocoded }
-        : null,
-      endPoint
-        ? { point: endPoint, source: LocationSourceType.Geocoded }
-        : null,
+      resultingStartLocation,
+      resultingEndLocation,
     );
   };
 }
@@ -126,11 +129,37 @@ async function _setLocationsAndMaybeFetchRoute(dispatch, getState, start, end) {
     end,
   });
 
-  await fetchRoute()(dispatch, getState);
+  if (start && end) {
+    await fetchRoute(
+      start.point.geometry.coordinates,
+      end.point.geometry.coordinates,
+    )(dispatch, getState);
+  }
 }
 
 export function locationInputFocused() {
   return {
     type: 'location_input_focused',
+  };
+}
+
+export function selectGeocodedLocation(startOrEnd, point) {
+  return async function selectGeocodedLocationThunk(dispatch, getState) {
+    dispatch({
+      type: 'geocoded_location_selected',
+      startOrEnd,
+      point,
+    });
+
+    // If this was the end point, and we have a start point, fetch the route.
+
+    if (startOrEnd !== 'end') return;
+    const startLocation = getState().locations.start;
+    if (!startLocation) return;
+
+    await _setLocationsAndMaybeFetchRoute(dispatch, getState, startLocation, {
+      point,
+      source: LocationSourceType.Geocoded,
+    });
   };
 }

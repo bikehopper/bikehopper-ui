@@ -44,7 +44,33 @@ export function routesReducer(state = DEFAULT_STATE, action) {
         )
       ) {
         return produce(state, (draft) => {
-          draft.routes = draft.activeRoute = null;
+          draft.routes =
+            draft.routeStartCoords =
+            draft.routeEndCoords =
+            draft.activeRoute =
+              null;
+          draft.routeStatus = 'none';
+        });
+      } else {
+        return state;
+      }
+    case 'geocoded_location_selected':
+      // As above, clear route if need be
+      if (
+        state.routes &&
+        !_coordsEqual(
+          action.startOrEnd === 'start'
+            ? state.routeStartCoords
+            : state.routeEndCoords,
+          action.point.geometry.coordinates,
+        )
+      ) {
+        return produce(state, (draft) => {
+          draft.routes =
+            draft.routeStartCoords =
+            draft.routeEndCoords =
+            draft.activeRoute =
+              null;
           draft.routeStatus = 'none';
         });
       } else {
@@ -103,12 +129,8 @@ export function routesReducer(state = DEFAULT_STATE, action) {
 
 let _routeNonce = 10000000; // For assigning a unique ID to each route fetched in a session
 
-export function fetchRoute() {
+export function fetchRoute(startCoords, endCoords) {
   return async function fetchRouteThunk(dispatch, getState) {
-    const locationState = getState().locations;
-    const startCoords = locationState.start?.point?.geometry.coordinates;
-    const endCoords = locationState.end?.point?.geometry.coordinates;
-
     if (!startCoords || !endCoords) {
       dispatch({ type: 'route_cleared' });
       return;
