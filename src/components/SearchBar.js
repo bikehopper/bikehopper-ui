@@ -119,6 +119,11 @@ export default function SearchBar(props) {
       endRef.current.focus();
     } else if (!startText && !startLocation) {
       startRef.current.focus();
+    } else {
+      // Make sure we don't think that the ending location input is still focused;
+      // that could cause glitches down the road.
+      endRef.current.blur();
+      setFocusedInput(null);
     }
   };
 
