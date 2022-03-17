@@ -85,10 +85,8 @@ export default function SearchBar(props) {
   };
 
   const handleSubmit = (event) => {
-    if (event) {
-      event.preventDefault();
-      event.target.blur();
-    }
+    event.preventDefault();
+    event.target.blur();
 
     dispatch(
       locationsSubmitted(
