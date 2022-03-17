@@ -113,7 +113,7 @@ export default function SearchBar(props) {
   const handleAutocompleteClick = (which, point) => {
     dispatch(selectGeocodedLocation(which, point));
 
-    if (which === 'start') {
+    if (which === 'start' && !endLocation) {
       endRef.current.focus();
     } else if (!startText && !startLocation) {
       startRef.current.focus();

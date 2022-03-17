@@ -148,15 +148,20 @@ export function selectGeocodedLocation(startOrEnd, point) {
       point,
     });
 
-    // If this was the end point, and we have a start point, fetch the route.
+    // If this was the end point, and we have a start point -- or vice versa --
+    // fetch the route.
 
-    if (startOrEnd !== 'end') return;
-    const startLocation = getState().locations.start;
-    if (!startLocation) return;
-
-    await _setLocationsAndMaybeFetchRoute(dispatch, getState, startLocation, {
-      point,
-      source: LocationSourceType.Geocoded,
-    });
+    const { locations } = getState();
+    if (startOrEnd === 'end' && locations.start) {
+      await fetchRoute(
+        locations.start.point.geometry.coordinates,
+        point.geometry.coordinates,
+      )(dispatch, getState);
+    } else if (startOrEnd === 'start' && locations.end) {
+      await fetchRoute(
+        point.geometry.coordinates,
+        locations.end.point.geometry.coordinates,
+      )(dispatch, getState);
+    }
   };
 }
