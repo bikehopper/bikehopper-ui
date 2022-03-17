@@ -97,8 +97,8 @@ export default function SearchBar(props) {
   };
 
   const handleFocus = (which, event) => {
-    setFocusedInput(which);
     dispatch(locationInputFocused());
+    setFocusedInput(which);
   };
 
   const handleBlur = (event) => {

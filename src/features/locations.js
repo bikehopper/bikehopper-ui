@@ -46,9 +46,6 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
 // Actions
 
 export function locationsSubmitted(startTextOrLocation, endTextOrLocation) {
-  // Note: may want to modify this later to accept start and/or end already
-  // being resolved to a confirmed location, possibly the current location, and
-  // so not just text.
   return async function locationsSubmittedThunk(dispatch, getState) {
     const geocodeOrUseCached = async function geocodeOrUseCached(
       textOrLocation,
