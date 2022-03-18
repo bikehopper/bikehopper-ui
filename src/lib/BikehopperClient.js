@@ -9,7 +9,7 @@ export async function fetchRoute({
 }) {
   const detail_param = details?.join('&details=') || '';
   const route = await fetch(
-    `${process.env.REACT_APP_GRAPHHOPPER_DOMAIN}/route-pt?point=${
+    `${process.env.REACT_APP_GRAPHHOPPER_PATH}/route-pt?point=${
       points[0]
     }&point=${
       points[1]
