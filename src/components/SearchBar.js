@@ -179,6 +179,9 @@ function _describeLocation(loc) {
   if (!loc) return '';
   if (loc.source === LocationSourceType.UserGeolocation)
     return 'Current Location';
-  if (loc.source === LocationSourceType.Marker) return 'Custom';
+  if (loc.source === LocationSourceType.Marker) {
+    const [long, lat] = loc.point.geometry.coordinates;
+    return `${lat.toFixed(5)},${long.toFixed(5)}`;
+  }
   return describePlace(loc.point);
 }
