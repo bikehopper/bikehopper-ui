@@ -1,6 +1,5 @@
 .SearchBar {
-  background-color: #5aaa0a;
-  padding: 20px 24px;
+  padding: 0;
   display: flex;
   flex-flow: column;
   align-items: stretch;
