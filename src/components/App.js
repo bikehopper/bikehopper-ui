@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import BikehopperMap from './BikehopperMap';
-import SearchBar from './SearchBar';
+import TopBar from './TopBar';
 import BottomPane from './BottomPane';
 import RoutesOverview from './RoutesOverview';
 
@@ -12,7 +12,7 @@ function App() {
 
   return (
     <div className="App">
-      <SearchBar />
+      <TopBar />
       <BikehopperMap />
       {hasRoutes && (
         <BottomPane>
