@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './Icon';
 import SearchAutocompleteDropdown from './SearchAutocompleteDropdown';
-import { describePlace, geocodeTypedLocation } from '../features/geocoding';
+import { geocodeTypedLocation } from '../features/geocoding';
 import {
   locationInputFocused,
   locationInputsBlurred,
@@ -10,6 +10,7 @@ import {
   LocationSourceType,
   selectGeocodedLocation,
 } from '../features/locations';
+import describePlace from '../lib/describePlace';
 import { ReactComponent as Pin } from 'iconoir/icons/pin-alt.svg';
 
 import './SearchBar.css';

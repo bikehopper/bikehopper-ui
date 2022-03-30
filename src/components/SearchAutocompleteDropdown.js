@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import uniqBy from 'lodash/uniqBy';
-import { describePlace } from '../features/geocoding';
+import describePlace from '../lib/describePlace';
 import Icon from './Icon';
 import SelectionList from './SelectionList';
 import SelectionListItem from './SelectionListItem';
