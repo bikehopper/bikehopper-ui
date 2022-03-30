@@ -129,9 +129,20 @@ export function routesReducer(state = DEFAULT_STATE, action) {
 
 let _routeNonce = 10000000; // For assigning a unique ID to each route fetched in a session
 
+const COORD_EPSILON = 1e-5;
+
 export function fetchRoute(startCoords, endCoords) {
   return async function fetchRouteThunk(dispatch, getState) {
     if (!startCoords || !endCoords) {
+      dispatch({ type: 'route_cleared' });
+      return;
+    }
+
+    if (
+      Math.abs(startCoords[0] - endCoords[0]) < COORD_EPSILON &&
+      Math.abs(startCoords[1] - endCoords[1]) < COORD_EPSILON
+    ) {
+      // Refuse to route from a place to itself.
       dispatch({ type: 'route_cleared' });
       return;
     }
