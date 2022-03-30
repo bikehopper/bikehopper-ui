@@ -1,7 +1,8 @@
 import produce from 'immer';
+import * as turf from '@turf/helpers';
+import describePlace from '../lib/describePlace';
 import { geocodeTypedLocation } from './geocoding';
 import { fetchRoute } from './routes';
-import * as turf from '@turf/helpers';
 
 export const LocationSourceType = {
   Geocoded: 'geocoded',
@@ -16,7 +17,15 @@ const DEFAULT_STATE = {
   // }
   start: null,
   end: null,
-  isEditingLocations: false,
+
+  // Transient input state. Which location input ('start', 'end' or null) is
+  // currently being edited, and what text is in the box (which may not yet be
+  // reflected in the above state)? Note: if a location input is focused, it
+  // should be reflected in editingLocation, but editingLocation being set may
+  // not necessarily mean a location input is focused.
+  editingLocation: null,
+  startInputText: '',
+  endInputText: '',
 };
 
 export function locationsReducer(state = DEFAULT_STATE, action) {
@@ -25,16 +34,24 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
       return produce(state, (draft) => {
         draft.start = action.start;
         draft.end = action.end;
-        if (action.start && action.end) draft.isEditingLocations = false;
+        if (action.start && action.end) draft.editingLocation = null;
+      });
+    case 'location_dragged':
+      return produce(state, (draft) => {
+        draft[action.startOrEnd] = {
+          point: turf.point(action.coords),
+          source: LocationSourceType.Marker,
+        };
+        draft[action.startOrEnd + 'InputText'] = '';
       });
     case 'location_input_focused':
       return produce(state, (draft) => {
-        draft.isEditingLocations = true;
+        draft.editingLocation = action.startOrEnd;
       });
     case 'route_fetch_attempted':
     case 'location_inputs_blurred':
       return produce(state, (draft) => {
-        draft.isEditingLocations = false;
+        draft.editingLocation = null;
       });
     case 'geocoded_location_selected':
       return produce(state, (draft) => {
@@ -42,6 +59,13 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
           point: action.point,
           source: LocationSourceType.Geocoded,
         };
+        draft[action.startOrEnd + 'InputText'] = describePlace(action.point);
+        // This probably will result in editingLocation changing but other
+        // actions should take care of that
+      });
+    case 'location_text_input_changed':
+      return produce(state, (draft) => {
+        draft[action.startOrEnd + 'InputText'] = action.value;
       });
     default:
       return state;
@@ -94,60 +118,69 @@ export function locationsSubmitted(startTextOrLocation, endTextOrLocation) {
       promiseResult.status === 'fulfilled' ? promiseResult.value : null,
     );
 
-    await _setLocationsAndMaybeFetchRoute(
-      dispatch,
-      getState,
-      resultingStartLocation,
-      resultingEndLocation,
-    );
+    dispatch({
+      type: 'locations_set',
+      start: resultingStartLocation,
+      end: resultingEndLocation,
+    });
+
+    if (resultingStartLocation && resultingEndLocation) {
+      await fetchRoute(
+        resultingStartLocation.point.geometry.coordinates,
+        resultingEndLocation.point.geometry.coordinates,
+      )(dispatch, getState);
+    }
   };
 }
 
 export function locationDragged(startOrEnd, coords) {
   return async function locationDraggedThunk(dispatch, getState) {
+    dispatch({
+      type: 'location_dragged',
+      startOrEnd,
+      coords,
+    });
+
+    // If we have a location for the other point, fetch a route.
     let { start, end } = getState().locations;
-    const pointFromCoords = turf.point(coords);
-
-    if (startOrEnd === 'start') {
-      start = {
-        point: pointFromCoords,
-        source: LocationSourceType.Marker,
-      };
-    } else {
-      end = {
-        point: pointFromCoords,
-        source: LocationSourceType.Marker,
-      };
+    if (startOrEnd === 'start' && end?.point?.geometry.coordinates) {
+      await fetchRoute(coords, end.point.geometry.coordinates)(
+        dispatch,
+        getState,
+      );
+    } else if (startOrEnd === 'end' && start?.point?.geometry.coordinates) {
+      await fetchRoute(start.point.geometry.coordinates, coords)(
+        dispatch,
+        getState,
+      );
     }
-
-    await _setLocationsAndMaybeFetchRoute(dispatch, getState, start, end);
   };
 }
 
-async function _setLocationsAndMaybeFetchRoute(dispatch, getState, start, end) {
-  dispatch({
-    type: 'locations_set',
-    start,
-    end,
-  });
-
-  if (start && end) {
-    await fetchRoute(
-      start.point.geometry.coordinates,
-      end.point.geometry.coordinates,
-    )(dispatch, getState);
-  }
-}
-
-export function locationInputFocused() {
+export function locationInputFocused(startOrEnd) {
   return {
     type: 'location_input_focused',
+    startOrEnd,
   };
 }
 
 export function locationInputsBlurred() {
   return {
     type: 'location_inputs_blurred',
+  };
+}
+
+export function changeLocationTextInput(startOrEnd, value) {
+  return async function locationTextInputChangedThunk(dispatch, getState) {
+    dispatch({
+      type: 'location_text_input_changed',
+      startOrEnd,
+      value,
+    });
+
+    dispatch(
+      geocodeTypedLocation(value, startOrEnd, { possiblyIncomplete: true }),
+    );
   };
 }
 

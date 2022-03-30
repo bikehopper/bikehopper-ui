@@ -14,7 +14,7 @@ function App() {
     (state) => ({
       hasLocations: !!(state.locations.start || state.locations.end),
       hasRoutes: !!state.routes.routes,
-      isEditingLocations: state.locations.isEditingLocations,
+      isEditingLocations: state.locations.editingLocation != null,
     }),
     shallowEqual,
   );
@@ -22,7 +22,7 @@ function App() {
   const dispatch = useDispatch();
 
   const handleBottomInputFocus = (evt) => {
-    dispatch(locationInputFocused());
+    dispatch(locationInputFocused('end'));
   };
 
   let bottomContent;
