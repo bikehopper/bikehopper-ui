@@ -5,6 +5,7 @@ import SearchAutocompleteDropdown from './SearchAutocompleteDropdown';
 import { describePlace, geocodeTypedLocation } from '../features/geocoding';
 import {
   locationInputFocused,
+  locationInputsBlurred,
   locationsSubmitted,
   LocationSourceType,
   selectGeocodedLocation,
@@ -106,7 +107,9 @@ export default function SearchBar(props) {
     // the autocomplete dropdown), set focused input to null (which hides the
     // autocomplete dropdown).
     if (!formRef.current.contains(event.relatedTarget)) {
+      const previousFocusedInput = focusedInput;
       setFocusedInput(null);
+      if (previousFocusedInput != null) dispatch(locationInputsBlurred());
     }
   };
 
@@ -136,10 +139,10 @@ export default function SearchBar(props) {
           <Pin />
         </Icon>
         <input
-          aria-label="Starting location"
+          aria-label="Starting point"
           className="SearchBar_input"
           type="text"
-          placeholder="from"
+          placeholder="Starting point"
           value={displayedStart}
           onChange={handleStartChange}
           onFocus={handleFocus.bind(null, 'start')}
@@ -148,21 +151,23 @@ export default function SearchBar(props) {
           ref={startRef}
         />
       </span>
+      <span className="SearchBar_divider" />
       <span className="SearchBar_inputContainer">
         <Icon className="SearchBar_icon">
           <Pin />
         </Icon>
         <input
-          aria-label="Ending location"
+          aria-label="Destination"
           className="SearchBar_input"
           type="text"
-          placeholder="to"
+          placeholder="Destination"
           value={displayedEnd}
           onChange={handleEndChange}
           onFocus={handleFocus.bind(null, 'end')}
           onBlur={handleBlur}
           onKeyPress={handleKeyPress}
           ref={endRef}
+          autoFocus={props.initiallyFocusDestination}
         />
       </span>
       {focusedInput && (

@@ -15,8 +15,11 @@
   font-size: 13px;
 }
 
-.SearchBar_inputContainer:first-child {
-  margin-bottom: 25px;
+.SearchBar_divider {
+  display: block;
+  height: 21px;
+  border-left: 3px dotted white;
+  margin-left: 19px;
 }
 
 .SearchBar_inputContainer {

@@ -1,24 +1,47 @@
 import * as React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import BikehopperMap from './BikehopperMap';
-import TopBar from './TopBar';
 import BottomPane from './BottomPane';
+import DirectionsNullState from './DirectionsNullState';
 import RoutesOverview from './RoutesOverview';
+import TopBar from './TopBar';
+import { locationInputFocused } from '../features/locations';
 
 import './App.css';
 
 function App() {
-  const hasRoutes = useSelector((state) => !!state.routes.routes);
+  const { hasRoutes, hasLocations, isEditingLocations } = useSelector(
+    (state) => ({
+      hasLocations: !!(state.locations.start || state.locations.end),
+      hasRoutes: !!state.routes.routes,
+      isEditingLocations: state.locations.isEditingLocations,
+    }),
+    shallowEqual,
+  );
+
+  const dispatch = useDispatch();
+
+  const handleBottomInputFocus = (evt) => {
+    dispatch(locationInputFocused());
+  };
+
+  let bottomContent;
+  if (hasRoutes) {
+    bottomContent = <RoutesOverview />;
+  } else if (!hasLocations && !isEditingLocations) {
+    bottomContent = (
+      <DirectionsNullState onInputFocus={handleBottomInputFocus} />
+    );
+  }
 
   return (
     <div className="App">
-      <TopBar />
+      <TopBar
+        showSearchBar={isEditingLocations || hasLocations || hasRoutes}
+        showDirectionsLabel={isEditingLocations}
+      />
       <BikehopperMap />
-      {hasRoutes && (
-        <BottomPane>
-          <RoutesOverview />
-        </BottomPane>
-      )}
+      {bottomContent && <BottomPane>{bottomContent}</BottomPane>}
     </div>
   );
 }

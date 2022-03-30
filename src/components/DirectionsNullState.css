@@ -1,0 +1,26 @@
+.DirectionsNullState {
+  padding: 24px;
+}
+
+.DirectionsNullState_header {
+  font-size: 20px;
+  margin: 0 0 20px 0;
+}
+
+.DirectionsNullState_input {
+  border: 1px solid #c4c4c4;
+  padding: 12px 12px 12px 40px;
+  border-radius: 12px;
+  width: 100%;
+  font-size: 13px;
+}
+
+.DirectionsNullState_inputContainer {
+  position: relative;
+}
+
+.DirectionsNullState_inputIcon {
+  position: absolute;
+  top: -2px;
+  left: 8px;
+}

@@ -31,6 +31,11 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
       return produce(state, (draft) => {
         draft.isEditingLocations = true;
       });
+    case 'route_fetch_attempted':
+    case 'location_inputs_blurred':
+      return produce(state, (draft) => {
+        draft.isEditingLocations = false;
+      });
     case 'geocoded_location_selected':
       return produce(state, (draft) => {
         draft[action.startOrEnd] = {
@@ -137,6 +142,12 @@ async function _setLocationsAndMaybeFetchRoute(dispatch, getState, start, end) {
 export function locationInputFocused() {
   return {
     type: 'location_input_focused',
+  };
+}
+
+export function locationInputsBlurred() {
+  return {
+    type: 'location_inputs_blurred',
   };
 }
 
