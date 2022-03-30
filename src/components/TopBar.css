@@ -30,6 +30,7 @@
 
 .TopBar_info {
   top: 2px; /* damn I need to remove the default fr */
+  height: 27px;
 }
 
 .TopBar_getDirections {
