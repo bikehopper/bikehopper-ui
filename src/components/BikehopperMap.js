@@ -16,7 +16,7 @@ import {
 import lngLatToCoords from '../lib/lngLatToCoords';
 import { locationDragged } from '../features/locations';
 import { routeClicked } from '../features/routes';
-import { DEFAULT_VIEWPORT, mapMoved } from '../features/viewport';
+import { mapMoved } from '../features/viewport';
 import useResizeObserver from '../hooks/useResizeObserver';
 import MarkerSVG from './MarkerSVG';
 
@@ -121,10 +121,16 @@ function BikehopperMap(props) {
     visibility: mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden',
   };
 
+  const viewState = useSelector(
+    (state) => ({ ...state.viewport }),
+    shallowEqual,
+  );
+  const viewStateOnFirstRender = React.useRef(viewState);
+
   return (
     <div className="BikehopperMap" ref={resizeRef}>
       <MapGL
-        initialViewState={DEFAULT_VIEWPORT}
+        initialViewState={viewStateOnFirstRender.current}
         ref={mapRef}
         style={{
           // expand to fill parent container div

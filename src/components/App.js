@@ -4,6 +4,7 @@ import BikehopperMap from './BikehopperMap';
 import BottomPane from './BottomPane';
 import DirectionsNullState from './DirectionsNullState';
 import RoutesOverview from './RoutesOverview';
+import SearchAutocompleteDropdown from './SearchAutocompleteDropdown';
 import TopBar from './TopBar';
 import { locationInputFocused } from '../features/locations';
 
@@ -26,13 +27,17 @@ function App() {
   };
 
   let bottomContent;
-  if (hasRoutes) {
+  if (isEditingLocations) {
+    bottomContent = <SearchAutocompleteDropdown />;
+  } else if (hasRoutes) {
     bottomContent = <RoutesOverview />;
-  } else if (!hasLocations && !isEditingLocations) {
+  } else if (!hasLocations) {
     bottomContent = (
       <DirectionsNullState onInputFocus={handleBottomInputFocus} />
     );
   }
+
+  const showMap = !isEditingLocations;
 
   return (
     <div className="App">
@@ -40,8 +45,10 @@ function App() {
         showSearchBar={isEditingLocations || hasLocations || hasRoutes}
         showDirectionsLabel={isEditingLocations}
       />
-      <BikehopperMap />
-      {bottomContent && <BottomPane>{bottomContent}</BottomPane>}
+      {showMap && <BikehopperMap />}
+      {bottomContent && (
+        <BottomPane withoutMap={!showMap}>{bottomContent}</BottomPane>
+      )}
     </div>
   );
 }

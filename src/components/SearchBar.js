@@ -1,15 +1,13 @@
 import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './Icon';
-import SearchAutocompleteDropdown from './SearchAutocompleteDropdown';
 import { changeLocationTextInput } from '../features/locations';
 import {
   locationInputFocused,
-  locationInputsBlurred,
   locationsSubmitted,
   LocationSourceType,
-  selectGeocodedLocation,
 } from '../features/locations';
+import usePrevious from '../hooks/usePrevious';
 import describePlace from '../lib/describePlace';
 import { ReactComponent as Pin } from 'iconoir/icons/pin-alt.svg';
 
@@ -30,7 +28,6 @@ export default function SearchBar(props) {
       shallowEqual,
     );
 
-  const formRef = React.useRef();
   const startRef = React.useRef();
   const endRef = React.useRef();
 
@@ -69,37 +66,42 @@ export default function SearchBar(props) {
     dispatch(locationInputFocused(which));
   };
 
-  const handleBlur = (event) => {
-    // If the newly focused element is not part of the search bar (including
-    // the autocomplete dropdown), set focused input to null (which hides the
-    // autocomplete dropdown).
-    // FIXME: But I'm moving the autocomplete dropdown elsewhere so this logic
-    // needs to change. Hmm
-    if (!formRef.current.contains(event.relatedTarget)) {
-      if (editingLocation != null) dispatch(locationInputsBlurred());
-    }
-  };
+  const prevStartLocation = usePrevious(startLocation);
+  const prevEndLocation = usePrevious(endLocation);
 
-  const handleAutocompleteClick = (which, point) => {
-    dispatch(selectGeocodedLocation(which, point));
+  React.useEffect(() => {
+    const justFilledStart = Boolean(startLocation && !prevStartLocation);
+    const justFilledEnd = Boolean(endLocation && !prevEndLocation);
 
-    if (which === 'start' && !endLocation) {
-      endRef.current.focus();
-    } else if (!startText && !startLocation) {
-      startRef.current.focus();
-    } else {
-      // Make sure we don't think that the ending location input is still focused;
-      // that could cause glitches down the road.
-      endRef.current.blur();
+    // If one location was just filled and the other one is blank, focus the blank one.
+    // If both locations are filled, make sure the one just filled is blurred.
+    if (editingLocation === 'start' && justFilledStart) {
+      if (!endLocation) {
+        endRef.current.focus();
+      } else {
+        startRef.current.blur();
+      }
+    } else if (editingLocation === 'end' && justFilledEnd) {
+      if (!startLocation) {
+        startRef.current.focus();
+      } else {
+        endRef.current.blur();
+      }
     }
-  };
+  }, [
+    startLocation,
+    endLocation,
+    prevStartLocation,
+    prevEndLocation,
+    editingLocation,
+  ]);
 
   const handleKeyPress = (evt) => {
     if (evt.key === 'Enter') handleSubmit(evt);
   };
 
   return (
-    <form className="SearchBar" onSubmit={handleSubmit} ref={formRef}>
+    <form className="SearchBar" onSubmit={handleSubmit}>
       <span className="SearchBar_inputContainer">
         <Icon className="SearchBar_icon">
           <Pin />
@@ -112,7 +114,6 @@ export default function SearchBar(props) {
           value={displayedStart}
           onChange={handleStartChange}
           onFocus={handleFocus.bind(null, 'start')}
-          onBlur={handleBlur}
           onKeyPress={handleKeyPress}
           ref={startRef}
         />
@@ -130,18 +131,11 @@ export default function SearchBar(props) {
           value={displayedEnd}
           onChange={handleEndChange}
           onFocus={handleFocus.bind(null, 'end')}
-          onBlur={handleBlur}
           onKeyPress={handleKeyPress}
           ref={endRef}
           autoFocus={props.initiallyFocusDestination}
         />
       </span>
-      {editingLocation && (
-        <SearchAutocompleteDropdown
-          text={editingLocation === 'start' ? startText : endText}
-          onResultClick={handleAutocompleteClick.bind(null, editingLocation)}
-        />
-      )}
     </form>
   );
 }

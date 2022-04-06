@@ -14,6 +14,7 @@ const DEFAULT_STATE = {
   // When set, start and end have the format: {
   //   point: a geoJSON point,
   //   source: a LocationSourceType,
+  //   fromInputText: the source input text (if source === Geocoded),
   // }
   start: null,
   end: null,
@@ -49,7 +50,6 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
         draft.editingLocation = action.startOrEnd;
       });
     case 'route_fetch_attempted':
-    case 'location_inputs_blurred':
       return produce(state, (draft) => {
         draft.editingLocation = null;
       });
@@ -58,6 +58,7 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
         draft[action.startOrEnd] = {
           point: action.point,
           source: LocationSourceType.Geocoded,
+          fromInputText: action.fromInputText,
         };
         draft[action.startOrEnd + 'InputText'] = describePlace(action.point);
         // This probably will result in editingLocation changing but other
@@ -164,12 +165,6 @@ export function locationInputFocused(startOrEnd) {
   };
 }
 
-export function locationInputsBlurred() {
-  return {
-    type: 'location_inputs_blurred',
-  };
-}
-
 export function changeLocationTextInput(startOrEnd, value) {
   return async function locationTextInputChangedThunk(dispatch, getState) {
     dispatch({
@@ -184,12 +179,13 @@ export function changeLocationTextInput(startOrEnd, value) {
   };
 }
 
-export function selectGeocodedLocation(startOrEnd, point) {
+export function selectGeocodedLocation(startOrEnd, point, fromInputText) {
   return async function selectGeocodedLocationThunk(dispatch, getState) {
     dispatch({
       type: 'geocoded_location_selected',
       startOrEnd,
       point,
+      fromInputText,
     });
 
     // If this was the end point, and we have a start point -- or vice versa --
