@@ -1,9 +1,5 @@
 .SearchAutocompleteDropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 3; /* to be in front of geolocate control */
-  width: 100%;
+  flex-grow: 1;
 }
 
 .SearchAutocompleteDropdown_place {

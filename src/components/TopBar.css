@@ -1,0 +1,40 @@
+.TopBar {
+  background-color: #5aaa0a;
+  padding: 20px 24px;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  position: relative;
+}
+
+.TopBar_logoAndInfoButton {
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.TopBar_logo {
+  font-size: 20px;
+  font-weight: bold;
+  text-shadow: 3px 3px 4px #056c22;
+}
+
+.TopBar_logoBike {
+  color: #fff;
+}
+
+.TopBar_logoHopper {
+  color: #ffd18e;
+}
+
+.TopBar_info {
+  top: 2px; /* damn I need to remove the default fr */
+  height: 27px;
+}
+
+.TopBar_getDirections {
+  font-size: 18px;
+  margin: 0 0 20px 0;
+  color: #fff;
+}

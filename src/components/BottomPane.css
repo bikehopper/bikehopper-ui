@@ -3,3 +3,7 @@
   display: flex;
   flex-flow: column;
 }
+
+.BottomPane__withoutMap {
+  flex-grow: 1;
+}

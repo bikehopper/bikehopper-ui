@@ -14,9 +14,10 @@ import {
   BIKEABLE_HIGHWAYS,
 } from '../lib/geometry';
 import lngLatToCoords from '../lib/lngLatToCoords';
-import { locationDragged } from '../features/locations';
+import { geolocated } from '../features/geolocation';
+import { LocationSourceType, locationDragged } from '../features/locations';
 import { routeClicked } from '../features/routes';
-import { DEFAULT_VIEWPORT, mapMoved } from '../features/viewport';
+import { mapMoved } from '../features/viewport';
 import useResizeObserver from '../hooks/useResizeObserver';
 import MarkerSVG from './MarkerSVG';
 
@@ -29,10 +30,21 @@ function BikehopperMap(props) {
   const mapRef = React.useRef();
 
   const dispatch = useDispatch();
-  const { startPoint, endPoint, routes, activePath } = useSelector(
+  const {
+    startPoint,
+    startIsCurrentLocation,
+    endPoint,
+    endIsCurrentLocation,
+    routes,
+    activePath,
+  } = useSelector(
     (state) => ({
       startPoint: state.locations.start?.point,
       endPoint: state.locations.end?.point,
+      startIsCurrentLocation:
+        state.locations.start?.source === LocationSourceType.UserGeolocation,
+      endIsCurrentLocation:
+        state.locations.end?.source === LocationSourceType.UserGeolocation,
       routes: state.routes.routes,
       activePath: state.routes.activeRoute,
     }),
@@ -58,6 +70,14 @@ function BikehopperMap(props) {
 
   const handleEndPointDrag = (evt) => {
     dispatch(locationDragged('end', lngLatToCoords(evt.lngLat)));
+  };
+
+  const handleGeolocate = (geolocateResultEvent) => {
+    console.log('geolocate event', geolocateResultEvent);
+    dispatch(
+      geolocated(geolocateResultEvent.coords, geolocateResultEvent.timestamp),
+    );
+    // TODO handle errors as well
   };
 
   const resizeRef = useResizeObserver(
@@ -121,10 +141,16 @@ function BikehopperMap(props) {
     visibility: mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden',
   };
 
+  const viewState = useSelector(
+    (state) => ({ ...state.viewport }),
+    shallowEqual,
+  );
+  const viewStateOnFirstRender = React.useRef(viewState);
+
   return (
     <div className="BikehopperMap" ref={resizeRef}>
       <MapGL
-        initialViewState={DEFAULT_VIEWPORT}
+        initialViewState={viewStateOnFirstRender.current}
         ref={mapRef}
         style={{
           // expand to fill parent container div
@@ -145,7 +171,10 @@ function BikehopperMap(props) {
         onClick={handleRouteClick}
         onMoveEnd={handleMoveEnd}
       >
-        <GeolocateControl trackUserLocation={true} />
+        <GeolocateControl
+          trackUserLocation={true}
+          onGeolocate={handleGeolocate}
+        />
         <NavigationControl
           showZoom={false}
           style={{ ...navigationControlStyle }}
@@ -179,7 +208,7 @@ function BikehopperMap(props) {
           <Layer {...getTransitLabelStyle(activePath)} />
           <Layer {...getBikeLabelStyle(activePath)} />
         </Source>
-        {startCoords && (
+        {startCoords && (routes || !startIsCurrentLocation) && (
           <Marker
             id="startMarker"
             longitude={startCoords[0]}
@@ -192,7 +221,7 @@ function BikehopperMap(props) {
             <MarkerSVG fillColor="#2fa7cc" />
           </Marker>
         )}
-        {endCoords && (
+        {endCoords && (routes || !endIsCurrentLocation) && (
           <Marker
             id="endMarker"
             longitude={endCoords[0]}

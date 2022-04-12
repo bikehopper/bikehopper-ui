@@ -20,14 +20,9 @@ function _coordsEqual(a, b) {
 export function routesReducer(state = DEFAULT_STATE, action) {
   switch (action.type) {
     case 'route_cleared':
-      return produce(state, (draft) => {
-        draft.routes =
-          draft.routeStartCoords =
-          draft.routeEndCoords =
-          draft.activeRoute =
-            null;
-        draft.routeStatus = 'none';
-      });
+      return _clearRoutes(state);
+    case 'location_dragged': // assume drag is to new location
+      return _clearRoutes(state);
     case 'locations_set':
       // clear routes if new start and/or end point differ from the routes we have
       if (
@@ -43,18 +38,12 @@ export function routesReducer(state = DEFAULT_STATE, action) {
           )
         )
       ) {
-        return produce(state, (draft) => {
-          draft.routes =
-            draft.routeStartCoords =
-            draft.routeEndCoords =
-            draft.activeRoute =
-              null;
-          draft.routeStatus = 'none';
-        });
+        return _clearRoutes(state);
       } else {
         return state;
       }
     case 'geocoded_location_selected':
+    case 'current_location_selected':
       // As above, clear route if need be
       if (
         state.routes &&
@@ -65,14 +54,7 @@ export function routesReducer(state = DEFAULT_STATE, action) {
           action.point.geometry.coordinates,
         )
       ) {
-        return produce(state, (draft) => {
-          draft.routes =
-            draft.routeStartCoords =
-            draft.routeEndCoords =
-            draft.activeRoute =
-              null;
-          draft.routeStatus = 'none';
-        });
+        return _clearRoutes(state);
       } else {
         return state;
       }
@@ -123,6 +105,17 @@ export function routesReducer(state = DEFAULT_STATE, action) {
     default:
       return state;
   }
+}
+
+function _clearRoutes(state) {
+  return produce(state, (draft) => {
+    draft.routes =
+      draft.routeStartCoords =
+      draft.routeEndCoords =
+      draft.activeRoute =
+        null;
+    draft.routeStatus = 'none';
+  });
 }
 
 // Actions
