@@ -6,14 +6,21 @@ import DirectionsNullState from './DirectionsNullState';
 import RoutesOverview from './RoutesOverview';
 import SearchAutocompleteDropdown from './SearchAutocompleteDropdown';
 import TopBar from './TopBar';
-import { locationInputFocused } from '../features/locations';
+import {
+  LocationSourceType,
+  locationInputFocused,
+} from '../features/locations';
 
 import './App.css';
 
 function App() {
   const { hasRoutes, hasLocations, isEditingLocations } = useSelector(
     (state) => ({
-      hasLocations: !!(state.locations.start || state.locations.end),
+      hasLocations: !!(
+        state.locations.end ||
+        (state.locations.start &&
+          state.locations.start.source !== LocationSourceType.UserGeolocation)
+      ),
       hasRoutes: !!state.routes.routes,
       isEditingLocations: state.locations.editingLocation != null,
     }),

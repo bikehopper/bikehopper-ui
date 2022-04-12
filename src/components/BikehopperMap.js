@@ -15,7 +15,7 @@ import {
 } from '../lib/geometry';
 import lngLatToCoords from '../lib/lngLatToCoords';
 import { geolocated } from '../features/geolocation';
-import { locationDragged } from '../features/locations';
+import { LocationSourceType, locationDragged } from '../features/locations';
 import { routeClicked } from '../features/routes';
 import { mapMoved } from '../features/viewport';
 import useResizeObserver from '../hooks/useResizeObserver';
@@ -30,10 +30,21 @@ function BikehopperMap(props) {
   const mapRef = React.useRef();
 
   const dispatch = useDispatch();
-  const { startPoint, endPoint, routes, activePath } = useSelector(
+  const {
+    startPoint,
+    startIsCurrentLocation,
+    endPoint,
+    endIsCurrentLocation,
+    routes,
+    activePath,
+  } = useSelector(
     (state) => ({
       startPoint: state.locations.start?.point,
       endPoint: state.locations.end?.point,
+      startIsCurrentLocation:
+        state.locations.start?.source === LocationSourceType.UserGeolocation,
+      endIsCurrentLocation:
+        state.locations.end?.source === LocationSourceType.UserGeolocation,
       routes: state.routes.routes,
       activePath: state.routes.activeRoute,
     }),
@@ -197,7 +208,7 @@ function BikehopperMap(props) {
           <Layer {...getTransitLabelStyle(activePath)} />
           <Layer {...getBikeLabelStyle(activePath)} />
         </Source>
-        {startCoords && (
+        {startCoords && (routes || !startIsCurrentLocation) && (
           <Marker
             id="startMarker"
             longitude={startCoords[0]}
@@ -210,7 +221,7 @@ function BikehopperMap(props) {
             <MarkerSVG fillColor="#2fa7cc" />
           </Marker>
         )}
-        {endCoords && (
+        {endCoords && (routes || !endIsCurrentLocation) && (
           <Marker
             id="endMarker"
             longitude={endCoords[0]}

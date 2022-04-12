@@ -72,7 +72,25 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
         };
         draft[action.startOrEnd + 'InputText'] = '';
       });
-
+    case 'geolocated':
+      return produce(state, (draft) => {
+        const isInNullState =
+          !state.start &&
+          !state.end &&
+          !state.startInputText &&
+          !state.endInputText &&
+          !state.editingLocation;
+        if (isInNullState) {
+          // Default to routing from current location now that we have one
+          draft.start = {
+            point: turf.point([
+              action.coords.longitude,
+              action.coords.latitude,
+            ]),
+            source: LocationSourceType.UserGeolocation,
+          };
+        }
+      });
     case 'location_text_input_changed':
       return produce(state, (draft) => {
         draft[action.startOrEnd + 'InputText'] = action.value;
