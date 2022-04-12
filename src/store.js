@@ -1,12 +1,14 @@
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import { geocodingReducer } from './features/geocoding';
+import { geolocationReducer } from './features/geolocation';
 import { locationsReducer } from './features/locations';
 import { routesReducer } from './features/routes';
 import { viewportReducer } from './features/viewport';
 
 const rootReducer = combineReducers({
   geocoding: geocodingReducer,
+  geolocation: geolocationReducer,
   locations: locationsReducer,
   routes: routesReducer,
   viewport: viewportReducer,

@@ -64,6 +64,15 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
         // This probably will result in editingLocation changing but other
         // actions should take care of that
       });
+    case 'current_location_selected':
+      return produce(state, (draft) => {
+        draft[action.startOrEnd] = {
+          point: action.point,
+          source: LocationSourceType.UserGeolocation,
+        };
+        draft[action.startOrEnd + 'InputText'] = '';
+      });
+
     case 'location_text_input_changed':
       return produce(state, (draft) => {
         draft[action.startOrEnd + 'InputText'] = action.value;
@@ -190,17 +199,44 @@ export function selectGeocodedLocation(startOrEnd, point, fromInputText) {
 
     // If this was the end point, and we have a start point -- or vice versa --
     // fetch the route.
-
-    const { locations } = getState();
-    if (startOrEnd === 'end' && locations.start) {
+    const { start, end } = getState().locations;
+    if (
+      start?.point?.geometry.coordinates &&
+      end?.point?.geometry.coordinates
+    ) {
       await fetchRoute(
-        locations.start.point.geometry.coordinates,
-        point.geometry.coordinates,
+        start.point.geometry.coordinates,
+        end.point.geometry.coordinates,
       )(dispatch, getState);
-    } else if (startOrEnd === 'start' && locations.end) {
+    }
+  };
+}
+
+export function selectCurrentLocation(startOrEnd) {
+  return async function selectCurrentLocationThunk(dispatch, getState) {
+    const { lng, lat } = getState().geolocation;
+    if (lng == null || lat == null) {
+      // shouldn't happen
+      console.error('selected current location but have none');
+      return;
+    }
+
+    dispatch({
+      type: 'current_location_selected',
+      startOrEnd,
+      point: turf.point([lng, lat]),
+    });
+
+    // If this was the start point, and we have an end point -- or vice versa --
+    // fetch the route.
+    const { start, end } = getState().locations;
+    if (
+      start?.point?.geometry.coordinates &&
+      end?.point?.geometry.coordinates
+    ) {
       await fetchRoute(
-        point.geometry.coordinates,
-        locations.end.point.geometry.coordinates,
+        start.point.geometry.coordinates,
+        end.point.geometry.coordinates,
       )(dispatch, getState);
     }
   };

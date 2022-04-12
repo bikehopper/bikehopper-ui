@@ -3,6 +3,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import uniqBy from 'lodash/uniqBy';
 import {
   LocationSourceType,
+  selectCurrentLocation,
   selectGeocodedLocation,
 } from '../features/locations';
 import describePlace from '../lib/describePlace';
@@ -50,9 +51,12 @@ export default function SearchAutocompleteDropdown(props) {
       }
 
       const other = startOrEnd === 'start' ? 'end' : 'start';
+      const haveCurrentLocation =
+        state.geolocation.lat != null && state.geolocation.lng != null;
       const canUseCurrentLocation =
-        !state.locations[other] ||
-        state.locations[other].source !== LocationSourceType.UserGeolocation;
+        haveCurrentLocation &&
+        (!state.locations[other] ||
+          state.locations[other].source !== LocationSourceType.UserGeolocation);
 
       return {
         startOrEnd,
@@ -72,7 +76,7 @@ export default function SearchAutocompleteDropdown(props) {
   };
 
   const handleCurrentLocationClick = () => {
-    // TODO
+    dispatch(selectCurrentLocation(startOrEnd));
   };
 
   return (

@@ -14,6 +14,7 @@ import {
   BIKEABLE_HIGHWAYS,
 } from '../lib/geometry';
 import lngLatToCoords from '../lib/lngLatToCoords';
+import { geolocated } from '../features/geolocation';
 import { locationDragged } from '../features/locations';
 import { routeClicked } from '../features/routes';
 import { mapMoved } from '../features/viewport';
@@ -58,6 +59,14 @@ function BikehopperMap(props) {
 
   const handleEndPointDrag = (evt) => {
     dispatch(locationDragged('end', lngLatToCoords(evt.lngLat)));
+  };
+
+  const handleGeolocate = (geolocateResultEvent) => {
+    console.log('geolocate event', geolocateResultEvent);
+    dispatch(
+      geolocated(geolocateResultEvent.coords, geolocateResultEvent.timestamp),
+    );
+    // TODO handle errors as well
   };
 
   const resizeRef = useResizeObserver(
@@ -151,7 +160,10 @@ function BikehopperMap(props) {
         onClick={handleRouteClick}
         onMoveEnd={handleMoveEnd}
       >
-        <GeolocateControl trackUserLocation={true} />
+        <GeolocateControl
+          trackUserLocation={true}
+          onGeolocate={handleGeolocate}
+        />
         <NavigationControl
           showZoom={false}
           style={{ ...navigationControlStyle }}

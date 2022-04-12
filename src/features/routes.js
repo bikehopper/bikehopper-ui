@@ -43,6 +43,7 @@ export function routesReducer(state = DEFAULT_STATE, action) {
         return state;
       }
     case 'geocoded_location_selected':
+    case 'current_location_selected':
       // As above, clear route if need be
       if (
         state.routes &&
