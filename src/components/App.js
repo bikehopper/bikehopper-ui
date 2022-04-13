@@ -50,7 +50,7 @@ function App() {
     <div className="App">
       <TopBar
         showSearchBar={isEditingLocations || hasLocations || hasRoutes}
-        showDirectionsLabel={isEditingLocations}
+        initiallyFocusDestination={isEditingLocations}
       />
       {showMap && <BikehopperMap />}
       {bottomContent && (

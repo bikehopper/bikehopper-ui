@@ -5,7 +5,7 @@ import { ReactComponent as InfoEmpty } from 'iconoir/icons/info-empty.svg';
 
 import './TopBar.css';
 
-export default function TopBar({ showSearchBar, showDirectionsLabel }) {
+export default function TopBar({ showSearchBar, initiallyFocusDestination }) {
   const logoAndInfoButton = (
     <div className="TopBar_logoAndInfoButton">
       <span className="TopBar_logo">
@@ -21,11 +21,8 @@ export default function TopBar({ showSearchBar, showDirectionsLabel }) {
   return (
     <div className="TopBar">
       {!showSearchBar && logoAndInfoButton}
-      {showSearchBar && showDirectionsLabel && (
-        <h2 className="TopBar_getDirections">Get directions</h2>
-      )}
       {showSearchBar && (
-        <SearchBar initiallyFocusDestination={showDirectionsLabel} />
+        <SearchBar initiallyFocusDestination={initiallyFocusDestination} />
       )}
     </div>
   );

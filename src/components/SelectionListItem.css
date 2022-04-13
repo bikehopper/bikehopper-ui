@@ -1,5 +1,5 @@
 .SelectionListItem {
-  padding: 14px 24px;
+  padding: 8px 24px;
 }
 
 .SelectionListItem:not(:last-child) {
@@ -17,6 +17,6 @@
 }
 
 .SelectionListItem_link {
-  padding: 14px 24px;
+  padding: 8px 24px;
   flex-grow: 1;
 }

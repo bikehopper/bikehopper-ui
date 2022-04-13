@@ -8,8 +8,8 @@
 
 .SearchBar_input {
   background-color: #def0cc;
-  border: none;
-  padding: 12px 12px 12px 40px;
+  border: 2px solid transparent;
+  padding: 10px 10px 10px 34px;
   border-radius: 12px;
   width: 100%;
   font-size: 13px;
@@ -17,7 +17,7 @@
 
 .SearchBar_divider {
   display: block;
-  height: 21px;
+  height: 16px;
   border-left: 3px dotted white;
   margin-left: 19px;
 }
@@ -28,11 +28,12 @@
 
 .SearchBar_icon {
   position: absolute;
-  top: 8px;
+  top: 10px;
   left: 8px;
 }
 
 .SearchBar_input:focus {
   background-color: #fff;
-  outline: #ffd18e solid 2px; /* FIXME: would look better INSIDE the input */
+  outline: none;
+  border: 2px solid #ffd18e;
 }
