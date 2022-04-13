@@ -10,6 +10,7 @@ import {
   LocationSourceType,
   locationInputFocused,
 } from '../features/locations';
+import * as VisualViewportTracker from '../lib/VisualViewportTracker';
 
 import './App.css';
 
@@ -45,6 +46,16 @@ function App() {
   }
 
   const showMap = !isEditingLocations;
+
+  // iOS hack: Shrink body when Safari virtual keyboard is hiding content, so
+  // you can't be scrolled down.
+  React.useEffect(() => {
+    if (VisualViewportTracker.isSupported()) {
+      VisualViewportTracker.listen((height) => {
+        document.body.style.height = `${height}px`;
+      });
+    }
+  }, []);
 
   return (
     <div className="App">

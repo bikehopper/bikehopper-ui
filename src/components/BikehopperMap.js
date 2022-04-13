@@ -21,6 +21,8 @@ import { routeClicked } from '../features/routes';
 import { mapMoved } from '../features/viewport';
 import useResizeObserver from '../hooks/useResizeObserver';
 import MarkerSVG from './MarkerSVG';
+import delay from '../lib/delay';
+import * as VisualViewportTracker from '../lib/VisualViewportTracker';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './BikehopperMap.css';
@@ -110,16 +112,32 @@ function BikehopperMap(props) {
     // fire before this, and we need that observer to handle resizes that
     // happen for other reasons (device orientation change, desktop browser
     // window resize, etc).
-    map.resize();
-    map.fitBounds(
-      [
-        [minx, miny],
-        [maxx, maxy],
-      ],
-      {
-        padding: ZOOM_PADDING,
-      },
-    );
+    const resizeAndFitBounds = () => {
+      map.resize();
+      map.fitBounds(
+        [
+          [minx, miny],
+          [maxx, maxy],
+        ],
+        {
+          padding: ZOOM_PADDING,
+        },
+      );
+    };
+
+    if (VisualViewportTracker.isKeyboardUp()) {
+      // On mobile Safari we have to wait for the virtual keyboard to go away,
+      // or we'll run this prematurely, with the map the wrong size.
+      (async function waitToResizeAndFitBounds() {
+        await Promise.race([
+          VisualViewportTracker.waitForKeyboardDown(),
+          delay(400),
+        ]);
+        resizeAndFitBounds();
+      })();
+    } else {
+      resizeAndFitBounds();
+    }
   }, [routes]);
 
   const features = routes ? routesToGeoJSON(routes) : EMPTY_GEOJSON;
