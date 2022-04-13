@@ -52,7 +52,7 @@ function App() {
         showSearchBar={isEditingLocations || hasLocations || hasRoutes}
         showDirectionsLabel={isEditingLocations}
       />
-      {showMap && <BikehopperMap />}
+      <BikehopperMap hidden={!showMap} />
       {bottomContent && (
         <BottomPane withoutMap={!showMap}>{bottomContent}</BottomPane>
       )}
