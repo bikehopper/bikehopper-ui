@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useCallback, useLayoutEffect } from 'react';
+import classnames from 'classnames';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import MapGL, {
   Layer,
@@ -148,7 +149,13 @@ function BikehopperMap(props) {
   const viewStateOnFirstRender = React.useRef(viewState);
 
   return (
-    <div className="BikehopperMap" ref={resizeRef}>
+    <div
+      className={classnames({
+        BikehopperMap: true,
+        BikehopperMap__hidden: props.hidden,
+      })}
+      ref={resizeRef}
+    >
       <MapGL
         initialViewState={viewStateOnFirstRender.current}
         ref={mapRef}

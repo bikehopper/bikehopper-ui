@@ -52,7 +52,7 @@ function App() {
         showSearchBar={isEditingLocations || hasLocations || hasRoutes}
         initiallyFocusDestination={isEditingLocations}
       />
-      {showMap && <BikehopperMap />}
+      <BikehopperMap hidden={!showMap} />
       {bottomContent && (
         <BottomPane withoutMap={!showMap}>{bottomContent}</BottomPane>
       )}

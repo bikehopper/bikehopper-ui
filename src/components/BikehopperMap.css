@@ -2,3 +2,14 @@
   position: relative;
   flex-grow: 1;
 }
+
+.BikehopperMap__hidden {
+  position: absolute;
+  /* vertical positioning roughly close to what it will be when shown, to
+   * minimize jumpiness */
+  top: 20%;
+  bottom: 10%;
+  left: 0;
+  right: 0;
+  z-index: -20;
+}
