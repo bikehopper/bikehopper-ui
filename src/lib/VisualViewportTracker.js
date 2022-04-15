@@ -10,11 +10,7 @@ let _lastHeight;
 
 export function isSupported() {
   const ua = Bowser.parse(navigator.userAgent);
-  return (
-    ua.browser.name === 'Safari' &&
-    ua.os.name === 'iOS' &&
-    !!window.visualViewport
-  );
+  return ua.os.name === 'iOS' && !!window.visualViewport;
 }
 
 export function init() {
