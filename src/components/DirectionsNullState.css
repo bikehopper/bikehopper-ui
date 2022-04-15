@@ -1,5 +1,6 @@
 .DirectionsNullState {
-  padding: 24px;
+  /* extra padding on bottom to work around mobile Safari expanding address bar */
+  padding: 24px 24px 82px 24px;
 }
 
 .DirectionsNullState_header {

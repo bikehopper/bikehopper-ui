@@ -7,14 +7,15 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  height: 100vh;
+  overflow: hidden;
 }
 
 * {
   box-sizing: border-box;
 }
 
-body,
-html {
+#root {
   height: 100%;
 }
 
