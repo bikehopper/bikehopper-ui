@@ -95,6 +95,14 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
       return produce(state, (draft) => {
         draft[action.startOrEnd + 'InputText'] = action.value;
       });
+    case 'locations_cleared':
+      return produce(state, (draft) => {
+        draft.start = null;
+        draft.end = null;
+        draft.editingLocation = null;
+        draft.startInputText = '';
+        draft.endInputText = '';
+      });
     default:
       return state;
   }
@@ -257,5 +265,11 @@ export function selectCurrentLocation(startOrEnd) {
         end.point.geometry.coordinates,
       )(dispatch, getState);
     }
+  };
+}
+
+export function clearLocations() {
+  return {
+    type: 'locations_cleared',
   };
 }
