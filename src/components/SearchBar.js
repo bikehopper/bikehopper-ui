@@ -109,7 +109,7 @@ export default function SearchBar(props) {
   return (
     <form className="SearchBar" onSubmit={handleSubmit}>
       <button onClick={handleBackClick} className="SearchBar_backButton">
-        <Icon className="SearchBar_backIcon">
+        <Icon label="back" className="SearchBar_backIcon">
           <NavLeftArrow />
         </Icon>
       </button>
