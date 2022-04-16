@@ -175,6 +175,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
           width: '100%',
           height: '100%',
         }}
+        onLoad={props.onMapLoad}
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
         interactiveLayerIds={[

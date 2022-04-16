@@ -14,3 +14,20 @@
   flex-shrink: 1;
   min-height: 10px;
 }
+
+.App_mapOverlay {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  overflow: auto;
+}
+
+.App_mapOverlayBottomPane {
+  background: white;
+  border-radius: 9px 9px 0 0;
+  flex-grow: 1;
+}
+
+.App_mapOverlayTransparent {
+  min-height: 300px;
+}
