@@ -14,7 +14,3 @@
   flex-shrink: 1;
   min-height: 10px;
 }
-
-.App_column__interactingWithMap {
-  pointer-events: none;
-}

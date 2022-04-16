@@ -32,8 +32,6 @@ function App() {
 
   const dispatch = useDispatch();
 
-  const [interactingWithMap, setInteractingWithMap] = React.useState(false);
-
   const mapRef = React.useRef();
 
   const handleBottomInputFocus = (evt) => {
@@ -46,13 +44,6 @@ function App() {
   const handleMapTouchEvent = (evt) => {
     mapRef.current.getContainer().focus();
     evt.preventDefault();
-    evt.stopPropagation();
-
-    if (evt.type == 'touchstart') {
-      setInteractingWithMap(true);
-    } else if (evt.type == 'touchend' || evt.type == 'touchcancel') {
-      setInteractingWithMap(false);
-    }
 
     var target = mapRef.current.getCanvas();
 
@@ -63,15 +54,13 @@ function App() {
       for (var i = 0; i < evt.touches.length; i++) {
         options.touches.push(
           new Touch({
-            identifier: 0,
+            identifier: i,
             target,
             clientX: evt.touches[i].clientX,
             clientY: evt.touches[i].clientY,
           }),
         );
       }
-
-      console.log(options.touches);
     }
 
     target.dispatchEvent(new TouchEvent(evt.type, options));
@@ -92,12 +81,7 @@ function App() {
   return (
     <div className="App">
       <BikehopperMap hidden={!showMap} ref={mapRef} />
-      <div
-        className={classnames({
-          App_column: true,
-          App_column__interactingWithMap: interactingWithMap,
-        })}
-      >
+      <div className="App_column">
         <TopBar
           showSearchBar={isEditingLocations || hasLocations || hasRoutes}
           initiallyFocusDestination={isEditingLocations}
