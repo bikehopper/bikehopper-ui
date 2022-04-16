@@ -6,8 +6,8 @@ import DirectionsNullState from './DirectionsNullState';
 import RoutesOverview from './RoutesOverview';
 import SearchAutocompleteDropdown from './SearchAutocompleteDropdown';
 import TopBar from './TopBar';
-import MapOverlay from './MapOverlay';
 import classnames from 'classnames';
+import useResizeObserver from '../hooks/useResizeObserver';
 import {
   LocationSourceType,
   locationInputFocused,
@@ -33,6 +33,50 @@ function App() {
   const dispatch = useDispatch();
 
   const mapRef = React.useRef();
+  const mapControlBottomLeftRef = React.useRef();
+  const mapControlBottomRightRef = React.useRef();
+  const mapControlTopLeftRef = React.useRef();
+  const mapControlTopRightRef = React.useRef();
+  const mapOverlayHeightRef = React.useRef();
+
+  const handleMapLoad = () => {
+    mapControlBottomLeftRef.current = document.getElementsByClassName(
+      'maplibregl-ctrl-bottom-left',
+    )[0];
+    mapControlBottomRightRef.current = document.getElementsByClassName(
+      'maplibregl-ctrl-bottom-right',
+    )[0];
+    mapControlTopLeftRef.current = document.getElementsByClassName(
+      'maplibregl-ctrl-top-left',
+    )[0];
+    mapControlTopRightRef.current = document.getElementsByClassName(
+      'maplibregl-ctrl-top-right',
+    )[0];
+
+    window.requestAnimationFrame(animationUpdate);
+    updateMapTopControls(mapOverlayHeightRef.current);
+  };
+
+  const updateMapTopControls = (height) => {
+    mapOverlayHeightRef.current = height;
+
+    if (!mapControlTopLeftRef.current) {
+      return;
+    }
+    var topBarHeight =
+      mapRef.current.getContainer().getBoundingClientRect().height - height;
+    mapControlTopLeftRef.current.style.transform =
+      'translate3d(0,' + topBarHeight + 'px,0)';
+    mapControlTopRightRef.current.style.transform =
+      'translate3d(0,' + topBarHeight + 'px,0)';
+  };
+
+  const mapOverlayResizeRef = useResizeObserver(
+    React.useCallback(([width, height]) => {
+      mapOverlayHeightRef.current = height;
+      updateMapTopControls(height);
+    }, []),
+  );
 
   const handleBottomInputFocus = (evt) => {
     dispatch(locationInputFocused('end'));
@@ -78,27 +122,65 @@ function App() {
     }
   }, []);
 
+  const mapOverlayTransparentRef = React.useRef();
+
+  React.useEffect(() => {
+    ['touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach(
+      (eventName) => {
+        mapOverlayTransparentRef.current.addEventListener(
+          eventName,
+          handleMapTouchEvent,
+        );
+      },
+    );
+  }, []);
+
+  const handleMapOverlayScroll = (evt) => {
+    window.requestAnimationFrame(animationUpdate);
+  };
+
+  const animationUpdate = () => {
+    var paneTopY =
+      mapOverlayTransparentRef.current.getBoundingClientRect().bottom;
+    var mapBottomY = mapRef.current
+      .getContainer()
+      .getBoundingClientRect().bottom;
+    var bottomTranslate = (mapBottomY - paneTopY) * -1;
+
+    if (mapControlBottomLeftRef.current) {
+      mapControlBottomLeftRef.current.style.transform =
+        'translate3d(0,' + bottomTranslate + 'px,0)';
+      mapControlBottomRightRef.current.style.transform =
+        'translate3d(0,' + bottomTranslate + 'px,0)';
+    }
+  };
+
   return (
     <div className="App">
-      <BikehopperMap hidden={!showMap} ref={mapRef} />
+      <BikehopperMap hidden={!showMap} ref={mapRef} onMapLoad={handleMapLoad} />
       <div className="App_column">
         <TopBar
           showSearchBar={isEditingLocations || hasLocations || hasRoutes}
           initiallyFocusDestination={isEditingLocations}
         />
         {!isEditingLocations && (
-          <MapOverlay
-            onMapTouchStart={handleMapTouchEvent}
-            onMapTouchMove={handleMapTouchEvent}
-            onMapTouchEnd={handleMapTouchEvent}
-            onMapTouchCancel={handleMapTouchEvent}
+          <div
+            className="App_mapOverlay"
+            onScroll={handleMapOverlayScroll}
+            ref={mapOverlayResizeRef}
           >
-            {hasRoutes ? (
-              <RoutesOverview />
-            ) : hasLocations ? null : (
-              <DirectionsNullState onInputFocus={handleBottomInputFocus} />
-            )}
-          </MapOverlay>
+            <div
+              className="App_mapOverlayTransparent"
+              ref={mapOverlayTransparentRef}
+            ></div>
+            <div className="App_mapOverlayBottomPane">
+              {hasRoutes ? (
+                <RoutesOverview />
+              ) : hasLocations ? null : (
+                <DirectionsNullState onInputFocus={handleBottomInputFocus} />
+              )}
+            </div>
+          </div>
         )}
         {isEditingLocations && <SearchAutocompleteDropdown />}
       </div>
