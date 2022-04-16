@@ -29,9 +29,7 @@ import './BikehopperMap.css';
 
 const ZOOM_PADDING = 40;
 
-function BikehopperMap(props) {
-  const mapRef = React.useRef();
-
+const BikehopperMap = React.forwardRef((props, mapRef) => {
   const dispatch = useDispatch();
   const {
     startPoint,
@@ -166,13 +164,7 @@ function BikehopperMap(props) {
   const viewStateOnFirstRender = React.useRef(viewState);
 
   return (
-    <div
-      className={classnames({
-        BikehopperMap: true,
-        BikehopperMap__hidden: props.hidden,
-      })}
-      ref={resizeRef}
-    >
+    <div className="BikehopperMap" ref={resizeRef}>
       <MapGL
         initialViewState={viewStateOnFirstRender.current}
         ref={mapRef}
@@ -261,7 +253,7 @@ function BikehopperMap(props) {
       </MapGL>
     </div>
   );
-}
+});
 
 function getTransitStyle(activePath) {
   return {

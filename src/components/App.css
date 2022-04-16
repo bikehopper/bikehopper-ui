@@ -5,3 +5,16 @@
   height: 100%;
   overflow: hidden;
 }
+
+.App_column {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  z-index: 10;
+  flex-shrink: 1;
+  min-height: 10px;
+}
+
+.App_column__interactingWithMap {
+  pointer-events: none;
+}
