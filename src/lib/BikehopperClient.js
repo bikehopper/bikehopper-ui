@@ -1,3 +1,5 @@
+const POINT_PRECISION = 5;
+
 export async function fetchRoute({
   profile = 'pt',
   connectingProfile = 'bike2',
@@ -9,11 +11,11 @@ export async function fetchRoute({
 }) {
   const detail_param = details?.join('&details=') || '';
   const route = await fetch(
-    `${process.env.REACT_APP_GRAPHHOPPER_PATH}/route-pt?point=${
-      points[0]
-    }&point=${
-      points[1]
-    }&locale=en-US&pt.earliest_departure_time=${encodeURIComponent(
+    `${process.env.REACT_APP_GRAPHHOPPER_PATH}/route-pt?point=${points[0].map(
+      (p) => p.toFixed(POINT_PRECISION),
+    )}&point=${points[1].map((p) =>
+      p.toFixed(POINT_PRECISION),
+    )}&locale=en-US&pt.earliest_departure_time=${encodeURIComponent(
       new Date().toISOString(),
     )}&elevation=true&profile=${profile}&pt.connecting_profile=${connectingProfile}&use_miles=false&selected_detail=Elevation&layer=OpenStreetMap&points_encoded=${pointsEncoded}&details=${detail_param}`,
     {
@@ -48,7 +50,9 @@ export async function geocode(
 
   if (latitude != null && longitude != null) {
     zoom = Math.round(zoom); // Photon doesn't accept float zoom values
-    url += `&lat=${latitude}&lon=${longitude}&zoom=${zoom}&location_bias_scale=${locationBias}`;
+    url += `&lat=${latitude.toFixed(POINT_PRECISION)}&lon=${longitude.toFixed(
+      POINT_PRECISION,
+    )}&zoom=${zoom}&location_bias_scale=${locationBias}`;
   }
 
   const geocoding = await fetch(url, {
