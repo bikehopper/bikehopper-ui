@@ -37,6 +37,13 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
         draft.end = action.end;
         if (action.start && action.end) draft.editingLocation = null;
       });
+    case 'locations_swapped':
+      return produce(state, (draft) => {
+        draft.start = state.end;
+        draft.end = state.start;
+        draft.startInputText = state.endInputText;
+        draft.endInputText = state.startInputText;
+      });
     case 'location_dragged':
       return produce(state, (draft) => {
         draft[action.startOrEnd] = {
@@ -271,5 +278,11 @@ export function selectCurrentLocation(startOrEnd) {
 export function clearLocations() {
   return {
     type: 'locations_cleared',
+  };
+}
+
+export function swapLocations() {
+  return {
+    type: 'locations_swapped',
   };
 }

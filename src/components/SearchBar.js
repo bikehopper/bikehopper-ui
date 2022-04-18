@@ -7,11 +7,13 @@ import {
   locationInputFocused,
   locationsSubmitted,
   LocationSourceType,
+  swapLocations,
 } from '../features/locations';
 import usePrevious from '../hooks/usePrevious';
 import describePlace from '../lib/describePlace';
 import { ReactComponent as Pin } from 'iconoir/icons/pin-alt.svg';
 import { ReactComponent as NavLeftArrow } from 'iconoir/icons/nav-arrow-left.svg';
+import { ReactComponent as SwapArrows } from 'iconoir/icons/data-transfer-both.svg';
 
 import './SearchBar.css';
 
@@ -66,6 +68,10 @@ export default function SearchBar(props) {
 
   const handleBackClick = (event) => {
     dispatch(clearLocations());
+  };
+
+  const handleSwapClick = (event) => {
+    dispatch(swapLocations());
   };
 
   const handleFocus = (which, event) => {
@@ -149,6 +155,11 @@ export default function SearchBar(props) {
           />
         </span>
       </div>
+      <button onClick={handleSwapClick} className="SearchBar_swapButton">
+        <Icon label="swap" className="SearchBar_swapIcon">
+          <SwapArrows />
+        </Icon>
+      </button>
     </form>
   );
 }

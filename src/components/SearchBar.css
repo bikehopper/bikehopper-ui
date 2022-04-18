@@ -53,6 +53,21 @@
   stroke-width: 3px;
 }
 
+.SearchBar_swapButton {
+  background: none;
+  width: 48px;
+  height: 48px;
+  display: block;
+  border: 0;
+  color: #ffd18e;
+  margin-right: -24px;
+  margin-top: 24px;
+}
+
+.SearchBar_swapIcon path {
+  stroke-width: 3px;
+}
+
 .SearchBar_inputs {
   flex-grow: 1;
 }
