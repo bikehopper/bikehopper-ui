@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useCallback, useLayoutEffect } from 'react';
-import classnames from 'classnames';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import MapGL, {
   Layer,
@@ -81,9 +80,12 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
   };
 
   const resizeRef = useResizeObserver(
-    useCallback(([width, height]) => {
-      if (mapRef.current) mapRef.current.resize();
-    }, []),
+    useCallback(
+      ([width, height]) => {
+        if (mapRef.current) mapRef.current.resize();
+      },
+      [mapRef],
+    ),
   );
 
   // center viewport on route paths
@@ -135,7 +137,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
     } else {
       resizeAndFitBounds();
     }
-  }, [routes]);
+  }, [routes, mapRef]);
 
   const features = routes ? routesToGeoJSON(routes) : EMPTY_GEOJSON;
 

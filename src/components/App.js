@@ -1,12 +1,10 @@
 import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import BikehopperMap from './BikehopperMap';
-import BottomPane from './BottomPane';
 import DirectionsNullState from './DirectionsNullState';
 import RoutesOverview from './RoutesOverview';
 import SearchAutocompleteDropdown from './SearchAutocompleteDropdown';
 import TopBar from './TopBar';
-import classnames from 'classnames';
 import useResizeObserver from '../hooks/useResizeObserver';
 import {
   LocationSourceType,
@@ -63,7 +61,7 @@ function App() {
     if (!mapControlTopLeftRef.current) {
       return;
     }
-    var topBarHeight =
+    const topBarHeight =
       mapRef.current.getContainer().getBoundingClientRect().height - height;
     mapControlTopLeftRef.current.style.transform =
       'translate3d(0,' + topBarHeight + 'px,0)';
@@ -82,20 +80,17 @@ function App() {
     dispatch(locationInputFocused('end'));
   };
 
-  var lastX = 0,
-    lastY = 0;
-
   const handleMapTouchEvent = (evt) => {
     mapRef.current.getContainer().focus();
     evt.preventDefault();
 
-    var target = mapRef.current.getCanvas();
+    const target = mapRef.current.getCanvas();
 
-    var options = { bubbles: true };
+    const options = { bubbles: true };
 
     if (evt.touches && evt.touches.length > 0) {
       options.touches = [];
-      for (var i = 0; i < evt.touches.length; i++) {
+      for (let i = 0; i < evt.touches.length; i++) {
         options.touches.push(
           new Touch({
             identifier: i,
@@ -140,12 +135,14 @@ function App() {
   };
 
   const animationUpdate = () => {
-    var paneTopY =
+    if (!mapRef.current) return;
+
+    const paneTopY =
       mapOverlayTransparentRef.current.getBoundingClientRect().bottom;
-    var mapBottomY = mapRef.current
+    const mapBottomY = mapRef.current
       .getContainer()
       .getBoundingClientRect().bottom;
-    var bottomTranslate = (mapBottomY - paneTopY) * -1;
+    const bottomTranslate = (mapBottomY - paneTopY) * -1;
 
     if (mapControlBottomLeftRef.current) {
       mapControlBottomLeftRef.current.style.transform =
