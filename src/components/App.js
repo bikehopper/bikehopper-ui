@@ -190,13 +190,6 @@ function App() {
     }
   };
 
-  React.useEffect(() => {
-    const interval = setInterval(() => {
-      window.requestAnimationFrame(animationUpdate);
-    }, 200);
-    return () => clearInterval(interval);
-  }, []);
-
   let bottomContent;
   if (isEditingLocations) {
     bottomContent = <SearchAutocompleteDropdown />;
