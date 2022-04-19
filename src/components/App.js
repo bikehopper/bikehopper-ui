@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import classnames from 'classnames';
 import BikehopperMap from './BikehopperMap';
 import DirectionsNullState from './DirectionsNullState';
 import RoutesOverview from './RoutesOverview';
@@ -125,16 +126,29 @@ function App() {
     );
   }
 
+  const [isMouseOverBottomPane, setIsMouseOverBottomPane] =
+    React.useState(false);
+  const handleBottomPaneEnter = setIsMouseOverBottomPane.bind(null, true);
+  const handleBottomPaneLeave = setIsMouseOverBottomPane.bind(null, false);
+
   return (
     <div className="App">
       <BikehopperMap ref={mapRef} onMapLoad={handleMapLoad} />
-      <div className="App_column">
+      <div
+        className={classnames({
+          App_column: true,
+          App_column__scrollable: isMouseOverBottomPane,
+        })}
+      >
         <TopBar
           showSearchBar={isEditingLocations || hasLocations || hasRoutes}
           initiallyFocusDestination={isEditingLocations}
         />
         <div
-          className="App_mapOverlay"
+          className={classnames({
+            App_mapOverlay: true,
+            App_mapOverlay__scrollable: isMouseOverBottomPane,
+          })}
           onScroll={handleMapOverlayScroll}
           ref={mapOverlayResizeRef}
         >
@@ -144,7 +158,16 @@ function App() {
               ref={mapOverlayTransparentRef}
             />
           )}
-          <div className="App_mapOverlayBottomPane">{bottomContent}</div>
+          <div
+            className="App_mapOverlayBottomPane"
+            onMouseEnter={handleBottomPaneEnter}
+            onMouseLeave={handleBottomPaneLeave}
+            onTouchStart={handleBottomPaneEnter}
+            onTouchEnd={handleBottomPaneLeave}
+            onTouchCancel={handleBottomPaneLeave}
+          >
+            {bottomContent}
+          </div>
         </div>
       </div>
     </div>

@@ -16,12 +16,19 @@
   pointer-events: none;
 }
 
+.App_column__scrollable {
+  pointer-events: auto;
+}
+
 .App_mapOverlay {
   display: flex;
   flex-grow: 1;
   flex-direction: column;
   overflow-y: scroll;
-  pointer-events: none;
+}
+
+.App_mapOverlay__scrollable {
+  background-color: rgba(249, 0, 0, 0.3);
 }
 
 .App_mapOverlayBottomPane {
