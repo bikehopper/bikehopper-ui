@@ -70,6 +70,80 @@ function App() {
       'translate3d(0,' + topBarHeight + 'px,0)';
   };
 
+  const touchTargetRef = React.useRef();
+
+  const handleMapTouchEvent = (eventName, evt) => {
+    if (!mapRef.current) return;
+    console.log('map touch', eventName);
+    mapRef.current.getContainer().focus();
+    evt.preventDefault();
+
+    const options = { bubbles: true };
+
+    if (eventName === 'touchstart' || !touchTargetRef.current) {
+      const mapCanvas = mapRef.current.getCanvas();
+      if (evt.touches?.length > 0) {
+        columnRef.current.style.pointerEvents = 'none';
+
+        console.log(
+          'element at',
+          evt.touches[0].clientX,
+          evt.touches[0].clientY,
+          'is',
+          document.elementFromPoint(
+            evt.touches[0].clientX,
+            evt.touches[0].clientY,
+          ),
+        );
+
+        touchTargetRef.current =
+          document.elementFromPoint(
+            evt.touches[0].clientX,
+            evt.touches[0].clientY,
+          ) || mapCanvas;
+
+        columnRef.current.style.pointerEvents = '';
+      } else {
+        touchTargetRef.current = mapCanvas;
+      }
+    }
+
+    const target = touchTargetRef.current;
+
+    if (evt.touches?.length > 0) {
+      options.touches = [];
+      for (let i = 0; i < evt.touches.length; i++) {
+        options.touches.push(
+          new Touch({
+            identifier: i,
+            target,
+            clientX: evt.touches[i].clientX,
+            clientY: evt.touches[i].clientY,
+          }),
+        );
+      }
+    }
+
+    console.log('dispatching to', target);
+
+    target.dispatchEvent(new TouchEvent(evt.type, options));
+
+    if (eventName === 'touchend' || eventName === 'touchcancel') {
+      touchTargetRef.current = null;
+    }
+  };
+
+  React.useEffect(() => {
+    ['touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach(
+      (eventName) => {
+        mapOverlayTransparentRef.current.addEventListener(
+          eventName,
+          handleMapTouchEvent.bind(null, eventName),
+        );
+      },
+    );
+  }, []);
+
   const mapOverlayResizeRef = useResizeObserver(
     React.useCallback(([width, height]) => {
       mapOverlayHeightRef.current = height;
@@ -131,14 +205,18 @@ function App() {
   const handleBottomPaneEnter = setIsMouseOverBottomPane.bind(null, true);
   const handleBottomPaneLeave = setIsMouseOverBottomPane.bind(null, false);
 
+  const columnRef = React.useRef();
+
   return (
     <div className="App">
       <BikehopperMap ref={mapRef} onMapLoad={handleMapLoad} />
       <div
         className={classnames({
           App_column: true,
+          App_column__nonTouchDevice: !('ontouchstart' in window),
           App_column__scrollable: isMouseOverBottomPane,
         })}
+        ref={columnRef}
       >
         <TopBar
           showSearchBar={isEditingLocations || hasLocations || hasRoutes}
