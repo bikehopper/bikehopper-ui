@@ -76,7 +76,6 @@ function BikehopperMap(props) {
   };
 
   const handleGeolocate = (geolocateResultEvent) => {
-    console.log('geolocate event', geolocateResultEvent);
     dispatch(
       geolocated(geolocateResultEvent.coords, geolocateResultEvent.timestamp),
     );
