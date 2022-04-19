@@ -15,6 +15,8 @@ import * as VisualViewportTracker from '../lib/VisualViewportTracker';
 
 import './App.css';
 
+const _isTouch = 'ontouchstart' in window;
+
 function App() {
   const { hasRoutes, hasLocations, isEditingLocations } = useSelector(
     (state) => ({
@@ -133,15 +135,19 @@ function App() {
     }
   };
 
-  React.useEffect(() => {
-    ['touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach(
-      (eventName) => {
-        mapOverlayTransparentRef.current.addEventListener(
-          eventName,
-          handleMapTouchEvent.bind(null, eventName),
-        );
-      },
-    );
+  const mapOverlayTransparentRef = React.useRef();
+  const mapOverlayTransparentRefCallback = React.useCallback((node) => {
+    if (node) {
+      ['touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach(
+        (eventName) => {
+          node.addEventListener(
+            eventName,
+            handleMapTouchEvent.bind(null, eventName),
+          );
+        },
+      );
+    }
+    mapOverlayTransparentRef.current = node;
   }, []);
 
   const mapOverlayResizeRef = useResizeObserver(
@@ -164,8 +170,6 @@ function App() {
       });
     }
   }, []);
-
-  const mapOverlayTransparentRef = React.useRef();
 
   const handleMapOverlayScroll = (evt) => {
     window.requestAnimationFrame(animationUpdate);
@@ -213,7 +217,7 @@ function App() {
       <div
         className={classnames({
           App_column: true,
-          App_column__nonTouchDevice: !('ontouchstart' in window),
+          App_column__nonTouchDevice: !_isTouch,
           App_column__scrollable: isMouseOverBottomPane,
         })}
         ref={columnRef}
@@ -233,16 +237,13 @@ function App() {
           {!isEditingLocations && (
             <div
               className="App_mapOverlayTransparent"
-              ref={mapOverlayTransparentRef}
+              ref={mapOverlayTransparentRefCallback}
             />
           )}
           <div
             className="App_mapOverlayBottomPane"
             onMouseEnter={handleBottomPaneEnter}
             onMouseLeave={handleBottomPaneLeave}
-            onTouchStart={handleBottomPaneEnter}
-            onTouchEnd={handleBottomPaneLeave}
-            onTouchCancel={handleBottomPaneLeave}
           >
             {bottomContent}
           </div>
