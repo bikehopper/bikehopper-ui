@@ -80,33 +80,6 @@ function App() {
     dispatch(locationInputFocused('end'));
   };
 
-  const handleMapTouchEvent = (evt) => {
-    mapRef.current.getContainer().focus();
-    evt.preventDefault();
-
-    const target = mapRef.current.getCanvas();
-
-    const options = { bubbles: true };
-
-    if (evt.touches && evt.touches.length > 0) {
-      options.touches = [];
-      for (let i = 0; i < evt.touches.length; i++) {
-        options.touches.push(
-          new Touch({
-            identifier: i,
-            target,
-            clientX: evt.touches[i].clientX,
-            clientY: evt.touches[i].clientY,
-          }),
-        );
-      }
-    }
-
-    target.dispatchEvent(new TouchEvent(evt.type, options));
-  };
-
-  const showMap = !isEditingLocations;
-
   // iOS hack: Shrink body when Safari virtual keyboard is hiding content, so
   // you can't be scrolled down.
   React.useEffect(() => {
@@ -118,17 +91,6 @@ function App() {
   }, []);
 
   const mapOverlayTransparentRef = React.useRef();
-
-  React.useEffect(() => {
-    ['touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach(
-      (eventName) => {
-        mapOverlayTransparentRef.current.addEventListener(
-          eventName,
-          handleMapTouchEvent,
-        );
-      },
-    );
-  }, []);
 
   const handleMapOverlayScroll = (evt) => {
     window.requestAnimationFrame(animationUpdate);
@@ -154,7 +116,7 @@ function App() {
 
   return (
     <div className="App">
-      <BikehopperMap hidden={!showMap} ref={mapRef} onMapLoad={handleMapLoad} />
+      <BikehopperMap ref={mapRef} onMapLoad={handleMapLoad} />
       <div className="App_column">
         <TopBar
           showSearchBar={isEditingLocations || hasLocations || hasRoutes}
@@ -169,7 +131,7 @@ function App() {
             <div
               className="App_mapOverlayTransparent"
               ref={mapOverlayTransparentRef}
-            ></div>
+            />
             <div className="App_mapOverlayBottomPane">
               {hasRoutes ? (
                 <RoutesOverview />

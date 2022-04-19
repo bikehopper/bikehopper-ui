@@ -5,6 +5,7 @@
   flex-flow: column;
   align-items: stretch;
   position: relative;
+  pointer-events: auto;
 }
 
 .TopBar_logoAndInfoButton {

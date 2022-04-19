@@ -13,21 +13,25 @@
   z-index: 10;
   flex-shrink: 1;
   min-height: 10px;
+  pointer-events: none;
 }
 
 .App_mapOverlay {
   display: flex;
   flex-grow: 1;
   flex-direction: column;
-  overflow: auto;
+  overflow-y: scroll;
+  pointer-events: none;
 }
 
 .App_mapOverlayBottomPane {
   background: white;
   border-radius: 9px 9px 0 0;
   flex-grow: 1;
+  pointer-events: auto;
 }
 
 .App_mapOverlayTransparent {
-  min-height: 300px;
+  flex-basis: calc(100% - 180px);
+  flex-shrink: 0;
 }
