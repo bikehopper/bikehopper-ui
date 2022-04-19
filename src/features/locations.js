@@ -282,7 +282,21 @@ export function clearLocations() {
 }
 
 export function swapLocations() {
-  return {
-    type: 'locations_swapped',
+  return async function swapLocationsThunk(dispatch, getState) {
+    dispatch({
+      type: 'locations_swapped',
+    });
+
+    // check if we still have a start and end point, just in case
+    const { start, end } = getState().locations;
+    if (
+      start?.point?.geometry.coordinates &&
+      end?.point?.geometry.coordinates
+    ) {
+      await fetchRoute(
+        start.point.geometry.coordinates,
+        end.point.geometry.coordinates,
+      )(dispatch, getState);
+    }
   };
 }

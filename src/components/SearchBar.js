@@ -71,6 +71,8 @@ export default function SearchBar(props) {
   };
 
   const handleSwapClick = (event) => {
+    event.preventDefault();
+
     dispatch(swapLocations());
   };
 
