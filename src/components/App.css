@@ -30,10 +30,6 @@
   overflow-y: scroll;
 }
 
-.App_mapOverlay__scrollable {
-  background-color: rgba(249, 0, 0, 0.3);
-}
-
 .App_mapOverlayBottomPane {
   background: white;
   border-radius: 9px 9px 0 0;

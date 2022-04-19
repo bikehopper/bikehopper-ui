@@ -225,13 +225,7 @@ function App() {
             initiallyFocusDestination={isEditingLocations}
           />
         </div>
-        <div
-          className={classnames({
-            App_mapOverlay: true,
-            App_mapOverlay__scrollable: isMouseOverBottomPane,
-          })}
-          onScroll={handleMapOverlayScroll}
-        >
+        <div className="App_mapOverlay" onScroll={handleMapOverlayScroll}>
           {!isEditingLocations && (
             <div
               className="App_mapOverlayTransparent"
