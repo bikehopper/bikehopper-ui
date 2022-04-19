@@ -6,7 +6,6 @@ import DirectionsNullState from './DirectionsNullState';
 import RoutesOverview from './RoutesOverview';
 import SearchAutocompleteDropdown from './SearchAutocompleteDropdown';
 import TopBar from './TopBar';
-import useResizeObserver from '../hooks/useResizeObserver';
 import {
   LocationSourceType,
   locationInputFocused,
@@ -40,7 +39,6 @@ function App() {
   const mapControlBottomRightRef = React.useRef();
   const mapControlTopLeftRef = React.useRef();
   const mapControlTopRightRef = React.useRef();
-  const mapOverlayHeightRef = React.useRef();
 
   const handleMapLoad = () => {
     mapControlBottomLeftRef.current = document.getElementsByClassName(
@@ -57,17 +55,18 @@ function App() {
     )[0];
 
     window.requestAnimationFrame(animationUpdate);
-    updateMapTopControls(mapOverlayHeightRef.current);
+    updateMapTopControls();
   };
 
-  const updateMapTopControls = (height) => {
-    mapOverlayHeightRef.current = height;
-
-    if (!mapControlTopLeftRef.current) {
+  const updateMapTopControls = () => {
+    if (
+      !mapRef.current ||
+      !mapControlTopLeftRef.current ||
+      !topBarRef.current
+    ) {
       return;
     }
-    const topBarHeight =
-      mapRef.current.getContainer().getBoundingClientRect().height - height;
+    const topBarHeight = topBarRef.current.getBoundingClientRect().height;
     mapControlTopLeftRef.current.style.transform =
       'translate3d(0,' + topBarHeight + 'px,0)';
     mapControlTopRightRef.current.style.transform =
@@ -78,7 +77,6 @@ function App() {
 
   const handleMapTouchEvent = (eventName, evt) => {
     if (!mapRef.current) return;
-    console.log('map touch', eventName);
     mapRef.current.getContainer().focus();
     evt.preventDefault();
 
@@ -152,13 +150,11 @@ function App() {
     mapOverlayTransparentRef.current = node;
   }, []);
 
-  const mapOverlayResizeRef = useResizeObserver(
-    React.useCallback(([width, height]) => {
-      mapOverlayHeightRef.current = height;
-      updateMapTopControls(height);
-    }, []),
-  );
-
+  const topBarRef = React.useRef();
+  React.useLayoutEffect(() => {
+    if (!mapRef.current) return;
+    updateMapTopControls();
+  });
   const handleBottomInputFocus = (evt) => {
     dispatch(locationInputFocused('end'));
   };
@@ -196,6 +192,13 @@ function App() {
     }
   };
 
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      window.requestAnimationFrame(animationUpdate);
+    }, 200);
+    return () => clearInterval(interval);
+  }, []);
+
   let bottomContent;
   if (isEditingLocations) {
     bottomContent = <SearchAutocompleteDropdown />;
@@ -225,17 +228,18 @@ function App() {
         })}
         ref={columnRef}
       >
-        <TopBar
-          showSearchBar={isEditingLocations || hasLocations || hasRoutes}
-          initiallyFocusDestination={isEditingLocations}
-        />
+        <div ref={topBarRef}>
+          <TopBar
+            showSearchBar={isEditingLocations || hasLocations || hasRoutes}
+            initiallyFocusDestination={isEditingLocations}
+          />
+        </div>
         <div
           className={classnames({
             App_mapOverlay: true,
             App_mapOverlay__scrollable: isMouseOverBottomPane,
           })}
           onScroll={handleMapOverlayScroll}
-          ref={mapOverlayResizeRef}
         >
           {!isEditingLocations && (
             <div
