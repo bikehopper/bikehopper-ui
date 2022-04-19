@@ -18,6 +18,8 @@ import './App.css';
 const _isTouch = 'ontouchstart' in window;
 
 function App() {
+  const [msg, setMsg] = React.useState('');
+
   const { hasRoutes, hasLocations, isEditingLocations } = useSelector(
     (state) => ({
       hasLocations: !!(
@@ -247,6 +249,7 @@ function App() {
             onMouseLeave={_isTouch ? null : handleBottomPaneLeave}
           >
             {bottomContent}
+            {msg}
           </div>
         </div>
       </div>

@@ -13,6 +13,7 @@
   z-index: 10;
   flex-shrink: 1;
   min-height: 10px;
+  opacity: 0.49;
 }
 
 .App_column__nonTouchDevice {
