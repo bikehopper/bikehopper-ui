@@ -97,7 +97,7 @@ function App() {
   };
 
   const animationUpdate = () => {
-    if (!mapRef.current) return;
+    if (!mapRef.current || !mapOverlayTransparentRef.current) return;
 
     const paneTopY =
       mapOverlayTransparentRef.current.getBoundingClientRect().bottom;
@@ -114,6 +114,17 @@ function App() {
     }
   };
 
+  let bottomContent;
+  if (isEditingLocations) {
+    bottomContent = <SearchAutocompleteDropdown />;
+  } else if (hasRoutes) {
+    bottomContent = <RoutesOverview />;
+  } else if (!hasLocations) {
+    bottomContent = (
+      <DirectionsNullState onInputFocus={handleBottomInputFocus} />
+    );
+  }
+
   return (
     <div className="App">
       <BikehopperMap ref={mapRef} onMapLoad={handleMapLoad} />
@@ -122,26 +133,19 @@ function App() {
           showSearchBar={isEditingLocations || hasLocations || hasRoutes}
           initiallyFocusDestination={isEditingLocations}
         />
-        {!isEditingLocations && (
-          <div
-            className="App_mapOverlay"
-            onScroll={handleMapOverlayScroll}
-            ref={mapOverlayResizeRef}
-          >
+        <div
+          className="App_mapOverlay"
+          onScroll={handleMapOverlayScroll}
+          ref={mapOverlayResizeRef}
+        >
+          {!isEditingLocations && (
             <div
               className="App_mapOverlayTransparent"
               ref={mapOverlayTransparentRef}
             />
-            <div className="App_mapOverlayBottomPane">
-              {hasRoutes ? (
-                <RoutesOverview />
-              ) : hasLocations ? null : (
-                <DirectionsNullState onInputFocus={handleBottomInputFocus} />
-              )}
-            </div>
-          </div>
-        )}
-        {isEditingLocations && <SearchAutocompleteDropdown />}
+          )}
+          <div className="App_mapOverlayBottomPane">{bottomContent}</div>
+        </div>
       </div>
     </div>
   );
