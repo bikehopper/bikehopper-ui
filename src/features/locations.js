@@ -37,6 +37,13 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
         draft.end = action.end;
         if (action.start && action.end) draft.editingLocation = null;
       });
+    case 'locations_swapped':
+      return produce(state, (draft) => {
+        draft.start = state.end;
+        draft.end = state.start;
+        draft.startInputText = state.endInputText;
+        draft.endInputText = state.startInputText;
+      });
     case 'location_dragged':
       return produce(state, (draft) => {
         draft[action.startOrEnd] = {
@@ -271,5 +278,25 @@ export function selectCurrentLocation(startOrEnd) {
 export function clearLocations() {
   return {
     type: 'locations_cleared',
+  };
+}
+
+export function swapLocations() {
+  return async function swapLocationsThunk(dispatch, getState) {
+    dispatch({
+      type: 'locations_swapped',
+    });
+
+    // check if we still have a start and end point, just in case
+    const { start, end } = getState().locations;
+    if (
+      start?.point?.geometry.coordinates &&
+      end?.point?.geometry.coordinates
+    ) {
+      await fetchRoute(
+        start.point.geometry.coordinates,
+        end.point.geometry.coordinates,
+      )(dispatch, getState);
+    }
   };
 }
