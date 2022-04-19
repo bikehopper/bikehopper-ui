@@ -243,8 +243,8 @@ function App() {
           )}
           <div
             className="App_mapOverlayBottomPane"
-            onMouseEnter={handleBottomPaneEnter}
-            onMouseLeave={handleBottomPaneLeave}
+            onMouseEnter={_isTouch ? null : handleBottomPaneEnter}
+            onMouseLeave={_isTouch ? null : handleBottomPaneLeave}
           >
             {bottomContent}
           </div>
