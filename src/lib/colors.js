@@ -11,3 +11,14 @@ export function darkenLegColor(legColorString) {
     .saturate(factor * 0.5)
     .hex();
 }
+
+export function getTextColor(legColorString) {
+  if (legColorString == null) return 'white';
+
+  const color = Color(`#${legColorString}`);
+  if (color.luminosity() > 0.5) {
+    return 'black';
+  } else {
+    return 'white';
+  }
+}
