@@ -186,17 +186,6 @@ function App() {
     dispatch(locationInputFocused('end'));
   };
 
-  // iOS hack: Shrink body when Safari virtual keyboard is hiding content, so
-  // you can't be scrolled down.
-  React.useEffect(() => {
-    if (VisualViewportTracker.isSupported()) {
-      VisualViewportTracker.listen((height) => {
-        document.body.style.height =
-          window.innerHeight > height + 100 ? `${height}px` : '';
-      });
-    }
-  }, []);
-
   const handleMapOverlayScroll = (evt) => {
     window.requestAnimationFrame(animationUpdate);
   };
@@ -236,6 +225,17 @@ function App() {
   const handleBottomPaneLeave = setIsMouseOverBottomPane.bind(null, false);
 
   const columnRef = React.useRef();
+
+  // iOS hack: Shrink body when Safari virtual keyboard is hiding content, so
+  // you can't be scrolled down.
+  React.useEffect(() => {
+    if (VisualViewportTracker.isSupported()) {
+      VisualViewportTracker.listen((height) => {
+        document.body.style.height =
+          window.innerHeight > height + 100 ? `${height}px` : '';
+      });
+    }
+  }, []);
 
   return (
     <div className="App">
