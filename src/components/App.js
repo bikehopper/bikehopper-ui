@@ -71,7 +71,7 @@ function App() {
       'translate3d(0,' + topBarHeight + 'px,0)';
   };
 
-  const touchTargetRef = React.useRef();
+  const mapTouchStateRef = React.useRef();
 
   const handleMapTouchEvent = (eventName, evt) => {
     if (!mapRef.current) return;
@@ -80,35 +80,42 @@ function App() {
 
     const options = { bubbles: true };
 
-    if (eventName === 'touchstart' || !touchTargetRef.current) {
+    if (eventName === 'touchstart') {
+      mapTouchStateRef.current = {
+        startClientX: evt.touches[0].clientX,
+        startClientY: evt.touches[0].clientY,
+        lastScreenX: evt.touches[0].screenX,
+        lastScreenY: evt.touches[0].screenY,
+        lastClientX: evt.touches[0].clientX,
+        lastClientY: evt.touches[0].clientY,
+        numTouches: evt.touches.length,
+      };
       const mapCanvas = mapRef.current.getCanvas();
-      if (evt.touches?.length > 0) {
-        columnRef.current.style.pointerEvents = 'none';
 
-        console.log(
-          'element at',
+      // Temporarily disable pointer-events on the element in front of the map,
+      // to see what the touch would have gone to on the map, otherwise.
+      columnRef.current.style.pointerEvents = 'none';
+      mapTouchStateRef.current.target =
+        document.elementFromPoint(
           evt.touches[0].clientX,
           evt.touches[0].clientY,
-          'is',
-          document.elementFromPoint(
-            evt.touches[0].clientX,
-            evt.touches[0].clientY,
-          ),
-        );
-
-        touchTargetRef.current =
-          document.elementFromPoint(
-            evt.touches[0].clientX,
-            evt.touches[0].clientY,
-          ) || mapCanvas;
-
-        columnRef.current.style.pointerEvents = '';
-      } else {
-        touchTargetRef.current = mapCanvas;
-      }
+        ) || mapCanvas;
+      columnRef.current.style.pointerEvents = '';
+    } else if (!mapTouchStateRef.current) {
+      console.error('unexpected touch'); // XXX remove if not happening
+      return;
     }
 
-    const target = touchTargetRef.current;
+    if (eventName === 'touchmove') {
+      mapTouchStateRef.current.lastClientX = evt.touches[0].clientX;
+      mapTouchStateRef.current.lastClientY = evt.touches[0].clientY;
+      mapTouchStateRef.current.lastScreenX = evt.touches[0].screenX;
+      mapTouchStateRef.current.lastScreenY = evt.touches[0].screenY;
+    }
+
+    const mapTouchState = mapTouchStateRef.current;
+
+    const { target } = mapTouchState;
 
     if (evt.touches?.length > 0) {
       options.touches = [];
@@ -124,12 +131,34 @@ function App() {
       }
     }
 
-    console.log('dispatching to', target);
-
     target.dispatchEvent(new TouchEvent(evt.type, options));
 
+    if (eventName === 'touchend') {
+      // Also simulate a click event, because map controls and buttons and stuff might need
+      // "clicks," not raw touch events, to do things.
+      // TODO: We might want to delay to make sure it's not a double-tap-to-zoom?
+
+      const dx = mapTouchState.lastClientX - mapTouchState.startClientX;
+      const dy = mapTouchState.lastClientY - mapTouchState.startClientY;
+      const distanceMoved = Math.sqrt(dx * dx + dy * dy);
+      if (distanceMoved > 7) return; // more of a drag than a click
+
+      const syntheticEvent = new MouseEvent('click', {
+        bubbles: true, // might click on a <span> inside of a <button>, etc
+        screenX: mapTouchState.lastScreenX,
+        screenY: mapTouchState.lastScreenY,
+        clientX: mapTouchState.lastClientX,
+        clientY: mapTouchState.lastClientY,
+        // Treat as right click if 2 or more touches.
+        // I don't know if this is correct or useful.
+        button: mapTouchState.numTouches.length > 1 ? 2 : 0,
+        buttons: mapTouchState.numTouches.length > 1 ? 2 : 1,
+      });
+      target.dispatchEvent(syntheticEvent);
+    }
+
     if (eventName === 'touchend' || eventName === 'touchcancel') {
-      touchTargetRef.current = null;
+      mapTouchStateRef.current = null;
     }
   };
 
@@ -210,7 +239,11 @@ function App() {
 
   return (
     <div className="App">
-      <BikehopperMap ref={mapRef} onMapLoad={handleMapLoad} />
+      <BikehopperMap
+        ref={mapRef}
+        onMapLoad={handleMapLoad}
+        overlayRef={mapOverlayTransparentRef}
+      />
       <div
         className={classnames({
           App_column: true,

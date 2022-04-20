@@ -26,8 +26,6 @@ import * as VisualViewportTracker from '../lib/VisualViewportTracker';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './BikehopperMap.css';
 
-const ZOOM_PADDING = 40;
-
 const BikehopperMap = React.forwardRef((props, mapRef) => {
   const dispatch = useDispatch();
   const {
@@ -112,6 +110,19 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
     // happen for other reasons (device orientation change, desktop browser
     // window resize, etc).
     const resizeAndFitBounds = () => {
+      const padding = {
+        top: 20,
+        left: 40,
+        right: 40,
+        bottom: 20,
+      };
+      if (props.overlayRef.current) {
+        const overlayEl = props.overlayRef.current;
+        const clientRect = overlayEl.getBoundingClientRect();
+        padding.top += clientRect.top;
+        padding.bottom += window.innerHeight - clientRect.bottom;
+        overlayEl.parentElement.scrollTop = 0;
+      }
       map.resize();
       map.fitBounds(
         [
@@ -119,7 +130,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
           [maxx, maxy],
         ],
         {
-          padding: ZOOM_PADDING,
+          padding,
         },
       );
     };
@@ -137,7 +148,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
     } else {
       resizeAndFitBounds();
     }
-  }, [routes, mapRef]);
+  }, [routes, mapRef, props.overlayRef]);
 
   const features = routes ? routesToGeoJSON(routes) : EMPTY_GEOJSON;
 
