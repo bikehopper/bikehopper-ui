@@ -18,7 +18,7 @@ export default function RouteLeg(props) {
     );
   } else if (props.type === 'pt') {
     const bgColor = props.routeColor != null ? '#' + props.routeColor : 'blue';
-    const fgColor = getTextColor(props.routeColor);
+    const fgColor = getTextColor(props.routeColor).main;
     mode = (
       <span
         className="RouteLeg_transitMode"

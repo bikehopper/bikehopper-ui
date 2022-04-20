@@ -23,10 +23,13 @@ export function routesToGeoJSON(paths) {
     for (let legIdx = 0; legIdx < path.legs.length; legIdx++) {
       const leg = path.legs[legIdx];
 
+      const legColor = darkenLegColor(leg.route_color);
+      const textColor = getTextColor(leg.route_color);
       // Add a LineString feature for the leg
       const legFeature = turf.lineString(leg.geometry.coordinates, {
-        route_color: darkenLegColor(leg.route_color),
-        text_color: getTextColor(leg.route_color),
+        route_color: legColor,
+        text_color: textColor.main,
+        text_halo_color: textColor.halo,
         route_name: leg.route_name,
         label: leg.route_name,
         type: leg.type,

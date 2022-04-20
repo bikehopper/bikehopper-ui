@@ -17,8 +17,8 @@ export function getTextColor(legColorString) {
 
   const color = Color(`#${legColorString}`);
   if (color.luminosity() > 0.5) {
-    return 'black';
+    return { main: 'black', halo: color.lighten(0.4).hex() };
   } else {
-    return 'white';
+    return { main: 'white', halo: darkenLegColor(legColorString) };
   }
 }
