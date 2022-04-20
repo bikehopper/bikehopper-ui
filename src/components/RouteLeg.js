@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Color from 'color';
+import { getTextColor } from '../lib/colors';
 import Icon from './Icon';
 import { ReactComponent as Bicycle } from 'iconoir/icons/bicycle.svg';
 import { formatInterval } from '../lib/time';
@@ -18,7 +18,7 @@ export default function RouteLeg(props) {
     );
   } else if (props.type === 'pt') {
     const bgColor = props.routeColor != null ? '#' + props.routeColor : 'blue';
-    const fgColor = Color(bgColor).luminosity() > 0.5 ? 'black' : 'white';
+    const fgColor = getTextColor(props.routeColor).main;
     mode = (
       <span
         className="RouteLeg_transitMode"

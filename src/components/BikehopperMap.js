@@ -329,8 +329,8 @@ function getTransitLabelStyle(activePath) {
       'text-allow-overlap': true,
     },
     paint: {
-      'text-color': 'white',
-      'text-halo-color': getTransitColorStyle(activePath),
+      'text-color': ['get', 'text_color'],
+      'text-halo-color': getTransitColorStyle(activePath, 'text_halo_color'),
       'text-halo-width': 2,
     },
   };
@@ -389,12 +389,12 @@ function getLegSortKey(indexOfActivePath) {
   return ['case', ['==', ['get', 'path_index'], indexOfActivePath], 9999, 0];
 }
 
-function getTransitColorStyle(indexOfActivePath) {
+function getTransitColorStyle(indexOfActivePath, colorKey = 'route_color') {
   return [
     'case',
     ['==', ['get', 'path_index'], indexOfActivePath],
     // for active path use the route color from GTFS or fallback to blue
-    ['to-color', ['get', 'route_color'], '#5aaa0a'],
+    ['to-color', ['get', colorKey], '#5aaa0a'],
     // inactive paths are darkgray
     ['to-color', 'darkgray'],
   ];

@@ -1,8 +1,24 @@
 import Color from 'color';
 
-export function darkenLegColor(legColorString, factor) {
+export function darkenLegColor(legColorString) {
   if (legColorString == null) return null;
 
   const color = Color(`#${legColorString}`);
-  return color.darken(factor).hex();
+
+  const factor = 0.1 + color.luminosity() * 0.2;
+  return color
+    .darken(factor)
+    .saturate(factor * 0.5)
+    .hex();
+}
+
+export function getTextColor(legColorString) {
+  if (legColorString == null) return 'white';
+
+  const color = Color(`#${legColorString}`);
+  if (color.luminosity() > 0.5) {
+    return { main: 'black', halo: color.lighten(0.4).hex() };
+  } else {
+    return { main: 'white', halo: darkenLegColor(legColorString) };
+  }
 }
