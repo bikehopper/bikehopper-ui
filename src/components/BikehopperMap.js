@@ -23,6 +23,7 @@ import useResizeObserver from '../hooks/useResizeObserver';
 import MarkerSVG from './MarkerSVG';
 import delay from '../lib/delay';
 import * as VisualViewportTracker from '../lib/VisualViewportTracker';
+import boxSdf from './box-sdf.png';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './BikehopperMap.css';
@@ -31,6 +32,14 @@ const ZOOM_PADDING = 40;
 
 function BikehopperMap(props) {
   const mapRef = React.useRef();
+
+  const onMapLoad = useCallback(() => {
+    const map = mapRef.current;
+    map.loadImage(boxSdf, (err, image) => {
+      if (err) throw err;
+      map.addImage('box-sdf', image, { sdf: true });
+    });
+  }, []);
 
   const dispatch = useDispatch();
   const {
@@ -175,6 +184,7 @@ function BikehopperMap(props) {
     >
       <MapGL
         initialViewState={viewStateOnFirstRender.current}
+        onLoad={onMapLoad}
         ref={mapRef}
         style={{
           // expand to fill parent container div
@@ -322,16 +332,22 @@ function getTransitLabelStyle(activePath) {
       ['==', ['get', 'type'], 'pt'],
     ],
     layout: {
+      'text-font': ['DIN Pro Bold'],
       'symbol-sort-key': getLegSortKey(activePath),
       'symbol-placement': 'line-center',
       'text-size': 16,
       'text-field': getLabelTextField(),
       'text-allow-overlap': true,
+      'icon-image': 'box-sdf',
+      'icon-text-fit': 'both',
+      'icon-text-fit-padding': [4, 4, 4, 4],
+      // 'text-rotation-alignment': 'viewport',
     },
     paint: {
-      'text-color': 'white',
-      'text-halo-color': getTransitColorStyle(activePath),
-      'text-halo-width': 2,
+      'text-color': ['get', 'text_color'],
+      'icon-color': getTransitColorStyle(activePath),
+      'icon-halo-color': 'white',
+      'icon-halo-width': 2,
     },
   };
 }
