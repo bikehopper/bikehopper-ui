@@ -2,6 +2,8 @@ import * as React from 'react';
 import RouteSummary from './RouteSummary';
 import SelectionList from './SelectionList';
 import SelectionListItem from './SelectionListItem';
+import ItineraryBikeLeg from './ItineraryBikeLeg';
+import ItineraryTransitLeg from './ItineraryTransitLeg';
 
 import './Itinerary.css';
 
@@ -13,12 +15,9 @@ export default function Itinerary({
 }) {
   const renderedLegs = route.legs.map((leg, idx, legs) => {
     if (leg.type === 'pt') {
-      const { stops } = leg;
       return (
         <SelectionListItem key={idx}>
-          Ride from {stops[0].stop_name}
-          <br />
-          to {stops[stops.length - 1].stop_name}
+          <ItineraryTransitLeg leg={leg} />
         </SelectionListItem>
       );
     } else {
@@ -29,7 +28,7 @@ export default function Itinerary({
           : legs[idx + 1].stops[0].stop_name;
       return (
         <SelectionListItem key={idx}>
-          Bike to {legDestination}
+          <ItineraryBikeLeg leg={leg} legDestination={legDestination} />
         </SelectionListItem>
       );
     }
