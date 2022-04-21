@@ -1,67 +1,39 @@
 .TimeBar {
   margin-left: 24px;
   margin-top: 10px;
-  /* display: flex; */
-  /* flex-flow: row; */
 }
 
+.TimeBar_clockIcon {
+  margin-right: -34px;
+  margin-left: 10px;
+  background: #5aaa0a;
+  color: #ffd18e;
+  top: 6px;
+}
 .TimeBar_select {
   display: inline-flex;
-  /* flex-flow: row; */
-  /* margin-top: 10px; */
   margin: 0px 10px 0px 0px;
+  background: transparent;
 }
 
 .TimeBar_select_control {
-  color: #def0cc;
-  background: #5aaa0a;
-  border: 1px solid #def0cc;
-  /* border-radius: 12px; */
+  color: #ffd18e;
+  background: transparent;
+  border: 1px solid;
   font-size: 13px;
   font-weight: bold;
   padding: 8px 10px;
-  width: 100px;
+  padding-left: 42px;
+  width: 115px;
 }
 
 .TimeBar_select_arrow {
   display: none;
 }
 .TimeBar_datetime {
-  /* margin: 0px 0px 0px 14px; */
-  /* width: 50%; */
-  /* float: right; */
-  margin: 0px;
-  display: inline-flex;
   height: 100%;
-  /* flex-flow: row; */
+  width: 150px;
 }
 .TimeBar_datetime:disabled {
   display: none;
 }
-
-/* 
-.react-tabs__tab-list {
-  border-bottom: none;
-}
-.react-tabs__tab {
-  color: #ffd18e;
-  font-size: 15px;
-  border: 0px;
-  font-weight: bold;
-}
-
-.react-tabs__tab:focus:after {
-  height: 0px;
-}
-
-.react-tabs__tab--selected {
-  background: #5aaa0a;
-  border: 5px solid;
-  border-top: none;
-  border-left: none;
-  border-right: none;
-  border-bottom-color: #ffd18e;
-  border-radius: 0px 0px 0px 0px;
-}
-
-*/

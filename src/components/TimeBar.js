@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './Icon';
+import { ReactComponent as ClockOutline } from 'iconoir/icons/clock-outline.svg';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import {
@@ -56,12 +57,16 @@ export default function TimeBar(props) {
 
   return (
     <form className="TimeBar">
+      <Icon label="clock" className="TimeBar_clockIcon">
+        <ClockOutline />
+      </Icon>
       <Dropdown
         className="TimeBar_select"
         options={options}
         onChange={handleSelect}
         arrowClassName="TimeBar_select_arrow"
         controlClassName="TimeBar_select_control"
+        placeholderClassName="TimeBar_select_placeholder"
         value={options.find((o) => o.value === timebarDropdownOption)}
       />
       <input
