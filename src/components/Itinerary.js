@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import './Itinerary.css';
+
 export default function Itinerary({ route, onBackClick, onStepClick }) {
   return (
     <div className="Itinerary">
