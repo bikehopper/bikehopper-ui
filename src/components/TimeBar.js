@@ -20,7 +20,6 @@ export default function TimeBar(props) {
     shallowEqual,
   );
 
-  const datetimeRef = React.useRef();
   const dispatch = useDispatch();
 
   const handleTimeChange = (event) => {
@@ -31,17 +30,13 @@ export default function TimeBar(props) {
     dispatch(timebarDropdownSelected(event.value));
     switch (event.value) {
       case 'now':
-        datetimeRef.current.disabled = true;
-        datetimeRef.current.value = null;
         dispatch(arriveBySet(false));
         dispatch(initialTimeSet(null));
         break;
       case 'departAt':
-        datetimeRef.current.disabled = false;
         dispatch(arriveBySet(false));
         break;
       case 'arriveBy':
-        datetimeRef.current.disabled = false;
         dispatch(arriveBySet(true));
         break;
       default:
@@ -70,8 +65,7 @@ export default function TimeBar(props) {
         value={options.find((o) => o.value === timebarDropdownOption)}
       />
       <input
-        ref={datetimeRef}
-        disabled
+        disabled={!['departAt', 'arriveBy'].includes(timebarDropdownOption)}
         className="TimeBar_datetime"
         onChange={handleTimeChange}
         type="datetime-local"
