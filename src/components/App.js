@@ -4,7 +4,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import classnames from 'classnames';
 import BikehopperMap from './BikehopperMap';
 import DirectionsNullState from './DirectionsNullState';
-import RoutesOverview from './RoutesOverview';
+import Routes from './Routes';
 import SearchAutocompleteDropdown from './SearchAutocompleteDropdown';
 import TopBar from './TopBar';
 import {
@@ -242,7 +242,7 @@ function App() {
   if (isEditingLocations) {
     bottomContent = <SearchAutocompleteDropdown />;
   } else if (hasRoutes) {
-    bottomContent = <RoutesOverview />;
+    bottomContent = <Routes />;
   } else if (!hasLocations) {
     bottomContent = (
       <DirectionsNullState onInputFocus={handleBottomInputFocus} />

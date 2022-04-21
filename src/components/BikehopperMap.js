@@ -54,7 +54,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
 
   const handleRouteClick = (evt) => {
     if (evt.features?.length) {
-      dispatch(routeClicked(evt.features[0].properties.path_index));
+      dispatch(routeClicked(evt.features[0].properties.path_index, 'map'));
     }
   };
 

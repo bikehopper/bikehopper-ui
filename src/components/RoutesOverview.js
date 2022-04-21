@@ -1,6 +1,4 @@
 import * as React from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { routeClicked } from '../features/routes';
 import { formatInterval } from '../lib/time';
 import DepartArriveTime from './DepartArriveTime';
 import Icon from './Icon';
@@ -13,18 +11,7 @@ import { ReactComponent as NavArrowRight } from 'iconoir/icons/nav-arrow-right.s
 import './RoutesOverview.css';
 
 export default function RoutesOverview(props) {
-  const dispatch = useDispatch();
-  const { routes, activeRoute } = useSelector(
-    (state) => ({
-      routes: state.routes.routes,
-      activeRoute: state.routes.activeRoute,
-    }),
-    shallowEqual,
-  );
-
-  const handleRouteClick = (index) => {
-    dispatch(routeClicked(index));
-  };
+  const { routes, activeRoute, onRouteClick } = props;
 
   return (
     <SelectionList>
@@ -32,7 +19,7 @@ export default function RoutesOverview(props) {
         <SelectionListItem
           className="RoutesOverview_route"
           active={activeRoute === index}
-          onClick={handleRouteClick.bind(null, index)}
+          onClick={onRouteClick.bind(null, index)}
           key={route.nonce}
         >
           <div className="RoutesOverview_row">

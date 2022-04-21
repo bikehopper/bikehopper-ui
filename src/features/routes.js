@@ -10,6 +10,10 @@ const DEFAULT_STATE = {
   // Index of the selected route. This should always be null if routes is null,
   // and otherwise, 0 <= activeRoute < routes.length
   activeRoute: null,
+
+  // State specific to an active route.
+  viewingDetails: false, // True if viewing detailed itinerary for the active route
+  viewingStep: null, // Array [leg, step] if viewing a particular step of active route.
 };
 
 function _coordsEqual(a, b) {
@@ -90,6 +94,7 @@ export function routesReducer(state = DEFAULT_STATE, action) {
         draft.routes = action.routes;
         draft.routeStatus = 'succeeded';
         draft.activeRoute = 0;
+        draft.viewingDetails = false;
       });
     case 'route_clicked':
       if (
@@ -101,7 +106,25 @@ export function routesReducer(state = DEFAULT_STATE, action) {
         console.error('invalid route click', action.index);
         return state;
       }
-      return { ...state, activeRoute: action.index };
+      return produce(state, (draft) => {
+        draft.activeRoute = action.index;
+
+        if (action.source === 'list') {
+          // If the route clicked was already active, toggle viewing details.
+          // Otherwise, always view the details.
+          draft.viewingDetails =
+            state.activeRoute !== action.index || !state.viewingDetails;
+        } else if (action.source === 'map') {
+          draft.viewingDetails = false;
+          draft.viewingStep = null;
+        }
+      });
+    case 'itinerary_back_clicked':
+      return { ...state, viewingDetails: false };
+    case 'itinerary_step_clicked':
+      return { ...state, viewingStep: [action.leg, action.step] };
+    case 'itinerary_step_back_clicked':
+      return { ...state, viewingStep: null };
     default:
       return state;
   }
@@ -195,9 +218,26 @@ export function fetchRoute(startCoords, endCoords, arriveBy, initialTime) {
   };
 }
 
-export function routeClicked(index) {
+export function routeClicked(index, source) {
   return {
     type: 'route_clicked',
     index,
+    source, // where was it clicked? should be 'map' or 'list'
   };
+}
+
+export function itineraryBackClicked() {
+  return { type: 'itinerary_back_clicked' };
+}
+
+export function itineraryStepClicked(legIndex, stepIndex) {
+  return {
+    type: 'itinerary_step_clicked',
+    leg: legIndex,
+    step: stepIndex,
+  };
+}
+
+export function itineraryStepBackClicked() {
+  return { type: 'itinerary_step_back_clicked' };
 }
