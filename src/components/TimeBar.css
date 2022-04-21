@@ -1,14 +1,25 @@
 .TimeBar {
   margin-left: 24px;
+  width: 100%;
 }
 
 .react-tabs__tab {
-  color: #fff;
+  color: #ffd18e;
+  font-size: 15px;
+  border: 0px;
+  font-weight: bold;
+}
+
+.react-tabs__tab:focus:after {
+  height: 0px;
 }
 
 .react-tabs__tab--selected {
   background: #5aaa0a;
-  border: none;
-  border-bottom: 2px;
+  border: 5px solid;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom-color: #ffd18e;
   border-radius: 0px 0px 0px 0px;
 }
