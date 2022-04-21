@@ -1,8 +1,16 @@
 .TimeBar {
-  margin-left: 24px;
+  margin-left: 16px;
+  margin-top: 4px;
   width: 100%;
 }
 
+.TimeBar_datetime {
+  margin: 0px 0px 0px 14px;
+}
+
+.react-tabs__tab-list {
+  border-bottom: none;
+}
 .react-tabs__tab {
   color: #ffd18e;
   font-size: 15px;

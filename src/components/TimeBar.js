@@ -40,18 +40,19 @@ export default function TimeBar(props) {
         <TabList>
           <Tab>Depart at</Tab>
           <Tab>Arrive by</Tab>
+          <input
+            className="TimeBar_datetime"
+            onChange={handleTimeChange}
+            type="datetime-local"
+            name="datetime"
+            id="datetime"
+            defaultValue={initialTime}
+          />
         </TabList>
 
         <TabPanel></TabPanel>
         <TabPanel></TabPanel>
       </Tabs>
-      <input
-        onChange={handleTimeChange}
-        type="datetime-local"
-        name="datetime"
-        id="datetime"
-        defaultValue={initialTime}
-      />
     </form>
   );
 }
