@@ -1,13 +1,24 @@
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './Icon';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
-import { arriveBySet, initialTimeSet } from '../features/time';
+import {
+  arriveBySet,
+  initialTimeSet,
+  timebarDropdownSelected,
+} from '../features/time';
 
 import './TimeBar.css';
 
 export default function TimeBar(props) {
+  const { timebarDropdownOption } = useSelector(
+    (state) => ({
+      timebarDropdownOption: state.time.timebarDropdownOption,
+    }),
+    shallowEqual,
+  );
+
   const datetimeRef = React.useRef();
   const dispatch = useDispatch();
 
@@ -16,6 +27,7 @@ export default function TimeBar(props) {
   };
 
   const handleSelect = (event) => {
+    dispatch(timebarDropdownSelected(event.value));
     switch (event.value) {
       case 'now':
         datetimeRef.current.disabled = true;
@@ -50,7 +62,7 @@ export default function TimeBar(props) {
         onChange={handleSelect}
         arrowClassName="TimeBar_select_arrow"
         controlClassName="TimeBar_select_control"
-        value={options[0]}
+        value={options.find((o) => o.value === timebarDropdownOption)}
       />
       <input
         ref={datetimeRef}

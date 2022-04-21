@@ -3,7 +3,8 @@ import { fetchRoute } from './routes';
 
 const DEFAULT_STATE = {
   arriveBy: false,
-  initialTime: null, //new Date().toISOString(),
+  initialTime: null,
+  timebarDropdownOption: 'now',
 };
 
 export function timeReducer(state = DEFAULT_STATE, action) {
@@ -15,6 +16,10 @@ export function timeReducer(state = DEFAULT_STATE, action) {
     case 'initial_time_set':
       return produce(state, (draft) => {
         draft.initialTime = action.initialTime;
+      });
+    case 'timebar_dropdown_selected':
+      return produce(state, (draft) => {
+        draft.timebarDropdownOption = action.timebarDropdownOption;
       });
     default:
       return state;
@@ -51,5 +56,14 @@ export function initialTimeSet(initialTime) {
         initialTime,
       )(dispatch, getState);
     }
+  };
+}
+
+export function timebarDropdownSelected(timebarDropdownOption) {
+  return async function timebarDropdownSelectedThunk(dispatch, getState) {
+    dispatch({
+      type: 'timebar_dropdown_selected',
+      timebarDropdownOption,
+    });
   };
 }
