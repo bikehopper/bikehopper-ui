@@ -33,6 +33,13 @@ function App() {
 
   const dispatch = useDispatch();
 
+  // A large amount of the complexity that follows is to manage the drawer at
+  // the bottom of the screen that scrolls up. We render the map full-screen,
+  // so it doesn't have to resize, and we draw other UI like the top bar and
+  // bottom drawer in front of it. We then dynamically reposition the map
+  // *controls* to be within the smaller part of the map that's actually
+  // visible.
+
   const mapRef = React.useRef();
   const mapControlBottomLeftRef = React.useRef();
   const mapControlBottomRightRef = React.useRef();
@@ -53,7 +60,7 @@ function App() {
       'maplibregl-ctrl-top-right',
     )[0];
 
-    window.requestAnimationFrame(animationUpdate);
+    window.requestAnimationFrame(updateMapBottomControls);
     updateMapTopControls();
   };
 
@@ -72,9 +79,18 @@ function App() {
       'translate3d(0,' + topBarHeight + 'px,0)';
   };
 
+  const columnRef = React.useRef();
+
+  // Holds state relating to a series of touch events (touchstart -> 0 to many
+  // touchmove -> touchcancel or touchend).
   const mapTouchStateRef = React.useRef();
 
   const handleMapTouchEvent = (eventName, evt) => {
+    // On mobile, when you think you're touching the map, you are actually touching a
+    // transparent <div/> placed in front of the map. This function creates synthetic
+    // touch events (and in some cases, click events) and forwards them to the map, or
+    // to markers, controls and other things on the map.
+
     if (!mapRef.current) return;
     mapRef.current.getContainer().focus();
     evt.preventDefault();
@@ -93,8 +109,9 @@ function App() {
       };
       const mapCanvas = mapRef.current.getCanvas();
 
-      // Temporarily disable pointer-events on the element in front of the map,
-      // to see what the touch would have gone to on the map, otherwise.
+      // You may not want to touch the map itself, but a marker or control on
+      // the map. Here, we figure out what element would have been touched, if
+      // there hadn't been a transparent <div/> in the way.
       columnRef.current.style.pointerEvents = 'none';
       mapTouchStateRef.current.target =
         document.elementFromPoint(
@@ -183,15 +200,12 @@ function App() {
     if (!mapRef.current) return;
     updateMapTopControls();
   });
-  const handleBottomInputFocus = (evt) => {
-    dispatch(locationInputFocused('end'));
-  };
 
   const handleMapOverlayScroll = (evt) => {
-    window.requestAnimationFrame(animationUpdate);
+    window.requestAnimationFrame(updateMapBottomControls);
   };
 
-  const animationUpdate = () => {
+  const updateMapBottomControls = () => {
     if (!mapRef.current || !mapOverlayTransparentRef.current) return;
 
     const paneTopY =
@@ -209,6 +223,19 @@ function App() {
     }
   };
 
+  // For non-touch devices, we use a much simpler method to allow map
+  // interaction and scrolling. Instead of forwarding mouse events, we can just
+  // enable the bottom drawer to receive mouse events only when the mouse is
+  // over it.
+  const [isMouseOverBottomPane, setIsMouseOverBottomPane] =
+    React.useState(false);
+  const handleBottomPaneEnter = setIsMouseOverBottomPane.bind(null, true);
+  const handleBottomPaneLeave = setIsMouseOverBottomPane.bind(null, false);
+
+  const handleBottomInputFocus = (evt) => {
+    dispatch(locationInputFocused('end'));
+  };
+
   let bottomContent;
   if (isEditingLocations) {
     bottomContent = <SearchAutocompleteDropdown />;
@@ -219,13 +246,6 @@ function App() {
       <DirectionsNullState onInputFocus={handleBottomInputFocus} />
     );
   }
-
-  const [isMouseOverBottomPane, setIsMouseOverBottomPane] =
-    React.useState(false);
-  const handleBottomPaneEnter = setIsMouseOverBottomPane.bind(null, true);
-  const handleBottomPaneLeave = setIsMouseOverBottomPane.bind(null, false);
-
-  const columnRef = React.useRef();
 
   // iOS/Android hack: Shrink body when virtual keyboard is hiding content, so
   // you can't be scrolled down.
