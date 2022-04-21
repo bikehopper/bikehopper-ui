@@ -4,12 +4,14 @@ import { geocodingReducer } from './features/geocoding';
 import { geolocationReducer } from './features/geolocation';
 import { locationsReducer } from './features/locations';
 import { routesReducer } from './features/routes';
+import { timeReducer } from './features/time';
 import { viewportReducer } from './features/viewport';
 
 const rootReducer = combineReducers({
   geocoding: geocodingReducer,
   geolocation: geolocationReducer,
   locations: locationsReducer,
+  time: timeReducer,
   routes: routesReducer,
   viewport: viewportReducer,
 });

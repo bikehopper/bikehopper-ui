@@ -167,10 +167,14 @@ export function locationsSubmitted(startTextOrLocation, endTextOrLocation) {
       end: resultingEndLocation,
     });
 
+    let { arriveBy, initialTime } = getState().time;
+
     if (resultingStartLocation && resultingEndLocation) {
       await fetchRoute(
         resultingStartLocation.point.geometry.coordinates,
         resultingEndLocation.point.geometry.coordinates,
+        arriveBy,
+        initialTime,
       )(dispatch, getState);
     }
   };
@@ -186,16 +190,21 @@ export function locationDragged(startOrEnd, coords) {
 
     // If we have a location for the other point, fetch a route.
     let { start, end } = getState().locations;
+    let { arriveBy, initialTime } = getState().time;
     if (startOrEnd === 'start' && end?.point?.geometry.coordinates) {
-      await fetchRoute(coords, end.point.geometry.coordinates)(
-        dispatch,
-        getState,
-      );
+      await fetchRoute(
+        coords,
+        end.point.geometry.coordinates,
+        arriveBy,
+        initialTime,
+      )(dispatch, getState);
     } else if (startOrEnd === 'end' && start?.point?.geometry.coordinates) {
-      await fetchRoute(start.point.geometry.coordinates, coords)(
-        dispatch,
-        getState,
-      );
+      await fetchRoute(
+        start.point.geometry.coordinates,
+        coords,
+        arriveBy,
+        initialTime,
+      )(dispatch, getState);
     }
   };
 }
@@ -233,6 +242,7 @@ export function selectGeocodedLocation(startOrEnd, point, fromInputText) {
     // If this was the end point, and we have a start point -- or vice versa --
     // fetch the route.
     const { start, end } = getState().locations;
+    const { arriveBy, initialTime } = getState().time;
     if (
       start?.point?.geometry.coordinates &&
       end?.point?.geometry.coordinates
@@ -240,6 +250,8 @@ export function selectGeocodedLocation(startOrEnd, point, fromInputText) {
       await fetchRoute(
         start.point.geometry.coordinates,
         end.point.geometry.coordinates,
+        arriveBy,
+        initialTime,
       )(dispatch, getState);
     }
   };
@@ -263,6 +275,7 @@ export function selectCurrentLocation(startOrEnd) {
     // If this was the start point, and we have an end point -- or vice versa --
     // fetch the route.
     const { start, end } = getState().locations;
+    const { arriveBy, initialTime } = getState().time;
     if (
       start?.point?.geometry.coordinates &&
       end?.point?.geometry.coordinates
@@ -270,6 +283,8 @@ export function selectCurrentLocation(startOrEnd) {
       await fetchRoute(
         start.point.geometry.coordinates,
         end.point.geometry.coordinates,
+        arriveBy,
+        initialTime,
       )(dispatch, getState);
     }
   };
@@ -289,6 +304,7 @@ export function swapLocations() {
 
     // check if we still have a start and end point, just in case
     const { start, end } = getState().locations;
+    const { arriveBy, initialTime } = getState().time;
     if (
       start?.point?.geometry.coordinates &&
       end?.point?.geometry.coordinates
@@ -296,6 +312,8 @@ export function swapLocations() {
       await fetchRoute(
         start.point.geometry.coordinates,
         end.point.geometry.coordinates,
+        arriveBy,
+        initialTime,
       )(dispatch, getState);
     }
   };

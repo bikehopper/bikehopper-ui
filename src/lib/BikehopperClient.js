@@ -1,6 +1,8 @@
 export async function fetchRoute({
   profile = 'pt',
   connectingProfile = 'bike2',
+  arriveBy = false,
+  earliestDepartureTime,
   optimize = false,
   pointsEncoded = false,
   details,
@@ -14,8 +16,8 @@ export async function fetchRoute({
     }&point=${
       points[1]
     }&locale=en-US&pt.earliest_departure_time=${encodeURIComponent(
-      new Date().toISOString(),
-    )}&elevation=true&profile=${profile}&pt.connecting_profile=${connectingProfile}&use_miles=false&selected_detail=Elevation&layer=OpenStreetMap&points_encoded=${pointsEncoded}&details=${detail_param}`,
+      earliestDepartureTime,
+    )}&elevation=true&profile=${profile}&pt.connecting_profile=${connectingProfile}&pt.arrive_by=${arriveBy}&use_miles=false&selected_detail=Elevation&layer=OpenStreetMap&points_encoded=${pointsEncoded}&details=${detail_param}`,
     {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },

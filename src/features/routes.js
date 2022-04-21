@@ -124,7 +124,7 @@ let _routeNonce = 10000000; // For assigning a unique ID to each route fetched i
 
 const COORD_EPSILON = 1e-5;
 
-export function fetchRoute(startCoords, endCoords) {
+export function fetchRoute(startCoords, endCoords, arriveBy, initialTime) {
   return async function fetchRouteThunk(dispatch, getState) {
     if (!startCoords || !endCoords) {
       dispatch({ type: 'route_cleared' });
@@ -154,6 +154,8 @@ export function fetchRoute(startCoords, endCoords) {
           [startCoords[1], startCoords[0]],
           [endCoords[1], endCoords[0]],
         ],
+        arriveBy,
+        earliestDepartureTime: initialTime,
         optimize: true,
         pointsEncoded: false,
         details: ['cycleway', 'road_class'],

@@ -1,0 +1,14 @@
+.TimeBar {
+  margin-left: 24px;
+}
+
+.react-tabs__tab {
+  color: #fff;
+}
+
+.react-tabs__tab--selected {
+  background: #5aaa0a;
+  border: none;
+  border-bottom: 2px;
+  border-radius: 0px 0px 0px 0px;
+}
