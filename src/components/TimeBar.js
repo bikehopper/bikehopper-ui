@@ -1,32 +1,34 @@
 import * as React from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
-// import Icon from './Icon';
-// import { ReactComponent as ClockOutline } from 'iconoir/icons/clock-outline.svg';
+import { useDispatch } from 'react-redux';
+import Icon from './Icon';
+import Dropdown from 'react-dropdown';
+import 'react-dropdown/style.css';
 import { arriveBySet, initialTimeSet } from '../features/time';
 
 import './TimeBar.css';
 
 export default function TimeBar(props) {
+  const datetimeRef = React.useRef();
   const dispatch = useDispatch();
-  const { initialTime } = useSelector(
-    (state) => ({ initialTime: state.time.initialTime }),
-    shallowEqual,
-  );
 
   const handleTimeChange = (event) => {
-    const iso = new Date(event.target.value).toISOString();
-    const short = iso.substring(0, ((iso.indexOf('T') | 0) + 6) | 0);
-    dispatch(initialTimeSet(short));
+    dispatch(initialTimeSet(event.target.value));
   };
 
-  const handleTabSelect = (index) => {
-    switch (index) {
-      case 0:
+  const handleSelect = (event) => {
+    switch (event.value) {
+      case 'now':
+        datetimeRef.current.disabled = true;
+        datetimeRef.current.value = null;
+        dispatch(arriveBySet(false));
+        dispatch(initialTimeSet(null));
+        break;
+      case 'departAt':
+        datetimeRef.current.disabled = false;
         dispatch(arriveBySet(false));
         break;
-      case 1:
+      case 'arriveBy':
+        datetimeRef.current.disabled = false;
         dispatch(arriveBySet(true));
         break;
       default:
@@ -34,25 +36,31 @@ export default function TimeBar(props) {
     }
   };
 
+  const options = [
+    { value: 'now', label: 'Now' },
+    { value: 'departAt', label: 'Depart at' },
+    { value: 'arriveBy', label: 'Arrive by' },
+  ];
+
   return (
     <form className="TimeBar">
-      <Tabs onSelect={handleTabSelect}>
-        <TabList>
-          <Tab>Depart at</Tab>
-          <Tab>Arrive by</Tab>
-          <input
-            className="TimeBar_datetime"
-            onChange={handleTimeChange}
-            type="datetime-local"
-            name="datetime"
-            id="datetime"
-            defaultValue={initialTime}
-          />
-        </TabList>
-
-        <TabPanel></TabPanel>
-        <TabPanel></TabPanel>
-      </Tabs>
+      <Dropdown
+        className="TimeBar_select"
+        options={options}
+        onChange={handleSelect}
+        arrowClassName="TimeBar_select_arrow"
+        controlClassName="TimeBar_select_control"
+        value={options[0]}
+      />
+      <input
+        ref={datetimeRef}
+        disabled
+        className="TimeBar_datetime"
+        onChange={handleTimeChange}
+        type="datetime-local"
+        name="datetime"
+        id="datetime"
+      />
     </form>
   );
 }

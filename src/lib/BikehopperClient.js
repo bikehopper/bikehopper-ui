@@ -9,6 +9,9 @@ export async function fetchRoute({
   points,
   signal,
 }) {
+  if (!earliestDepartureTime) {
+    earliestDepartureTime = new Date().toISOString();
+  }
   const detail_param = details?.join('&details=') || '';
   const route = await fetch(
     `${process.env.REACT_APP_GRAPHHOPPER_PATH}/route-pt?point=${
@@ -16,7 +19,7 @@ export async function fetchRoute({
     }&point=${
       points[1]
     }&locale=en-US&pt.earliest_departure_time=${encodeURIComponent(
-      earliestDepartureTime,
+      new Date(earliestDepartureTime).toISOString(),
     )}&elevation=true&profile=${profile}&pt.connecting_profile=${connectingProfile}&pt.arrive_by=${arriveBy}&use_miles=false&selected_detail=Elevation&layer=OpenStreetMap&points_encoded=${pointsEncoded}&details=${detail_param}`,
     {
       method: 'GET',

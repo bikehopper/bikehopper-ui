@@ -3,7 +3,7 @@ import { fetchRoute } from './routes';
 
 const DEFAULT_STATE = {
   arriveBy: false,
-  initialTime: new Date().toISOString(),
+  initialTime: null, //new Date().toISOString(),
 };
 
 export function timeReducer(state = DEFAULT_STATE, action) {
