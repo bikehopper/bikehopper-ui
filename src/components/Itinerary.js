@@ -40,7 +40,9 @@ export default function Itinerary({
         <RouteSummary route={route} />
       </SelectionListItem>
       {renderedLegs}
-      <SelectionListItem onClick={onBackClick}>Go back</SelectionListItem>
+      <SelectionListItem onClick={onBackClick}>
+        Return to route results
+      </SelectionListItem>
     </SelectionList>
   );
 }
