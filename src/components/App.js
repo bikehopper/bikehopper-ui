@@ -231,8 +231,7 @@ function App() {
   React.useEffect(() => {
     if (VisualViewportTracker.isSupported()) {
       VisualViewportTracker.listen((height) => {
-        document.body.style.height =
-          window.innerHeight > height + 100 ? `${height}px` : '';
+        document.body.style.height = Math.floor(height) + 'px';
       });
     }
   }, []);
