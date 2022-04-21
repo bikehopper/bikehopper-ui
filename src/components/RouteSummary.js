@@ -12,7 +12,7 @@ export default function RouteSummary({ route }) {
     <React.Fragment>
       <div className="RouteSummary_topRow">
         <ul className="RouteSummary_legs">
-          {route.legs.map((leg, index) => (
+          {route.legs.filter(isNotShortInterpolatedLeg).map((leg, index) => (
             <React.Fragment key={route.nonce + ':' + index}>
               {index > 0 && (
                 <li className="RouteSummary_legSeparator">
@@ -47,5 +47,14 @@ export default function RouteSummary({ route }) {
         arrive={route.legs[route.legs.length - 1].arrival_time}
       />
     </React.Fragment>
+  );
+}
+
+function isNotShortInterpolatedLeg(leg) {
+  const THRESHOLD_IN_METERS = 120;
+  return !(
+    leg.type === 'bike2' &&
+    leg.interpolated &&
+    leg.distance < THRESHOLD_IN_METERS
   );
 }
