@@ -1,3 +1,4 @@
+import Bowser from 'bowser';
 import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import classnames from 'classnames';
@@ -226,13 +227,23 @@ function App() {
 
   const columnRef = React.useRef();
 
-  // iOS hack: Shrink body when Safari virtual keyboard is hiding content, so
+  // iOS/Android hack: Shrink body when virtual keyboard is hiding content, so
   // you can't be scrolled down.
   React.useEffect(() => {
     if (VisualViewportTracker.isSupported()) {
+      const isIos = Bowser.parse(navigator.userAgent).os.name === 'iOS';
       VisualViewportTracker.listen((height) => {
-        document.body.style.height =
-          window.innerHeight > height + 100 ? `${height}px` : '';
+        if (isIos) {
+          // Ignore small discrepancies between visual viewport height and
+          // window inner height. If the discrepancy is too small for the
+          // virtual keyboard to be up, go back to full height.
+          document.body.style.height =
+            window.innerHeight > height + 100 ? `${height}px` : '';
+        } else {
+          // On Android it works better if we always set body height to
+          // visual viewport height.
+          document.body.style.height = Math.floor(height) + 'px';
+        }
       });
     }
   }, []);
