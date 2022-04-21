@@ -6,23 +6,29 @@ import {
   itineraryStepClicked,
   itineraryStepBackClicked,
 } from '../features/routes';
+import describePlace from '../lib/describePlace';
 import RoutesOverview from './RoutesOverview';
 import Itinerary from './Itinerary';
 
 export default function Routes(props) {
   const dispatch = useDispatch();
-  const { routes, activeRoute, details, leg, step } = useSelector(
-    ({ routes }) => {
+  const { routes, activeRoute, details, leg, step, destinationDescription } =
+    useSelector(({ routes, locations }) => {
+      let destinationDescription = 'destination';
+      if (locations.end && locations.end.point) {
+        destinationDescription = describePlace(locations.end.point);
+      } else {
+        console.error('rendering routes: expected end location');
+      }
       return {
         routes: routes.routes,
         activeRoute: routes.activeRoute,
         details: routes.viewingDetails,
         leg: routes.viewingStep && routes.viewingStep[0],
         step: routes.viewingStep && routes.viewingStep[1],
+        destinationDescription,
       };
-    },
-    shallowEqual,
-  );
+    }, shallowEqual);
 
   const handleRouteClick = (index) => {
     dispatch(routeClicked(index, 'list'));
@@ -54,6 +60,7 @@ export default function Routes(props) {
         route={routes[activeRoute]}
         onBackClick={handleBackClick}
         onStepClick={handleStepClick}
+        destinationDescription={destinationDescription}
       />
     );
   } else {
