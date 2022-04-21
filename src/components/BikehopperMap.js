@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useCallback, useLayoutEffect } from 'react';
-import classnames from 'classnames';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import MapGL, {
   Layer,
@@ -27,11 +26,7 @@ import * as VisualViewportTracker from '../lib/VisualViewportTracker';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './BikehopperMap.css';
 
-const ZOOM_PADDING = 40;
-
-function BikehopperMap(props) {
-  const mapRef = React.useRef();
-
+const BikehopperMap = React.forwardRef((props, mapRef) => {
   const dispatch = useDispatch();
   const {
     startPoint,
@@ -83,9 +78,12 @@ function BikehopperMap(props) {
   };
 
   const resizeRef = useResizeObserver(
-    useCallback(([width, height]) => {
-      if (mapRef.current) mapRef.current.resize();
-    }, []),
+    useCallback(
+      ([width, height]) => {
+        if (mapRef.current) mapRef.current.resize();
+      },
+      [mapRef],
+    ),
   );
 
   // center viewport on route paths
@@ -112,6 +110,19 @@ function BikehopperMap(props) {
     // happen for other reasons (device orientation change, desktop browser
     // window resize, etc).
     const resizeAndFitBounds = () => {
+      const padding = {
+        top: 20,
+        left: 40,
+        right: 40,
+        bottom: 20,
+      };
+      if (props.overlayRef.current) {
+        const overlayEl = props.overlayRef.current;
+        const clientRect = overlayEl.getBoundingClientRect();
+        padding.top += clientRect.top;
+        padding.bottom += window.innerHeight - clientRect.bottom;
+        overlayEl.parentElement.scrollTop = 0;
+      }
       map.resize();
       map.fitBounds(
         [
@@ -119,7 +130,7 @@ function BikehopperMap(props) {
           [maxx, maxy],
         ],
         {
-          padding: ZOOM_PADDING,
+          padding,
         },
       );
     };
@@ -137,7 +148,7 @@ function BikehopperMap(props) {
     } else {
       resizeAndFitBounds();
     }
-  }, [routes]);
+  }, [routes, mapRef, props.overlayRef]);
 
   const features = routes ? routesToGeoJSON(routes) : EMPTY_GEOJSON;
 
@@ -166,13 +177,7 @@ function BikehopperMap(props) {
   const viewStateOnFirstRender = React.useRef(viewState);
 
   return (
-    <div
-      className={classnames({
-        BikehopperMap: true,
-        BikehopperMap__hidden: props.hidden,
-      })}
-      ref={resizeRef}
-    >
+    <div className="BikehopperMap" ref={resizeRef}>
       <MapGL
         initialViewState={viewStateOnFirstRender.current}
         ref={mapRef}
@@ -182,6 +187,7 @@ function BikehopperMap(props) {
           width: '100%',
           height: '100%',
         }}
+        onLoad={props.onMapLoad}
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
         interactiveLayerIds={[
@@ -261,7 +267,7 @@ function BikehopperMap(props) {
       </MapGL>
     </div>
   );
-}
+});
 
 function getTransitStyle(activePath) {
   return {

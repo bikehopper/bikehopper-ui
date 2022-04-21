@@ -1,7 +1,7 @@
 import Bowser from 'bowser';
 
 // Helper for tracking changes in the visual viewport height, used to detect
-// presence of the virtual keyboard in mobile Safari.
+// presence of the virtual keyboard in mobile iOS/Android browsers.
 
 let _inited = false;
 let _callbacks = [];
@@ -10,7 +10,10 @@ let _lastHeight;
 
 export function isSupported() {
   const ua = Bowser.parse(navigator.userAgent);
-  return ua.os.name === 'iOS' && !!window.visualViewport;
+  return (
+    (ua.os.name === 'iOS' || ua.os.name === 'Android') &&
+    !!window.visualViewport
+  );
 }
 
 export function init() {
