@@ -16,7 +16,7 @@ import {
 } from '../lib/geometry';
 import lngLatToCoords from '../lib/lngLatToCoords';
 import { geolocated } from '../features/geolocation';
-import { LocationSourceType, locationDragged } from '../features/locations';
+import { LocationSourceType, locationDragged } from '../features/routeParams';
 import { routeClicked } from '../features/routes';
 import { mapMoved } from '../features/viewport';
 import useResizeObserver from '../hooks/useResizeObserver';
@@ -42,12 +42,12 @@ function BikehopperMap(props) {
     activePath,
   } = useSelector(
     (state) => ({
-      startPoint: state.locations.start?.point,
-      endPoint: state.locations.end?.point,
+      startPoint: state.routeParams.start?.point,
+      endPoint: state.routeParams.end?.point,
       startIsCurrentLocation:
-        state.locations.start?.source === LocationSourceType.UserGeolocation,
+        state.routeParams.start?.source === LocationSourceType.UserGeolocation,
       endIsCurrentLocation:
-        state.locations.end?.source === LocationSourceType.UserGeolocation,
+        state.routeParams.end?.source === LocationSourceType.UserGeolocation,
       routes: state.routes.routes,
       activePath: state.routes.activeRoute,
     }),

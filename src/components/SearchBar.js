@@ -9,7 +9,7 @@ import {
   locationsSubmitted,
   LocationSourceType,
   swapLocations,
-} from '../features/locations';
+} from '../features/routeParams';
 import usePrevious from '../hooks/usePrevious';
 import describePlace from '../lib/describePlace';
 import { ReactComponent as Pin } from 'iconoir/icons/pin-alt.svg';
@@ -24,11 +24,11 @@ export default function SearchBar(props) {
   const { startLocation, startText, endLocation, endText, editingLocation } =
     useSelector(
       (state) => ({
-        startLocation: state.locations.start,
-        endLocation: state.locations.end,
-        startText: state.locations.startInputText,
-        endText: state.locations.endInputText,
-        editingLocation: state.locations.editingLocation,
+        startLocation: state.routeParams.start,
+        endLocation: state.routeParams.end,
+        startText: state.routeParams.startInputText,
+        endText: state.routeParams.endInputText,
+        editingLocation: state.routeParams.editingLocation,
       }),
       shallowEqual,
     );

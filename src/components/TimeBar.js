@@ -4,14 +4,17 @@ import Icon from './Icon';
 import { ReactComponent as ClockOutline } from 'iconoir/icons/clock-outline.svg';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
-import { initialTimeSet, timebarDropdownSelected } from '../features/time';
+import {
+  initialTimeSet,
+  timebarDropdownSelected,
+} from '../features/routeParams';
 
 import './TimeBar.css';
 
 export default function TimeBar(props) {
   const { departureType } = useSelector(
     (state) => ({
-      departureType: state.time.departureType,
+      departureType: state.routeParams.departureType,
     }),
     shallowEqual,
   );
