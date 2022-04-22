@@ -302,7 +302,6 @@ function App() {
             />
           )}
           <div
-            className=""
             className={classnames({
               App_mapOverlayBottomPane: true,
               App_mapOverlayBottomPane__withMapHidden: hideMap,
