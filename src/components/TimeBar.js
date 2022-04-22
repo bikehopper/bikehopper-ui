@@ -4,18 +4,14 @@ import Icon from './Icon';
 import { ReactComponent as ClockOutline } from 'iconoir/icons/clock-outline.svg';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
-import {
-  arriveBySet,
-  initialTimeSet,
-  timebarDropdownSelected,
-} from '../features/time';
+import { initialTimeSet, timebarDropdownSelected } from '../features/time';
 
 import './TimeBar.css';
 
 export default function TimeBar(props) {
-  const { timebarDropdownOption } = useSelector(
+  const { departureType } = useSelector(
     (state) => ({
-      timebarDropdownOption: state.time.timebarDropdownOption,
+      departureType: state.time.departureType,
     }),
     shallowEqual,
   );
@@ -28,20 +24,6 @@ export default function TimeBar(props) {
 
   const handleSelect = (event) => {
     dispatch(timebarDropdownSelected(event.value));
-    switch (event.value) {
-      case 'now':
-        dispatch(arriveBySet(false));
-        dispatch(initialTimeSet(null));
-        break;
-      case 'departAt':
-        dispatch(arriveBySet(false));
-        break;
-      case 'arriveBy':
-        dispatch(arriveBySet(true));
-        break;
-      default:
-        break;
-    }
   };
 
   const options = [
@@ -52,20 +34,22 @@ export default function TimeBar(props) {
 
   return (
     <form className="TimeBar">
-      <Icon label="clock" className="TimeBar_clockIcon">
+      <Icon className="TimeBar_clockIcon">
         <ClockOutline />
       </Icon>
       <Dropdown
+        label="select departure type"
         className="TimeBar_select"
         options={options}
         onChange={handleSelect}
         arrowClassName="TimeBar_select_arrow"
         controlClassName="TimeBar_select_control"
         placeholderClassName="TimeBar_select_placeholder"
-        value={options.find((o) => o.value === timebarDropdownOption)}
+        value={options.find((o) => o.value === departureType)}
       />
       <input
-        disabled={!['departAt', 'arriveBy'].includes(timebarDropdownOption)}
+        label="select time"
+        disabled={!['departAt', 'arriveBy'].includes(departureType)}
         className="TimeBar_datetime"
         onChange={handleTimeChange}
         type="datetime-local"

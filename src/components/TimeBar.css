@@ -32,7 +32,7 @@
 }
 .TimeBar_datetime {
   height: 100%;
-  width: 150px;
+  width: 170px;
 }
 .TimeBar_datetime:disabled {
   display: none;

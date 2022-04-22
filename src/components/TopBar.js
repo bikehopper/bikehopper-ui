@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Icon from './Icon';
 import SearchBar from './SearchBar';
-import TimeBar from './TimeBar';
 import { ReactComponent as InfoEmpty } from 'iconoir/icons/info-empty.svg';
 
 import './TopBar.css';
@@ -25,8 +24,6 @@ export default function TopBar({ showSearchBar, initiallyFocusDestination }) {
       {showSearchBar && (
         <SearchBar initiallyFocusDestination={initiallyFocusDestination} />
       )}
-
-      {showSearchBar && <TimeBar />}
     </div>
   );
 }

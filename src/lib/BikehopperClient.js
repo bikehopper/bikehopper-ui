@@ -9,24 +9,29 @@ export async function fetchRoute({
   points,
   signal,
 }) {
-  if (!earliestDepartureTime) {
-    earliestDepartureTime = new Date().toISOString();
-  }
-  const detail_param = details?.join('&details=') || '';
-  const route = await fetch(
-    `${process.env.REACT_APP_GRAPHHOPPER_PATH}/route-pt?point=${
-      points[0]
-    }&point=${
-      points[1]
-    }&locale=en-US&pt.earliest_departure_time=${encodeURIComponent(
-      new Date(earliestDepartureTime).toISOString(),
-    )}&elevation=true&profile=${profile}&pt.connecting_profile=${connectingProfile}&pt.arrive_by=${arriveBy}&use_miles=false&selected_detail=Elevation&layer=OpenStreetMap&points_encoded=${pointsEncoded}&details=${detail_param}`,
-    {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      signal,
-    },
-  );
+  const params = new URLSearchParams({
+    locale: 'en-US',
+    elevation: true,
+    useMiles: false,
+    layer: 'OpenStreetMap',
+    profile,
+    optimize,
+    pointsEncoded,
+    'pt.earliest_departure_time': earliestDepartureTime
+      ? new Date(earliestDepartureTime).toISOString()
+      : new Date().toISOString(),
+    'pt.connecting_profile': connectingProfile,
+    'pt.arrive_by': arriveBy,
+  });
+  details?.forEach((d) => params.append('details', d));
+  points?.forEach((p) => params.append('point', p));
+
+  const url = `${process.env.REACT_APP_GRAPHHOPPER_PATH}/route-pt?${params}`;
+  const route = await fetch(url, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+    signal,
+  });
 
   if (!route.ok) throw new Error(route.statusText);
 

@@ -4,35 +4,25 @@ import { fetchRoute } from './routes';
 const DEFAULT_STATE = {
   arriveBy: false,
   initialTime: null,
-  timebarDropdownOption: 'now',
+  departureType: 'now',
 };
 
 export function timeReducer(state = DEFAULT_STATE, action) {
   switch (action.type) {
-    case 'arrive_by_set':
-      return produce(state, (draft) => {
-        draft.arriveBy = action.arriveBy;
-      });
     case 'initial_time_set':
       return produce(state, (draft) => {
         draft.initialTime = action.initialTime;
       });
     case 'timebar_dropdown_selected':
       return produce(state, (draft) => {
-        draft.timebarDropdownOption = action.timebarDropdownOption;
+        draft.departureType = action.departureType;
+        draft.arriveBy = action.departureType === 'arriveBy';
+        if (action.departureType === 'now') draft.initialTime = null;
       });
+
     default:
       return state;
   }
-}
-
-export function arriveBySet(arriveBy) {
-  return async function arriveBySetThunk(dispatch, getState) {
-    dispatch({
-      type: 'arrive_by_set',
-      arriveBy,
-    });
-  };
 }
 
 export function initialTimeSet(initialTime) {
@@ -59,11 +49,26 @@ export function initialTimeSet(initialTime) {
   };
 }
 
-export function timebarDropdownSelected(timebarDropdownOption) {
+export function timebarDropdownSelected(departureType) {
   return async function timebarDropdownSelectedThunk(dispatch, getState) {
     dispatch({
       type: 'timebar_dropdown_selected',
-      timebarDropdownOption,
+      departureType,
     });
+
+    // If we have a location, fetch a route.
+    let { start, end } = getState().locations;
+    let { arriveBy, initialTime } = getState().time;
+    if (
+      start?.point?.geometry.coordinates &&
+      end?.point?.geometry.coordinates
+    ) {
+      await fetchRoute(
+        start.point.geometry.coordinates,
+        end.point.geometry.coordinates,
+        arriveBy,
+        initialTime,
+      )(dispatch, getState);
+    }
   };
 }
