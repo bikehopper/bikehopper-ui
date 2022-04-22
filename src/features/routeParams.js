@@ -105,13 +105,11 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
       return produce(state, (draft) => {
         draft[action.startOrEnd + 'InputText'] = action.value;
       });
-    case 'locations_cleared':
+    case 'route_params_cleared':
       return produce(state, (draft) => {
-        draft.start = null;
-        draft.end = null;
-        draft.editingLocation = null;
-        draft.startInputText = '';
-        draft.endInputText = '';
+        for (const [k, v] of Object.entries(DEFAULT_STATE)) {
+          draft[k] = v;
+        }
       });
     case 'initial_time_set':
       return produce(state, (draft) => {
@@ -300,9 +298,9 @@ export function selectCurrentLocation(startOrEnd) {
   };
 }
 
-export function clearLocations() {
+export function clearRouteParams() {
   return {
-    type: 'locations_cleared',
+    type: 'route_params_cleared',
   };
 }
 

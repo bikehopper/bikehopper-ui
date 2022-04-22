@@ -4,7 +4,7 @@ import Icon from './Icon';
 import TimeBar from './TimeBar';
 import {
   changeLocationTextInput,
-  clearLocations,
+  clearRouteParams,
   locationInputFocused,
   locationsSubmitted,
   LocationSourceType,
@@ -68,7 +68,7 @@ export default function SearchBar(props) {
   };
 
   const handleBackClick = (event) => {
-    dispatch(clearLocations());
+    dispatch(clearRouteParams());
   };
 
   const handleSwapClick = (event) => {
