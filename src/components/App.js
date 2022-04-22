@@ -223,6 +223,8 @@ function App() {
     }
   };
 
+  React.useLayoutEffect(updateMapBottomControls);
+
   // For non-touch devices, we use a much simpler method to allow map
   // interaction and scrolling. Instead of forwarding mouse events, we can just
   // enable the bottom drawer to receive mouse events only when the mouse is
@@ -268,6 +270,8 @@ function App() {
     }
   }, []);
 
+  const hideMap = isEditingLocations;
+
   return (
     <div className="App">
       <BikehopperMap
@@ -290,14 +294,19 @@ function App() {
           />
         </div>
         <div className="App_mapOverlay" onScroll={handleMapOverlayScroll}>
-          {!isEditingLocations && (
+          {!hideMap && (
             <div
               className="App_mapOverlayTransparent"
               ref={mapOverlayTransparentRefCallback}
+              onMouseOver={_isTouch ? null : handleBottomPaneLeave}
             />
           )}
           <div
-            className="App_mapOverlayBottomPane"
+            className=""
+            className={classnames({
+              App_mapOverlayBottomPane: true,
+              App_mapOverlayBottomPane__withMapHidden: hideMap,
+            })}
             onMouseEnter={_isTouch ? null : handleBottomPaneEnter}
             onMouseLeave={_isTouch ? null : handleBottomPaneLeave}
           >

@@ -33,11 +33,15 @@
 .App_mapOverlayBottomPane {
   background: white;
   border-radius: 9px 9px 0 0;
-  flex-grow: 1;
   pointer-events: auto;
+}
+
+.App_mapOverlayBottomPane__withMapHidden {
+  flex-grow: 1;
 }
 
 .App_mapOverlayTransparent {
   flex-basis: calc(100% - 180px);
   flex-shrink: 0;
+  flex-grow: 1;
 }
