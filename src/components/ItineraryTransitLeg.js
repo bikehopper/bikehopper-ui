@@ -34,7 +34,7 @@ export default function ItineraryTransitLeg({ leg }) {
         {stops.length} stop{stops.length > 1 && 's'}
       </ItineraryDivider>
       <ItineraryStep IconSVGComponent={Circle} smallIcon={true}>
-        Get off at {stops[stops.length - 1].stop_name}
+        Get off at <strong>{stops[stops.length - 1].stop_name}</strong>
       </ItineraryStep>
       <ItineraryDivider />
     </>
