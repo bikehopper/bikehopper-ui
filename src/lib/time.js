@@ -1,3 +1,9 @@
+import { DateTime } from 'luxon';
+
+export function formatTime(isoTimeString) {
+  return DateTime.fromISO(isoTimeString).toLocaleString(DateTime.TIME_SIMPLE);
+}
+
 export function formatInterval(milliseconds) {
   let minutes = Math.ceil(milliseconds / 1000 / 60);
   if (minutes < 60) {

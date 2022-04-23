@@ -1,5 +1,5 @@
 // The meaning of the "sign" field in GraphHopper's returned instructions.
-export default {
+const InstructionSigns = {
   UNKNOWN: -99,
   U_TURN_UNKNOWN: -98,
   U_TURN_LEFT: -8,
@@ -21,3 +21,5 @@ export default {
   PT_TRANSFER: 102,
   PT_END_TRIP: 103,
 };
+
+export default InstructionSigns;

@@ -1,11 +1,9 @@
 import * as React from 'react';
 import formatDuration from '../lib/formatDuration';
+import { formatTime } from '../lib/time';
 import getAgencyNameForDisplay from '../lib/getAgencyNameForDisplay';
-import DepartArriveTime from './DepartArriveTime';
-import RouteSummary from './RouteSummary';
-import SelectionList from './SelectionList';
-import SelectionListItem from './SelectionListItem';
 import ItineraryBikeLeg from './ItineraryBikeLeg';
+import ItineraryHeader, { ItineraryHeaderIcons } from './ItineraryHeader';
 import ItineraryTransitLeg from './ItineraryTransitLeg';
 
 import './Itinerary.css';
@@ -47,15 +45,18 @@ export default function Itinerary({
 
   return (
     <div className="Itinerary">
-      <DepartArriveTime
-        className="Itinerary_overallTimeHeading"
-        depart={startTime}
-        arrive={endTime}
-      />
-      <p className="Itinerary_overallSubheading">
+      <h2 className="Itinerary_overallTimeHeading">
+        {formatTime(startTime)} to {formatTime(endTime)}
+      </h2>
+      <h3 className="Itinerary_overallSubheading">
         {durationText} &middot; via {modesText}
-      </p>
-      {renderedLegs}
+      </h3>
+      <div className="Itinerary_timeline">
+        {renderedLegs}
+        <ItineraryHeader icon={ItineraryHeaderIcons.ARRIVE} iconColor="ea526f">
+          Arrive at destination
+        </ItineraryHeader>
+      </div>
       <button onClick={onBackClick}>Return to route results</button>
     </div>
   );

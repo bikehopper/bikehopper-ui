@@ -1,0 +1,15 @@
+.ItineraryDivider_border {
+  width: 3px;
+  background-color: #bbb;
+  height: 100%;
+  display: inline-block;
+  margin-left: 30px;
+}
+
+.ItineraryDivider_content {
+  color: #626262;
+  font-size: 12px;
+  line-height: 12px;
+  margin-bottom: 12px;
+  margin-top: 12px;
+}
