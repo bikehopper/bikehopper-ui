@@ -6,8 +6,6 @@ import ItineraryBikeStep from './ItineraryBikeStep';
 import ItineraryHeader, { ItineraryHeaderIcons } from './ItineraryHeader';
 import ItineraryDivider from './ItineraryDivider';
 
-import './ItineraryBikeLeg.css';
-
 export default function ItineraryBikeLeg({ leg, legDestination, onStepClick }) {
   return (
     <>
