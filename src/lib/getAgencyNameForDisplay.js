@@ -1,7 +1,7 @@
 const COMMON_NAMES = {
-  'San Francisco Municipal Transportation Agency': 'Muni',
-  'Bay Area Rapid Transit': 'BART',
   'AC TRANSIT': 'AC Transit',
+  'Bay Area Rapid Transit': 'BART',
+  'San Francisco Municipal Transportation Agency': 'Muni',
 };
 
 export default function getAgencyNameForDisplay(fullName) {
