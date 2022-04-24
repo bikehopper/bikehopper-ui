@@ -1,6 +1,5 @@
 import * as React from 'react';
-import formatDuration from '../lib/formatDuration';
-import { formatTime } from '../lib/time';
+import { formatTime, formatDurationBetween } from '../lib/time';
 import getAgencyNameForDisplay from '../lib/getAgencyNameForDisplay';
 import ItineraryBikeLeg from './ItineraryBikeLeg';
 import ItineraryHeader, { ItineraryHeaderIcons } from './ItineraryHeader';
@@ -31,7 +30,7 @@ export default function Itinerary({
 
   const startTime = route.legs[0].departure_time;
   const endTime = route.legs[route.legs.length - 1].arrival_time;
-  const durationText = formatDuration(startTime, endTime);
+  const durationText = formatDurationBetween(startTime, endTime);
   const modesText = route.legs
     .reduce((modesArray, leg) => {
       let modeForLeg = 'unknown';

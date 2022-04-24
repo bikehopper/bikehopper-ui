@@ -1,6 +1,6 @@
 import * as React from 'react';
 import formatDistance from '../lib/formatDistance';
-import formatDuration from '../lib/formatDuration';
+import { formatDurationBetween } from '../lib/time';
 import InstructionSigns from '../lib/InstructionSigns';
 import ItineraryBikeStep from './ItineraryBikeStep';
 import ItineraryHeader, { ItineraryHeaderIcons } from './ItineraryHeader';
@@ -15,7 +15,7 @@ export default function ItineraryBikeLeg({ leg, legDestination }) {
         <span>Bike to {legDestination}</span>
         <span>
           {formatDistance(leg.distance)} &middot;{' '}
-          {formatDuration(leg.departure_time, leg.arrival_time)}
+          {formatDurationBetween(leg.departure_time, leg.arrival_time)}
         </span>
       </ItineraryHeader>
       <ItineraryDivider />

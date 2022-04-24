@@ -1,6 +1,5 @@
 import * as React from 'react';
-import formatDuration from '../lib/formatDuration';
-import { formatTime } from '../lib/time';
+import { formatTime, formatDurationBetween } from '../lib/time';
 import getAgencyNameForDisplay from '../lib/getAgencyNameForDisplay';
 import ItineraryHeader, { ItineraryHeaderIcons } from './ItineraryHeader';
 import ItineraryDivider from './ItineraryDivider';
@@ -27,7 +26,7 @@ export default function ItineraryTransitLeg({ leg }) {
         </span>
         <span>
           {stops.length} stop{stops.length > 1 && 's'} &middot;{' '}
-          {formatDuration(leg.departure_time, leg.arrival_time)}
+          {formatDurationBetween(leg.departure_time, leg.arrival_time)}
         </span>
       </ItineraryHeader>
       <ItineraryDivider />
