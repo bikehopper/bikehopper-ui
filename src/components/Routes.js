@@ -56,7 +56,7 @@ export default function Routes(props) {
         onRouteClick={handleRouteClick}
       />
     );
-  } else if (!step) {
+  } else if (step == null) {
     return (
       <Itinerary
         route={routes[activeRoute]}
@@ -66,9 +66,11 @@ export default function Routes(props) {
       />
     );
   } else {
+    // TODO Make a nice single-step display that gives the same description as
+    // the step in the full itinerary.
     return (
-      <p>
-        Step {step} of leg {leg}. Description TK.{' '}
+      <p style={{ marginLeft: 32 }}>
+        {routes[activeRoute].legs[leg].instructions[step].text + ' '}
         <button onClick={handleStepBackClick}>Go back</button>
       </p>
     );

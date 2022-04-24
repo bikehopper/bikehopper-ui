@@ -23,7 +23,12 @@ export default function Itinerary({
           ? destinationDescription
           : legs[idx + 1].stops[0].stop_name;
       return (
-        <ItineraryBikeLeg key={idx} leg={leg} legDestination={legDestination} />
+        <ItineraryBikeLeg
+          key={idx}
+          leg={leg}
+          legDestination={legDestination}
+          onStepClick={onStepClick.bind(null, idx)}
+        />
       );
     }
   });

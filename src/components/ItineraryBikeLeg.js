@@ -8,7 +8,7 @@ import ItineraryDivider from './ItineraryDivider';
 
 import './ItineraryBikeLeg.css';
 
-export default function ItineraryBikeLeg({ leg, legDestination }) {
+export default function ItineraryBikeLeg({ leg, legDestination, onStepClick }) {
   return (
     <>
       <ItineraryHeader icon={ItineraryHeaderIcons.BIKE}>
@@ -27,6 +27,7 @@ export default function ItineraryBikeLeg({ leg, legDestination }) {
                 key={stepIdx}
                 step={step}
                 isFirstStep={stepIdx === 0}
+                onClick={onStepClick.bind(null, stepIdx)}
               />,
               <ItineraryDivider key={stepIdx + 'd'}>
                 {step.distance ? formatDistance(step.distance) : null}

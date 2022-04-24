@@ -35,6 +35,8 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
     endIsCurrentLocation,
     routes,
     activePath,
+    viewingDetails,
+    viewingStep,
   } = useSelector(
     (state) => ({
       startPoint: state.routeParams.start?.point,
@@ -45,6 +47,8 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
         state.routeParams.end?.source === LocationSourceType.UserGeolocation,
       routes: state.routes.routes,
       activePath: state.routes.activeRoute,
+      viewingDetails: state.routes.viewingDetails,
+      viewingStep: state.routes.viewingStep,
     }),
     shallowEqual,
   );
@@ -149,6 +153,30 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
       resizeAndFitBounds();
     }
   }, [routes, mapRef, props.overlayRef]);
+
+  // When viewing a specific step of a route, zoom to where it starts.
+  React.useEffect(() => {
+    if (
+      !routes ||
+      activePath == null ||
+      !viewingDetails ||
+      !viewingStep ||
+      !mapRef.current
+    )
+      return;
+
+    const [legIdx, stepIdx] = viewingStep;
+
+    const leg = routes[activePath].legs[legIdx];
+    const stepStartPointIdx = leg.instructions[stepIdx].interval[0];
+    const stepStartPointLngLat = leg.geometry.coordinates[stepStartPointIdx];
+
+    const map = mapRef.current.getMap();
+    map.easeTo({
+      center: stepStartPointLngLat,
+      zoom: 18,
+    });
+  }, [routes, activePath, viewingDetails, viewingStep, mapRef]);
 
   const features = routes ? routesToGeoJSON(routes) : EMPTY_GEOJSON;
 
