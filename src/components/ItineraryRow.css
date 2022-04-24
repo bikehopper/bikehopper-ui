@@ -8,6 +8,7 @@
   width: 60px;
   margin-right: 18px;
   box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .ItineraryRow_content {
