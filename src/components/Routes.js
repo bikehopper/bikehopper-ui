@@ -16,7 +16,9 @@ export default function Routes(props) {
     useSelector(({ routes, locations }) => {
       let destinationDescription = 'destination';
       if (locations.end && locations.end.point) {
-        destinationDescription = describePlace(locations.end.point);
+        destinationDescription = describePlace(locations.end.point, {
+          short: true,
+        });
       } else {
         console.error('rendering routes: expected end location');
       }
