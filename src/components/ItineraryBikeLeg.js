@@ -23,7 +23,11 @@ export default function ItineraryBikeLeg({ leg, legDestination }) {
         isArriveStep(step)
           ? null
           : [
-              <ItineraryBikeStep key={stepIdx} step={step} />,
+              <ItineraryBikeStep
+                key={stepIdx}
+                step={step}
+                isFirstStep={stepIdx === 0}
+              />,
               <ItineraryDivider key={stepIdx + 'd'}>
                 {step.distance ? formatDistance(step.distance) : null}
               </ItineraryDivider>,
