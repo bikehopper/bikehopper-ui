@@ -95,6 +95,7 @@ export function routesReducer(state = DEFAULT_STATE, action) {
         draft.routeStatus = 'succeeded';
         draft.activeRoute = 0;
         draft.viewingDetails = false;
+        draft.viewingStep = null;
       });
     case 'route_clicked':
       if (
