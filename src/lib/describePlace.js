@@ -12,10 +12,6 @@ export default function describePlace(feature, { short = false } = {}) {
     postcode = '',
   } = feature.properties;
 
-  if (short) {
-    if (name) return name;
-  }
-
   const descriptionElements = [
     name,
     housenumber != null ? housenumber + ' ' + street : street,
