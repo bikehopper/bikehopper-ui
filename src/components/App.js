@@ -2,6 +2,7 @@ import Bowser from 'bowser';
 import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import classnames from 'classnames';
+import useResizeObserver from '../hooks/useResizeObserver';
 import BikehopperMap from './BikehopperMap';
 import DirectionsNullState from './DirectionsNullState';
 import Routes from './Routes';
@@ -201,10 +202,6 @@ function App() {
     updateMapTopControls();
   });
 
-  const handleMapOverlayScroll = (evt) => {
-    window.requestAnimationFrame(updateMapBottomControls);
-  };
-
   const updateMapBottomControls = () => {
     if (!mapRef.current || !mapOverlayTransparentRef.current) return;
 
@@ -223,6 +220,10 @@ function App() {
     }
   };
 
+  const bottomPaneRef = useResizeObserver(updateMapBottomControls);
+  const handleMapOverlayScroll = (evt) => {
+    window.requestAnimationFrame(updateMapBottomControls);
+  };
   React.useLayoutEffect(updateMapBottomControls);
 
   // For non-touch devices, we use a much simpler method to allow map
@@ -308,6 +309,7 @@ function App() {
             })}
             onMouseEnter={_isTouch ? null : handleBottomPaneEnter}
             onMouseLeave={_isTouch ? null : handleBottomPaneLeave}
+            ref={bottomPaneRef}
           >
             {bottomContent}
           </div>
