@@ -220,6 +220,9 @@ function App() {
     }
   };
 
+  // Update the positioning of the map's bottom-left and bottom-right controls
+  // when the bottom pane resizes under them, scrolls, or when this component
+  // rerenders.
   const bottomPaneRef = useResizeObserver(updateMapBottomControls);
   const handleMapOverlayScroll = (evt) => {
     window.requestAnimationFrame(updateMapBottomControls);
