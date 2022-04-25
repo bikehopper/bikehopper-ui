@@ -35,7 +35,11 @@
 .TimeBar_datetime {
   width: 50%;
   height: 35px;
-  font-size: 11px;
+  font-size: 12px;
+  font-family: inherit;
+  background-color: #def0cc;
+  border: 2px solid transparent;
+  border-radius: 12px;
 }
 .TimeBar_datetime:disabled {
   display: none;
