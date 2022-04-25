@@ -1,6 +1,5 @@
 .TimeBar {
-  margin-left: 24px;
-  margin-top: 10px;
+  position: relative;
 }
 
 .TimeBar_clockIcon {
@@ -10,10 +9,11 @@
   color: #ffd18e;
   top: 6px;
 }
+
 .TimeBar_select {
   display: inline-flex;
-  margin: 0px 10px 0px 0px;
   background: transparent;
+  width: 50%;
 }
 
 .TimeBar_select_control {
@@ -24,15 +24,18 @@
   font-weight: bold;
   padding: 8px 10px;
   padding-left: 42px;
-  width: 115px;
+  width: 100%;
+  margin-right: 6px;
 }
 
 .TimeBar_select_arrow {
   display: none;
 }
+
 .TimeBar_datetime {
-  height: 100%;
-  width: 170px;
+  width: 50%;
+  height: 35px;
+  font-size: 11px;
 }
 .TimeBar_datetime:disabled {
   display: none;

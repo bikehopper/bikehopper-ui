@@ -4,10 +4,7 @@ import Icon from './Icon';
 import { ReactComponent as ClockOutline } from 'iconoir/icons/clock-outline.svg';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
-import {
-  initialTimeSet,
-  timebarDropdownSelected,
-} from '../features/routeParams';
+import { initialTimeSet, departureTypeSelected } from '../features/routeParams';
 
 import './TimeBar.css';
 
@@ -26,7 +23,7 @@ export default function TimeBar(props) {
   };
 
   const handleSelect = (event) => {
-    dispatch(timebarDropdownSelected(event.value));
+    dispatch(departureTypeSelected(event.value));
   };
 
   const options = [

@@ -107,15 +107,21 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
       });
     case 'route_params_cleared':
       return produce(state, (draft) => {
-        for (const [k, v] of Object.entries(DEFAULT_STATE)) {
-          draft[k] = v;
-        }
+        draft.start = null;
+        draft.end = null;
+        draft.editingLocation = null;
+        draft.startInputText = '';
+        draft.endInputText = '';
+        draft.endInputText = '';
+        draft.arriveBy = false;
+        draft.initialTime = null;
+        draft.departureType = 'now';
       });
     case 'initial_time_set':
       return produce(state, (draft) => {
         draft.initialTime = action.initialTime;
       });
-    case 'timebar_dropdown_selected':
+    case 'departure_type_selected':
       return produce(state, (draft) => {
         draft.departureType = action.departureType;
         draft.arriveBy = action.departureType === 'arriveBy';
@@ -349,10 +355,10 @@ export function initialTimeSet(initialTime) {
   };
 }
 
-export function timebarDropdownSelected(departureType) {
-  return async function timebarDropdownSelectedThunk(dispatch, getState) {
+export function departureTypeSelected(departureType) {
+  return async function departureTypeSelectedThunk(dispatch, getState) {
     dispatch({
-      type: 'timebar_dropdown_selected',
+      type: 'departure_type_selected',
       departureType,
     });
 

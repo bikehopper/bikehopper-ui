@@ -116,14 +116,14 @@ export default function SearchBar(props) {
   };
 
   return (
-    <div>
-      <form className="SearchBar" onSubmit={handleSubmit}>
-        <button onClick={handleBackClick} className="SearchBar_backButton">
-          <Icon label="back" className="SearchBar_backIcon">
-            <NavLeftArrow />
-          </Icon>
-        </button>
-        <div className="SearchBar_inputs">
+    <div className="SearchBar">
+      <button onClick={handleBackClick} className="SearchBar_backButton">
+        <Icon label="back" className="SearchBar_backIcon">
+          <NavLeftArrow />
+        </Icon>
+      </button>
+      <div className="SearchBar_inputs">
+        <form onSubmit={handleSubmit}>
           <span className="SearchBar_inputContainer">
             <Icon className="SearchBar_icon">
               <Pin />
@@ -140,7 +140,7 @@ export default function SearchBar(props) {
               ref={startRef}
             />
           </span>
-          <span className="SearchBar_divider" />
+          <span className="SearchBar_divider_dotted" />
           <span className="SearchBar_inputContainer">
             <Icon className="SearchBar_icon">
               <Pin />
@@ -158,14 +158,15 @@ export default function SearchBar(props) {
               autoFocus={props.initiallyFocusDestination}
             />
           </span>
-        </div>
-        <button onClick={handleSwapClick} className="SearchBar_swapButton">
-          <Icon label="swap" className="SearchBar_swapIcon">
-            <SwapArrows />
-          </Icon>
-        </button>
-      </form>
-      <TimeBar />
+        </form>
+        <span className="SearchBar_divider" />
+        <TimeBar />
+      </div>
+      <button onClick={handleSwapClick} className="SearchBar_swapButton">
+        <Icon label="swap" className="SearchBar_swapIcon">
+          <SwapArrows />
+        </Icon>
+      </button>
     </div>
   );
 }
