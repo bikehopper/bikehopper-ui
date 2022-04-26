@@ -35,7 +35,21 @@ export async function fetchRoute({
 
   if (!route.ok) throw new Error(route.statusText);
 
-  return route.json();
+  return parse(await route.json());
+}
+
+function parse(route) {
+  for (const path of route?.paths) {
+    for (const leg of path?.legs) {
+      if (leg?.type !== 'pt') continue;
+
+      if (!leg?.route_color) continue;
+
+      leg.route_color = '#' + leg.route_color;
+    }
+  }
+
+  return route;
 }
 
 export async function geocode(

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getTextColor } from '../lib/colors';
+import { DEFAULT_PT_COLOR, getTextColor } from '../lib/colors';
 import Icon from './Icon';
 import { ReactComponent as Bicycle } from 'iconoir/icons/bicycle.svg';
 import { formatInterval } from '../lib/time';
@@ -17,8 +17,8 @@ export default function RouteLeg(props) {
       </Icon>
     );
   } else if (props.type === 'pt') {
-    const bgColor = props.routeColor != null ? '#' + props.routeColor : 'blue';
-    const fgColor = getTextColor(props.routeColor).main;
+    const bgColor = props.routeColor || DEFAULT_PT_COLOR;
+    const fgColor = getTextColor(bgColor).main;
     mode = (
       <span
         className="RouteLeg_transitMode"

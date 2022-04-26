@@ -25,6 +25,7 @@ import * as VisualViewportTracker from '../lib/VisualViewportTracker';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './BikehopperMap.css';
+import { DEFAULT_BIKE_COLOR, DEFAULT_INACTIVE_COLOR } from '../lib/colors';
 
 const BikehopperMap = React.forwardRef((props, mapRef) => {
   const dispatch = useDispatch();
@@ -427,10 +428,10 @@ function getTransitColorStyle(indexOfActivePath, colorKey = 'route_color') {
   return [
     'case',
     ['==', ['get', 'path_index'], indexOfActivePath],
-    // for active path use the route color from GTFS or fallback to blue
-    ['to-color', ['get', colorKey], '#5aaa0a'],
-    // inactive paths are darkgray
-    ['to-color', 'darkgray'],
+    // for active path use the route color
+    ['to-color', ['get', colorKey]],
+    // inactive paths
+    ['to-color', DEFAULT_INACTIVE_COLOR],
   ];
 }
 
@@ -444,8 +445,7 @@ function getBikeColorStyle(indexOfActivePath) {
       '#006600',
       cyclewayIs('lane', 'shared_lane'),
       '#33cc33',
-      // ...
-      'royalblue',
+      DEFAULT_BIKE_COLOR,
     ],
     'darkgray',
   ];
