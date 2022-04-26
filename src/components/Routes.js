@@ -13,10 +13,10 @@ import Itinerary from './Itinerary';
 export default function Routes(props) {
   const dispatch = useDispatch();
   const { routes, activeRoute, details, leg, step, destinationDescription } =
-    useSelector(({ routes, locations }) => {
+    useSelector(({ routes, routeParams }) => {
       let destinationDescription = 'destination';
-      if (locations.end && locations.end.point) {
-        destinationDescription = describePlace(locations.end.point, {
+      if (routeParams.end && routeParams.end.point) {
+        destinationDescription = describePlace(routeParams.end.point, {
           short: true,
         });
       } else {
