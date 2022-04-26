@@ -1,14 +1,15 @@
 import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './Icon';
+import TimeBar from './TimeBar';
 import {
   changeLocationTextInput,
-  clearLocations,
+  clearRouteParams,
   locationInputFocused,
   locationsSubmitted,
   LocationSourceType,
   swapLocations,
-} from '../features/locations';
+} from '../features/routeParams';
 import usePrevious from '../hooks/usePrevious';
 import describePlace from '../lib/describePlace';
 import { ReactComponent as Pin } from 'iconoir/icons/pin-alt.svg';
@@ -23,11 +24,11 @@ export default function SearchBar(props) {
   const { startLocation, startText, endLocation, endText, editingLocation } =
     useSelector(
       (state) => ({
-        startLocation: state.locations.start,
-        endLocation: state.locations.end,
-        startText: state.locations.startInputText,
-        endText: state.locations.endInputText,
-        editingLocation: state.locations.editingLocation,
+        startLocation: state.routeParams.start,
+        endLocation: state.routeParams.end,
+        startText: state.routeParams.startInputText,
+        endText: state.routeParams.endInputText,
+        editingLocation: state.routeParams.editingLocation,
       }),
       shallowEqual,
     );
@@ -67,7 +68,7 @@ export default function SearchBar(props) {
   };
 
   const handleBackClick = (event) => {
-    dispatch(clearLocations());
+    dispatch(clearRouteParams());
   };
 
   const handleSwapClick = (event) => {
@@ -115,54 +116,58 @@ export default function SearchBar(props) {
   };
 
   return (
-    <form className="SearchBar" onSubmit={handleSubmit}>
+    <div className="SearchBar">
       <button onClick={handleBackClick} className="SearchBar_backButton">
         <Icon label="back" className="SearchBar_backIcon">
           <NavLeftArrow />
         </Icon>
       </button>
       <div className="SearchBar_inputs">
-        <span className="SearchBar_inputContainer">
-          <Icon className="SearchBar_icon">
-            <Pin />
-          </Icon>
-          <input
-            aria-label="Starting point"
-            className="SearchBar_input"
-            type="text"
-            placeholder="Starting point"
-            value={displayedStart}
-            onChange={handleStartChange}
-            onFocus={handleFocus.bind(null, 'start')}
-            onKeyPress={handleKeyPress}
-            ref={startRef}
-          />
-        </span>
+        <form onSubmit={handleSubmit}>
+          <span className="SearchBar_inputContainer">
+            <Icon className="SearchBar_icon">
+              <Pin />
+            </Icon>
+            <input
+              aria-label="Starting point"
+              className="SearchBar_input"
+              type="text"
+              placeholder="Starting point"
+              value={displayedStart}
+              onChange={handleStartChange}
+              onFocus={handleFocus.bind(null, 'start')}
+              onKeyPress={handleKeyPress}
+              ref={startRef}
+            />
+          </span>
+          <span className="SearchBar_divider_dotted" />
+          <span className="SearchBar_inputContainer">
+            <Icon className="SearchBar_icon">
+              <Pin />
+            </Icon>
+            <input
+              aria-label="Destination"
+              className="SearchBar_input"
+              type="text"
+              placeholder="Destination"
+              value={displayedEnd}
+              onChange={handleEndChange}
+              onFocus={handleFocus.bind(null, 'end')}
+              onKeyPress={handleKeyPress}
+              ref={endRef}
+              autoFocus={props.initiallyFocusDestination}
+            />
+          </span>
+        </form>
         <span className="SearchBar_divider" />
-        <span className="SearchBar_inputContainer">
-          <Icon className="SearchBar_icon">
-            <Pin />
-          </Icon>
-          <input
-            aria-label="Destination"
-            className="SearchBar_input"
-            type="text"
-            placeholder="Destination"
-            value={displayedEnd}
-            onChange={handleEndChange}
-            onFocus={handleFocus.bind(null, 'end')}
-            onKeyPress={handleKeyPress}
-            ref={endRef}
-            autoFocus={props.initiallyFocusDestination}
-          />
-        </span>
+        <TimeBar />
       </div>
       <button onClick={handleSwapClick} className="SearchBar_swapButton">
         <Icon label="swap" className="SearchBar_swapIcon">
           <SwapArrows />
         </Icon>
       </button>
-    </form>
+    </div>
   );
 }
 

@@ -10,7 +10,7 @@ import TopBar from './TopBar';
 import {
   LocationSourceType,
   locationInputFocused,
-} from '../features/locations';
+} from '../features/routeParams';
 import * as VisualViewportTracker from '../lib/VisualViewportTracker';
 
 import './App.css';
@@ -21,12 +21,12 @@ function App() {
   const { hasRoutes, hasLocations, isEditingLocations } = useSelector(
     (state) => ({
       hasLocations: !!(
-        state.locations.end ||
-        (state.locations.start &&
-          state.locations.start.source !== LocationSourceType.UserGeolocation)
+        state.routeParams.end ||
+        (state.routeParams.start &&
+          state.routeParams.start.source !== LocationSourceType.UserGeolocation)
       ),
       hasRoutes: !!state.routes.routes,
-      isEditingLocations: state.locations.editingLocation != null,
+      isEditingLocations: state.routeParams.editingLocation != null,
     }),
     shallowEqual,
   );

@@ -5,7 +5,7 @@ import {
   LocationSourceType,
   selectCurrentLocation,
   selectGeocodedLocation,
-} from '../features/locations';
+} from '../features/routeParams';
 import describePlace from '../lib/describePlace';
 import Icon from './Icon';
 import SelectionList from './SelectionList';
@@ -20,17 +20,17 @@ export default function SearchAutocompleteDropdown(props) {
 
   const { startOrEnd, inputText, geocodedFeatures, canUseCurrentLocation } =
     useSelector((state) => {
-      const startOrEnd = state.locations.editingLocation;
+      const startOrEnd = state.routeParams.editingLocation;
 
       // TODO: Remove this after verifying it doesn't happen
       if (!startOrEnd) throw new Error('expected to be editing start or end');
 
-      let inputText = state.locations[startOrEnd + 'InputText'];
+      let inputText = state.routeParams[startOrEnd + 'InputText'];
       let cache = inputText && state.geocoding.cache['@' + inputText.trim()];
       if (!cache) {
         // If the location we're editing has a geocoded location already selected, display the
         // other options from the input text that was used to pick that.
-        const relevantLocation = state.locations[startOrEnd];
+        const relevantLocation = state.routeParams[startOrEnd];
         if (
           relevantLocation &&
           relevantLocation.source === LocationSourceType.Geocoded &&
@@ -55,8 +55,9 @@ export default function SearchAutocompleteDropdown(props) {
         state.geolocation.lat != null && state.geolocation.lng != null;
       const canUseCurrentLocation =
         haveCurrentLocation &&
-        (!state.locations[other] ||
-          state.locations[other].source !== LocationSourceType.UserGeolocation);
+        (!state.routeParams[other] ||
+          state.routeParams[other].source !==
+            LocationSourceType.UserGeolocation);
 
       return {
         startOrEnd,
