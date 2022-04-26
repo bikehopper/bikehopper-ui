@@ -1,3 +1,9 @@
+import { DateTime, Duration } from 'luxon';
+
+export function formatTime(isoTimeString) {
+  return DateTime.fromISO(isoTimeString).toLocaleString(DateTime.TIME_SIMPLE);
+}
+
 export function formatInterval(milliseconds) {
   let minutes = Math.ceil(milliseconds / 1000 / 60);
   if (minutes < 60) {
@@ -14,5 +20,16 @@ export function formatInterval(milliseconds) {
     // add one to hours to make sure to always overestimate time
     hours += 1;
   }
-  return hours === 0 ? `${days}d` : `${days}d ${hours}m`;
+  return hours === 0 ? `${days}d` : `${days}d ${hours}h`;
+}
+
+// Long description of the interval between two ISO time strings.
+// TODO: Reconcile this with the above somehow.
+export function formatDurationBetween(startTime, endTime) {
+  const duration = DateTime.fromISO(endTime)
+    .diff(DateTime.fromISO(startTime), ['days', 'hours', 'minutes'])
+    .toObject();
+  if (duration.days === 0) delete duration.days;
+  if (duration.hours === 0) delete duration.hours;
+  return Duration.fromObject(duration).toHuman({ maximumFractionDigits: 0 });
 }

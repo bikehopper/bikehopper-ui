@@ -2,9 +2,10 @@ import Bowser from 'bowser';
 import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import classnames from 'classnames';
+import useResizeObserver from '../hooks/useResizeObserver';
 import BikehopperMap from './BikehopperMap';
 import DirectionsNullState from './DirectionsNullState';
-import RoutesOverview from './RoutesOverview';
+import Routes from './Routes';
 import SearchAutocompleteDropdown from './SearchAutocompleteDropdown';
 import TopBar from './TopBar';
 import {
@@ -201,10 +202,6 @@ function App() {
     updateMapTopControls();
   });
 
-  const handleMapOverlayScroll = (evt) => {
-    window.requestAnimationFrame(updateMapBottomControls);
-  };
-
   const updateMapBottomControls = () => {
     if (!mapRef.current || !mapOverlayTransparentRef.current) return;
 
@@ -223,6 +220,13 @@ function App() {
     }
   };
 
+  // Update the positioning of the map's bottom-left and bottom-right controls
+  // when the bottom pane resizes under them, scrolls, or when this component
+  // rerenders.
+  const bottomPaneRef = useResizeObserver(updateMapBottomControls);
+  const handleMapOverlayScroll = (evt) => {
+    window.requestAnimationFrame(updateMapBottomControls);
+  };
   React.useLayoutEffect(updateMapBottomControls);
 
   // For non-touch devices, we use a much simpler method to allow map
@@ -242,7 +246,7 @@ function App() {
   if (isEditingLocations) {
     bottomContent = <SearchAutocompleteDropdown />;
   } else if (hasRoutes) {
-    bottomContent = <RoutesOverview />;
+    bottomContent = <Routes />;
   } else if (!hasLocations) {
     bottomContent = (
       <DirectionsNullState onInputFocus={handleBottomInputFocus} />
@@ -308,6 +312,7 @@ function App() {
             })}
             onMouseEnter={_isTouch ? null : handleBottomPaneEnter}
             onMouseLeave={_isTouch ? null : handleBottomPaneLeave}
+            ref={bottomPaneRef}
           >
             {bottomContent}
           </div>

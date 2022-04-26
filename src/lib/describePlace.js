@@ -1,6 +1,6 @@
 // Describe a place from its Photon GeoJSON result hash.
 // (If we were to switch back to Nominatim, parts of this would change)
-export default function describePlace(feature) {
+export default function describePlace(feature, { short = false } = {}) {
   if (!feature || feature.type !== 'Feature' || !feature.properties)
     return 'Point';
 
@@ -12,14 +12,18 @@ export default function describePlace(feature) {
     postcode = '',
   } = feature.properties;
 
-  const description = [
+  const descriptionElements = [
     name,
     housenumber != null ? housenumber + ' ' + street : street,
     city,
     postcode,
-  ]
-    .filter((segment) => !!segment)
-    .join(', ');
+  ];
 
-  return description || 'Point';
+  if (short) {
+    return descriptionElements.find((segment) => !!segment) || 'Point';
+  } else {
+    return (
+      descriptionElements.filter((segment) => !!segment).join(', ') || 'Point'
+    );
+  }
 }
