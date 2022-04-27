@@ -1,6 +1,4 @@
 import * as React from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { routeClicked } from '../features/routes';
 import { formatInterval } from '../lib/time';
 import DepartArriveTime from './DepartArriveTime';
 import Icon from './Icon';
@@ -13,31 +11,19 @@ import { ReactComponent as NavArrowRight } from 'iconoir/icons/nav-arrow-right.s
 import './RoutesOverview.css';
 
 export default function RoutesOverview(props) {
-  const dispatch = useDispatch();
-  const { routes, activeRoute } = useSelector(
-    (state) => ({
-      routes: state.routes.routes,
-      activeRoute: state.routes.activeRoute,
-    }),
-    shallowEqual,
-  );
-
-  const handleRouteClick = (index) => {
-    dispatch(routeClicked(index));
-  };
+  const { routes, activeRoute, onRouteClick } = props;
 
   return (
     <SelectionList>
       {routes.map((route, index) => (
         <SelectionListItem
-          className="RoutesOverview_route"
           active={activeRoute === index}
-          onClick={handleRouteClick.bind(null, index)}
+          onClick={onRouteClick.bind(null, index)}
           key={route.nonce}
         >
           <div className="RoutesOverview_row">
             <ul className="RoutesOverview_routeLegs">
-              {route.legs.map((leg, index) => (
+              {route.legs.filter(isSignificantLeg).map((leg, index) => (
                 <React.Fragment key={route.nonce + ':' + index}>
                   {index > 0 && (
                     <li className="RoutesOverview_legSeparator">
@@ -75,5 +61,15 @@ export default function RoutesOverview(props) {
         </SelectionListItem>
       ))}
     </SelectionList>
+  );
+}
+
+function isSignificantLeg(leg) {
+  // For filtering out short, interpolated legs
+  const THRESHOLD_IN_METERS = 120;
+  return !(
+    leg.type === 'bike2' &&
+    leg.interpolated &&
+    leg.distance < THRESHOLD_IN_METERS
   );
 }

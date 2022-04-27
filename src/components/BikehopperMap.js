@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useCallback, useLayoutEffect } from 'react';
-import classnames from 'classnames';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import MapGL, {
   Layer,
@@ -16,7 +15,7 @@ import {
 } from '../lib/geometry';
 import lngLatToCoords from '../lib/lngLatToCoords';
 import { geolocated } from '../features/geolocation';
-import { LocationSourceType, locationDragged } from '../features/locations';
+import { LocationSourceType, locationDragged } from '../features/routeParams';
 import { routeClicked } from '../features/routes';
 import { mapMoved } from '../features/viewport';
 import useResizeObserver from '../hooks/useResizeObserver';
@@ -27,11 +26,7 @@ import * as VisualViewportTracker from '../lib/VisualViewportTracker';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './BikehopperMap.css';
 
-const ZOOM_PADDING = 40;
-
-function BikehopperMap(props) {
-  const mapRef = React.useRef();
-
+const BikehopperMap = React.forwardRef((props, mapRef) => {
   const dispatch = useDispatch();
   const {
     startPoint,
@@ -40,16 +35,20 @@ function BikehopperMap(props) {
     endIsCurrentLocation,
     routes,
     activePath,
+    viewingDetails,
+    viewingStep,
   } = useSelector(
     (state) => ({
-      startPoint: state.locations.start?.point,
-      endPoint: state.locations.end?.point,
+      startPoint: state.routeParams.start?.point,
+      endPoint: state.routeParams.end?.point,
       startIsCurrentLocation:
-        state.locations.start?.source === LocationSourceType.UserGeolocation,
+        state.routeParams.start?.source === LocationSourceType.UserGeolocation,
       endIsCurrentLocation:
-        state.locations.end?.source === LocationSourceType.UserGeolocation,
+        state.routeParams.end?.source === LocationSourceType.UserGeolocation,
       routes: state.routes.routes,
       activePath: state.routes.activeRoute,
+      viewingDetails: state.routes.viewingDetails,
+      viewingStep: state.routes.viewingStep,
     }),
     shallowEqual,
   );
@@ -59,7 +58,7 @@ function BikehopperMap(props) {
 
   const handleRouteClick = (evt) => {
     if (evt.features?.length) {
-      dispatch(routeClicked(evt.features[0].properties.path_index));
+      dispatch(routeClicked(evt.features[0].properties.path_index, 'map'));
     }
   };
 
@@ -76,7 +75,6 @@ function BikehopperMap(props) {
   };
 
   const handleGeolocate = (geolocateResultEvent) => {
-    console.log('geolocate event', geolocateResultEvent);
     dispatch(
       geolocated(geolocateResultEvent.coords, geolocateResultEvent.timestamp),
     );
@@ -84,9 +82,12 @@ function BikehopperMap(props) {
   };
 
   const resizeRef = useResizeObserver(
-    useCallback(([width, height]) => {
-      if (mapRef.current) mapRef.current.resize();
-    }, []),
+    useCallback(
+      ([width, height]) => {
+        if (mapRef.current) mapRef.current.resize();
+      },
+      [mapRef],
+    ),
   );
 
   // center viewport on route paths
@@ -113,6 +114,19 @@ function BikehopperMap(props) {
     // happen for other reasons (device orientation change, desktop browser
     // window resize, etc).
     const resizeAndFitBounds = () => {
+      const padding = {
+        top: 20,
+        left: 40,
+        right: 40,
+        bottom: 20,
+      };
+      if (props.overlayRef.current) {
+        const overlayEl = props.overlayRef.current;
+        const clientRect = overlayEl.getBoundingClientRect();
+        padding.top += clientRect.top;
+        padding.bottom += window.innerHeight - clientRect.bottom;
+        overlayEl.parentElement.scrollTop = 0;
+      }
       map.resize();
       map.fitBounds(
         [
@@ -120,7 +134,7 @@ function BikehopperMap(props) {
           [maxx, maxy],
         ],
         {
-          padding: ZOOM_PADDING,
+          padding,
         },
       );
     };
@@ -138,7 +152,31 @@ function BikehopperMap(props) {
     } else {
       resizeAndFitBounds();
     }
-  }, [routes]);
+  }, [routes, mapRef, props.overlayRef]);
+
+  // When viewing a specific step of a route, zoom to where it starts.
+  React.useEffect(() => {
+    if (
+      !routes ||
+      activePath == null ||
+      !viewingDetails ||
+      !viewingStep ||
+      !mapRef.current
+    )
+      return;
+
+    const [legIdx, stepIdx] = viewingStep;
+
+    const leg = routes[activePath].legs[legIdx];
+    const stepStartPointIdx = leg.instructions[stepIdx].interval[0];
+    const stepStartPointLngLat = leg.geometry.coordinates[stepStartPointIdx];
+
+    const map = mapRef.current.getMap();
+    map.easeTo({
+      center: stepStartPointLngLat,
+      zoom: 18,
+    });
+  }, [routes, activePath, viewingDetails, viewingStep, mapRef]);
 
   const features = routes ? routesToGeoJSON(routes) : EMPTY_GEOJSON;
 
@@ -167,13 +205,7 @@ function BikehopperMap(props) {
   const viewStateOnFirstRender = React.useRef(viewState);
 
   return (
-    <div
-      className={classnames({
-        BikehopperMap: true,
-        BikehopperMap__hidden: props.hidden,
-      })}
-      ref={resizeRef}
-    >
+    <div className="BikehopperMap" ref={resizeRef}>
       <MapGL
         initialViewState={viewStateOnFirstRender.current}
         ref={mapRef}
@@ -183,6 +215,7 @@ function BikehopperMap(props) {
           width: '100%',
           height: '100%',
         }}
+        onLoad={props.onMapLoad}
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
         interactiveLayerIds={[
@@ -262,7 +295,7 @@ function BikehopperMap(props) {
       </MapGL>
     </div>
   );
-}
+});
 
 function getTransitStyle(activePath) {
   return {
@@ -330,8 +363,8 @@ function getTransitLabelStyle(activePath) {
       'text-allow-overlap': true,
     },
     paint: {
-      'text-color': 'white',
-      'text-halo-color': getTransitColorStyle(activePath),
+      'text-color': ['get', 'text_color'],
+      'text-halo-color': getTransitColorStyle(activePath, 'text_halo_color'),
       'text-halo-width': 2,
     },
   };
@@ -390,12 +423,12 @@ function getLegSortKey(indexOfActivePath) {
   return ['case', ['==', ['get', 'path_index'], indexOfActivePath], 9999, 0];
 }
 
-function getTransitColorStyle(indexOfActivePath) {
+function getTransitColorStyle(indexOfActivePath, colorKey = 'route_color') {
   return [
     'case',
     ['==', ['get', 'path_index'], indexOfActivePath],
     // for active path use the route color from GTFS or fallback to blue
-    ['to-color', ['get', 'route_color'], '#5aaa0a'],
+    ['to-color', ['get', colorKey], '#5aaa0a'],
     // inactive paths are darkgray
     ['to-color', 'darkgray'],
   ];

@@ -3,27 +3,41 @@ const POINT_PRECISION = 5;
 export async function fetchRoute({
   profile = 'pt',
   connectingProfile = 'bike2',
+  arriveBy = false,
+  earliestDepartureTime,
   optimize = false,
   pointsEncoded = false,
   details,
   points,
   signal,
 }) {
-  const detail_param = details?.join('&details=') || '';
-  const route = await fetch(
-    `${process.env.REACT_APP_GRAPHHOPPER_PATH}/route-pt?point=${points[0].map(
-      (p) => p.toFixed(POINT_PRECISION),
-    )}&point=${points[1].map((p) =>
-      p.toFixed(POINT_PRECISION),
-    )}&locale=en-US&pt.earliest_departure_time=${encodeURIComponent(
-      new Date().toISOString(),
-    )}&elevation=true&profile=${profile}&pt.connecting_profile=${connectingProfile}&use_miles=false&selected_detail=Elevation&layer=OpenStreetMap&points_encoded=${pointsEncoded}&details=${detail_param}`,
-    {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      signal,
-    },
-  );
+  const params = new URLSearchParams({
+    locale: 'en-US',
+    elevation: true,
+    useMiles: false,
+    layer: 'OpenStreetMap',
+    profile,
+    optimize,
+    pointsEncoded,
+    'pt.earliest_departure_time': earliestDepartureTime
+      ? new Date(earliestDepartureTime).toISOString()
+      : new Date().toISOString(),
+    'pt.connecting_profile': connectingProfile,
+    'pt.arrive_by': arriveBy,
+  });
+  for (const detail of details || []) params.append('details', detail);
+  for (const pt of points)
+    params.append(
+      'point',
+      pt.map((coord) => coord.toFixed(POINT_PRECISION)),
+    );
+
+  const url = `${process.env.REACT_APP_GRAPHHOPPER_PATH}/route-pt?${params}`;
+  const route = await fetch(url, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+    signal,
+  });
 
   if (!route.ok) throw new Error(route.statusText);
 

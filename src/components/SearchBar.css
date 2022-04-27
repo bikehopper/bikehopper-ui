@@ -18,6 +18,12 @@
 .SearchBar_divider {
   display: block;
   height: 16px;
+  margin-left: 19px;
+}
+
+.SearchBar_divider_dotted {
+  display: block;
+  height: 16px;
   border-left: 3px dotted white;
   margin-left: 19px;
 }
@@ -51,6 +57,21 @@
 
 .SearchBar_backIcon path {
   stroke-width: 3px;
+}
+
+.SearchBar_swapButton {
+  background: none;
+  width: 48px;
+  height: 48px;
+  display: block;
+  border: 0;
+  color: #ffd18e;
+  margin-right: -24px;
+  margin-top: 24px;
+}
+
+.SearchBar_swapIcon path {
+  stroke-width: 2.5px;
 }
 
 .SearchBar_inputs {

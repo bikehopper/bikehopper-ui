@@ -1,5 +1,6 @@
 .SearchAutocompleteDropdown {
   flex-grow: 1;
+  pointer-events: auto;
 }
 
 .SearchAutocompleteDropdown_place {

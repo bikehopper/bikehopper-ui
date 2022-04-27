@@ -1,6 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import useThrottledValue from './useThrottledValue';
 
+// This hook helps you listen for changes in an element's size.
+//
+// Usage:
+//
+// const doStuffWithSize = useCallback((width, height) =>
+//   { /* use width and height */ }
+// );
+// const resizeRef = useResizeObserver(doStuffWithSize);
+// ...
+//   <div ref={resizeRef}> ...
+
 // Caution: this hook does not call the callback with the initial size when
 // first attaching to a node.
 

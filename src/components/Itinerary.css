@@ -1,0 +1,19 @@
+.Itinerary {
+  padding: 32px 32px;
+}
+
+.Itinerary_overallTimeHeading {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.Itinerary_overallSubheading {
+  font-weight: normal;
+  font-size: 16px;
+  margin: 8px 0;
+}
+
+.Itinerary_timeline {
+  margin: 32px 0;
+}

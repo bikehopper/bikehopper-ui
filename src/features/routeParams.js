@@ -27,15 +27,25 @@ const DEFAULT_STATE = {
   editingLocation: null,
   startInputText: '',
   endInputText: '',
+  arriveBy: false,
+  initialTime: null,
+  departureType: 'now',
 };
 
-export function locationsReducer(state = DEFAULT_STATE, action) {
+export function routeParamsReducer(state = DEFAULT_STATE, action) {
   switch (action.type) {
     case 'locations_set':
       return produce(state, (draft) => {
         draft.start = action.start;
         draft.end = action.end;
         if (action.start && action.end) draft.editingLocation = null;
+      });
+    case 'locations_swapped':
+      return produce(state, (draft) => {
+        draft.start = state.end;
+        draft.end = state.start;
+        draft.startInputText = state.endInputText;
+        draft.endInputText = state.startInputText;
       });
     case 'location_dragged':
       return produce(state, (draft) => {
@@ -95,13 +105,27 @@ export function locationsReducer(state = DEFAULT_STATE, action) {
       return produce(state, (draft) => {
         draft[action.startOrEnd + 'InputText'] = action.value;
       });
-    case 'locations_cleared':
+    case 'route_params_cleared':
       return produce(state, (draft) => {
         draft.start = null;
         draft.end = null;
         draft.editingLocation = null;
         draft.startInputText = '';
         draft.endInputText = '';
+        draft.endInputText = '';
+        draft.arriveBy = false;
+        draft.initialTime = null;
+        draft.departureType = 'now';
+      });
+    case 'initial_time_set':
+      return produce(state, (draft) => {
+        draft.initialTime = action.initialTime;
+      });
+    case 'departure_type_selected':
+      return produce(state, (draft) => {
+        draft.departureType = action.departureType;
+        draft.arriveBy = action.departureType === 'arriveBy';
+        if (action.departureType === 'now') draft.initialTime = null;
       });
     default:
       return state;
@@ -160,10 +184,14 @@ export function locationsSubmitted(startTextOrLocation, endTextOrLocation) {
       end: resultingEndLocation,
     });
 
+    let { arriveBy, initialTime } = getState().routeParams;
+
     if (resultingStartLocation && resultingEndLocation) {
       await fetchRoute(
         resultingStartLocation.point.geometry.coordinates,
         resultingEndLocation.point.geometry.coordinates,
+        arriveBy,
+        initialTime,
       )(dispatch, getState);
     }
   };
@@ -178,17 +206,21 @@ export function locationDragged(startOrEnd, coords) {
     });
 
     // If we have a location for the other point, fetch a route.
-    let { start, end } = getState().locations;
+    let { start, end, arriveBy, initialTime } = getState().routeParams;
     if (startOrEnd === 'start' && end?.point?.geometry.coordinates) {
-      await fetchRoute(coords, end.point.geometry.coordinates)(
-        dispatch,
-        getState,
-      );
+      await fetchRoute(
+        coords,
+        end.point.geometry.coordinates,
+        arriveBy,
+        initialTime,
+      )(dispatch, getState);
     } else if (startOrEnd === 'end' && start?.point?.geometry.coordinates) {
-      await fetchRoute(start.point.geometry.coordinates, coords)(
-        dispatch,
-        getState,
-      );
+      await fetchRoute(
+        start.point.geometry.coordinates,
+        coords,
+        arriveBy,
+        initialTime,
+      )(dispatch, getState);
     }
   };
 }
@@ -225,7 +257,7 @@ export function selectGeocodedLocation(startOrEnd, point, fromInputText) {
 
     // If this was the end point, and we have a start point -- or vice versa --
     // fetch the route.
-    const { start, end } = getState().locations;
+    const { start, end, arriveBy, initialTime } = getState().routeParams;
     if (
       start?.point?.geometry.coordinates &&
       end?.point?.geometry.coordinates
@@ -233,6 +265,8 @@ export function selectGeocodedLocation(startOrEnd, point, fromInputText) {
       await fetchRoute(
         start.point.geometry.coordinates,
         end.point.geometry.coordinates,
+        arriveBy,
+        initialTime,
       )(dispatch, getState);
     }
   };
@@ -255,7 +289,7 @@ export function selectCurrentLocation(startOrEnd) {
 
     // If this was the start point, and we have an end point -- or vice versa --
     // fetch the route.
-    const { start, end } = getState().locations;
+    const { start, end, arriveBy, initialTime } = getState().routeParams;
     if (
       start?.point?.geometry.coordinates &&
       end?.point?.geometry.coordinates
@@ -263,13 +297,83 @@ export function selectCurrentLocation(startOrEnd) {
       await fetchRoute(
         start.point.geometry.coordinates,
         end.point.geometry.coordinates,
+        arriveBy,
+        initialTime,
       )(dispatch, getState);
     }
   };
 }
 
-export function clearLocations() {
+export function clearRouteParams() {
   return {
-    type: 'locations_cleared',
+    type: 'route_params_cleared',
+  };
+}
+
+export function swapLocations() {
+  return async function swapLocationsThunk(dispatch, getState) {
+    dispatch({
+      type: 'locations_swapped',
+    });
+
+    // check if we still have a start and end point, just in case
+    const { start, end, arriveBy, initialTime } = getState().routeParams;
+    if (
+      start?.point?.geometry.coordinates &&
+      end?.point?.geometry.coordinates
+    ) {
+      await fetchRoute(
+        start.point.geometry.coordinates,
+        end.point.geometry.coordinates,
+        arriveBy,
+        initialTime,
+      )(dispatch, getState);
+    }
+  };
+}
+
+export function initialTimeSet(initialTime) {
+  return async function initialTimeSetThunk(dispatch, getState) {
+    dispatch({
+      type: 'initial_time_set',
+      initialTime,
+    });
+
+    // If we have a location, fetch a route.
+    let { start, end, arriveBy } = getState().routeParams;
+    if (
+      start?.point?.geometry.coordinates &&
+      end?.point?.geometry.coordinates
+    ) {
+      await fetchRoute(
+        start.point.geometry.coordinates,
+        end.point.geometry.coordinates,
+        arriveBy,
+        initialTime,
+      )(dispatch, getState);
+    }
+  };
+}
+
+export function departureTypeSelected(departureType) {
+  return async function departureTypeSelectedThunk(dispatch, getState) {
+    dispatch({
+      type: 'departure_type_selected',
+      departureType,
+    });
+
+    // If we have a location, fetch a route.
+    let { start, end, arriveBy, initialTime } = getState().routeParams;
+    if (
+      start?.point?.geometry.coordinates &&
+      end?.point?.geometry.coordinates
+    ) {
+      await fetchRoute(
+        start.point.geometry.coordinates,
+        end.point.geometry.coordinates,
+        arriveBy,
+        initialTime,
+      )(dispatch, getState);
+    }
   };
 }
