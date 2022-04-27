@@ -38,10 +38,16 @@
   height: 35px;
   font-size: 12px;
   font-family: inherit;
+  color: inherit;
   background-color: #def0cc;
   border: 2px solid transparent;
   border-radius: 12px;
 }
 .TimeBar_datetime:disabled {
   display: none;
+}
+.TimeBar_datetime:focus {
+  background-color: #fff;
+  outline: none;
+  border: 2px solid #ffd18e;
 }
