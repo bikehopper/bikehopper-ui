@@ -14,6 +14,31 @@
   margin: 8px 0;
 }
 
+.Itinerary_backBtnAndHeadings {
+  display: flex;
+  flex-direction: row;
+}
+
+.Itinerary_headings {
+  flex-grow: 1;
+  margin-left: 12px;
+}
+
+.Itinerary_backButton {
+  background: none;
+  width: 32px;
+  height: 48px;
+  display: block;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+  margin-left: -12px;
+}
+
+.Itinerary_backIcon path {
+  stroke-width: 3px;
+}
+
 .Itinerary_timeline {
   margin: 32px 0;
 }
