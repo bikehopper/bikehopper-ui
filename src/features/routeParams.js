@@ -154,7 +154,7 @@ export function locationsSubmitted(startTextOrLocation, endTextOrLocation) {
       }
 
       await geocodeTypedLocation(text, startOrEnd, {
-        possiblyIncomplete: false,
+        fromTextAutocomplete: false,
       })(dispatch, getState);
 
       // check again if geocoding succeeded (there's no direct return value)
@@ -241,7 +241,7 @@ export function changeLocationTextInput(startOrEnd, value) {
     });
 
     dispatch(
-      geocodeTypedLocation(value, startOrEnd, { possiblyIncomplete: true }),
+      geocodeTypedLocation(value, startOrEnd, { fromTextAutocomplete: true }),
     );
   };
 }

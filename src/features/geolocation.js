@@ -1,5 +1,6 @@
 import produce from 'immer';
 import getCurrentPosition from '../lib/getCurrentPosition';
+import { AlertSeverity } from './alerts';
 
 const DEFAULT_STATE = {
   lat: null,
@@ -56,14 +57,33 @@ export function geolocate(maxAge, timeout) {
         timeout,
       });
     } catch (e) {
+      const errorCode =
+        e instanceof window.GeolocationPositionError ? e.code : null;
+      let errorMsg = "Can't geolocate";
+      if (errorCode && 'GeolocationPositionError' in window) {
+        switch (errorCode) {
+          case window.GeolocationPositionError.PERMISSION_DENIED:
+            errorMsg += ': permission denied';
+            break;
+          case window.GeolocationPositionError.POSITION_UNAVAILABLE:
+            errorMsg += ': position unavailable';
+            break;
+          case window.GeolocationPositionError.TIMEOUT:
+            errorMsg += ': timed out';
+            break;
+          default:
+            errorMsg += ': unknown error';
+            break;
+        }
+      }
       dispatch({
         type: 'geolocate_failed',
-        code: e instanceof window.GeolocationPositionError ? e.code : null,
+        code: errorCode,
+        alert: {
+          severity: AlertSeverity.WARNING,
+          message: errorMsg,
+        },
       });
-      if (!e instanceof window.GeolocationPositionError) {
-        // This is unexpected
-        console.error(e);
-      }
       return;
     }
 

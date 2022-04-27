@@ -3,6 +3,7 @@ import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import classnames from 'classnames';
 import useResizeObserver from '../hooks/useResizeObserver';
+import AlertBar from './AlertBar';
 import BikehopperMap from './BikehopperMap';
 import DirectionsNullState from './DirectionsNullState';
 import Routes from './Routes';
@@ -283,6 +284,7 @@ function App() {
         onMapLoad={handleMapLoad}
         overlayRef={mapOverlayTransparentRef}
       />
+      <AlertBar />
       <div
         className={classnames({
           App_column: true,
