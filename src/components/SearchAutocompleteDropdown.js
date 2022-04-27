@@ -27,7 +27,7 @@ export default function SearchAutocompleteDropdown(props) {
 
       let inputText = state.routeParams[startOrEnd + 'InputText'];
       let cache = inputText && state.geocoding.cache['@' + inputText.trim()];
-      if (!cache) {
+      if (!cache || cache.status !== 'succeeded') {
         // If the location we're editing has a geocoded location already selected, display the
         // other options from the input text that was used to pick that.
         const relevantLocation = state.routeParams[startOrEnd];
@@ -43,7 +43,11 @@ export default function SearchAutocompleteDropdown(props) {
           // "123 Main St" which hasn't been looked up yet but we have results for "123 Mai",
           // which came back while you were typing.
           let strippedChars = 0;
-          while (inputText && !cache && strippedChars++ < 8) {
+          while (
+            inputText &&
+            (!cache || cache.status !== 'succeeded') &&
+            strippedChars++ < 8
+          ) {
             inputText = inputText.substr(0, inputText.length - 1);
             cache = state.geocoding.cache['@' + inputText.trim()];
           }
