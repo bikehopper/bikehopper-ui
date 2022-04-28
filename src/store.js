@@ -1,5 +1,6 @@
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunkMiddleware from 'redux-thunk';
+import { alertsReducer } from './features/alerts';
 import { geocodingReducer } from './features/geocoding';
 import { geolocationReducer } from './features/geolocation';
 import { routeParamsReducer } from './features/routeParams';
@@ -7,6 +8,7 @@ import { routesReducer } from './features/routes';
 import { viewportReducer } from './features/viewport';
 
 const rootReducer = combineReducers({
+  alerts: alertsReducer,
   geocoding: geocodingReducer,
   geolocation: geolocationReducer,
   routeParams: routeParamsReducer,

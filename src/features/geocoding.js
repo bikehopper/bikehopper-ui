@@ -47,14 +47,14 @@ const _LOCATION_TYPED_ACTION_LAST_TEXT_FOR_KEY = {};
 // The user has typed some text representing a location (which may be
 // incomplete). That's our cue to try geocoding it. The key is used to
 // debounce, e.g. 'start' vs 'end' location.
-export function geocodeTypedLocation(text, key, { possiblyIncomplete } = {}) {
+export function geocodeTypedLocation(text, key, { fromTextAutocomplete } = {}) {
   return async function geocodeTypedLocationThunk(dispatch, getState) {
     text = text.trim();
     if (text === '') return;
 
     _LOCATION_TYPED_ACTION_LAST_TEXT_FOR_KEY[key] = text;
 
-    if (possiblyIncomplete) {
+    if (fromTextAutocomplete) {
       // This is functioning as an autocomplete: we don't know for sure if the
       // user is done typing. Therefore, debounce.
       await delay(700);
@@ -68,6 +68,10 @@ export function geocodeTypedLocation(text, key, { possiblyIncomplete } = {}) {
     });
 
     const { latitude, longitude, zoom } = getState().viewport;
+
+    // Only alert on failure if the location was explicitly submitted. Fail
+    // silently in the autocomplete case.
+    const alertOnFailure = !fromTextAutocomplete;
 
     let result;
     try {
@@ -83,6 +87,7 @@ export function geocodeTypedLocation(text, key, { possiblyIncomplete } = {}) {
         text,
         failureType: 'network error',
         time: Date.now(),
+        alert: alertOnFailure && { message: "Can't connect to server" },
       });
       return;
     }
@@ -93,6 +98,7 @@ export function geocodeTypedLocation(text, key, { possiblyIncomplete } = {}) {
         text,
         failureType: 'not a FeatureCollection',
         time: Date.now(),
+        alert: alertOnFailure && { message: `Couldn't find ${text}` },
       });
       return;
     }
@@ -107,6 +113,7 @@ export function geocodeTypedLocation(text, key, { possiblyIncomplete } = {}) {
         text,
         failureType: 'no points found',
         time: Date.now(),
+        alert: alertOnFailure && { message: `Couldn't find ${text}` },
       });
       return;
     }

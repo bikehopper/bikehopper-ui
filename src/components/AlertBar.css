@@ -1,0 +1,45 @@
+.AlertBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  padding: 10px 8px 10px 14px;
+}
+
+.AlertBar__error {
+  background-color: #ffcaca;
+}
+
+.AlertBar__warning {
+  background-color: #fffbca;
+}
+
+.AlertBar_icon {
+  display: inline-block;
+  flex-shrink: 0;
+  top: 1px;
+}
+
+.AlertBar_cancel {
+  background: none;
+  width: 32px;
+  height: 32px;
+  display: block;
+  border: 0;
+  flex-shrink: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.AlertBar_cancelIcon {
+  top: 1px;
+}
+
+.AlertBar_msg {
+  flex-grow: 1;
+  margin: 0 10px;
+}

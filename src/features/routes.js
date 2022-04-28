@@ -186,11 +186,16 @@ export function fetchRoute(startCoords, endCoords, arriveBy, initialTime) {
       });
     } catch (e) {
       console.error('route fetch failed:', e);
+      let alertMessage = "Can't connect to server";
+      // GraphHopper sometimes 400s if it doesn't like the coordinates
+      if (e instanceof Error && e.message === 'Bad Request')
+        alertMessage = "Can't find a route";
       dispatch({
         type: 'route_fetch_failed',
         startCoords,
         endCoords,
         failureType: 'network error',
+        alert: { message: alertMessage },
       });
       return;
     }
@@ -202,6 +207,7 @@ export function fetchRoute(startCoords, endCoords, arriveBy, initialTime) {
         startCoords,
         endCoords,
         failureType: 'no route found',
+        alert: { message: "Can't find a route" },
       });
       return;
     }
