@@ -72,6 +72,14 @@ export default function Itinerary({
           Arrive at destination
         </ItineraryHeader>
       </div>
+      <div className="Itinerary_bottomBackBtnContainer">
+        <button onClick={onBackClick} className="Itinerary_bottomBackBtn">
+          <Icon className="Itinerary_backIcon">
+            <NavLeftArrow />
+          </Icon>
+          <span className="Itinerary_bottomBackBtnText">Back to routes</span>
+        </button>
+      </div>
     </div>
   );
 }

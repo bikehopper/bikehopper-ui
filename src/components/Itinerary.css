@@ -24,15 +24,30 @@
   margin-left: 12px;
 }
 
-.Itinerary_backButton {
+.Itinerary_backButton,
+.Itinerary_bottomBackBtn {
   background: none;
-  width: 32px;
   height: 48px;
   display: block;
   border: 0;
   cursor: pointer;
   padding: 0;
   margin-left: -12px;
+}
+
+.Itinerary_bottomBackBtnText {
+  font-size: 16px;
+  margin-left: 8px;
+}
+
+.Itinerary_bottomBackBtnContainer {
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+}
+
+.Itinerary_backIcon {
+  vertical-align: middle;
 }
 
 .Itinerary_backIcon path {
