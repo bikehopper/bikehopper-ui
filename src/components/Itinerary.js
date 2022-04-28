@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { formatTime, formatDurationBetween } from '../lib/time';
 import getAgencyNameForDisplay from '../lib/getAgencyNameForDisplay';
+import Icon from './Icon';
 import ItineraryBikeLeg from './ItineraryBikeLeg';
 import ItineraryHeader, { ItineraryHeaderIcons } from './ItineraryHeader';
 import ItineraryTransitLeg from './ItineraryTransitLeg';
 
+import { ReactComponent as NavLeftArrow } from 'iconoir/icons/nav-arrow-left.svg';
 import './Itinerary.css';
 
 export default function Itinerary({
@@ -49,19 +51,35 @@ export default function Itinerary({
 
   return (
     <div className="Itinerary">
-      <h2 className="Itinerary_overallTimeHeading">
-        {formatTime(startTime)} to {formatTime(endTime)}
-      </h2>
-      <h3 className="Itinerary_overallSubheading">
-        {durationText} &middot; via {modesText}
-      </h3>
+      <div className="Itinerary_backBtnAndHeadings">
+        <button onClick={onBackClick} className="Itinerary_backButton">
+          <Icon label="Back to routes overview" className="Itinerary_backIcon">
+            <NavLeftArrow />
+          </Icon>
+        </button>
+        <div className="Itinerary_headings">
+          <h2 className="Itinerary_overallTimeHeading">
+            {formatTime(startTime)} to {formatTime(endTime)}
+          </h2>
+          <h3 className="Itinerary_overallSubheading">
+            {durationText} &middot; via {modesText}
+          </h3>
+        </div>
+      </div>
       <div className="Itinerary_timeline">
         {renderedLegs}
         <ItineraryHeader icon={ItineraryHeaderIcons.ARRIVE} iconColor="ea526f">
           Arrive at destination
         </ItineraryHeader>
       </div>
-      <button onClick={onBackClick}>Return to route results</button>
+      <div className="Itinerary_bottomBackBtnContainer">
+        <button onClick={onBackClick} className="Itinerary_bottomBackBtn">
+          <Icon className="Itinerary_backIcon">
+            <NavLeftArrow />
+          </Icon>
+          <span className="Itinerary_bottomBackBtnText">Back to routes</span>
+        </button>
+      </div>
     </div>
   );
 }
