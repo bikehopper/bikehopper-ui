@@ -24,7 +24,7 @@ function _coordsEqual(a, b) {
 export function routesReducer(state = DEFAULT_STATE, action) {
   switch (action.type) {
     case 'route_cleared':
-    case 'locations_cleared':
+    case 'route_params_cleared':
     case 'location_dragged': // assume drag is to new location
       return _clearRoutes(state);
     case 'locations_set':
