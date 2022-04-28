@@ -1,3 +1,20 @@
+// Hardcoded list of API domains for different environments.
+// TODO: Find a cleaner way to handle this, so people deploying their own
+// instances on their own domains don't have to edit the source.
+const API_DOMAINS = {
+  'https://bikehopper-staging.techlabor.org':
+    'https://api-bikehopper-staging.techlabor.org',
+  'https://bikehopper.org': 'https://api.bikehopper.org',
+};
+
+function getApiPath() {
+  const loc = document.location;
+  const protoAndHost = `${loc.protocol}//${loc.host}`;
+  // If not running on one of the above domains, default to making API requests
+  // to same domain, which is what we generally want for development.
+  return API_DOMAINS[protoAndHost] || '';
+}
+
 const POINT_PRECISION = 5;
 
 export async function fetchRoute({
@@ -32,7 +49,14 @@ export async function fetchRoute({
       pt.map((coord) => coord.toFixed(POINT_PRECISION)),
     );
 
-  const url = `${process.env.REACT_APP_GRAPHHOPPER_PATH}/route-pt?${params}`;
+  let graphHopperPath = getApiPath() + '/v1/graphhopper';
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    process.env.REACT_APP_USE_LOCAL_GRAPHHOPPER
+  )
+    graphHopperPath = process.env.REACT_APP_USE_LOCAL_GRAPHHOPPER;
+
+  const url = `${graphHopperPath}/route-pt?${params}`;
   const route = await fetch(url, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
@@ -56,9 +80,7 @@ export async function geocode(
     signal,
   },
 ) {
-  let url = `${
-    process.env.REACT_APP_BIKEHOPPER_DOMAIN
-  }/v1/photon/geocode?q=${encodeURIComponent(
+  let url = `${getApiPath()}/v1/photon/geocode?q=${encodeURIComponent(
     placeString,
   )}&lang=${lang}&limit=${limit}`;
 
