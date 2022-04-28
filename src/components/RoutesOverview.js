@@ -50,7 +50,10 @@ export default function RoutesOverview(props) {
               ))}
             </ul>
             <p className="RoutesOverview_timeEstimate">
-              {formatInterval(route.time)}
+              {formatInterval(
+                new Date(route.legs[route.legs.length - 1].arrival_time) -
+                  new Date(route.legs[0].departure_time),
+              )}
             </p>
           </div>
           <DepartArriveTime
