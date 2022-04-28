@@ -1,6 +1,5 @@
 .DirectionsNullState {
-  /* extra padding on bottom to work around mobile Safari expanding address bar */
-  padding: 24px 24px 82px 24px;
+  padding: 24px;
 }
 
 .DirectionsNullState_header {
@@ -18,10 +17,27 @@
 
 .DirectionsNullState_inputContainer {
   position: relative;
+  margin-bottom: 20px;
 }
 
 .DirectionsNullState_inputIcon {
   position: absolute;
   top: -2px;
   left: 8px;
+}
+
+.DirectionsNullState_para {
+  margin: 20px 0;
+  font-size: 14px;
+}
+
+.DirectionsNullState_para a {
+  text-decoration: underline;
+  color: rgb(0, 104, 224);
+}
+
+@media (max-width: 899px) {
+  .DirectionsNullState_wideScreenOnly {
+    display: none;
+  }
 }
