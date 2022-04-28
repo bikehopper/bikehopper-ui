@@ -40,7 +40,11 @@ export default function DirectionsNullState(props) {
       <p className="DirectionsNullState_para">
         Let us know what you think by reporting bugs, routes that could be
         better, and other feedback in{' '}
-        <a href="https://forms.gle/ggVFjztFN6ivLEAu9" target="_blank">
+        <a
+          href="https://forms.gle/ggVFjztFN6ivLEAu9"
+          target="_blank"
+          rel="noreferrer"
+        >
           this form
         </a>
         !
