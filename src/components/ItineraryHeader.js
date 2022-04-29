@@ -1,6 +1,10 @@
 import * as React from 'react';
 import classnames from 'classnames';
-import { getTextColor } from '../lib/colors';
+import {
+  BIKEHOPPER_THEME_COLOR,
+  DEFAULT_PT_COLOR,
+  getTextColor,
+} from '../lib/colors';
 import Icon from './Icon';
 import ItineraryRow from './ItineraryRow';
 
@@ -46,9 +50,9 @@ export default function ItineraryHeader(props) {
   let iconColor = props.iconColor; // Actually the icon background color
   if (!iconColor) {
     if (props.icon === ItineraryHeaderIcons.BIKE) {
-      iconColor = '5aaa0a';
+      iconColor = BIKEHOPPER_THEME_COLOR;
     } else {
-      iconColor = '00f'; // TODO: Better default transit color
+      iconColor = DEFAULT_PT_COLOR;
     }
   }
   const iconIsWhite = getTextColor(iconColor).main === 'white';
@@ -67,7 +71,7 @@ export default function ItineraryHeader(props) {
           ItineraryHeader_iconContainer: true,
           ItineraryHeader_iconContainer__isWhite: iconIsWhite,
         })}
-        style={{ backgroundColor: '#' + iconColor }}
+        style={{ backgroundColor: iconColor }}
       >
         <Icon className="ItineraryHeader_icon">
           <IconSVGComponent width="32" height="32" />

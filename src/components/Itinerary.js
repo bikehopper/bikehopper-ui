@@ -68,7 +68,7 @@ export default function Itinerary({
       </div>
       <div className="Itinerary_timeline">
         {renderedLegs}
-        <ItineraryHeader icon={ItineraryHeaderIcons.ARRIVE} iconColor="ea526f">
+        <ItineraryHeader icon={ItineraryHeaderIcons.ARRIVE} iconColor="#ea526f">
           Arrive at destination
         </ItineraryHeader>
       </div>
