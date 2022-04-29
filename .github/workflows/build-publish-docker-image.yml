@@ -47,6 +47,8 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16'
+        env: # Or as an environment variable
+          REACT_APP_MAPBOX_TOKEN: ${{ secrets.MAPBOX_BIKEHOPPER }}
       - run: npm install
       - run: npm run build
 
