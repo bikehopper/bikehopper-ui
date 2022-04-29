@@ -1,7 +1,7 @@
 import * as React from 'react';
 import classnames from 'classnames';
 import {
-  DEFAULT_BIKE_COLOR,
+  BIKEHOPPER_THEME_COLOR,
   DEFAULT_PT_COLOR,
   getTextColor,
 } from '../lib/colors';
@@ -50,7 +50,7 @@ export default function ItineraryHeader(props) {
   let iconColor = props.iconColor; // Actually the icon background color
   if (!iconColor) {
     if (props.icon === ItineraryHeaderIcons.BIKE) {
-      iconColor = DEFAULT_BIKE_COLOR;
+      iconColor = BIKEHOPPER_THEME_COLOR;
     } else {
       iconColor = DEFAULT_PT_COLOR;
     }
