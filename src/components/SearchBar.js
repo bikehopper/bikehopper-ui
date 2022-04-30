@@ -33,6 +33,12 @@ export default function SearchBar(props) {
       shallowEqual,
     );
 
+  // Only set auto-focus on first render; otherwise, Android Chrome focuses
+  // every time you switch apps and switch back to BikeHopper.
+  const [autoFocusDestination, setAutoFocusDestination] = React.useState(
+    props.initiallyFocusDestination,
+  );
+
   const startRef = React.useRef();
   const endRef = React.useRef();
 
@@ -48,14 +54,17 @@ export default function SearchBar(props) {
   );
 
   const handleStartChange = (evt) => {
+    setAutoFocusDestination(false);
     dispatch(changeLocationTextInput('start', evt.target.value));
   };
 
   const handleEndChange = (evt) => {
+    setAutoFocusDestination(false);
     dispatch(changeLocationTextInput('end', evt.target.value));
   };
 
   const handleSubmit = (event) => {
+    setAutoFocusDestination(false);
     event.preventDefault();
     event.target.blur();
 
@@ -72,12 +81,14 @@ export default function SearchBar(props) {
   };
 
   const handleSwapClick = (event) => {
+    setAutoFocusDestination(false);
     event.preventDefault();
 
     dispatch(swapLocations());
   };
 
   const handleFocus = (which, event) => {
+    setAutoFocusDestination(false);
     dispatch(locationInputFocused(which));
   };
 
@@ -155,7 +166,7 @@ export default function SearchBar(props) {
               onFocus={handleFocus.bind(null, 'end')}
               onKeyPress={handleKeyPress}
               ref={endRef}
-              autoFocus={props.initiallyFocusDestination}
+              autoFocus={autoFocusDestination}
             />
           </span>
         </form>
