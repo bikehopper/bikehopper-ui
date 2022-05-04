@@ -1,6 +1,7 @@
 .ItineraryBikeStep_btn {
   border: none;
   background: none;
+  color: inherit;
   font-size: inherit;
   font-weight: inherit;
   padding: 0;
