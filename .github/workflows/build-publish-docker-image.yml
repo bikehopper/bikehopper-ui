@@ -12,7 +12,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  REACT_APP_MAPBOX_TOKEN: ${{ secrets.MAPBOX_BIKEHOPPER }}
+  REACT_APP_MAPBOX_TOKEN: ${{ secrets.MAPBOX_PRODUCTION }}
 
 jobs:
   build-and-push-image:
