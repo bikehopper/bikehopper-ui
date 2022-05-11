@@ -65,7 +65,7 @@ body.isMobileSafari .App_mapOverlayBottomPane {
 }
 
 .App_mapOverlayTransparent {
-  flex-basis: calc(100% - 180px);
+  flex-basis: calc(100% - 140px);
   flex-shrink: 0;
   flex-grow: 1;
 }

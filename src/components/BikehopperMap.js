@@ -19,6 +19,7 @@ import { LocationSourceType, locationDragged } from '../features/routeParams';
 import { routeClicked } from '../features/routes';
 import { mapMoved } from '../features/viewport';
 import useResizeObserver from '../hooks/useResizeObserver';
+import { BOTTOM_DRAWER_DEFAULT_SCROLL } from '../lib/layout';
 import MarkerSVG from './MarkerSVG';
 import delay from '../lib/delay';
 import * as VisualViewportTracker from '../lib/VisualViewportTracker';
@@ -125,7 +126,8 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
         const overlayEl = props.overlayRef.current;
         const clientRect = overlayEl.getBoundingClientRect();
         padding.top += clientRect.top;
-        padding.bottom += window.innerHeight - clientRect.bottom;
+        padding.bottom +=
+          window.innerHeight - clientRect.bottom + BOTTOM_DRAWER_DEFAULT_SCROLL;
         overlayEl.parentElement.scrollTop = 0;
       }
       map.resize();
