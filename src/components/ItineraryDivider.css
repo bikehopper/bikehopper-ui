@@ -1,0 +1,40 @@
+.ItineraryDivider_border {
+  width: 3px;
+  background-color: #bbb;
+  height: 100%;
+  display: inline-block;
+  margin-left: 30px;
+}
+
+.ItineraryDivider_content_transit {
+  font-weight: bold;
+  color: #626262;
+  font-size: 16px;
+  line-height: 16px;
+  margin-bottom: 6px;
+  margin-top: 6px;
+}
+
+.ItineraryDivider_content_bike {
+  font-weight: bold;
+  color: #626262;
+  font-size: 16px;
+  line-height: 16px;
+  margin-bottom: 6px;
+  margin-top: 6px;
+}
+.ItineraryDivider_detail_transit {
+  color: #626262;
+  font-size: 12px;
+  line-height: 12px;
+  margin-bottom: 12px;
+  margin-top: 6px;
+}
+
+.ItineraryDivider_detail_bike {
+  color: #626262;
+  font-size: 12px;
+  line-height: 12px;
+  margin-bottom: 12px;
+  margin-top: 6px;
+}

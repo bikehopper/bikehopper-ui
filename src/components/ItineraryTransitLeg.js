@@ -2,7 +2,7 @@ import * as React from 'react';
 import { formatTime, formatDurationBetween } from '../lib/time';
 import getAgencyNameForDisplay from '../lib/getAgencyNameForDisplay';
 import ItineraryHeader, { ItineraryHeaderIcons } from './ItineraryHeader';
-import ItineraryTransitDivider from './ItineraryTransitDivider';
+import ItineraryDivider from './ItineraryDivider';
 import ItineraryStep from './ItineraryStep';
 
 import { ReactComponent as Circle } from 'iconoir/icons/circle.svg';
@@ -18,6 +18,7 @@ export default function ItineraryTransitLeg({ leg }) {
   const icon = ItineraryHeaderIcons.BUS;
   const agency = getAgencyNameForDisplay(leg.agency_name);
 
+  const stop_detail = `${stops.length} stop${stops.length > 1 && 's'}`;
   return (
     <>
       <ItineraryHeader icon={icon} iconColor={leg.route_color}>
@@ -29,18 +30,18 @@ export default function ItineraryTransitLeg({ leg }) {
           {formatDurationBetween(leg.departure_time, leg.arrival_time)}
         </span>
       </ItineraryHeader>
-      <ItineraryTransitDivider />
+      <ItineraryDivider />
       <ItineraryStep IconSVGComponent={Circle} smallIcon={true}>
         Board at <strong>{stops[0].stop_name}</strong> &middot; {departure}
       </ItineraryStep>
-      <ItineraryTransitDivider>
+      <ItineraryDivider transit={true} detail={stop_detail}>
         Towards {leg.trip_headsign}
-      </ItineraryTransitDivider>
+      </ItineraryDivider>
       <ItineraryStep IconSVGComponent={Circle} smallIcon={true}>
         Get off at <strong>{stops[stops.length - 1].stop_name}</strong> &middot;{' '}
         {arrival}
       </ItineraryStep>
-      <ItineraryTransitDivider />
+      <ItineraryDivider />
     </>
   );
 }

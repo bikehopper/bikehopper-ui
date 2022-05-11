@@ -4,7 +4,7 @@ import { formatDurationBetween } from '../lib/time';
 import InstructionSigns from '../lib/InstructionSigns';
 import ItineraryBikeStep from './ItineraryBikeStep';
 import ItineraryHeader, { ItineraryHeaderIcons } from './ItineraryHeader';
-import ItineraryBikeDivider from './ItineraryBikeDivider';
+import ItineraryDivider from './ItineraryDivider';
 
 export default function ItineraryBikeLeg({ leg, legDestination, onStepClick }) {
   return (
@@ -16,7 +16,7 @@ export default function ItineraryBikeLeg({ leg, legDestination, onStepClick }) {
           {formatDurationBetween(leg.departure_time, leg.arrival_time)}
         </span>
       </ItineraryHeader>
-      <ItineraryBikeDivider />
+      <ItineraryDivider />
       {leg.instructions.map((step, stepIdx) =>
         isArriveStep(step)
           ? null
@@ -27,9 +27,13 @@ export default function ItineraryBikeLeg({ leg, legDestination, onStepClick }) {
                 isFirstStep={stepIdx === 0}
                 onClick={onStepClick.bind(null, stepIdx)}
               />,
-              <ItineraryBikeDivider key={stepIdx + 'd'}>
-                {step.distance ? formatDistance(step.distance) : null}
-              </ItineraryBikeDivider>,
+              <ItineraryDivider
+                key={stepIdx + 'd'}
+                transit={false}
+                detail={`${
+                  step.distance ? formatDistance(step.distance) : null
+                }`}
+              ></ItineraryDivider>,
             ],
       )}
     </>
