@@ -240,6 +240,10 @@ function App() {
   const handleBottomPaneLeave = setIsMouseOverBottomPane.bind(null, false);
 
   const handleBottomInputFocus = (evt) => {
+    // Scroll up to counteract iOS Safari scrolling down towards the input.
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+    evt.preventDefault();
     dispatch(locationInputFocused('end'));
   };
 
