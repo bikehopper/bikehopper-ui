@@ -1,8 +1,5 @@
 .SelectionListItem {
   padding: 8px 24px;
-}
-
-.SelectionListItem:not(:last-child) {
   border-bottom: 1px solid #c4c4c4;
 }
 
