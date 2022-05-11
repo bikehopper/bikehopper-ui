@@ -307,17 +307,19 @@ function App() {
               onMouseOver={_isTouch ? null : handleBottomPaneLeave}
             />
           )}
-          <div
-            className={classnames({
-              App_mapOverlayBottomPane: true,
-              App_mapOverlayBottomPane__withMapHidden: hideMap,
-            })}
-            onMouseEnter={_isTouch ? null : handleBottomPaneEnter}
-            onMouseLeave={_isTouch ? null : handleBottomPaneLeave}
-            ref={bottomPaneRef}
-          >
-            {bottomContent}
-          </div>
+          {bottomContent && (
+            <div
+              className={classnames({
+                App_mapOverlayBottomPane: true,
+                App_mapOverlayBottomPane__withMapHidden: hideMap,
+              })}
+              onMouseEnter={_isTouch ? null : handleBottomPaneEnter}
+              onMouseLeave={_isTouch ? null : handleBottomPaneLeave}
+              ref={bottomPaneRef}
+            >
+              {bottomContent}
+            </div>
+          )}
         </div>
       </div>
     </div>
