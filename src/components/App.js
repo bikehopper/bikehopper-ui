@@ -3,6 +3,7 @@ import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import classnames from 'classnames';
 import useResizeObserver from '../hooks/useResizeObserver';
+import { BOTTOM_DRAWER_DEFAULT_SCROLL } from '../lib/layout';
 import AlertBar from './AlertBar';
 import BikehopperMap from './BikehopperMap';
 import DirectionsNullState from './DirectionsNullState';
@@ -247,6 +248,8 @@ function App() {
     dispatch(locationInputFocused('end'));
   };
 
+  const mapOverlayRef = React.useRef();
+
   let bottomContent;
   if (isEditingLocations) {
     bottomContent = <SearchAutocompleteDropdown />;
@@ -259,6 +262,14 @@ function App() {
   }
 
   const hideMap = isEditingLocations;
+  const hasBottomContentWithMap = Boolean(bottomContent) && !hideMap;
+
+  // When the bottom drawer appears, start it somewhat taller than its minimum height.
+  React.useLayoutEffect(() => {
+    if (mapOverlayRef.current && hasBottomContentWithMap) {
+      mapOverlayRef.current.scrollTop = BOTTOM_DRAWER_DEFAULT_SCROLL;
+    }
+  }, [hasBottomContentWithMap]);
 
   // iOS/Android hack: Shrink body when virtual keyboard is hiding content, so
   // you can't be scrolled down.
@@ -307,7 +318,11 @@ function App() {
             initiallyFocusDestination={isEditingLocations}
           />
         </div>
-        <div className="App_mapOverlay" onScroll={handleMapOverlayScroll}>
+        <div
+          className="App_mapOverlay"
+          ref={mapOverlayRef}
+          onScroll={handleMapOverlayScroll}
+        >
           {!hideMap && (
             <div
               className="App_mapOverlayTransparent"

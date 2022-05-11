@@ -1,0 +1,1 @@
+export const BOTTOM_DRAWER_DEFAULT_SCROLL = 60;
