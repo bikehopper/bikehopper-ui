@@ -18,7 +18,7 @@ export default function ItineraryTransitLeg({ leg }) {
   const icon = ItineraryHeaderIcons.BUS;
   const agency = getAgencyNameForDisplay(leg.agency_name);
 
-  const stop_detail = `${stops.length} stop${stops.length > 1 && 's'}`;
+  const stopDetail = `${stops.length} stop${stops.length > 1 && 's'}`;
   return (
     <>
       <ItineraryHeader icon={icon} iconColor={leg.route_color}>
