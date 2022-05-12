@@ -3,6 +3,7 @@ import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import classnames from 'classnames';
 import useResizeObserver from '../hooks/useResizeObserver';
+import { BOTTOM_DRAWER_DEFAULT_SCROLL } from '../lib/layout';
 import AlertBar from './AlertBar';
 import BikehopperMap from './BikehopperMap';
 import DirectionsNullState from './DirectionsNullState';
@@ -240,8 +241,14 @@ function App() {
   const handleBottomPaneLeave = setIsMouseOverBottomPane.bind(null, false);
 
   const handleBottomInputFocus = (evt) => {
+    // Scroll up to counteract iOS Safari scrolling down towards the input.
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+    evt.preventDefault();
     dispatch(locationInputFocused('end'));
   };
+
+  const mapOverlayRef = React.useRef();
 
   let bottomContent;
   if (isEditingLocations) {
@@ -254,28 +261,40 @@ function App() {
     );
   }
 
+  const hideMap = isEditingLocations;
+  const hasBottomContentWithMap = Boolean(bottomContent) && !hideMap;
+
+  // When the bottom drawer appears, start it somewhat taller than its minimum height.
+  React.useLayoutEffect(() => {
+    if (mapOverlayRef.current && hasBottomContentWithMap) {
+      mapOverlayRef.current.scrollTop = BOTTOM_DRAWER_DEFAULT_SCROLL;
+    }
+  }, [hasBottomContentWithMap]);
+
   // iOS/Android hack: Shrink body when virtual keyboard is hiding content, so
   // you can't be scrolled down.
-  React.useEffect(() => {
-    if (VisualViewportTracker.isSupported()) {
-      const isIos = Bowser.parse(navigator.userAgent).os.name === 'iOS';
-      VisualViewportTracker.listen((height) => {
-        if (isIos) {
-          // Ignore small discrepancies between visual viewport height and
-          // window inner height. If the discrepancy is too small for the
-          // virtual keyboard to be up, go back to full height.
-          document.body.style.height =
-            window.innerHeight > height + 100 ? `${height}px` : '';
-        } else {
-          // On Android it works better if we always set body height to
-          // visual viewport height.
-          document.body.style.height = Math.floor(height) + 'px';
-        }
-      });
+  const adjustHeightBasedOnVisualViewport = React.useCallback((height) => {
+    const isIos = Bowser.parse(navigator.userAgent).os.name === 'iOS';
+    if (isIos) {
+      // Ignore small discrepancies between visual viewport height and
+      // window inner height. If the discrepancy is too small for the
+      // virtual keyboard to be up, go back to full height.
+      document.body.style.height =
+        window.innerHeight > height + 100 ? `${height}px` : '';
+    } else {
+      // On Android it works better if we always set body height to
+      // visual viewport height.
+      document.body.style.height = Math.floor(height) + 'px';
     }
   }, []);
-
-  const hideMap = isEditingLocations;
+  React.useEffect(() => {
+    if (VisualViewportTracker.isSupported()) {
+      VisualViewportTracker.listen(adjustHeightBasedOnVisualViewport);
+      // Make one initial call -- required on Android Chrome so you can scroll
+      // to bottom on first load.
+      adjustHeightBasedOnVisualViewport(window.visualViewport.height);
+    }
+  }, [adjustHeightBasedOnVisualViewport]);
 
   return (
     <div className="App">
@@ -299,7 +318,11 @@ function App() {
             initiallyFocusDestination={isEditingLocations}
           />
         </div>
-        <div className="App_mapOverlay" onScroll={handleMapOverlayScroll}>
+        <div
+          className="App_mapOverlay"
+          ref={mapOverlayRef}
+          onScroll={handleMapOverlayScroll}
+        >
           {!hideMap && (
             <div
               className="App_mapOverlayTransparent"
@@ -307,17 +330,19 @@ function App() {
               onMouseOver={_isTouch ? null : handleBottomPaneLeave}
             />
           )}
-          <div
-            className={classnames({
-              App_mapOverlayBottomPane: true,
-              App_mapOverlayBottomPane__withMapHidden: hideMap,
-            })}
-            onMouseEnter={_isTouch ? null : handleBottomPaneEnter}
-            onMouseLeave={_isTouch ? null : handleBottomPaneLeave}
-            ref={bottomPaneRef}
-          >
-            {bottomContent}
-          </div>
+          {bottomContent && (
+            <div
+              className={classnames({
+                App_mapOverlayBottomPane: true,
+                App_mapOverlayBottomPane__withMapHidden: hideMap,
+              })}
+              onMouseEnter={_isTouch ? null : handleBottomPaneEnter}
+              onMouseLeave={_isTouch ? null : handleBottomPaneLeave}
+              ref={bottomPaneRef}
+            >
+              {bottomContent}
+            </div>
+          )}
         </div>
       </div>
     </div>

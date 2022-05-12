@@ -1,3 +1,4 @@
+import Bowser from 'bowser';
 import * as React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
@@ -7,6 +8,10 @@ import App from './components/App';
 import store from './store';
 
 import './index.css';
+
+const ua = Bowser.parse(navigator.userAgent);
+if (ua.os.name === 'iOS' && ua.browser.name === 'Safari')
+  document.body.className += ' isMobileSafari';
 
 render(
   <React.StrictMode>

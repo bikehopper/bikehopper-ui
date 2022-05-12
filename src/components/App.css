@@ -35,6 +35,29 @@
   border-radius: 9px 9px 0 0;
   pointer-events: auto;
   box-shadow: 0 1px 10px #c4c4c4;
+
+  /* Make sure you can always scroll down even when iOS, etc. is putting an
+   * address bar over the bottom of the page.
+   */
+  padding-bottom: 0; /* For browsers not supporting env */
+  padding-bottom: env(safe-area-inset-bottom);
+  /* See below as well */
+}
+
+body.isMobileSafari .App_mapOverlayBottomPane {
+  /* Apple documentation suggests you can rely on env(safe-area-inset-bottom)
+   * here, but it's 0 on iOS 15 on my iPhone SE 1st gen, despite the expanding
+   * address bar. Apparently can't be relied upon. The fallback value below is
+   * empirically determined
+   */
+  padding-bottom: max(env(safe-area-inset-bottom), 74px);
+}
+
+@media all and (display-mode: standalone) {
+  body.isMobileSafari .App_mapOverlayBottomPane {
+    /* When running as a PWA, don't add extra padding */
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
 
 .App_mapOverlayBottomPane__withMapHidden {
@@ -42,7 +65,7 @@
 }
 
 .App_mapOverlayTransparent {
-  flex-basis: calc(100% - 180px);
+  flex-basis: calc(100% - 140px);
   flex-shrink: 0;
   flex-grow: 1;
 }
