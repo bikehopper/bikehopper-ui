@@ -2,6 +2,7 @@ import produce from 'immer';
 import * as turf from '@turf/helpers';
 import describePlace from '../lib/describePlace';
 import { geocodeTypedLocation } from './geocoding';
+import { geolocate } from './geolocation';
 import { fetchRoute } from './routes';
 
 export const LocationSourceType = {
@@ -12,7 +13,7 @@ export const LocationSourceType = {
 
 const DEFAULT_STATE = {
   // When set, start and end have the format: {
-  //   point: a geoJSON point,
+  //   point: a geoJSON point (can be null if source === UserGeolocation),
   //   source: a LocationSourceType,
   //   fromInputText: the source input text (if source === Geocoded),
   // }
@@ -59,6 +60,15 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
       return produce(state, (draft) => {
         draft.editingLocation = action.startOrEnd;
       });
+    case 'enter_destination_focused':
+      return produce(state, (draft) => {
+        draft.editingLocation = 'end';
+        // TODO don't default start to current location on desktop
+        draft.start = {
+          point: null,
+          source: LocationSourceType.UserGeolocation,
+        };
+      });
     case 'route_fetch_attempted':
       return produce(state, (draft) => {
         draft.editingLocation = null;
@@ -77,33 +87,42 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
     case 'current_location_selected':
       return produce(state, (draft) => {
         draft[action.startOrEnd] = {
-          point: action.point,
+          point: null, // To be hydrated by a later action
           source: LocationSourceType.UserGeolocation,
         };
         draft[action.startOrEnd + 'InputText'] = '';
       });
-    case 'geolocated':
+    case 'geolocate_failed':
+      // If we were waiting on geolocation to hydrate a location, clear it
       return produce(state, (draft) => {
-        const isInNullState =
-          !state.start &&
-          !state.end &&
-          !state.startInputText &&
-          !state.endInputText &&
-          !state.editingLocation;
-        if (isInNullState) {
-          // Default to routing from current location now that we have one
-          draft.start = {
-            point: turf.point([
-              action.coords.longitude,
-              action.coords.latitude,
-            ]),
-            source: LocationSourceType.UserGeolocation,
-          };
+        if (
+          state.start?.source === LocationSourceType.UserGeolocation &&
+          !state.start.point
+        ) {
+          draft.start = null;
+          draft.startInputText = '';
+        }
+        if (
+          state.end?.source === LocationSourceType.UserGeolocation &&
+          !state.end.point
+        ) {
+          draft.end = null;
+          draft.endInputText = '';
         }
       });
     case 'location_text_input_changed':
       return produce(state, (draft) => {
         draft[action.startOrEnd + 'InputText'] = action.value;
+
+        // Hack: In order to make it possible to clear out "Current Location,"
+        // we must empty out the location value if the corresponding text
+        // changes, in this case.
+        if (
+          state[action.startOrEnd]?.source ===
+          LocationSourceType.UserGeolocation
+        ) {
+          draft[action.startOrEnd] = null;
+        }
       });
     case 'route_params_cleared':
       return produce(state, (draft) => {
@@ -134,45 +153,86 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
 
 // Actions
 
-export function locationsSubmitted(startTextOrLocation, endTextOrLocation) {
+// This can be triggered either directly by pressing Enter in the location
+// input form (or the mobile equivalent: submitting the form), or indirectly
+// from other actions that call it as a helper function.
+//
+// If we have start and end location info, hydrate the locations if possible
+// and then fetch routes. Hydrating can mean geocoding input text or finding
+// the current geolocation if a location has source type UserGeolocation.
+export function locationsSubmitted() {
   return async function locationsSubmittedThunk(dispatch, getState) {
-    const geocodeOrUseCached = async function geocodeOrUseCached(
-      textOrLocation,
-      startOrEnd,
-    ) {
-      // If it's already a point (not text), pass through
-      if (typeof textOrLocation !== 'string') return textOrLocation;
+    const { start, startInputText, end, endInputText, initialTime, arriveBy } =
+      getState().routeParams;
 
-      const text = textOrLocation.trim();
+    const hydrate = async function hydrate(text, location, startOrEnd) {
+      // Decide whether to use the text or location:
+      let useLocation = false;
 
-      let cacheEntry = getState().geocoding.cache['@' + text];
-      if (cacheEntry && cacheEntry.status === 'succeeded') {
-        return {
-          point: cacheEntry.features[0],
-          source: LocationSourceType.Geocoded,
-        };
+      // If text WAS an address string from the geocoder, and the user explicitly blanked it
+      // out, let them blank it out. But otherwise, empty text means fall back to location.
+      if (
+        text === '' &&
+        location &&
+        location.source !== LocationSourceType.Geocoded
+      ) {
+        useLocation = true;
+      } else if (
+        location &&
+        location.source === LocationSourceType.Geocoded &&
+        text === describePlace(location.point)
+      ) {
+        // Stick with geocoded location if the text is its exact description
+        useLocation = true;
       }
 
-      await geocodeTypedLocation(text, startOrEnd, {
-        fromTextAutocomplete: false,
-      })(dispatch, getState);
+      if (!useLocation) {
+        text = text.trim();
 
-      // check again if geocoding succeeded (there's no direct return value)
-      cacheEntry = getState().geocoding.cache['@' + text];
-      if (cacheEntry && cacheEntry.status === 'succeeded') {
+        let cacheEntry = getState().geocoding.cache['@' + text];
+        if (cacheEntry && cacheEntry.status === 'succeeded') {
+          return {
+            point: cacheEntry.features[0],
+            source: LocationSourceType.Geocoded,
+          };
+        }
+
+        await geocodeTypedLocation(text, startOrEnd, {
+          fromTextAutocomplete: false,
+        })(dispatch, getState);
+
+        // check again if geocoding succeeded (there's no direct return value)
+        cacheEntry = getState().geocoding.cache['@' + text];
+        if (cacheEntry && cacheEntry.status === 'succeeded') {
+          return {
+            point: cacheEntry.features[0],
+            source: LocationSourceType.Geocoded,
+          };
+        }
+
+        return null;
+      } else if (location.point) {
+        // If we already have a point, pass through
+        return location;
+      } else if (location.source === LocationSourceType.UserGeolocation) {
+        await dispatch(geolocate());
+
+        const { lng, lat } = getState().geolocation;
+        if (lng == null || lat == null) return null;
         return {
-          point: cacheEntry.features[0],
-          source: LocationSourceType.Geocoded,
+          point: turf.point([lng, lat]),
+          source: LocationSourceType.UserGeolocation,
         };
+      } else {
+        console.error('expected location.point');
+        return null;
       }
-
-      return null;
     };
 
     const [resultingStartLocation, resultingEndLocation] = (
       await Promise.allSettled([
-        geocodeOrUseCached(startTextOrLocation, 'start'),
-        geocodeOrUseCached(endTextOrLocation, 'end'),
+        hydrate(startInputText, start, 'start'),
+        hydrate(endInputText, end, 'end'),
       ])
     ).map((promiseResult) =>
       promiseResult.status === 'fulfilled' ? promiseResult.value : null,
@@ -183,8 +243,6 @@ export function locationsSubmitted(startTextOrLocation, endTextOrLocation) {
       start: resultingStartLocation,
       end: resultingEndLocation,
     });
-
-    let { arriveBy, initialTime } = getState().routeParams;
 
     if (resultingStartLocation && resultingEndLocation) {
       await fetchRoute(
@@ -232,6 +290,12 @@ export function locationInputFocused(startOrEnd) {
   };
 }
 
+export function enterDestinationFocused() {
+  return {
+    type: 'enter_destination_focused',
+  };
+}
+
 export function changeLocationTextInput(startOrEnd, value) {
   return async function locationTextInputChangedThunk(dispatch, getState) {
     dispatch({
@@ -255,52 +319,18 @@ export function selectGeocodedLocation(startOrEnd, point, fromInputText) {
       fromInputText,
     });
 
-    // If this was the end point, and we have a start point -- or vice versa --
-    // fetch the route.
-    const { start, end, arriveBy, initialTime } = getState().routeParams;
-    if (
-      start?.point?.geometry.coordinates &&
-      end?.point?.geometry.coordinates
-    ) {
-      await fetchRoute(
-        start.point.geometry.coordinates,
-        end.point.geometry.coordinates,
-        arriveBy,
-        initialTime,
-      )(dispatch, getState);
-    }
+    dispatch(locationsSubmitted());
   };
 }
 
 export function selectCurrentLocation(startOrEnd) {
   return async function selectCurrentLocationThunk(dispatch, getState) {
-    const { lng, lat } = getState().geolocation;
-    if (lng == null || lat == null) {
-      // shouldn't happen
-      console.error('selected current location but have none');
-      return;
-    }
-
     dispatch({
       type: 'current_location_selected',
       startOrEnd,
-      point: turf.point([lng, lat]),
     });
 
-    // If this was the start point, and we have an end point -- or vice versa --
-    // fetch the route.
-    const { start, end, arriveBy, initialTime } = getState().routeParams;
-    if (
-      start?.point?.geometry.coordinates &&
-      end?.point?.geometry.coordinates
-    ) {
-      await fetchRoute(
-        start.point.geometry.coordinates,
-        end.point.geometry.coordinates,
-        arriveBy,
-        initialTime,
-      )(dispatch, getState);
-    }
+    dispatch(locationsSubmitted());
   };
 }
 
@@ -316,19 +346,7 @@ export function swapLocations() {
       type: 'locations_swapped',
     });
 
-    // check if we still have a start and end point, just in case
-    const { start, end, arriveBy, initialTime } = getState().routeParams;
-    if (
-      start?.point?.geometry.coordinates &&
-      end?.point?.geometry.coordinates
-    ) {
-      await fetchRoute(
-        start.point.geometry.coordinates,
-        end.point.geometry.coordinates,
-        arriveBy,
-        initialTime,
-      )(dispatch, getState);
-    }
+    dispatch(locationsSubmitted());
   };
 }
 
@@ -340,18 +358,7 @@ export function initialTimeSet(initialTime) {
     });
 
     // If we have a location, fetch a route.
-    let { start, end, arriveBy } = getState().routeParams;
-    if (
-      start?.point?.geometry.coordinates &&
-      end?.point?.geometry.coordinates
-    ) {
-      await fetchRoute(
-        start.point.geometry.coordinates,
-        end.point.geometry.coordinates,
-        arriveBy,
-        initialTime,
-      )(dispatch, getState);
-    }
+    dispatch(locationsSubmitted());
   };
 }
 
@@ -363,17 +370,6 @@ export function departureTypeSelected(departureType) {
     });
 
     // If we have a location, fetch a route.
-    let { start, end, arriveBy, initialTime } = getState().routeParams;
-    if (
-      start?.point?.geometry.coordinates &&
-      end?.point?.geometry.coordinates
-    ) {
-      await fetchRoute(
-        start.point.geometry.coordinates,
-        end.point.geometry.coordinates,
-        arriveBy,
-        initialTime,
-      )(dispatch, getState);
-    }
+    dispatch(locationsSubmitted());
   };
 }

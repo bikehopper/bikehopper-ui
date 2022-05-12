@@ -15,7 +15,7 @@ import {
 } from '../lib/geometry';
 import lngLatToCoords from '../lib/lngLatToCoords';
 import { geolocated } from '../features/geolocation';
-import { LocationSourceType, locationDragged } from '../features/routeParams';
+import { locationDragged } from '../features/routeParams';
 import { routeClicked } from '../features/routes';
 import { mapMoved } from '../features/viewport';
 import useResizeObserver from '../hooks/useResizeObserver';
@@ -31,32 +31,30 @@ import { DEFAULT_BIKE_COLOR, DEFAULT_INACTIVE_COLOR } from '../lib/colors';
 const BikehopperMap = React.forwardRef((props, mapRef) => {
   const dispatch = useDispatch();
   const {
-    startPoint,
-    startIsCurrentLocation,
-    endPoint,
-    endIsCurrentLocation,
+    startCoords,
+    endCoords,
     routes,
     activePath,
     viewingDetails,
     viewingStep,
   } = useSelector(
     (state) => ({
-      startPoint: state.routeParams.start?.point,
-      endPoint: state.routeParams.end?.point,
-      startIsCurrentLocation:
-        state.routeParams.start?.source === LocationSourceType.UserGeolocation,
-      endIsCurrentLocation:
-        state.routeParams.end?.source === LocationSourceType.UserGeolocation,
       routes: state.routes.routes,
+      // If we have fetched routes, display start and end markers at the coords
+      // the routes are for; if not, but we do have start and/or end locations
+      // with coords, display marker(s) at that location/those locations.
+      startCoords: state.routes.routes
+        ? state.routes.routeStartCoords
+        : state.routeParams.start?.point?.geometry.coordinates,
+      endCoords: state.routes.routes
+        ? state.routes.routeEndCoords
+        : state.routeParams.end?.point?.geometry.coordinates,
       activePath: state.routes.activeRoute,
       viewingDetails: state.routes.viewingDetails,
       viewingStep: state.routes.viewingStep,
     }),
     shallowEqual,
   );
-
-  const startCoords = startPoint?.geometry?.coordinates;
-  const endCoords = endPoint?.geometry?.coordinates;
 
   const handleRouteClick = (evt) => {
     if (evt.features?.length) {
@@ -68,11 +66,11 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
     dispatch(mapMoved(evt.viewState));
   };
 
-  const handleStartPointDrag = (evt) => {
+  const handleStartMarkerDrag = (evt) => {
     dispatch(locationDragged('start', lngLatToCoords(evt.lngLat)));
   };
 
-  const handleEndPointDrag = (evt) => {
+  const handleEndMarkerDrag = (evt) => {
     dispatch(locationDragged('end', lngLatToCoords(evt.lngLat)));
   };
 
@@ -269,26 +267,26 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
           <Layer {...getTransitLabelStyle(activePath)} />
           <Layer {...getBikeLabelStyle(activePath)} />
         </Source>
-        {startCoords && (routes || !startIsCurrentLocation) && (
+        {startCoords && (
           <Marker
             id="startMarker"
             longitude={startCoords[0]}
             latitude={startCoords[1]}
             draggable={true}
-            onDragEnd={handleStartPointDrag}
+            onDragEnd={handleStartMarkerDrag}
             offsetLeft={-13}
             offsetTop={-39}
           >
             <MarkerSVG fillColor="#2fa7cc" />
           </Marker>
         )}
-        {endCoords && (routes || !endIsCurrentLocation) && (
+        {endCoords && (
           <Marker
             id="endMarker"
             longitude={endCoords[0]}
             latitude={endCoords[1]}
             draggable={true}
-            onDragEnd={handleEndPointDrag}
+            onDragEnd={handleEndMarkerDrag}
             offsetLeft={-13}
             offsetTop={-39}
           >

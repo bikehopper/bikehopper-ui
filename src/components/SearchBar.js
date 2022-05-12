@@ -11,12 +11,13 @@ import {
   swapLocations,
 } from '../features/routeParams';
 import usePrevious from '../hooks/usePrevious';
-import describePlace from '../lib/describePlace';
 import { ReactComponent as Pin } from 'iconoir/icons/pin-alt.svg';
 import { ReactComponent as NavLeftArrow } from 'iconoir/icons/nav-arrow-left.svg';
 import { ReactComponent as SwapArrows } from 'iconoir/icons/data-transfer-both.svg';
 
 import './SearchBar.css';
+
+const CURRENT_LOCATION_STRING = 'Current Location';
 
 export default function SearchBar(props) {
   const dispatch = useDispatch();
@@ -59,12 +60,7 @@ export default function SearchBar(props) {
     event.preventDefault();
     event.target.blur();
 
-    dispatch(
-      locationsSubmitted(
-        _selectTextOrLocationToUse(startText, startLocation),
-        _selectTextOrLocationToUse(endText, endLocation),
-      ),
-    );
+    dispatch(locationsSubmitted());
   };
 
   const handleBackClick = (event) => {
@@ -79,14 +75,28 @@ export default function SearchBar(props) {
 
   const handleFocus = (which, event) => {
     dispatch(locationInputFocused(which));
+    if (
+      (which === 'start' &&
+        startLocation?.source === LocationSourceType.UserGeolocation) ||
+      (which === 'end' &&
+        endLocation?.source === LocationSourceType.UserGeolocation)
+    ) {
+      // Select the "Current Location" text so that any key input will replace it in its
+      // entirety, since it doesn't make sense to edit this magic string otherwise.
+      event.target.select();
+    }
   };
 
   const prevStartLocation = usePrevious(startLocation);
   const prevEndLocation = usePrevious(endLocation);
 
   React.useEffect(() => {
-    const justFilledStart = Boolean(startLocation && !prevStartLocation);
-    const justFilledEnd = Boolean(endLocation && !prevEndLocation);
+    const justFilledStart = Boolean(
+      startLocation && startLocation !== prevStartLocation,
+    );
+    const justFilledEnd = Boolean(
+      endLocation && endLocation !== prevEndLocation,
+    );
 
     // If one location was just filled and the other one is blank, focus the blank one.
     // If both locations are filled, make sure the one just filled is blurred.
@@ -183,33 +193,10 @@ function _getDisplayedText(text, loc, isFocused) {
       return isFocused ? '' : 'Custom';
     case LocationSourceType.UserGeolocation:
       if (text !== '') return text;
-      return isFocused ? '' : 'Current Location';
+      return CURRENT_LOCATION_STRING;
     default:
       console.error('unexpected location type', loc.source);
       if (text !== '') return text;
       return isFocused ? '' : 'Point';
   }
-}
-
-// Helper to decide whether un-geocoded input text should be used, or the
-// previously set location.
-// FIXME: This logic should be moved into the action creator and out of this
-// component.  Now that the state is in Redux this logic should be too, there's
-// no reason for the component to pass global state through.
-function _selectTextOrLocationToUse(text, loc) {
-  if (!loc) return text;
-
-  // If text WAS an address string from the geocoder, and the user explicitly blanked it
-  // out, let them blank it out. But otherwise, empty text means fall back to location.
-  if (text === '' && loc.source !== LocationSourceType.Geocoded) return loc;
-
-  // Stick with geocoded location if the text is its exact description
-  if (
-    loc.source === LocationSourceType.Geocoded &&
-    text === describePlace(loc.point)
-  ) {
-    return loc;
-  }
-
-  return text;
 }
