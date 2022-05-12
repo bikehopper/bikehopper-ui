@@ -33,7 +33,7 @@ export default function ItineraryBikeLeg({ leg, legDestination, onStepClick }) {
                 detail={`${
                   step.distance ? formatDistance(step.distance) : null
                 }`}
-              ></ItineraryDivider>,
+              />,
             ],
       )}
     </>
