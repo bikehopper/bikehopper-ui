@@ -6,10 +6,26 @@
   margin-left: 30px;
 }
 
-.ItineraryDivider_content {
+.ItineraryDivider_subheading {
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 16px;
+  margin-bottom: 6px;
+  margin-top: 6px;
+}
+
+.ItineraryDivider_subheadingTransit {
+  color: #626262;
+}
+
+.ItineraryDivider_subheadingBike {
+  color: #438601;
+}
+
+.ItineraryDivider_detail {
   color: #626262;
   font-size: 12px;
   line-height: 12px;
   margin-bottom: 12px;
-  margin-top: 12px;
+  margin-top: 6px;
 }

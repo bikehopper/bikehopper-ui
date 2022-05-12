@@ -27,9 +27,13 @@ export default function ItineraryBikeLeg({ leg, legDestination, onStepClick }) {
                 isFirstStep={stepIdx === 0}
                 onClick={onStepClick.bind(null, stepIdx)}
               />,
-              <ItineraryDivider key={stepIdx + 'd'}>
-                {step.distance ? formatDistance(step.distance) : null}
-              </ItineraryDivider>,
+              <ItineraryDivider
+                key={stepIdx + 'd'}
+                transit={false}
+                detail={`${
+                  step.distance ? formatDistance(step.distance) : null
+                }`}
+              />,
             ],
       )}
     </>

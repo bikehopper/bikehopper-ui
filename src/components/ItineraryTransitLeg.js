@@ -18,6 +18,7 @@ export default function ItineraryTransitLeg({ leg }) {
   const icon = ItineraryHeaderIcons.BUS;
   const agency = getAgencyNameForDisplay(leg.agency_name);
 
+  const stopDetail = `${stops.length} stop${stops.length > 1 && 's'}`;
   return (
     <>
       <ItineraryHeader icon={icon} iconColor={leg.route_color}>
@@ -33,8 +34,8 @@ export default function ItineraryTransitLeg({ leg }) {
       <ItineraryStep IconSVGComponent={Circle} smallIcon={true}>
         Board at <strong>{stops[0].stop_name}</strong> &middot; {departure}
       </ItineraryStep>
-      <ItineraryDivider>
-        {stops.length} stop{stops.length > 1 && 's'}
+      <ItineraryDivider transit={true} detail={stopDetail}>
+        Towards {leg.trip_headsign}
       </ItineraryDivider>
       <ItineraryStep IconSVGComponent={Circle} smallIcon={true}>
         Get off at <strong>{stops[stops.length - 1].stop_name}</strong> &middot;{' '}
