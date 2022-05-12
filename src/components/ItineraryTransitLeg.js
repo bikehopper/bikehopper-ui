@@ -34,7 +34,7 @@ export default function ItineraryTransitLeg({ leg }) {
       <ItineraryStep IconSVGComponent={Circle} smallIcon={true}>
         Board at <strong>{stops[0].stop_name}</strong> &middot; {departure}
       </ItineraryStep>
-      <ItineraryDivider transit={true} detail={stop_detail}>
+      <ItineraryDivider transit={true} detail={stopDetail}>
         Towards {leg.trip_headsign}
       </ItineraryDivider>
       <ItineraryStep IconSVGComponent={Circle} smallIcon={true}>
