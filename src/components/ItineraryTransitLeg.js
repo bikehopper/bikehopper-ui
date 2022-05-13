@@ -18,7 +18,8 @@ export default function ItineraryTransitLeg({ leg }) {
   const icon = ItineraryHeaderIcons.BUS;
   const agency = getAgencyNameForDisplay(leg.agency_name);
 
-  const stopDetail = `${stops.length} stop${stops.length > 1 && 's'}`;
+  const stopsTraveled = stops.length - 1;
+  const stopsBetweenStartAndEnd = stopsTraveled - 1;
   return (
     <>
       <ItineraryHeader icon={icon} iconColor={leg.route_color}>
@@ -26,7 +27,7 @@ export default function ItineraryTransitLeg({ leg }) {
           Ride the {leg.route_name} {mode} ({agency})
         </span>
         <span>
-          {stops.length} stop{stops.length > 1 && 's'} &middot;{' '}
+          {pluralizedStopCount(stopsTraveled)} &middot;{' '}
           {formatDurationBetween(leg.departure_time, leg.arrival_time)}
         </span>
       </ItineraryHeader>
@@ -34,7 +35,14 @@ export default function ItineraryTransitLeg({ leg }) {
       <ItineraryStep IconSVGComponent={Circle} smallIcon={true}>
         Board at <strong>{stops[0].stop_name}</strong> &middot; {departure}
       </ItineraryStep>
-      <ItineraryDivider transit={true} detail={stopDetail}>
+      <ItineraryDivider
+        transit={true}
+        detail={
+          stopsBetweenStartAndEnd > 0
+            ? pluralizedStopCount(stopsBetweenStartAndEnd) + ' before'
+            : null
+        }
+      >
         Towards {leg.trip_headsign}
       </ItineraryDivider>
       <ItineraryStep IconSVGComponent={Circle} smallIcon={true}>
@@ -44,4 +52,8 @@ export default function ItineraryTransitLeg({ leg }) {
       <ItineraryDivider />
     </>
   );
+}
+
+function pluralizedStopCount(numStops) {
+  return `${numStops} stop${numStops > 1 ? 's' : ''}`;
 }
