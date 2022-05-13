@@ -167,24 +167,14 @@ export function locationsSubmitted() {
 
     const hydrate = async function hydrate(text, location, startOrEnd) {
       // Decide whether to use the text or location:
-      let useLocation = false;
-
-      // If text WAS an address string from the geocoder, and the user explicitly blanked it
-      // out, let them blank it out. But otherwise, empty text means fall back to location.
-      if (
-        text === '' &&
+      let useLocation =
         location &&
-        location.source !== LocationSourceType.Geocoded
-      ) {
-        useLocation = true;
-      } else if (
-        location &&
-        location.source === LocationSourceType.Geocoded &&
-        text === describePlace(location.point)
-      ) {
-        // Stick with geocoded location if the text is its exact description
-        useLocation = true;
-      }
+        // Use location when its from Maker or User Location
+        (location.source === LocationSourceType.Marker ||
+          location.source === LocationSourceType.UserGeolocation ||
+          // Use location from geocoded result when text is the same as point's text
+          (location.source === LocationSourceType.Geocoded &&
+            text === describePlace(location.point)));
 
       if (!useLocation) {
         text = text.trim();
