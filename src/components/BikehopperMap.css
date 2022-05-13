@@ -6,3 +6,16 @@
   width: 100%;
   z-index: 1;
 }
+
+/* render draggable marker over user location circle*/
+.maplibregl-marker {
+  z-index: 3;
+}
+
+.maplibregl-user-location-accuracy-circle {
+  z-index: 1;
+}
+
+.maplibregl-user-location-dot {
+  z-index: 2;
+}
