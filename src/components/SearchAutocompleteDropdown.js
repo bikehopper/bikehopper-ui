@@ -18,7 +18,7 @@ import './SearchAutocompleteDropdown.css';
 export default function SearchAutocompleteDropdown(props) {
   const dispatch = useDispatch();
 
-  const { startOrEnd, inputText, geocodedFeatures, canUseCurrentLocation } =
+  const { startOrEnd, inputText, geocodedFeatures, showCurrentLocationOption } =
     useSelector((state) => {
       const startOrEnd = state.routeParams.editingLocation;
 
@@ -27,6 +27,7 @@ export default function SearchAutocompleteDropdown(props) {
 
       let inputText = state.routeParams[startOrEnd + 'InputText'];
       let cache = inputText && state.geocoding.cache['@' + inputText.trim()];
+      let fallbackToGeocodedLocationSourceText = false;
       if (!cache || cache.status !== 'succeeded') {
         // If the location we're editing has a geocoded location already selected, display the
         // other options from the input text that was used to pick that.
@@ -34,10 +35,13 @@ export default function SearchAutocompleteDropdown(props) {
         if (
           relevantLocation &&
           relevantLocation.source === LocationSourceType.Geocoded &&
-          relevantLocation.fromInputText
+          relevantLocation.fromInputText &&
+          (inputText === '' ||
+            inputText === describePlace(relevantLocation.point))
         ) {
           inputText = relevantLocation.fromInputText;
           cache = state.geocoding.cache['@' + inputText.trim()];
+          fallbackToGeocodedLocationSourceText = true;
         } else {
           // Still nothing? Try prefixes of the input text. Example: current input text is
           // "123 Main St" which hasn't been looked up yet but we have results for "123 Mai",
@@ -55,20 +59,25 @@ export default function SearchAutocompleteDropdown(props) {
       }
 
       const other = startOrEnd === 'start' ? 'end' : 'start';
-      const haveCurrentLocation =
-        state.geolocation.lat != null && state.geolocation.lng != null;
       const canUseCurrentLocation =
-        haveCurrentLocation &&
+        'geolocation' in navigator &&
         (!state.routeParams[other] ||
           state.routeParams[other].source !==
             LocationSourceType.UserGeolocation);
+
+      // Only show the current location option if typed text is 1) blank, or 2)
+      // a prefix of "Current Location", case-insensitive
+      const showCurrentLocationOption =
+        canUseCurrentLocation &&
+        (fallbackToGeocodedLocationSourceText ||
+          'current location'.indexOf(inputText.toLowerCase()) === 0);
 
       return {
         startOrEnd,
         inputText,
         geocodedFeatures:
           cache && cache.status === 'succeeded' ? cache.features : [],
-        canUseCurrentLocation,
+        showCurrentLocationOption,
       };
     }, shallowEqual);
 
@@ -86,7 +95,7 @@ export default function SearchAutocompleteDropdown(props) {
 
   return (
     <SelectionList className="SearchAutocompleteDropdown">
-      {canUseCurrentLocation && (
+      {showCurrentLocationOption && (
         <SelectionListItem
           className="SearchAutocompleteDropdown_place"
           onClick={handleCurrentLocationClick}

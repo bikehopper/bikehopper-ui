@@ -47,7 +47,6 @@ export function routesReducer(state = DEFAULT_STATE, action) {
         return state;
       }
     case 'geocoded_location_selected':
-    case 'current_location_selected':
       // As above, clear route if need be
       if (
         state.routes &&
@@ -62,6 +61,8 @@ export function routesReducer(state = DEFAULT_STATE, action) {
       } else {
         return state;
       }
+    case 'current_location_selected':
+      return _clearRoutes(state);
     case 'route_fetch_attempted':
       return produce(state, (draft) => {
         draft.routes = draft.activeRoute = null;

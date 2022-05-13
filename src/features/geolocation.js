@@ -43,18 +43,18 @@ export function geolocated(coords, timestamp) {
   };
 }
 
-// Not yet used or tested.
-// TODO: Call this when "Current Location" is used in a location input and
-// enable that option even if the geolocate control has not been touched.
-export function geolocate(maxAge, timeout) {
+const MAX_AGE_MS = 30000;
+const TIMEOUT_MS = 15000;
+
+export function geolocate() {
   return async function geolocateThunk(dispatch, getState) {
     dispatch({ type: 'geolocate_attempted' });
 
     let pos;
     try {
       pos = await getCurrentPosition({
-        maximumAge: maxAge,
-        timeout,
+        maximumAge: MAX_AGE_MS,
+        timeout: TIMEOUT_MS,
       });
     } catch (e) {
       const errorCode =

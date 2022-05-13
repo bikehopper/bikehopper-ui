@@ -12,7 +12,7 @@ import SearchAutocompleteDropdown from './SearchAutocompleteDropdown';
 import TopBar from './TopBar';
 import {
   LocationSourceType,
-  locationInputFocused,
+  enterDestinationFocused,
 } from '../features/routeParams';
 import * as VisualViewportTracker from '../lib/VisualViewportTracker';
 
@@ -245,7 +245,7 @@ function App() {
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
     evt.preventDefault();
-    dispatch(locationInputFocused('end'));
+    dispatch(enterDestinationFocused());
   };
 
   const mapOverlayRef = React.useRef();
