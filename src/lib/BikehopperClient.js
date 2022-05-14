@@ -48,7 +48,7 @@ export async function fetchRoute({
     layer: 'OpenStreetMap',
     profile,
     optimize,
-    pointsEncoded,
+    points_encoded: pointsEncoded,
     'pt.earliest_departure_time': earliestDepartureTime
       ? new Date(earliestDepartureTime).toISOString()
       : new Date().toISOString(),
