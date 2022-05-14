@@ -4,6 +4,7 @@ export const DEFAULT_BIKE_COLOR = '#5c5c3d';
 export const DEFAULT_PT_COLOR = '#4169e1';
 export const DEFAULT_INACTIVE_COLOR = 'darkgray';
 export const BIKEHOPPER_THEME_COLOR = '#5aaa0a';
+export const TRANSITION_COLOR = DEFAULT_BIKE_COLOR;
 
 export function darkenLegColor(legColorString) {
   if (legColorString == null) return null;
