@@ -28,9 +28,7 @@ export default function DirectionsNullState(props) {
         options for getting around without a car.
       </p>
       <p className="DirectionsNullState_para">
-        Get started by entering a destination and starting point above, or tap
-        the "find my location" button in the top right corner of the map to get
-        directions from your current location.
+        Get started by entering a destination above.
       </p>
       <p className="DirectionsNullState_para DirectionsNullState_wideScreenOnly">
         In this early beta, BikeHopper is{' '}
