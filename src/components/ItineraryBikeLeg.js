@@ -1,5 +1,6 @@
 import * as React from 'react';
 import formatDistance from '../lib/formatDistance';
+import { describeBikeInfra } from '../lib/geometry';
 import { formatDurationBetween } from '../lib/time';
 import InstructionSigns from '../lib/InstructionSigns';
 import ItineraryBikeStep from './ItineraryBikeStep';
@@ -8,6 +9,21 @@ import ItineraryDivider from './ItineraryDivider';
 import ItinerarySpacer from './ItinerarySpacer';
 
 export default function ItineraryBikeLeg({ leg, legDestination, onStepClick }) {
+  const instructionsWithBikeInfra = React.useMemo(() => {
+    return leg.instructions.map((step) => {
+      return {
+        ...step,
+        bikeInfra: describeBikeInfra(
+          leg.geometry,
+          leg.details.cycleway,
+          leg.details.road_class,
+          step.interval[0],
+          step.interval[1],
+        ),
+      };
+    });
+  }, [leg]);
+
   return (
     <>
       <ItineraryHeader icon={ItineraryHeaderIcons.BIKE}>
@@ -18,7 +34,7 @@ export default function ItineraryBikeLeg({ leg, legDestination, onStepClick }) {
         </span>
       </ItineraryHeader>
       <ItineraryDivider />
-      {leg.instructions.map((step, stepIdx) =>
+      {instructionsWithBikeInfra.map((step, stepIdx) =>
         isArriveStep(step)
           ? null
           : [
@@ -34,7 +50,9 @@ export default function ItineraryBikeLeg({ leg, legDestination, onStepClick }) {
                 detail={`${
                   step.distance ? formatDistance(step.distance) : null
                 }`}
-              />,
+              >
+                {step.bikeInfra}
+              </ItineraryDivider>,
             ],
       )}
       <ItinerarySpacer />
