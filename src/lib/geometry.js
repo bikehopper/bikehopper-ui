@@ -7,6 +7,7 @@ import {
   darkenLegColor,
   DEFAULT_BIKE_COLOR,
   DEFAULT_PT_COLOR,
+  TRANSITION_COLOR,
   getTextColor,
 } from './colors.js';
 
@@ -57,6 +58,7 @@ export function routesToGeoJSON(paths) {
           properties: {
             path_index: pathIdx,
             type: leg.type,
+            route_color: TRANSITION_COLOR,
           },
           resolution: 1000,
         });
