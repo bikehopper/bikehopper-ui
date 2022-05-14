@@ -1,7 +1,9 @@
 import * as turf from '@turf/helpers';
+import { segmentEach } from '@turf/meta';
 import transformRotate from '@turf/transform-rotate';
 import bezierSpline from '@turf/bezier-spline';
 import distance from '@turf/distance';
+import turfLength from '@turf/length';
 import lineSliceAlong from '@turf/line-slice-along';
 import {
   darkenLegColor,
@@ -140,4 +142,76 @@ export function curveBetween(start, end, options, angle = 30) {
     ]),
     options,
   );
+}
+
+function _describeBikeInfraFromCyclewayAndRoadClass(cycleway, roadClass) {
+  if (roadClass === 'path') return 'path';
+  if (roadClass === 'cycleway') return 'bike path';
+  if (roadClass === 'footway') return 'foot path';
+  if (roadClass === 'pedestrian') return 'promenade';
+  if (roadClass === 'steps') return 'steps';
+  if (cycleway === 'track') return 'protected bike lane';
+  if (cycleway === 'lane') return 'bike lane';
+  if (cycleway === 'shared_lane') return 'shared road';
+  if (cycleway === 'sidepath') return 'sidepath';
+  if (cycleway === 'shoulder') return 'shoulder';
+  return null;
+}
+
+// Describe the bike infra encountered at a particular step of the instructions which
+// spans points 'start' to 'end' in 'lineString'.
+//
+// 'cyclewayValues' and 'roadClasses' are each arrays of triples [start, end, value]
+// in which the start and end refer to coordinate indexes in the lineString.
+export function describeBikeInfra(
+  lineString,
+  cyclewayValues,
+  roadClasses,
+  start,
+  end,
+) {
+  if (end <= start) return ''; // Ignore instruction steps that travel zero distance.
+
+  const stepLineString = turf.lineString(
+    lineString.coordinates.slice(start, end + 1),
+  );
+
+  // The approach here is to compute the total length traveled in this step,
+  // and then tally what kinds of bike infra we encounter by percentage of that
+  // distance.
+
+  const stepTotalDistance = turfLength(stepLineString);
+
+  let cyclewayIndex = 0,
+    roadClassIndex = 0;
+  const distanceByInfraType = {};
+
+  segmentEach(stepLineString, (cur, _f, _mf, _g, segmentIndex) => {
+    const segmentStartIndexInWhole = segmentIndex + start;
+
+    while (cyclewayValues[cyclewayIndex][1] <= segmentStartIndexInWhole)
+      cyclewayIndex++;
+    while (roadClasses[roadClassIndex][1] <= segmentStartIndexInWhole)
+      roadClassIndex++;
+
+    const infraType = _describeBikeInfraFromCyclewayAndRoadClass(
+      cyclewayValues[cyclewayIndex][2],
+      roadClasses[roadClassIndex][2],
+    );
+
+    if (infraType) {
+      distanceByInfraType[infraType] =
+        (distanceByInfraType[infraType] || 0) +
+        (turfLength(cur) * 100) / stepTotalDistance;
+    }
+  });
+
+  let infraTypes = Object.entries(distanceByInfraType);
+  // Sort the infra types by most common first
+  infraTypes.sort((a, b) => b[1] - a[1]);
+
+  if (infraTypes.length === 0) return '';
+  return infraTypes
+    .map(([infraType, percent]) => `${infraType} ${percent.toFixed(0)}%`)
+    .join(', ');
 }
