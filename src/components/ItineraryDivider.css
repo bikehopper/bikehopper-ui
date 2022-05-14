@@ -1,17 +1,8 @@
-.ItineraryDivider_border {
-  width: 3px;
-  background-color: #bbb;
-  height: 100%;
-  display: inline-block;
-  margin-left: 30px;
-}
-
 .ItineraryDivider_subheading {
   font-weight: bold;
-  font-size: 16px;
-  line-height: 16px;
-  margin-bottom: 6px;
-  margin-top: 6px;
+  font-size: 14px;
+  line-height: 14px;
+  margin: 0 0 8px;
 }
 
 .ItineraryDivider_subheadingTransit {
@@ -22,10 +13,25 @@
   color: #438601;
 }
 
-.ItineraryDivider_detail {
+.ItineraryDivider_horizontalRule {
   color: #626262;
   font-size: 12px;
   line-height: 12px;
   margin-bottom: 12px;
-  margin-top: 6px;
+  margin-top: 8px;
+  display: inline-block;
+  height: 12px;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) calc(50% - 1px),
+    rgba(187, 187, 187, 1) 50%,
+    rgba(0, 0, 0, 0) 50%
+  );
+}
+
+.ItineraryDivider_detail {
+  background: white;
+  margin-left: 9px;
+  padding: 0 5px;
 }

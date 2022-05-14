@@ -3,6 +3,7 @@ import { formatTime, formatDurationBetween } from '../lib/time';
 import getAgencyNameForDisplay from '../lib/getAgencyNameForDisplay';
 import ItineraryHeader, { ItineraryHeaderIcons } from './ItineraryHeader';
 import ItineraryDivider from './ItineraryDivider';
+import ItinerarySpacer from './ItinerarySpacer';
 import ItineraryStep from './ItineraryStep';
 
 import { ReactComponent as Circle } from 'iconoir/icons/circle.svg';
@@ -50,6 +51,7 @@ export default function ItineraryTransitLeg({ leg }) {
         {arrival}
       </ItineraryStep>
       <ItineraryDivider />
+      <ItinerarySpacer />
     </>
   );
 }
