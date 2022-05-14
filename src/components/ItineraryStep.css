@@ -8,7 +8,7 @@
 
 .ItineraryStep_iconSmall {
   margin-left: 9px;
-  top: 2px;
+  top: 10px;
 }
 
 .ItineraryStep_iconSmall path {
@@ -16,5 +16,9 @@
 }
 
 .ItineraryStep_content {
-  margin: 0;
+  margin: 8px 0;
+}
+
+.ItineraryStep_iconSvg {
+  background: white;
 }
