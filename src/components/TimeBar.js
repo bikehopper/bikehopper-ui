@@ -18,8 +18,23 @@ export default function TimeBar(props) {
 
   const dispatch = useDispatch();
 
-  const handleTimeChange = (event) => {
-    dispatch(initialTimeSet(event.target.value));
+  const lastDispatchedTimeValue = React.useRef(null);
+
+  const handleUpdatedDateTimeValue = (value) => {
+    if (value === lastDispatchedTimeValue.current) return;
+    lastDispatchedTimeValue.current = value;
+    dispatch(initialTimeSet(value));
+  };
+
+  const handleTimeBlur = (event) => {
+    // On some platforms (observed on mobile Safari and desktop Firefox) the
+    // datetime input's change event prematurely fires before you are likely to
+    // be finished selecting a time, so we don't commit the update until blur.
+    handleUpdatedDateTimeValue(event.target.value);
+  };
+
+  const handleTimeKeyPress = (event) => {
+    if (event.key === 'Enter') handleUpdatedDateTimeValue(event.target.value);
   };
 
   const handleSelect = (event) => {
@@ -51,7 +66,8 @@ export default function TimeBar(props) {
         label="select time"
         disabled={!['departAt', 'arriveBy'].includes(departureType)}
         className="TimeBar_datetime"
-        onChange={handleTimeChange}
+        onBlur={handleTimeBlur}
+        onKeyPress={handleTimeKeyPress}
         type="datetime-local"
         name="datetime"
         id="datetime"
