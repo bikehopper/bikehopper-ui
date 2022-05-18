@@ -181,20 +181,6 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
 
   const features = routes ? routesToGeoJSON(routes) : EMPTY_GEOJSON;
 
-  const transitionStyle = {
-    id: 'transitionLayer',
-    type: 'line',
-    filter: ['to-boolean', ['get', 'is_transition']],
-    layout: {
-      'line-sort-key': getLegSortKey(activePath),
-    },
-    paint: {
-      'line-width': 3,
-      'line-color': 'darkgray',
-      'line-dasharray': [1, 1],
-    },
-  };
-
   const navigationControlStyle = {
     visibility: mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden',
   };
@@ -220,6 +206,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
         interactiveLayerIds={[
+          'inactiveLayer',
           'transitLayer',
           'standardBikeLayer',
           'sharedLaneLayer',
@@ -240,6 +227,8 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
         />
 
         <Source id="routeSource" type="geojson" data={features}>
+          {/* Order matters: lowest to highest */}
+          <Layer {...getInactiveStyle(activePath)} />
           <Layer
             {...getLegOutlineStyle(
               'routeDropShadow',
@@ -263,7 +252,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
           <Layer {...getTransitStyle(activePath)} />
           <Layer {...getStandardBikeStyle(activePath)} />
           <Layer {...getSharedLaneStyle(activePath)} />
-          <Layer {...transitionStyle} />
+          <Layer {...getTransitionStyle(activePath)} />
           <Layer {...getTransitLabelStyle(activePath)} />
           <Layer {...getBikeLabelStyle(activePath)} />
         </Source>
@@ -298,18 +287,50 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
   );
 });
 
+function getInactiveStyle(activePath) {
+  return {
+    id: 'inactiveLayer',
+    type: 'line',
+    filter: ['!', isActivePath(activePath)],
+    layout: {
+      'line-cap': 'round',
+    },
+    paint: {
+      'line-width': 4,
+      'line-color': ['to-color', DEFAULT_INACTIVE_COLOR],
+    },
+  };
+}
+
+function getTransitionStyle(activePath) {
+  return {
+    id: 'transitionLayer',
+    type: 'line',
+    filter: [
+      'all',
+      isActivePath(activePath),
+      ['to-boolean', ['get', 'is_transition']],
+    ],
+    layout: {},
+    paint: {
+      'line-width': 3,
+      'line-color': 'darkgray',
+      'line-dasharray': [1, 1],
+    },
+  };
+}
+
 function getTransitStyle(activePath) {
   return {
     id: 'transitLayer',
     type: 'line',
-    filter: ['==', ['get', 'type'], 'pt'],
+    filter: ['all', isActivePath(activePath), ['==', ['get', 'type'], 'pt']],
     layout: {
       'line-cap': 'round',
-      'line-sort-key': getLegSortKey(activePath),
     },
     paint: {
       'line-width': 5,
-      'line-color': getTransitColorStyle(activePath),
+      'line-color': getTransitColorStyle(),
     },
   };
 }
@@ -318,14 +339,18 @@ function getStandardBikeStyle(activePath) {
   return {
     id: 'standardBikeLayer',
     type: 'line',
-    filter: ['all', ['has', 'cycleway'], ['!', cyclewayIs('shared_lane')]],
+    filter: [
+      'all',
+      isActivePath(activePath),
+      ['has', 'cycleway'],
+      ['!', cyclewayIs('shared_lane')],
+    ],
     layout: {
       'line-cap': 'round',
-      'line-sort-key': getLegSortKey(activePath),
     },
     paint: {
       'line-width': 4,
-      'line-color': getBikeColorStyle(activePath),
+      'line-color': getBikeColorStyle(),
     },
   };
 }
@@ -334,14 +359,13 @@ function getSharedLaneStyle(activePath) {
   return {
     id: 'sharedLaneLayer',
     type: 'line',
-    filter: cyclewayIs('shared_lane'),
+    filter: ['all', isActivePath(activePath), cyclewayIs('shared_lane')],
     layout: {
       'line-cap': 'round',
-      'line-sort-key': getLegSortKey(activePath),
     },
     paint: {
       'line-width': 4,
-      'line-color': getBikeColorStyle(activePath),
+      'line-color': getBikeColorStyle(),
       'line-dasharray': [1, 2],
     },
   };
@@ -351,13 +375,8 @@ function getTransitLabelStyle(activePath) {
   return {
     id: 'transitLabelLayer',
     type: 'symbol',
-    filter: [
-      'all',
-      ['==', ['get', 'path_index'], activePath],
-      ['==', ['get', 'type'], 'pt'],
-    ],
+    filter: ['all', isActivePath(activePath), ['==', ['get', 'type'], 'pt']],
     layout: {
-      'symbol-sort-key': getLegSortKey(activePath),
       'symbol-placement': 'line-center',
       'text-size': 16,
       'text-field': getLabelTextField(),
@@ -365,7 +384,7 @@ function getTransitLabelStyle(activePath) {
     },
     paint: {
       'text-color': ['get', 'text_color'],
-      'text-halo-color': getTransitColorStyle(activePath, 'text_halo_color'),
+      'text-halo-color': getTransitColorStyle('text_halo_color'),
       'text-halo-width': 2,
     },
   };
@@ -377,12 +396,11 @@ function getBikeLabelStyle(activePath) {
     type: 'symbol',
     filter: [
       'all',
-      ['==', ['get', 'path_index'], activePath],
+      isActivePath(activePath),
       ['has', 'cycleway'],
       ['!', cyclewayIs('missing', 'no')],
     ],
     layout: {
-      'symbol-sort-key': getLegSortKey(activePath),
       'symbol-placement': 'line-center',
       'text-size': 16,
       'text-field': getLabelTextField(),
@@ -390,7 +408,7 @@ function getBikeLabelStyle(activePath) {
     },
     paint: {
       'text-color': 'white',
-      'text-halo-color': getBikeColorStyle(activePath),
+      'text-halo-color': getBikeColorStyle(),
       'text-halo-width': 2,
     },
   };
@@ -407,7 +425,7 @@ function getLegOutlineStyle(
   return {
     id: layerId,
     type: 'line',
-    filter: ['==', ['get', 'path_index'], activePath],
+    filter: isActivePath(activePath),
     layout: {
       'line-cap': 'round',
     },
@@ -420,34 +438,18 @@ function getLegOutlineStyle(
   };
 }
 
-function getLegSortKey(indexOfActivePath) {
-  return ['case', ['==', ['get', 'path_index'], indexOfActivePath], 9999, 0];
+function getTransitColorStyle(colorKey = 'route_color') {
+  return ['to-color', ['get', colorKey]];
 }
 
-function getTransitColorStyle(indexOfActivePath, colorKey = 'route_color') {
-  return [
-    'case',
-    ['==', ['get', 'path_index'], indexOfActivePath],
-    // for active path use the route color
-    ['to-color', ['get', colorKey]],
-    // inactive paths
-    ['to-color', DEFAULT_INACTIVE_COLOR],
-  ];
-}
-
-function getBikeColorStyle(indexOfActivePath) {
+function getBikeColorStyle() {
   const color = [
     'case',
-    ['==', ['get', 'path_index'], indexOfActivePath],
-    [
-      'case',
-      cyclewayIs('track', ...BIKEABLE_HIGHWAYS),
-      '#006600',
-      cyclewayIs('lane', 'shared_lane'),
-      '#33cc33',
-      DEFAULT_BIKE_COLOR,
-    ],
-    'darkgray',
+    cyclewayIs('track', ...BIKEABLE_HIGHWAYS),
+    '#006600',
+    cyclewayIs('lane', 'shared_lane'),
+    '#33cc33',
+    DEFAULT_BIKE_COLOR,
   ];
   return ['to-color', color];
 }
@@ -462,6 +464,10 @@ function cyclewayIs(...values) {
     return ['==', ['get', 'cycleway'], values[0]];
   }
   return ['any', ...values.map((v) => ['==', ['get', 'cycleway'], v])];
+}
+
+function isActivePath(indexOfActivePath) {
+  return ['==', ['get', 'path_index'], indexOfActivePath];
 }
 
 export default BikehopperMap;
