@@ -343,7 +343,11 @@ function getStandardBikeStyle(activePath) {
       'all',
       isActivePath(activePath),
       ['==', ['get', 'type'], 'bike2'],
-      ['!', cyclewayIs('shared_lane')],
+      [
+        'any',
+        ['!', cyclewayIs('shared_lane')],
+        roadClassIs(...BIKEABLE_HIGHWAYS),
+      ],
     ],
     layout: {
       'line-cap': 'round',
@@ -359,7 +363,15 @@ function getSharedLaneStyle(activePath) {
   return {
     id: 'sharedLaneLayer',
     type: 'line',
-    filter: ['all', isActivePath(activePath), cyclewayIs('shared_lane')],
+    filter: [
+      'all',
+      isActivePath(activePath),
+      [
+        'all',
+        cyclewayIs('shared_lane'),
+        ['!', roadClassIs(...BIKEABLE_HIGHWAYS)],
+      ],
+    ],
     layout: {
       'line-cap': 'round',
     },
