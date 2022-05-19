@@ -342,7 +342,7 @@ function getStandardBikeStyle(activePath) {
     filter: [
       'all',
       isActivePath(activePath),
-      ['has', 'cycleway'],
+      ['==', ['get', 'type'], 'bike2'],
       ['!', cyclewayIs('shared_lane')],
     ],
     layout: {
@@ -394,12 +394,7 @@ function getBikeLabelStyle(activePath) {
   return {
     id: 'bikeLabelLayer',
     type: 'symbol',
-    filter: [
-      'all',
-      isActivePath(activePath),
-      ['has', 'cycleway'],
-      ['!', cyclewayIs('missing', 'no')],
-    ],
+    filter: ['all', isActivePath(activePath), ['==', ['get', 'type'], 'bike2']],
     layout: {
       'symbol-placement': 'line-center',
       'text-size': 16,
@@ -445,7 +440,7 @@ function getTransitColorStyle(colorKey = 'route_color') {
 function getBikeColorStyle() {
   const color = [
     'case',
-    cyclewayIs('track', ...BIKEABLE_HIGHWAYS),
+    ['any', cyclewayIs('track'), roadClassIs(...BIKEABLE_HIGHWAYS)],
     '#006600',
     cyclewayIs('lane', 'shared_lane'),
     '#33cc33',
@@ -455,7 +450,29 @@ function getBikeColorStyle() {
 }
 
 function getLabelTextField() {
-  const text = ['case', ['has', 'label'], ['get', 'label'], ''];
+  const text = [
+    'concat',
+    [
+      'case',
+      ['has', 'route_name'],
+      ['get', 'route_name'],
+      roadClassIs(...BIKEABLE_HIGHWAYS),
+      ['get', 'road_class'],
+      cyclewayIs('missing', 'no'),
+      '',
+      ['has', 'cycleway'],
+      ['get', 'cycleway'],
+      '',
+    ],
+    [
+      'case',
+      cyclewayIs('missing', 'no'),
+      ['get', 'street_name'],
+      ['has', 'street_name'],
+      ['concat', '   (', ['get', 'street_name'], ')'],
+      '',
+    ],
+  ];
   return ['format', text];
 }
 
@@ -464,6 +481,13 @@ function cyclewayIs(...values) {
     return ['==', ['get', 'cycleway'], values[0]];
   }
   return ['any', ...values.map((v) => ['==', ['get', 'cycleway'], v])];
+}
+
+function roadClassIs(...values) {
+  if (values?.length === 1) {
+    return ['==', ['get', 'road_class'], values[0]];
+  }
+  return ['any', ...values.map((v) => ['==', ['get', 'road_class'], v])];
 }
 
 function isActivePath(indexOfActivePath) {

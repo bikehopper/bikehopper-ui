@@ -183,7 +183,7 @@ export function fetchRoute(startCoords, endCoords, arriveBy, initialTime) {
         earliestDepartureTime: initialTime,
         optimize: true,
         pointsEncoded: false,
-        details: ['cycleway', 'road_class'],
+        details: ['cycleway', 'road_class', 'street_name'],
       });
     } catch (e) {
       console.error('route fetch failed:', e);
