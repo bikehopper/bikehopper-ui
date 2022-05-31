@@ -1,3 +1,4 @@
+import Bowser from 'bowser';
 import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './Icon';
@@ -27,14 +28,17 @@ export default function TimeBar(props) {
   };
 
   const handleTimeBlur = (event) => {
-    // On some platforms (observed on mobile Safari and desktop Firefox) the
-    // datetime input's change event prematurely fires before you are likely to
-    // be finished selecting a time, so we don't commit the update until blur.
     handleUpdatedDateTimeValue(event.target.value);
   };
 
   const handleTimeKeyPress = (event) => {
     if (event.key === 'Enter') handleUpdatedDateTimeValue(event.target.value);
+  };
+
+  const handleTimeChange = (event) => {
+    const ua = Bowser.parse(navigator.userAgent);
+    if (!doesBrowserFireDateTimeChangePrematurely(ua))
+      handleUpdatedDateTimeValue(event.target.value);
   };
 
   const handleSelect = (event) => {
@@ -66,6 +70,7 @@ export default function TimeBar(props) {
         label="select time"
         disabled={!['departAt', 'arriveBy'].includes(departureType)}
         className="TimeBar_datetime"
+        onChange={handleTimeChange}
         onBlur={handleTimeBlur}
         onKeyPress={handleTimeKeyPress}
         type="datetime-local"
@@ -73,5 +78,16 @@ export default function TimeBar(props) {
         id="datetime"
       />
     </form>
+  );
+}
+
+// On some platforms the datetime input's change event prematurely fires before
+// you are likely to be finished selecting a time, so we have to not commit the
+// update until blur.
+function doesBrowserFireDateTimeChangePrematurely(ua) {
+  return (
+    ua.os.name === 'iOS' || // All iOS browsers
+    (ua.browser.name === 'Firefox' && ua.platform.type === 'desktop') ||
+    (ua.browser.name === 'Chrome' && ua.platform.type === 'desktop')
   );
 }
