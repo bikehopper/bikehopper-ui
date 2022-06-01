@@ -84,23 +84,26 @@ export function routesToGeoJSON(paths) {
 function detailsToLines(details, coordinates, type, pathIdx) {
   if (!details || !Object.keys(details).length) return;
   const lines = [];
-  let point = 0;
+  let currentStart = 0;
   const keys = Object.keys(details);
   let indexes = {};
   keys.forEach((k) => {
     indexes[k] = 0;
   });
 
-  while (point < coordinates.length - 1) {
+  while (currentStart < coordinates.length - 1) {
     let ends = {};
     keys.forEach((k) => {
       ends[k] = details[k][indexes[k]][1];
     });
-    const end = Math.min(...Object.values(ends));
-    let lineDetails = {};
-    keys.forEach((k) => (lineDetails[k] = details[k][indexes[k]][2]));
+    const currentEnd = Math.min(...Object.values(ends));
 
-    const line = coordinates?.slice(point, end + 1);
+    let lineDetails = {};
+    keys.forEach(
+      (k) => (lineDetails[k] = details[k][indexes[k]][2].replace('_', ' ')),
+    );
+
+    const line = coordinates?.slice(currentStart, currentEnd + 1);
     if (line.length > 1)
       lines.push(
         turf.lineString(line, {
@@ -110,9 +113,9 @@ function detailsToLines(details, coordinates, type, pathIdx) {
         }),
       );
 
-    point = end;
+    currentStart = currentEnd;
     for (const k of keys) {
-      if (point >= ends[k]) indexes[k]++;
+      if (currentStart >= ends[k]) indexes[k]++;
     }
   }
   return lines;
