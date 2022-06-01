@@ -78,66 +78,42 @@ export function routesToGeoJSON(paths) {
 
 /**
  * From a details object, generates a coherent set of lines such that no lines overlap.
+ *
  * @param {object} details
  */
 function detailsToLines(details, coordinates, type, pathIdx) {
   if (!details || !Object.keys(details).length) return;
   const lines = [];
-  const indexes = Array(coordinates.length);
+  let point = 0;
+  const keys = Object.keys(details);
+  let indexes = {};
+  keys.forEach((k) => {
+    indexes[k] = 0;
+  });
 
-  for (const [key, segments] of Object.entries(details)) {
-    for (const [start, end, value] of segments) {
-      for (let i = start; i < end + 1; i++) {
-        if (!indexes[i]) indexes[i] = {};
-        indexes[i][key] = value;
-      }
-    }
-  }
+  while (point < coordinates.length - 1) {
+    let ends = {};
+    keys.forEach((k) => {
+      ends[k] = details[k][indexes[k]][1];
+    });
+    const end = Math.min(...Object.values(ends));
+    let lineDetails = {};
+    keys.forEach((k) => (lineDetails[k] = details[k][indexes[k]][2]));
 
-  let currentStart;
-  let currentProps;
-  for (let i = 0; i < indexes.length; i++) {
-    const props = indexes[i];
-    // Skip until properties are found
-    if (!props || !Object.entries(props).length) continue;
-
-    // The first line is started
-    if (!currentProps) {
-      currentStart = i;
-      currentProps = props;
-      continue;
-    }
-
-    // Skip until the end of the line
-    if (JSON.stringify(currentProps) === JSON.stringify(props)) continue;
-
-    // The line finished, add it to the list
-    const line = coordinates?.slice(currentStart, i + 1);
-    if (line?.length < 2) continue;
-
-    lines.push(
-      turf.lineString(line, {
-        path_index: pathIdx,
-        type,
-        ...currentProps,
-      }),
-    );
-
-    // Start a new line
-    currentStart = i;
-    currentProps = props;
-  }
-  // Finish the last line
-  if (currentProps && Object.entries(currentProps).length) {
-    const line = coordinates?.slice(currentStart, indexes.length);
+    const line = coordinates?.slice(point, end + 1);
     if (line.length > 1)
       lines.push(
         turf.lineString(line, {
           path_index: pathIdx,
           type,
-          ...currentProps,
+          ...lineDetails,
         }),
       );
+
+    point = end;
+    for (const k of keys) {
+      if (point >= ends[k]) indexes[k]++;
+    }
   }
   return lines;
 }
