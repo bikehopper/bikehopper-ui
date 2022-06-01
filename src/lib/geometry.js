@@ -87,21 +87,16 @@ function detailsToLines(details, coordinates, type, pathIdx) {
   let currentStart = 0;
   const keys = Object.keys(details);
   let indexes = {};
-  keys.forEach((k) => {
-    indexes[k] = 0;
-  });
+  for (const k of keys) indexes[k] = 0;
 
   while (currentStart < coordinates.length - 1) {
     let ends = {};
-    keys.forEach((k) => {
-      ends[k] = details[k][indexes[k]][1];
-    });
+    for (const k of keys) ends[k] = details[k][indexes[k]][1];
     const currentEnd = Math.min(...Object.values(ends));
 
     let lineDetails = {};
-    keys.forEach(
-      (k) => (lineDetails[k] = details[k][indexes[k]][2].replace('_', ' ')),
-    );
+    for (const k of keys)
+      lineDetails[k] = details[k][indexes[k]][2].replace('_', ' ');
 
     const line = coordinates?.slice(currentStart, currentEnd + 1);
     if (line.length > 1)
@@ -115,7 +110,7 @@ function detailsToLines(details, coordinates, type, pathIdx) {
 
     currentStart = currentEnd;
     for (const k of keys) {
-      if (currentStart >= ends[k]) indexes[k]++;
+      if (currentStart === ends[k]) indexes[k]++;
     }
   }
   return lines;
