@@ -22,7 +22,11 @@ export default function ItineraryStep(props) {
             ItineraryStep_iconSmall: smallIcon,
           })}
         >
-          <IconSVGComponent width={iconSize} height={iconSize} />
+          <IconSVGComponent
+            className="ItineraryStep_iconSvg"
+            width={iconSize}
+            height={iconSize}
+          />
         </Icon>
       </span>
       <p className="ItineraryStep_content">{props.children}</p>

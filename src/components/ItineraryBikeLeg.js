@@ -5,6 +5,7 @@ import InstructionSigns from '../lib/InstructionSigns';
 import ItineraryBikeStep from './ItineraryBikeStep';
 import ItineraryHeader, { ItineraryHeaderIcons } from './ItineraryHeader';
 import ItineraryDivider from './ItineraryDivider';
+import ItinerarySpacer from './ItinerarySpacer';
 
 export default function ItineraryBikeLeg({ leg, legDestination, onStepClick }) {
   return (
@@ -36,6 +37,7 @@ export default function ItineraryBikeLeg({ leg, legDestination, onStepClick }) {
               />,
             ],
       )}
+      <ItinerarySpacer />
     </>
   );
 }

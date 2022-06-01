@@ -9,6 +9,14 @@
   margin-right: 18px;
   box-sizing: border-box;
   flex-shrink: 0;
+
+  /* Draws the literal time*line* ... a dark gray line going down the middle. */
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0) 30px,
+    rgba(187, 187, 187, 1) 30px 33px,
+    rgba(0, 0, 0, 0) 33px 100%
+  );
 }
 
 .ItineraryRow_content {
