@@ -195,6 +195,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
     <div className="BikehopperMap" ref={resizeRef}>
       <MapGL
         initialViewState={viewStateOnFirstRender.current}
+        maxBounds={MAP_MAX_BOUNDS}
         ref={mapRef}
         style={{
           // expand to fill parent container div
@@ -502,5 +503,15 @@ function propIs(key, ...values) {
 function pathIndexIs(index) {
   return ['==', ['get', 'path_index'], index];
 }
+
+// NorCal data cutout boundaries, computed from the .poly file at:
+// https://download.geofabrik.de/north-america/us/california/norcal.html
+//
+// west, south, east, north order.
+//
+// In future, to better support BikeHopper instances in other regions, we may
+// want to move this to a config file, or compute it automatically from the
+// data cutout in use.
+const MAP_MAX_BOUNDS = [-125.8935, 35.78528, -115.6468, 42.01618];
 
 export default BikehopperMap;
