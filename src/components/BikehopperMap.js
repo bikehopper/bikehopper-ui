@@ -411,7 +411,6 @@ function getBikeLabelStyle(activePath) {
       'symbol-placement': 'line-center',
       'text-size': 16,
       'text-field': getLabelTextField(),
-      'text-ignore-placement': true,
     },
     paint: {
       'text-color': 'white',
