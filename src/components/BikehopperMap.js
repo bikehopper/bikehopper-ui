@@ -342,8 +342,12 @@ function getStandardBikeStyle(activePath) {
     filter: [
       'all',
       pathIndexIs(activePath),
-      ['has', 'cycleway'],
-      ['!', cyclewayIs('shared_lane')],
+      ['==', ['get', 'type'], 'bike2'],
+      [
+        'any',
+        ['!', propIs('cycleway', 'shared lane')],
+        propIs('road_class', ...BIKEABLE_HIGHWAYS),
+      ],
     ],
     layout: {
       'line-cap': 'round',
@@ -359,7 +363,15 @@ function getSharedLaneStyle(activePath) {
   return {
     id: 'sharedLaneLayer',
     type: 'line',
-    filter: ['all', pathIndexIs(activePath), cyclewayIs('shared_lane')],
+    filter: [
+      'all',
+      pathIndexIs(activePath),
+      [
+        'all',
+        propIs('cycleway', 'shared lane'),
+        ['!', propIs('road_class', ...BIKEABLE_HIGHWAYS)],
+      ],
+    ],
     layout: {
       'line-cap': 'round',
     },
@@ -394,17 +406,11 @@ function getBikeLabelStyle(activePath) {
   return {
     id: 'bikeLabelLayer',
     type: 'symbol',
-    filter: [
-      'all',
-      pathIndexIs(activePath),
-      ['has', 'cycleway'],
-      ['!', cyclewayIs('missing', 'no')],
-    ],
+    filter: ['all', pathIndexIs(activePath), ['==', ['get', 'type'], 'bike2']],
     layout: {
       'symbol-placement': 'line-center',
       'text-size': 16,
       'text-field': getLabelTextField(),
-      'text-ignore-placement': true,
     },
     paint: {
       'text-color': 'white',
@@ -446,24 +452,51 @@ const bikeColorStyle = [
   'to-color',
   [
     'case',
-    cyclewayIs('track', ...BIKEABLE_HIGHWAYS),
+    [
+      'any',
+      propIs('cycleway', 'track'),
+      propIs('road_class', ...BIKEABLE_HIGHWAYS),
+    ],
     '#006600',
-    cyclewayIs('lane', 'shared_lane'),
+    propIs('cycleway', 'lane', 'shared lane'),
     '#33cc33',
     DEFAULT_BIKE_COLOR,
   ],
 ];
 
 function getLabelTextField() {
-  const text = ['case', ['has', 'label'], ['get', 'label'], ''];
+  const text = [
+    'concat',
+    [
+      'case',
+      ['has', 'route_name'],
+      ['get', 'route_name'],
+      propIs('road_class', ...BIKEABLE_HIGHWAYS),
+      ['get', 'road_class'],
+      propIs('cycleway', 'missing', 'no'),
+      '',
+      ['has', 'cycleway'],
+      ['get', 'cycleway'],
+      '',
+    ],
+    [
+      'case',
+      propIs('cycleway', 'missing', 'no'),
+      ['get', 'street_name'],
+      ['all', ['has', 'street_name'], ['!', propIs('street_name', '')]],
+      ['concat', '   (', ['get', 'street_name'], ')'],
+      '',
+    ],
+  ];
   return ['format', text];
 }
 
-function cyclewayIs(...values) {
+function propIs(key, ...values) {
   if (values?.length === 1) {
-    return ['==', ['get', 'cycleway'], values[0]];
+    return ['==', ['get', key], values[0]];
   }
-  return ['any', ...values.map((v) => ['==', ['get', 'cycleway'], v])];
+
+  return ['any', ...values.map((v) => ['==', ['get', key], v])];
 }
 
 function pathIndexIs(index) {
