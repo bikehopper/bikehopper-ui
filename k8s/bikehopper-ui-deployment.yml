@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: bikehopper-ui
-          image: ghcr.io/bikehopper/bikehopper-ui@sha256:56f955a1668283c60d43ad0a4298786fa68a90f0ba9944742e0a407a718357ed
+          image: ghcr.io/bikehopper/bikehopper-ui@sha256:f3474de97552e80766d2c6797f6448fa922bf536ec5819e2dacb18cab47e5cfc
           ports:
             - containerPort: 80
           resources:
