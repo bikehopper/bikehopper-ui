@@ -466,29 +466,31 @@ const bikeColorStyle = [
 
 function getLabelTextField() {
   const text = [
-    'concat',
+    'case',
+    // Bikeable highways display the type with optional street name
+    propIs('road_class', ...BIKEABLE_HIGHWAYS),
     [
       'case',
-      ['has', 'route_name'],
-      ['get', 'route_name'],
-      propIs('road_class', ...BIKEABLE_HIGHWAYS),
+      hasProp('street_name', ''),
+      ['concat', ['get', 'road_class'], '   (', ['get', 'street_name'], ')'],
       ['get', 'road_class'],
-      propIs('cycleway', 'missing', 'no'),
-      '',
-      ['has', 'cycleway'],
-      ['get', 'cycleway'],
-      '',
     ],
+    // Cycleways display the type with optional street name
+    hasProp('cycleway', 'missing', 'no'),
     [
       'case',
-      propIs('cycleway', 'missing', 'no'),
-      ['get', 'street_name'],
-      ['all', ['has', 'street_name'], ['!', propIs('street_name', '')]],
-      ['concat', '   (', ['get', 'street_name'], ')'],
-      '',
+      hasProp('street_name', ''),
+      ['concat', ['get', 'cycleway'], '   (', ['get', 'street_name'], ')'],
+      ['get', 'cycleway'],
     ],
+    // Default to public transit route or street name
+    ['coalesce', ['get', 'route_name'], ['get', 'street_name'], ''],
   ];
   return ['format', text];
+}
+
+function hasProp(key, ...negativeValues) {
+  return ['all', ['has', key], ['!', propIs(key, ...negativeValues)]];
 }
 
 function propIs(key, ...values) {
