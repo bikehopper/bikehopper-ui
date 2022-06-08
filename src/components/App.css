@@ -44,17 +44,18 @@
   /* See below as well */
 }
 
-body.isMobileSafari .App_mapOverlayBottomPane {
+body.isIOSChromeOrSafari .App_mapOverlayBottomPane {
   /* Apple documentation suggests you can rely on env(safe-area-inset-bottom)
    * here, but it's 0 on iOS 15 on my iPhone SE 1st gen, despite the expanding
    * address bar. Apparently can't be relied upon. The fallback value below is
-   * empirically determined
+   * empirically determined and applies to Chrome and Safari on iOS but is not
+   * needed for some reason on Firefox for iOS
    */
   padding-bottom: max(env(safe-area-inset-bottom), 74px);
 }
 
 @media all and (display-mode: standalone) {
-  body.isMobileSafari .App_mapOverlayBottomPane {
+  body.isIOSChromeOrSafari .App_mapOverlayBottomPane {
     /* When running as a PWA, don't add extra padding */
     padding-bottom: env(safe-area-inset-bottom);
   }
