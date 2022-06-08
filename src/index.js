@@ -10,8 +10,12 @@ import store from './store';
 import './index.css';
 
 const ua = Bowser.parse(navigator.userAgent);
-if (ua.os.name === 'iOS' && ua.browser.name === 'Safari')
-  document.body.className += ' isMobileSafari';
+if (
+  ua.os.name === 'iOS' &&
+  (ua.browser.name === 'Chrome' || ua.browser.name === 'Safari')
+) {
+  document.body.className += ' isIOSChromeOrSafari';
+}
 
 render(
   <React.StrictMode>
