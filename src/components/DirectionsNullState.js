@@ -47,6 +47,17 @@ export default function DirectionsNullState(props) {
         </a>
         !
       </p>
+      <p className="DirectionsNullState_para">
+        BikeHopper is{' '}
+        <a
+          href="https://github.com/bikehopper/bikehopper-ui"
+          target="_blank"
+          rel="noreferrer"
+        >
+          open source
+        </a>{' '}
+        under the GNU Affero General Public License.
+      </p>
     </div>
   );
 }
