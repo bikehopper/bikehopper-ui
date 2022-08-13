@@ -18,8 +18,16 @@ export const EMPTY_GEOJSON = {
 };
 
 export const BIKEABLE_HIGHWAYS = ['cycleway', 'footway', 'pedestrian', 'path'];
-
-const METERS_PER_FOOT = 0.3048;
+export const MAIN_ROADS = [
+  'primary',
+  'primary_link',
+  'secondary',
+  'secondary_link',
+  'motorway',
+  'motorway_link',
+  'trunk',
+  'trunk_link',
+];
 
 export function routesToGeoJSON(paths) {
   const features = [];
@@ -158,7 +166,7 @@ function _describeBikeInfraFromCyclewayAndRoadClass(cycleway, roadClass) {
   if (cycleway === 'shared_lane') return 'shared road';
   if (cycleway === 'sidepath') return 'sidepath';
   if (cycleway === 'shoulder') return 'shoulder';
-  if (roadClass === 'primary' || roadClass === 'secondary') return 'main road';
+  if (MAIN_ROADS.includes(roadClass)) return 'main road';
   return null;
 }
 
@@ -187,7 +195,11 @@ export function describeBikeInfra(
   const stepTotalDistance = turfLength(stepLineString);
 
   // Don't describe steps less than 150 feet long.
-  const MIN_DISTANCE_TO_DESCRIBE = (150 * METERS_PER_FOOT) / 1000;
+  const MIN_DISTANCE_TO_DESCRIBE = turf.convertLength(
+    150,
+    'feet',
+    'kilometers',
+  );
   if (stepTotalDistance < MIN_DISTANCE_TO_DESCRIBE) return '';
 
   let cyclewayIndex = 0,
