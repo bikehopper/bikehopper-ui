@@ -202,9 +202,13 @@ export function describeBikeInfra(
   );
   if (stepTotalDistance < MIN_DISTANCE_TO_DESCRIBE) return '';
 
+  const MIN_STEEP_HILL_LENGTH = turf.convertLength(500, 'feet', 'kilometers');
+
   let cyclewayIndex = 0,
     roadClassIndex = 0;
   const distanceByInfraType = {};
+  let gradesScratchpad = []; // array of [percent grade, length in km] tuples
+  let maxGrade = 0;
 
   segmentEach(stepLineString, (cur, _f, _mf, _g, segmentIndex) => {
     const segmentStartIndexInWhole = segmentIndex + start;
@@ -214,6 +218,9 @@ export function describeBikeInfra(
     while (roadClasses[roadClassIndex][1] <= segmentStartIndexInWhole)
       roadClassIndex++;
 
+    const segmentLength = turfLength(cur);
+    if (segmentLength === 0) return; // nothing to compute for zero length segments
+
     const infraType = _describeBikeInfraFromCyclewayAndRoadClass(
       cyclewayValues[cyclewayIndex][2],
       roadClasses[roadClassIndex][2],
@@ -222,23 +229,61 @@ export function describeBikeInfra(
     if (infraType) {
       distanceByInfraType[infraType] =
         (distanceByInfraType[infraType] || 0) +
-        (turfLength(cur) * 100) / stepTotalDistance;
+        (segmentLength * 100) / stepTotalDistance;
     }
+
+    // Compute windowed grade
+    const segmentGrade = (100 * _elevationChangeInKm(cur)) / segmentLength;
+    gradesScratchpad.push([segmentGrade, segmentLength]);
+
+    // compute a weighted average until we reach the min length
+    let lengthLeftToConsider = MIN_STEEP_HILL_LENGTH;
+    let summedGrades = 0;
+    let ix = gradesScratchpad.length;
+    while (--ix >= 0 && lengthLeftToConsider > 0) {
+      let [thisGrade, thisLen] = gradesScratchpad[ix];
+      thisLen = Math.min(thisLen, lengthLeftToConsider);
+      summedGrades += thisGrade * thisLen;
+      lengthLeftToConsider -= thisLen;
+    }
+
+    if (lengthLeftToConsider > 0) return; // not enough distance for grade computation
+
+    const windowedAverageGrade = Math.abs(summedGrades / MIN_STEEP_HILL_LENGTH);
+    maxGrade = Math.max(maxGrade, windowedAverageGrade);
   });
 
   let infraTypes = Object.entries(distanceByInfraType);
   // Sort the infra types by most common first
   infraTypes.sort((a, b) => b[1] - a[1]);
 
-  if (infraTypes.length === 0) return '';
-  return infraTypes
+  let descriptors = infraTypes
     .filter(([infraType, percent]) => percent > 25)
-    .map(([infraType, percent]) => `${_describePercent(percent)} ${infraType}`)
-    .join(', ');
+    .map(([infraType, percent]) => `${_describePercent(percent)} ${infraType}`);
+
+  if (maxGrade > 14) {
+    descriptors = [
+      'very steep hill (max grade ' + maxGrade.toFixed(1) + '%)',
+    ].concat(descriptors);
+  } else if (maxGrade > 8) {
+    descriptors = [
+      'steep hill (max grade ' + maxGrade.toFixed(1) + '%)',
+    ].concat(descriptors);
+  }
+
+  return descriptors.join(', ');
 }
 
 function _describePercent(percent) {
   if (percent > 75) return '';
   if (percent > 50) return 'mostly ';
   return 'partial ';
+}
+
+function _elevationChangeInKm(lineSegment) {
+  return (
+    (lineSegment.geometry.coordinates[1][2] -
+      lineSegment.geometry.coordinates[0][2]) /
+    1000
+  );
 }
