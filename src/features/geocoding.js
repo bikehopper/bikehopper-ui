@@ -82,12 +82,20 @@ export function geocodeTypedLocation(text, key, { fromTextAutocomplete } = {}) {
         limit: GEOCODE_RESULT_LIMIT,
       });
     } catch (e) {
+      let failureType, alertMsg;
+      if (e instanceof BikehopperClient.BikehopperClientError) {
+        failureType = 'server error';
+        alertMsg = 'Server error';
+      } else {
+        failureType = 'network error';
+        alertMsg = "Can't connect to server";
+      }
       dispatch({
         type: 'geocode_failed',
         text,
-        failureType: 'network error',
+        failureType,
         time: Date.now(),
-        alert: alertOnFailure && { message: "Can't connect to server" },
+        alert: alertOnFailure && { message: alertMsg },
       });
       return;
     }
