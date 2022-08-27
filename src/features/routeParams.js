@@ -29,6 +29,8 @@ const DEFAULT_STATE = {
   startInputText: '',
   endInputText: '',
   arriveBy: false,
+  // If initialTime == null, this means depart now (should be used with
+  // arriveBy === false)
   initialTime: null,
   departureType: 'now',
 };
@@ -55,6 +57,18 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
           source: LocationSourceType.Marker,
         };
         draft[action.startOrEnd + 'InputText'] = '';
+      });
+    case 'locations_hydrated_from_url':
+      return produce(state, (draft) => {
+        draft.start = {
+          point: turf.point(action.startCoords),
+          source: LocationSourceType.Marker, // TODO new source type?
+        };
+        draft.end = {
+          point: turf.point(action.endCoords),
+          source: LocationSourceType.Marker, // TODO new source type?
+        };
+        draft.startInputText = draft.endInputText = '';
       });
     case 'location_input_focused':
       return produce(state, (draft) => {
@@ -280,6 +294,23 @@ export function locationDragged(startOrEnd, coords) {
         initialTime,
       )(dispatch, getState);
     }
+  };
+}
+
+export function hydrateLocationsFromUrl(startCoords, endCoords) {
+  return async function hydrateLocationsFromUrlThunk(dispatch, getState) {
+    dispatch({
+      type: 'locations_hydrated_from_url',
+      startCoords,
+      endCoords,
+    });
+    const { arriveBy, initialTime } = getState().routeParams;
+    await fetchRoute(
+      startCoords,
+      endCoords,
+      arriveBy,
+      initialTime,
+    )(dispatch, getState);
   };
 }
 
