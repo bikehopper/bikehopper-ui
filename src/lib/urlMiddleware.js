@@ -1,5 +1,9 @@
 import { createBrowserHistory } from 'history';
-import { hydrateLocationsFromUrl } from '../features/routeParams';
+import describePlace from '../lib/describePlace';
+import {
+  LocationSourceType,
+  hydrateParamsFromUrl,
+} from '../features/routeParams';
 
 /*
  * Middleware for maintaining the URL in the browser location bar.
@@ -10,11 +14,17 @@ import { hydrateLocationsFromUrl } from '../features/routeParams';
 
 let history;
 
+function _coordsEqual(a, b) {
+  if (!a || !b) return a === b; // handle null input
+  return a[0] === b[0] && a[1] === b[1];
+}
+
 export default function routesUrlMiddleware(store) {
   return (next) => (action) => {
     const routeStateBefore = store.getState().routes;
     next(action);
-    const routeStateAfter = store.getState().routes;
+    const stateAfter = store.getState();
+    const routeStateAfter = stateAfter.routes;
 
     if (!history) {
       _initializeFromUrl(store);
@@ -30,9 +40,50 @@ export default function routesUrlMiddleware(store) {
     } else if (routeStateBefore.routes === routeStateAfter.routes) {
       return;
     } else if (routeStateAfter.routes) {
-      const from = routeStateAfter.routeStartCoords.join(',');
-      const to = routeStateAfter.routeEndCoords.join(',');
-      history.replace(`/route/${from}/to/${to}`);
+      const params = stateAfter.routeParams;
+
+      let from = routeStateAfter.routeStartCoords.join(',');
+      let to = routeStateAfter.routeEndCoords.join(',');
+      // Add the string description of the start and end point if applicable
+      if (
+        _coordsEqual(
+          routeStateAfter.routeStartCoords,
+          params.start.point?.geometry.coordinates,
+        )
+      ) {
+        let fromText = describePlace(params.start.point, { fallback: '' });
+        if (
+          !fromText &&
+          params.start.source === LocationSourceType.UrlWithString
+        )
+          fromText = params.start.fromInputText;
+        if (fromText)
+          from = encodeURIComponent(fromText.replace(/@/g, '_')) + '@' + from;
+      } else console.log('start coords not equal');
+      if (
+        _coordsEqual(
+          routeStateAfter.routeEndCoords,
+          params.end.point?.geometry.coordinates,
+        )
+      ) {
+        let toText = describePlace(params.end.point, { fallback: '' });
+        if (!toText && params.end.source === LocationSourceType.UrlWithString)
+          toText = params.end.fromInputText;
+        if (toText)
+          to = encodeURIComponent(toText.replace(/@/g, '_')) + '@' + to;
+      } else console.log('end coords not equal');
+
+      let generatedPath = `/route/${from}/to/${to}`;
+
+      // add the departure/arrival time, if not departing now
+      if (params.initialTime != null) {
+        generatedPath +=
+          '/' +
+          (params.arriveBy ? 'a' : 'd') +
+          '/' +
+          new Date(params.initialTime).getTime();
+      }
+      history.replace(generatedPath);
     } else {
       history.replace('/');
     }
@@ -42,14 +93,50 @@ export default function routesUrlMiddleware(store) {
 function _initializeFromUrl(store) {
   history = createBrowserHistory();
 
-  const path = history.location.pathname;
-  // See if it can be parsed as a route
-  const matches = path.match(
-    /^\/route\/(-?\d+\.\d*),(-?\d+\.\d*)\/to\/(-?\d+\.\d*),(-?\d+\.\d*)$/,
-  );
-  if (matches) {
-    const startCoords = matches.slice(1, 3).map(Number);
-    const endCoords = matches.slice(3, 5).map(Number);
-    store.dispatch(hydrateLocationsFromUrl(startCoords, endCoords));
+  const pathElements = history.location.pathname.split('/').slice(1);
+  const POINT_RE = /^(?:([^@]+)@+)?(-?\d+\.\d*),(-?\d+\.\d*)$/;
+
+  // See if path can be parsed as a route, such as
+  //   /route/-122,37/to/-123,37                  (depart now)
+  //   /route/-122,37/to/-123,37/a/1662000000000  (arrive by)
+  //   /route/-122,37/to/-123,37/d/1662000000000  (depart at)
+  if (pathElements[0] === 'route' && pathElements[2] === 'to') {
+    let [, startText, ...startCoords] = pathElements[1]?.match(POINT_RE) || [];
+    let [, endText, ...endCoords] = pathElements[3]?.match(POINT_RE) || [];
+    const arriveBy = pathElements[4] === 'a';
+    let initialTime = null;
+
+    const possibleDatetime = Number(pathElements[5]);
+    if (!Number.isNaN(possibleDatetime)) {
+      const date = new Date(possibleDatetime);
+      // It needs to be a string in this format: 2018-06-12T19:30
+      // to plug into an <input type="datetime-local">
+      const year = date.getFullYear().toString();
+      let month = (date.getMonth() + 1).toString();
+      if (month < 10) month = '0' + month;
+      let day = date.getDate().toString();
+      if (day < 10) day = '0' + day;
+      let hour = date.getHours().toString();
+      if (hour < 10) hour = '0' + hour;
+      let min = date.getMinutes().toString();
+      if (min < 10) min = '0' + min;
+      initialTime = `${year}-${month}-${day}T${hour}:${min}`;
+    }
+    if (startCoords && endCoords) {
+      startCoords = startCoords.map(Number);
+      endCoords = endCoords.map(Number);
+      if (startText) startText = decodeURIComponent(startText);
+      if (endText) endText = decodeURIComponent(endText);
+      store.dispatch(
+        hydrateParamsFromUrl(
+          startCoords,
+          endCoords,
+          startText,
+          endText,
+          arriveBy,
+          initialTime,
+        ),
+      );
+    }
   }
 }
