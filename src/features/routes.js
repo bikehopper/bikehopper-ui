@@ -26,6 +26,7 @@ export function routesReducer(state = DEFAULT_STATE, action) {
     case 'route_cleared':
     case 'route_params_cleared':
     case 'location_dragged': // assume drag is to new location
+    case 'locations_hydrated_from_url':
       return _clearRoutes(state);
     case 'locations_set':
       // clear routes if new start and/or end point differ from the routes we have

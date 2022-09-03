@@ -9,13 +9,15 @@ export const LocationSourceType = {
   Geocoded: 'geocoded',
   Marker: 'marker_drag',
   UserGeolocation: 'user_geolocation',
+  UrlWithString: 'url_with_string',
+  UrlWithoutString: 'url_without_string',
 };
 
 const DEFAULT_STATE = {
   // When set, start and end have the format: {
   //   point: a geoJSON point (can be null if source === UserGeolocation),
   //   source: a LocationSourceType,
-  //   fromInputText: the source input text (if source === Geocoded),
+  //   fromInputText: the source input text (if source === Geocoded or UrlWithString),
   // }
   start: null,
   end: null,
@@ -29,8 +31,9 @@ const DEFAULT_STATE = {
   startInputText: '',
   endInputText: '',
   arriveBy: false,
+  // If initialTime == null, this means depart now (should be used with
+  // arriveBy === false)
   initialTime: null,
-  departureType: 'now',
 };
 
 export function routeParamsReducer(state = DEFAULT_STATE, action) {
@@ -55,6 +58,27 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
           source: LocationSourceType.Marker,
         };
         draft[action.startOrEnd + 'InputText'] = '';
+      });
+    case 'params_hydrated_from_url':
+      return produce(state, (draft) => {
+        draft.start = {
+          point: turf.point(action.startCoords),
+          source: action.startText
+            ? LocationSourceType.UrlWithString
+            : LocationSourceType.UrlWithoutString,
+          fromInputText: action.startText || null,
+        };
+        draft.end = {
+          point: turf.point(action.endCoords),
+          source: action.endText
+            ? LocationSourceType.UrlWithString
+            : LocationSourceType.UrlWithoutString,
+          fromInputText: action.endText || null,
+        };
+        draft.startInputText = action.startText || '';
+        draft.endInputText = action.endText || '';
+        draft.arriveBy = action.arriveBy;
+        draft.initialTime = action.initialTime;
       });
     case 'location_input_focused':
       return produce(state, (draft) => {
@@ -134,17 +158,37 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
         draft.endInputText = '';
         draft.arriveBy = false;
         draft.initialTime = null;
-        draft.departureType = 'now';
       });
     case 'initial_time_set':
       return produce(state, (draft) => {
         draft.initialTime = action.initialTime;
+        if (action.initialTime == null) draft.arriveBy = false;
       });
     case 'departure_type_selected':
       return produce(state, (draft) => {
-        draft.departureType = action.departureType;
         draft.arriveBy = action.departureType === 'arriveBy';
-        if (action.departureType === 'now') draft.initialTime = null;
+        if (action.departureType === 'now') {
+          draft.initialTime = null;
+        } else if (action.departureType === 'departAt') {
+          // Default the departure time to something reasonable
+          if (
+            draft.initialTime == null ||
+            draft.initialTime < action.defaultDepartureTime
+          ) {
+            draft.initialTime = action.defaultDepartureTime;
+          }
+        } else if (action.departureType === 'arriveBy') {
+          // Default the arrival time to something reasonable
+          // (2 hours past current time)
+          const reasonableArrivalTime =
+            action.defaultDepartureTime + 120 * 60 * 1000;
+          if (
+            draft.initialTime == null ||
+            draft.initialTime < reasonableArrivalTime
+          ) {
+            draft.initialTime = reasonableArrivalTime;
+          }
+        }
       });
     default:
       return state;
@@ -283,6 +327,33 @@ export function locationDragged(startOrEnd, coords) {
   };
 }
 
+export function hydrateParamsFromUrl(
+  startCoords,
+  endCoords,
+  startText = '',
+  endText = '',
+  arriveBy,
+  initialTime,
+) {
+  return async function hydrateParamsFromUrlThunk(dispatch, getState) {
+    dispatch({
+      type: 'params_hydrated_from_url',
+      startCoords,
+      endCoords,
+      startText,
+      endText,
+      arriveBy,
+      initialTime,
+    });
+    await fetchRoute(
+      startCoords,
+      endCoords,
+      arriveBy,
+      initialTime,
+    )(dispatch, getState);
+  };
+}
+
 export function locationInputFocused(startOrEnd) {
   return {
     type: 'location_input_focused',
@@ -363,10 +434,15 @@ export function initialTimeSet(initialTime) {
 }
 
 export function departureTypeSelected(departureType) {
+  // departureType should be 'departAt', 'arriveBy', or 'now'
   return async function departureTypeSelectedThunk(dispatch, getState) {
     dispatch({
       type: 'departure_type_selected',
       departureType,
+      // This default departure time is used if you switch from 'Now' to
+      // 'Depart At' or 'Arrive By'. Why fetch the current datetime here in the
+      // action creator? So the reducer can stay purely functional.
+      defaultDepartureTime: Date.now(),
     });
 
     // If we have a location, fetch a route.

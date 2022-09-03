@@ -6,6 +6,7 @@ import { geolocationReducer } from './features/geolocation';
 import { routeParamsReducer } from './features/routeParams';
 import { routesReducer } from './features/routes';
 import { viewportReducer } from './features/viewport';
+import urlMiddleware from './lib/urlMiddleware';
 
 const rootReducer = combineReducers({
   alerts: alertsReducer,
@@ -20,7 +21,7 @@ const enhancedCompose = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore(
   rootReducer,
-  enhancedCompose(applyMiddleware(thunkMiddleware)),
+  enhancedCompose(applyMiddleware(thunkMiddleware, urlMiddleware)),
 );
 
 export default store;
