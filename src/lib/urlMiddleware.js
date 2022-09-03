@@ -14,11 +14,6 @@ import {
 
 let history;
 
-function _coordsEqual(a, b) {
-  if (!a || !b) return a === b; // handle null input
-  return a[0] === b[0] && a[1] === b[1];
-}
-
 export default function routesUrlMiddleware(store) {
   return (next) => (action) => {
     const routeStateBefore = store.getState().routes;
@@ -44,7 +39,9 @@ export default function routesUrlMiddleware(store) {
 
       let from = routeStateAfter.routeStartCoords.join(',');
       let to = routeStateAfter.routeEndCoords.join(',');
-      // Add the string description of the start and end point if applicable
+      // Add the string description of the start and end point if applicable.
+      // If there is a description, we use '@' as the separator character
+      // between the description and the coordinates.
       if (
         _coordsEqual(
           routeStateAfter.routeStartCoords,
@@ -59,7 +56,7 @@ export default function routesUrlMiddleware(store) {
           fromText = params.start.fromInputText;
         if (fromText)
           from = encodeURIComponent(fromText.replace(/@/g, '_')) + '@' + from;
-      } else console.log('start coords not equal');
+      }
       if (
         _coordsEqual(
           routeStateAfter.routeEndCoords,
@@ -71,7 +68,7 @@ export default function routesUrlMiddleware(store) {
           toText = params.end.fromInputText;
         if (toText)
           to = encodeURIComponent(toText.replace(/@/g, '_')) + '@' + to;
-      } else console.log('end coords not equal');
+      }
 
       let generatedPath = `/route/${from}/to/${to}`;
 
@@ -139,4 +136,12 @@ function _initializeFromUrl(store) {
       );
     }
   }
+}
+
+// Note: This function is used above in a case where the coordinates
+// have not been converted to strings and back to numbers, so it's
+// okay for this to be exact, not approximate, equality.
+function _coordsEqual(a, b) {
+  if (!a || !b) return a === b; // handle null input
+  return a[0] === b[0] && a[1] === b[1];
 }
