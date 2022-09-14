@@ -8,12 +8,12 @@
       "type": "image/x-icon"
     },
     {
-      "src": "BikeLogo192.png",
+      "src": "bikehopperlogo192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "BikeLogo512.png",
+      "src": "bikehopperlogo512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
