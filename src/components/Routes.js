@@ -9,28 +9,36 @@ import {
 import describePlace from '../lib/describePlace';
 import RoutesOverview from './RoutesOverview';
 import Itinerary from './Itinerary';
+import ItinerarySingleStep from './ItinerarySingleStep';
+import ItinerarySingleTransitStop from './ItinerarySingleTransitStop';
 
 export default function Routes(props) {
   const dispatch = useDispatch();
-  const { routes, activeRoute, details, leg, step, destinationDescription } =
-    useSelector(({ routes, routeParams }) => {
-      let destinationDescription = 'destination';
-      if (routeParams.end && routeParams.end.point) {
-        destinationDescription = describePlace(routeParams.end.point, {
-          short: true,
-        });
-      } else {
-        console.error('rendering routes: expected end location');
-      }
-      return {
-        routes: routes.routes,
-        activeRoute: routes.activeRoute,
-        details: routes.viewingDetails,
-        leg: routes.viewingStep && routes.viewingStep[0],
-        step: routes.viewingStep && routes.viewingStep[1],
-        destinationDescription,
-      };
-    }, shallowEqual);
+  const {
+    routes,
+    activeRoute,
+    details,
+    legIdx,
+    stepIdx,
+    destinationDescription,
+  } = useSelector(({ routes, routeParams }) => {
+    let destinationDescription = 'destination';
+    if (routeParams.end && routeParams.end.point) {
+      destinationDescription = describePlace(routeParams.end.point, {
+        short: true,
+      });
+    } else {
+      console.error('rendering routes: expected end location');
+    }
+    return {
+      routes: routes.routes,
+      activeRoute: routes.activeRoute,
+      details: routes.viewingDetails,
+      legIdx: routes.viewingStep && routes.viewingStep[0],
+      stepIdx: routes.viewingStep && routes.viewingStep[1],
+      destinationDescription,
+    };
+  }, shallowEqual);
 
   const handleRouteClick = (index) => {
     dispatch(routeClicked(index, 'list'));
@@ -56,7 +64,7 @@ export default function Routes(props) {
         onRouteClick={handleRouteClick}
       />
     );
-  } else if (step == null) {
+  } else if (stepIdx == null) {
     return (
       <Itinerary
         route={routes[activeRoute]}
@@ -66,13 +74,24 @@ export default function Routes(props) {
       />
     );
   } else {
-    // TODO Make a nice single-step display that gives the same description as
-    // the step in the full itinerary.
-    return (
-      <p style={{ marginLeft: 32 }}>
-        {routes[activeRoute].legs[leg].instructions[step].text + ' '}
-        <button onClick={handleStepBackClick}>Go back</button>
-      </p>
-    );
+    const leg = routes[activeRoute].legs[legIdx];
+
+    if (leg.type !== 'pt') {
+      return (
+        <ItinerarySingleStep
+          leg={leg}
+          stepIdx={stepIdx}
+          onBackClick={handleStepBackClick}
+        />
+      );
+    } else {
+      return (
+        <ItinerarySingleTransitStop
+          stop={leg.stops[stepIdx]}
+          relationship={stepIdx === 0 ? 'board' : 'alight'}
+          onBackClick={handleStepBackClick}
+        />
+      );
+    }
   }
 }

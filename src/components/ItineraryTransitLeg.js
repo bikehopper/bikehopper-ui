@@ -8,7 +8,9 @@ import ItineraryStep from './ItineraryStep';
 
 import { ReactComponent as Circle } from 'iconoir/icons/circle.svg';
 
-export default function ItineraryTransitLeg({ leg }) {
+import './ItineraryTransitLeg.css';
+
+export default function ItineraryTransitLeg({ leg, onStopClick }) {
   const { stops } = leg;
 
   const departure = formatTime(leg.departure_time);
@@ -34,7 +36,12 @@ export default function ItineraryTransitLeg({ leg }) {
       </ItineraryHeader>
       <ItineraryDivider />
       <ItineraryStep IconSVGComponent={Circle} smallIcon={true}>
-        Board at <strong>{stops[0].stop_name}</strong> &middot; {departure}
+        <button
+          className="ItineraryTransitLeg_btn"
+          onClick={onStopClick.bind(null, 0)}
+        >
+          Board at <strong>{stops[0].stop_name}</strong> &middot; {departure}
+        </button>
       </ItineraryStep>
       <ItineraryDivider
         transit={true}
@@ -47,8 +54,13 @@ export default function ItineraryTransitLeg({ leg }) {
         Towards {leg.trip_headsign}
       </ItineraryDivider>
       <ItineraryStep IconSVGComponent={Circle} smallIcon={true}>
-        Get off at <strong>{stops[stops.length - 1].stop_name}</strong> &middot;{' '}
-        {arrival}
+        <button
+          className="ItineraryTransitLeg_btn"
+          onClick={onStopClick.bind(null, stops.length - 1)}
+        >
+          Get off at <strong>{stops[stops.length - 1].stop_name}</strong>{' '}
+          &middot; {arrival}
+        </button>
       </ItineraryStep>
       <ItineraryDivider />
       <ItinerarySpacer />

@@ -17,7 +17,13 @@ export default function Itinerary({
 }) {
   const renderedLegs = route.legs.map((leg, idx, legs) => {
     if (leg.type === 'pt') {
-      return <ItineraryTransitLeg key={idx} leg={leg} />;
+      return (
+        <ItineraryTransitLeg
+          key={idx}
+          leg={leg}
+          onStopClick={onStepClick.bind(null, idx)}
+        />
+      );
     } else {
       // Where are we biking to? (Either final destination, or name of transit stop to board)
       const legDestination =
