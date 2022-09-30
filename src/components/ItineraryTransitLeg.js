@@ -1,14 +1,13 @@
 import * as React from 'react';
 import { formatTime, formatDurationBetween } from '../lib/time';
 import getAgencyNameForDisplay from '../lib/getAgencyNameForDisplay';
+import BorderlessButton from './BorderlessButton';
 import ItineraryHeader, { ItineraryHeaderIcons } from './ItineraryHeader';
 import ItineraryDivider from './ItineraryDivider';
 import ItinerarySpacer from './ItinerarySpacer';
 import ItineraryStep from './ItineraryStep';
 
 import { ReactComponent as Circle } from 'iconoir/icons/circle.svg';
-
-import './ItineraryTransitLeg.css';
 
 export default function ItineraryTransitLeg({ leg, onStopClick }) {
   const { stops } = leg;
@@ -36,12 +35,9 @@ export default function ItineraryTransitLeg({ leg, onStopClick }) {
       </ItineraryHeader>
       <ItineraryDivider />
       <ItineraryStep IconSVGComponent={Circle} smallIcon={true}>
-        <button
-          className="ItineraryTransitLeg_btn"
-          onClick={onStopClick.bind(null, 0)}
-        >
+        <BorderlessButton onClick={onStopClick.bind(null, 0)}>
           Board at <strong>{stops[0].stop_name}</strong> &middot; {departure}
-        </button>
+        </BorderlessButton>
       </ItineraryStep>
       <ItineraryDivider
         transit={true}
@@ -54,13 +50,10 @@ export default function ItineraryTransitLeg({ leg, onStopClick }) {
         Towards {leg.trip_headsign}
       </ItineraryDivider>
       <ItineraryStep IconSVGComponent={Circle} smallIcon={true}>
-        <button
-          className="ItineraryTransitLeg_btn"
-          onClick={onStopClick.bind(null, stops.length - 1)}
-        >
+        <BorderlessButton onClick={onStopClick.bind(null, stops.length - 1)}>
           Get off at <strong>{stops[stops.length - 1].stop_name}</strong>{' '}
           &middot; {arrival}
-        </button>
+        </BorderlessButton>
       </ItineraryStep>
       <ItineraryDivider />
       <ItinerarySpacer />
