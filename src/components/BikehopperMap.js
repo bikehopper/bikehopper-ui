@@ -169,12 +169,20 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
     const [legIdx, stepIdx] = viewingStep;
 
     const leg = routes[activePath].legs[legIdx];
-    const stepStartPointIdx = leg.instructions[stepIdx].interval[0];
-    const stepStartPointLngLat = leg.geometry.coordinates[stepStartPointIdx];
+    let stepLngLat;
+    if (leg.type === 'pt') {
+      // Leg is a transit leg; zoom to a transit stop
+      stepLngLat = leg.stops[stepIdx].geometry.coordinates;
+    } else {
+      // Leg is a bike leg (maybe we'll support walk in the future?);
+      // zoom to the start point of the given instruction
+      const stepStartPointIdx = leg.instructions[stepIdx].interval[0];
+      stepLngLat = leg.geometry.coordinates[stepStartPointIdx];
+    }
 
     const map = mapRef.current.getMap();
     map.easeTo({
-      center: stepStartPointLngLat,
+      center: stepLngLat,
       zoom: 18,
     });
   }, [routes, activePath, viewingDetails, viewingStep, mapRef]);
