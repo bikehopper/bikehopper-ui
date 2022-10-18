@@ -1,3 +1,8 @@
+.RoutesOverview {
+  display: flex;
+  flex-direction: column;
+}
+
 .RoutesOverview_row {
   display: flex;
   flex-direction: row;
