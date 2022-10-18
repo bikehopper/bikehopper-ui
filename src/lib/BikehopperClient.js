@@ -69,7 +69,8 @@ export async function fetchRoute({
   )
     graphHopperPath = process.env.REACT_APP_USE_LOCAL_GRAPHHOPPER;
 
-  const url = `${graphHopperPath}/route-pt?${params}`;
+  const endpointName = profile === 'pt' ? 'route-pt' : 'route';
+  const url = `${graphHopperPath}/${endpointName}?${params}`;
   const route = await fetch(url, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },

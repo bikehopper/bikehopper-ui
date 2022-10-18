@@ -30,6 +30,10 @@ const DEFAULT_STATE = {
   editingLocation: null,
   startInputText: '',
   endInputText: '',
+
+  // Route type, one of 'bike+pt' (bike + public transit) or 'bike' (bike only)
+  routeType: 'bike+pt',
+
   arriveBy: false,
   // If initialTime == null, this means depart now (should be used with
   // arriveBy === false)
@@ -162,6 +166,7 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
         draft.endInputText = '';
         draft.arriveBy = false;
         draft.initialTime = null;
+        // don't reset routeType, so if you select bike-only routing that's sticky
       });
     case 'initial_time_set':
       return produce(state, (draft) => {
@@ -194,6 +199,10 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
           }
         }
       });
+    case 'route_type_selected':
+      return produce(state, (draft) => {
+        draft.routeType = action.routeType;
+      });
     default:
       return state;
   }
@@ -210,8 +219,15 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
 // the current geolocation if a location has source type UserGeolocation.
 export function locationsSubmitted() {
   return async function locationsSubmittedThunk(dispatch, getState) {
-    const { start, startInputText, end, endInputText, initialTime, arriveBy } =
-      getState().routeParams;
+    const {
+      start,
+      startInputText,
+      end,
+      endInputText,
+      initialTime,
+      arriveBy,
+      routeType,
+    } = getState().routeParams;
 
     const hydrate = async function hydrate(text, location, startOrEnd) {
       // Decide whether to use the text or location:
@@ -298,6 +314,7 @@ export function locationsSubmitted() {
         resultingEndLocation.point.geometry.coordinates,
         arriveBy,
         initialTime,
+        routeType,
       )(dispatch, getState);
     }
   };
@@ -312,13 +329,15 @@ export function locationDragged(startOrEnd, coords) {
     });
 
     // If we have a location for the other point, fetch a route.
-    let { start, end, arriveBy, initialTime } = getState().routeParams;
+    let { start, end, arriveBy, initialTime, routeType } =
+      getState().routeParams;
     if (startOrEnd === 'start' && end?.point?.geometry.coordinates) {
       await fetchRoute(
         coords,
         end.point.geometry.coordinates,
         arriveBy,
         initialTime,
+        routeType,
       )(dispatch, getState);
     } else if (startOrEnd === 'end' && start?.point?.geometry.coordinates) {
       await fetchRoute(
@@ -326,6 +345,7 @@ export function locationDragged(startOrEnd, coords) {
         coords,
         arriveBy,
         initialTime,
+        routeType,
       )(dispatch, getState);
     }
   };
@@ -340,6 +360,7 @@ export function hydrateParamsFromUrl(
   initialTime,
 ) {
   return async function hydrateParamsFromUrlThunk(dispatch, getState) {
+    const { routeType } = getState().routeParams;
     dispatch({
       type: 'params_hydrated_from_url',
       startCoords,
@@ -354,6 +375,7 @@ export function hydrateParamsFromUrl(
       endCoords,
       arriveBy,
       initialTime,
+      routeType,
     )(dispatch, getState);
   };
 }
@@ -458,6 +480,23 @@ export function departureTypeSelected(departureType) {
     });
 
     // If we have a location, fetch a route.
+    dispatch(locationsSubmitted());
+  };
+}
+
+export function routeTypeSelected(routeType) {
+  if (routeType !== 'bike+pt' && routeType !== 'bike') {
+    console.error(`unexpected routeType ${routeType}`);
+    return;
+  }
+  return async function routeTypeSelectedThunk(dispatch, getState) {
+    dispatch({
+      type: 'route_type_selected',
+      routeType,
+    });
+
+    // FIXME This sucks that we're calling an unrelated location function to get
+    // the route fetched. Copying this shitty pattern to get something working.
     dispatch(locationsSubmitted());
   };
 }

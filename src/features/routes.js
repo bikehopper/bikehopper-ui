@@ -150,7 +150,13 @@ let _routeNonce = 10000000; // For assigning a unique ID to each route fetched i
 
 const COORD_EPSILON = 1e-5;
 
-export function fetchRoute(startCoords, endCoords, arriveBy, initialTime) {
+export function fetchRoute(
+  startCoords,
+  endCoords,
+  arriveBy,
+  initialTime,
+  routeType,
+) {
   return async function fetchRouteThunk(dispatch, getState) {
     if (!startCoords || !endCoords) {
       dispatch({ type: 'route_cleared' });
@@ -185,6 +191,8 @@ export function fetchRoute(startCoords, endCoords, arriveBy, initialTime) {
         optimize: true,
         pointsEncoded: false,
         details: ['cycleway', 'road_class', 'street_name'],
+        profile: routeType === 'bike+pt' ? 'pt' : 'bike2',
+        connectingProfile: 'bike2', // always include, ignored if not pt but cant be blank
       });
     } catch (e) {
       console.error('route fetch failed:', e);

@@ -16,6 +16,12 @@ export default function RoutesOverview(props) {
 
   return (
     <div className="RoutesOverview">
+      <div className="RoutesOverview_routeTypeSelectionBar">
+        <button onClick={onRouteTypeClick.bind(null, 'bike+pt')}>
+          Bike + Transit
+        </button>
+        <button onClick={onRouteTypeClick.bind(null, 'bike')}>Bike</button>
+      </div>
       <SelectionList>
         {routes.map((route, index) => (
           <SelectionListItem
@@ -53,16 +59,20 @@ export default function RoutesOverview(props) {
               </ul>
               <p className="RoutesOverview_timeEstimate">
                 {formatInterval(
-                  new Date(route.legs[route.legs.length - 1].arrival_time) -
-                    new Date(route.legs[0].departure_time),
+                  route.legs.length > 0
+                    ? new Date(route.legs[route.legs.length - 1].arrival_time) -
+                        new Date(route.legs[0].departure_time)
+                    : route.time,
                 )}
               </p>
             </div>
-            <DepartArriveTime
-              className="RoutesOverview_departArriveTime"
-              depart={route.legs[0].departure_time}
-              arrive={route.legs[route.legs.length - 1].arrival_time}
-            />
+            {route.legs.length > 0 && (
+              <DepartArriveTime
+                className="RoutesOverview_departArriveTime"
+                depart={route.legs[0].departure_time}
+                arrive={route.legs[route.legs.length - 1].arrival_time}
+              />
+            )}
           </SelectionListItem>
         ))}
       </SelectionList>

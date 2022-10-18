@@ -6,6 +6,7 @@ import {
   itineraryStepClicked,
   itineraryStepBackClicked,
 } from '../features/routes';
+import { routeTypeSelected } from '../features/routeParams';
 import describePlace from '../lib/describePlace';
 import RoutesOverview from './RoutesOverview';
 import Itinerary from './Itinerary';
@@ -21,6 +22,7 @@ export default function Routes(props) {
     legIdx,
     stepIdx,
     destinationDescription,
+    routeType,
   } = useSelector(({ routes, routeParams }) => {
     let destinationDescription = 'destination';
     if (routeParams.end && routeParams.end.point) {
@@ -37,6 +39,7 @@ export default function Routes(props) {
       legIdx: routes.viewingStep && routes.viewingStep[0],
       stepIdx: routes.viewingStep && routes.viewingStep[1],
       destinationDescription,
+      routeType: routeParams.routeType,
     };
   }, shallowEqual);
 
@@ -56,12 +59,18 @@ export default function Routes(props) {
     dispatch(itineraryStepBackClicked());
   };
 
+  const handleRouteTypeClick = (routeType) => {
+    dispatch(routeTypeSelected(routeType));
+  };
+
   if (!details) {
     return (
       <RoutesOverview
         routes={routes}
         activeRoute={activeRoute}
         onRouteClick={handleRouteClick}
+        routeType={routeType}
+        onRouteTypeClick={handleRouteTypeClick}
       />
     );
   } else if (stepIdx == null) {
