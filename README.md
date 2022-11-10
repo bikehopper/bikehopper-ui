@@ -33,7 +33,7 @@ copy the `.env.development.template` to `.env.development.local` and put in a
 Mapbox token you create (free plan is fine), run `npm install`, then run `npm start`.
 
 Requests to `localhost` are proxied to
-`https://api-bikehopper-staging.techlabor.org`. This is configured by the "proxy"
+`https://api-staging.bikehopper.org`. This is configured by the "proxy"
 property in the package.json of this repo. Presently there is a thin client
 library at `src/lib/BikehopperClient.js`. More methods should be added as
 needed. This library calls the Bikehopper

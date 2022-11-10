@@ -85,7 +85,7 @@
     "test": "node scripts/test.js",
     "prepare": "husky install"
   },
-  "proxy": "https://api-bikehopper-staging.techlabor.org",
+  "proxy": "https://api-staging.bikehopper.org",
   "eslintConfig": {
     "extends": [
       "react-app",

@@ -2,8 +2,7 @@
 // TODO: Find a cleaner way to handle this, so people deploying their own
 // instances on their own domains don't have to edit the source.
 const API_DOMAINS = {
-  'https://bikehopper-staging.techlabor.org':
-    'https://api-bikehopper-staging.techlabor.org',
+  'https://staging.bikehopper.org': 'https://api-staging.bikehopper.org',
   'https://bikehopper.org': 'https://api.bikehopper.org',
 };
 
