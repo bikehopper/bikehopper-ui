@@ -1,4 +1,5 @@
 resources:
   - ../../base
+namespace: staging
 patchesStrategicMerge:
   - deployment.yml
