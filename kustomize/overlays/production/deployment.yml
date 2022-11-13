@@ -1,0 +1,11 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bikehopper-ui-deployment
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+        - name: bikehopper-ui
+          image: ghcr.io/bikehopper/bikehopper-ui:v1.0.0
