@@ -7,4 +7,4 @@ spec:
     spec:
       containers:
         - name: bikehopper-ui
-          image: ghcr.io/bikehopper/bikehopper-ui:main
+          image: ghcr.io/bikehopper/bikehopper-ui:latest
