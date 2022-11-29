@@ -97,6 +97,10 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
       return produce(state, (draft) => {
         draft.editingLocation = null;
       });
+    case 'search_blurred_with_unchanged_locations':
+      return produce(state, (draft) => {
+        draft.editingLocation = null;
+      });
     case 'geocoded_location_selected':
       return produce(state, (draft) => {
         draft[action.startOrEnd] = {
@@ -408,6 +412,14 @@ export function selectCurrentLocation(startOrEnd) {
 export function clearRouteParams() {
   return {
     type: 'route_params_cleared',
+  };
+}
+
+export function blurSearchWithUnchangedLocations() {
+  // When you focus the start or end input but then blur it without changing existing
+  // (geocoded, geolocated, marker dragged, etc.) locations.
+  return {
+    type: 'search_blurred_with_unchanged_locations',
   };
 }
 

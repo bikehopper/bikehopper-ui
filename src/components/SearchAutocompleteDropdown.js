@@ -15,6 +15,8 @@ import { ReactComponent as Position } from 'iconoir/icons/position.svg';
 
 import './SearchAutocompleteDropdown.css';
 
+const LIST_ITEM_CLASSNAME = 'SearchAutocompleteDropdown_place';
+
 export default function SearchAutocompleteDropdown(props) {
   const dispatch = useDispatch();
 
@@ -97,7 +99,7 @@ export default function SearchAutocompleteDropdown(props) {
     <SelectionList className="SearchAutocompleteDropdown">
       {showCurrentLocationOption && (
         <SelectionListItem
-          className="SearchAutocompleteDropdown_place"
+          className={LIST_ITEM_CLASSNAME}
           onClick={handleCurrentLocationClick}
         >
           <Icon className="SearchAutocompleteDropdown_icon">
@@ -110,7 +112,7 @@ export default function SearchAutocompleteDropdown(props) {
       )}
       {dedupedFeatures.map((feature, index) => (
         <SelectionListItem
-          className="SearchAutocompleteDropdown_place"
+          className={LIST_ITEM_CLASSNAME}
           key={feature.properties.osm_id + ':' + feature.properties.type}
           onClick={handleClick.bind(null, index)}
         >
@@ -124,4 +126,10 @@ export default function SearchAutocompleteDropdown(props) {
       ))}
     </SelectionList>
   );
+}
+
+// Hack for letting search bar see if an autocomplete result was focused
+export function isAutocompleteResultElement(domElement) {
+  if (!domElement) return false;
+  return [].slice.call(domElement.classList).includes(LIST_ITEM_CLASSNAME);
 }
