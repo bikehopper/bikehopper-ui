@@ -10,8 +10,18 @@ import describePlace from '../lib/describePlace';
 import Icon from './Icon';
 import SelectionList from './SelectionList';
 import SelectionListItem from './SelectionListItem';
+import { ReactComponent as CoffeeCup } from 'iconoir/icons/coffee-cup.svg';
+import { ReactComponent as Cutlery } from 'iconoir/icons/clutery.svg';
+import { ReactComponent as Flower } from 'iconoir/icons/flower.svg';
+import { ReactComponent as GlassHalf } from 'iconoir/icons/glass-half.svg';
+import { ReactComponent as Golf } from 'iconoir/icons/golf.svg';
 import { ReactComponent as Pin } from 'iconoir/icons/pin-alt.svg';
 import { ReactComponent as Position } from 'iconoir/icons/position.svg';
+import { ReactComponent as PineTree } from 'iconoir/icons/pine-tree.svg';
+import { ReactComponent as Sandals } from 'iconoir/icons/sandals.svg';
+import { ReactComponent as StarOutline } from 'iconoir/icons/star-outline.svg';
+import { ReactComponent as Swimming } from 'iconoir/icons/swimming.svg';
+import { ReactComponent as Trekking } from 'iconoir/icons/trekking.svg';
 
 import './SearchAutocompleteDropdown.css';
 
@@ -117,7 +127,7 @@ export default function SearchAutocompleteDropdown(props) {
           onClick={handleClick.bind(null, index)}
         >
           <Icon className="SearchAutocompleteDropdown_icon">
-            <Pin />
+            {_getSvgForFeature(feature)}
           </Icon>
           <span className="SearchAutocompleteDropdown_placeDescription">
             {describePlace(feature)}
@@ -132,4 +142,55 @@ export default function SearchAutocompleteDropdown(props) {
 export function isAutocompleteResultElement(domElement) {
   if (!domElement) return false;
   return Array.from(domElement.classList).includes(LIST_ITEM_CLASSNAME);
+}
+
+function _getSvgForFeature(feature) {
+  const { osm_key: key, osm_value: value } = feature?.properties || {};
+
+  let Klass = Pin;
+
+  if (
+    (key === 'boundary' && value === 'national_park') ||
+    (key === 'leisure' && value === 'park')
+  ) {
+    // park
+    Klass = PineTree;
+  } else if (
+    (key === 'natural' && ['beach', 'shingle'].includes(value)) ||
+    (key === 'leisure' && value === 'beach_resort')
+  ) {
+    // beach
+    Klass = Sandals;
+  } else if (
+    key === 'natural' &&
+    ['peak', 'hill', 'rock', 'saddle'].includes(value)
+  ) {
+    // mountain, trail
+    Klass = Trekking;
+  } else if (key === 'leisure' && value === 'garden') {
+    Klass = Flower;
+  } else if (key === 'leisure' && value === 'golf_course') {
+    Klass = Golf;
+  } else if (
+    key === 'leisure' &&
+    ['swimming_area', 'swimming_pool', 'water_park'].includes(value)
+  ) {
+    Klass = Swimming;
+  } else if (key === 'tourism' && value === 'attraction') {
+    Klass = StarOutline;
+  } else if (key === 'amenity' && value === 'cafe') {
+    Klass = CoffeeCup;
+  } else if (
+    key === 'amenity' &&
+    ['restaurant', 'fast_food', 'food_court'].includes(value)
+  ) {
+    Klass = Cutlery;
+  } else if (
+    key === 'amenity' &&
+    ['bar', 'biergarten', 'pub'].includes(value)
+  ) {
+    Klass = GlassHalf;
+  }
+
+  return <Klass />;
 }
