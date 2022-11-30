@@ -2,7 +2,7 @@ import produce from 'immer';
 import * as BikehopperClient from '../lib/BikehopperClient';
 import delay from '../lib/delay';
 
-const GEOCODE_RESULT_LIMIT = 5;
+const GEOCODE_RESULT_LIMIT = 8;
 
 const DEFAULT_STATE = {
   // maps location strings to geocoded results.
