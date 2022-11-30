@@ -131,5 +131,5 @@ export default function SearchAutocompleteDropdown(props) {
 // Hack for letting search bar see if an autocomplete result was focused
 export function isAutocompleteResultElement(domElement) {
   if (!domElement) return false;
-  return [].slice.call(domElement.classList).includes(LIST_ITEM_CLASSNAME);
+  return Array.from(domElement.classList).includes(LIST_ITEM_CLASSNAME);
 }
