@@ -42,3 +42,20 @@ needed. This library calls the Bikehopper
 If you're actively making changes to [our fork of
 GraphHopper](https://github.com/bikehopper/graphhopper), you'll find a variable
 you can set in your `.env.development.local` to point to local GraphHopper.
+
+## Configuring local GraphHopper
+
+If you're actively making changes to [our fork of GraphHopper](https://github.com/bikehopper/graphhopper), follow these steps.
+
+1. You'll need a local OSM cutout for Northern California.
+
+    ```sh
+    wget http://download.geofabrik.de/north-america/us/california/norcal-latest.osm.pbf
+    ```
+
+    Place the OSM cutout at `graphhopper/data/norcal-latest.osm.pbf`.
+
+2. You'll also need GTFS data. Follow steps on this page, under "To Use the Feed and Ask Questions": https://www.interline.io/blog/mtc-regional-gtfs-feed-release/
+
+    Place the GTFS zip file at `graphhopper/data/GTFSTransitData_RG.zip`.
+
