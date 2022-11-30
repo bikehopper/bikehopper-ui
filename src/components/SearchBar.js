@@ -2,7 +2,9 @@ import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './Icon';
 import TimeBar from './TimeBar';
+import { isAutocompleteResultElement } from './SearchAutocompleteDropdown';
 import {
+  blurSearchWithUnchangedLocations,
   changeLocationTextInput,
   clearRouteParams,
   locationInputFocused,
@@ -37,6 +39,10 @@ export default function SearchBar(props) {
   const startRef = React.useRef();
   const endRef = React.useRef();
 
+  // Has the text of either start or end been modified, since something that aborted or
+  // completed the edit?
+  const [textModified, setTextModified] = React.useState(false);
+
   const displayedStart = _getDisplayedText(
     startText,
     startLocation,
@@ -49,26 +55,31 @@ export default function SearchBar(props) {
   );
 
   const handleStartChange = (evt) => {
+    setTextModified(true);
     dispatch(changeLocationTextInput('start', evt.target.value));
   };
 
   const handleEndChange = (evt) => {
+    setTextModified(true);
     dispatch(changeLocationTextInput('end', evt.target.value));
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    setTextModified(false);
     event.target.blur();
 
     dispatch(locationsSubmitted());
   };
 
   const handleBackClick = (event) => {
+    setTextModified(false);
     dispatch(clearRouteParams());
   };
 
   const handleSwapClick = (event) => {
     event.preventDefault();
+    setTextModified(false);
 
     dispatch(swapLocations());
   };
@@ -84,6 +95,27 @@ export default function SearchBar(props) {
       // Select the "Current Location" text so that any key input will replace it in its
       // entirety, since it doesn't make sense to edit this magic string otherwise.
       event.target.select();
+    }
+  };
+
+  const handleBlur = (which, event) => {
+    const isOtherSearchInputFocused =
+      event.relatedTarget === startRef.current ||
+      event.relatedTarget === endRef.current;
+    const isAutocompleteResultFocused = isAutocompleteResultElement(
+      event.relatedTarget,
+    );
+    const haveLocations = !!(startLocation && endLocation);
+
+    // If you focused a search input but then blurred it without editing anything, then
+    // we may want to cancel the edit so you can go back to existing routes.
+    if (
+      !isAutocompleteResultFocused &&
+      !isOtherSearchInputFocused &&
+      !textModified &&
+      haveLocations
+    ) {
+      dispatch(blurSearchWithUnchangedLocations());
     }
   };
 
@@ -104,12 +136,14 @@ export default function SearchBar(props) {
       if (!endLocation) {
         endRef.current.focus();
       } else {
+        setTextModified(false);
         startRef.current.blur();
       }
     } else if (editingLocation === 'end' && justFilledEnd) {
       if (!startLocation) {
         startRef.current.focus();
       } else {
+        setTextModified(false);
         endRef.current.blur();
       }
     }
@@ -146,6 +180,7 @@ export default function SearchBar(props) {
               value={displayedStart}
               onChange={handleStartChange}
               onFocus={handleFocus.bind(null, 'start')}
+              onBlur={handleBlur.bind(null, 'start')}
               onKeyPress={handleKeyPress}
               ref={startRef}
             />
@@ -163,6 +198,7 @@ export default function SearchBar(props) {
               value={displayedEnd}
               onChange={handleEndChange}
               onFocus={handleFocus.bind(null, 'end')}
+              onBlur={handleBlur.bind(null, 'end')}
               onKeyPress={handleKeyPress}
               ref={endRef}
               autoFocus={props.initiallyFocusDestination}
