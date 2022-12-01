@@ -39,10 +39,6 @@ library at `src/lib/BikehopperClient.js`. More methods should be added as
 needed. This library calls the Bikehopper
 [backend](https://github.com/bikehopper/bikehopper-web-app).
 
-If you're actively making changes to [our fork of
-GraphHopper](https://github.com/bikehopper/graphhopper), you'll find a variable
-you can set in your `.env.development.local` to point to local GraphHopper.
-
 ## Configuring local GraphHopper
 
 If you're actively making changes to [our fork of GraphHopper](https://github.com/bikehopper/graphhopper), follow these steps.
@@ -59,3 +55,4 @@ If you're actively making changes to [our fork of GraphHopper](https://github.co
 
     Place the GTFS zip file at `graphhopper/data/GTFSTransitData_RG.zip`.
 
+3. Edit the relevant variable in your `.env.development.local` to point to local GraphHopper.
