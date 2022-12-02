@@ -96,13 +96,19 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
     if (!map || !routes?.length) return;
 
     // merge all bboxes
+
     const bboxes = routes.map((path) => path.bbox);
-    const [minx, miny, maxx, maxy] = bboxes.reduce((acc, cur) => [
+    let [minx, miny, maxx, maxy] = bboxes.reduce((acc, cur) => [
       Math.min(acc[0], cur[0]), // minx
       Math.min(acc[1], cur[1]), // miny
       Math.max(acc[2], cur[2]), // maxx
       Math.max(acc[3], cur[3]), // maxy
     ]);
+
+    minx = Math.min(minx, startCoords[0], endCoords[0]);
+    miny = Math.min(miny, startCoords[1], endCoords[1]);
+    maxx = Math.max(maxx, startCoords[0], endCoords[0]);
+    maxy = Math.max(maxy, startCoords[1], endCoords[1]);
 
     // Before centering the map, we must resize the map, because on mobile,
     // showing the bottom pane with the routes overview will have resized the
@@ -153,7 +159,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
     } else {
       resizeAndFitBounds();
     }
-  }, [routes, mapRef, props.overlayRef]);
+  }, [routes, mapRef, props.overlayRef, startCoords, endCoords]);
 
   // When viewing a specific step of a route, zoom to where it starts.
   React.useEffect(() => {
