@@ -159,7 +159,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
     } else {
       resizeAndFitBounds();
     }
-  }, [routes, mapRef, props.overlayRef]);
+  }, [routes, mapRef, props.overlayRef, startCoords, endCoords]);
 
   // When viewing a specific step of a route, zoom to where it starts.
   React.useEffect(() => {
