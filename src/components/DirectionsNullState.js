@@ -28,7 +28,8 @@ export default function DirectionsNullState(props) {
         options for getting around without a car.
       </p>
       <p className="DirectionsNullState_para">
-        Get started by entering a destination above.
+        We support the <strong>San Francisco Bay Area</strong>, California. Get
+        started by entering a destination above.
       </p>
       <p className="DirectionsNullState_para DirectionsNullState_wideScreenOnly">
         In this early beta, BikeHopper is{' '}
