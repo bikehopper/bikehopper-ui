@@ -482,20 +482,12 @@ function getLabelTextField() {
   const text = [
     'case',
     // Bikeable highways display the type with optional street name
-    propIs('road_class', ...BIKEABLE_HIGHWAYS),
+    hasProp('bike_infra', ''),
     [
       'case',
       hasProp('street_name', ''),
-      ['concat', ['get', 'road_class'], '   (', ['get', 'street_name'], ')'],
-      ['get', 'road_class'],
-    ],
-    // Cycleways display the type with optional street name
-    hasProp('cycleway', 'missing', 'no'),
-    [
-      'case',
-      hasProp('street_name', ''),
-      ['concat', ['get', 'cycleway'], '   (', ['get', 'street_name'], ')'],
-      ['get', 'cycleway'],
+      ['concat', ['get', 'bike_infra'], '   (', ['get', 'street_name'], ')'],
+      ['get', 'bike_infra'],
     ],
     // Default to public transit route or street name
     ['coalesce', ['get', 'route_name'], ['get', 'street_name'], ''],
