@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { ReactComponent as MagnifyingGlass } from 'iconoir/icons/search.svg';
 import Icon from './Icon';
+import { SUPPORTED_REGION_DISPLAY } from '../lib/region';
 
 import './DirectionsNullState.css';
 
@@ -28,8 +29,10 @@ export default function DirectionsNullState(props) {
         options for getting around without a car.
       </p>
       <p className="DirectionsNullState_para">
-        We support the <strong>San Francisco Bay Area</strong>, California. Get
-        started by entering a destination above.
+        {SUPPORTED_REGION_DISPLAY && (
+          <span>We support {SUPPORTED_REGION_DISPLAY}. </span>
+        )}
+        Get started by entering a destination above.
       </p>
       <p className="DirectionsNullState_para DirectionsNullState_wideScreenOnly">
         In this early beta, BikeHopper is{' '}
