@@ -37,8 +37,19 @@ export function routesToGeoJSON(paths) {
     const path = paths[pathIdx];
 
     // For-each leg in the path
-    for (let legIdx = 0; legIdx < path.legs.length; legIdx++) {
-      const leg = path.legs[legIdx];
+    // For bike-only routing, the path *is* the leg (sort of)
+    const legs =
+      path.legs.length >= 1
+        ? path.legs
+        : [
+            {
+              type: 'bike2',
+              geometry: path.points,
+              details: path.details,
+            },
+          ];
+    for (let legIdx = 0; legIdx < legs.length; legIdx++) {
+      const leg = legs[legIdx];
 
       // Add a LineString feature for the leg
       if (leg.type === 'pt') {
@@ -58,8 +69,8 @@ export function routesToGeoJSON(paths) {
       }
 
       // Add transition for every leg except the last one
-      if (legIdx !== path.legs.length - 1) {
-        const nextLeg = path.legs[legIdx + 1];
+      if (legIdx !== legs.length - 1) {
+        const nextLeg = legs[legIdx + 1];
         const start =
           leg.geometry.coordinates[leg.geometry.coordinates.length - 1];
         const end = nextLeg.geometry.coordinates[0];
