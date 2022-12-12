@@ -10,14 +10,13 @@
 // around in (direct) response to the state in this reducer, only vice versa.
 
 import geoViewport from '@mapbox/geo-viewport';
-
-const BAY_AREA_BOUNDS = [-122.597652, 37.330751, -121.669687, 37.858476];
+import { DEFAULT_VIEWPORT_BOUNDS } from '../lib/region';
 
 const MAPBOX_VT_SIZE = 512;
 
 function viewportForScreen(screenDims) {
   const viewport = geoViewport.viewport(
-    BAY_AREA_BOUNDS,
+    DEFAULT_VIEWPORT_BOUNDS,
     screenDims,
     0,
     14,

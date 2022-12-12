@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { formatTime, formatDurationBetween } from '../lib/time';
-import getAgencyNameForDisplay from '../lib/getAgencyNameForDisplay';
+import { getAgencyDisplayName } from '../lib/region';
 import BorderlessButton from './BorderlessButton';
 import ItineraryHeader, { ItineraryHeaderIcons } from './ItineraryHeader';
 import ItineraryDivider from './ItineraryDivider';
@@ -18,7 +18,7 @@ export default function ItineraryTransitLeg({ leg, onStopClick }) {
   // TODO use the actual transit mode
   const mode = 'line';
   const icon = ItineraryHeaderIcons.BUS;
-  const agency = getAgencyNameForDisplay(leg.agency_name);
+  const agency = getAgencyDisplayName(leg.agency_name);
 
   const stopsTraveled = stops.length - 1;
   const stopsBetweenStartAndEnd = stopsTraveled - 1;

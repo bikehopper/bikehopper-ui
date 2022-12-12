@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { formatTime, formatDurationBetween } from '../lib/time';
-import getAgencyNameForDisplay from '../lib/getAgencyNameForDisplay';
+import { getAgencyDisplayName } from '../lib/region';
 import Icon from './Icon';
 import ItineraryBikeLeg from './ItineraryBikeLeg';
 import ItineraryHeader, { ItineraryHeaderIcons } from './ItineraryHeader';
@@ -49,7 +49,7 @@ export default function Itinerary({
       let modeForLeg = 'unknown';
       if (leg.type === 'bike2') modeForLeg = 'bike';
       else if (leg.type === 'pt')
-        modeForLeg = getAgencyNameForDisplay(leg.agency_name);
+        modeForLeg = getAgencyDisplayName(leg.agency_name);
       if (!modesArray.includes(modeForLeg)) modesArray.push(modeForLeg);
       return modesArray;
     }, [])
