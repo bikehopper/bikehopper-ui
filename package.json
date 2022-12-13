@@ -11,6 +11,9 @@
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
     "@turf/bezier-spline": "^6.5.0",
+    "@turf/boolean-point-in-polygon": "^6.5.0",
+    "@turf/buffer": "^6.5.0",
+    "@turf/convex": "^6.5.0",
     "@turf/distance": "^6.5.0",
     "@turf/helpers": "^6.5.0",
     "@turf/length": "^6.5.0",
@@ -162,6 +165,7 @@
     ]
   },
   "devDependencies": {
+    "csv": "^6.2.5",
     "eslint-config-prettier": "^8.3.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.3.4",
