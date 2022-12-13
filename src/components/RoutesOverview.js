@@ -11,10 +11,16 @@ import { ReactComponent as NavArrowRight } from 'iconoir/icons/nav-arrow-right.s
 import './RoutesOverview.css';
 
 export default function RoutesOverview(props) {
-  const { routes, activeRoute, onRouteClick } = props;
+  const { routes, activeRoute, outOfArea, onRouteClick } = props;
 
   return (
     <SelectionList>
+      {outOfArea && (
+        <SelectionListItem key="outOfAreaWarning">
+          Transit options may be missing. The area for which we have local
+          transit data doesn't include your {outOfArea}.
+        </SelectionListItem>
+      )}
       {routes.map((route, index) => (
         <SelectionListItem
           active={activeRoute === index}

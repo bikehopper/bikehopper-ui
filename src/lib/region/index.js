@@ -7,9 +7,14 @@ import {
   SUPPORTED_REGION_DISPLAY,
   DEFAULT_VIEWPORT_BOUNDS,
   AGENCY_COMMON_NAMES,
+  TRANSIT_SERVICE_AREA,
 } from './BayArea';
 
-export { SUPPORTED_REGION_DISPLAY, DEFAULT_VIEWPORT_BOUNDS };
+export {
+  SUPPORTED_REGION_DISPLAY,
+  DEFAULT_VIEWPORT_BOUNDS,
+  TRANSIT_SERVICE_AREA,
+};
 
 export function getAgencyDisplayName(gtfsAgencyName) {
   return AGENCY_COMMON_NAMES[gtfsAgencyName] || gtfsAgencyName;

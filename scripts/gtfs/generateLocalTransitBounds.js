@@ -1,7 +1,7 @@
-import { readFileSync, writeFileSync } from 'fs';
-import { parse } from 'csv/sync';
-import turfConvex from '@turf/convex';
-import turfBuffer from '@turf/buffer';
+const { readFileSync, writeFileSync } = require('fs');
+const { parse } = require('csv/sync');
+const turfConvex = require('@turf/convex').default;
+const turfBuffer = require('@turf/buffer');
 
 // computes a polygon to define the "transit service area"
 
