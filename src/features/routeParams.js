@@ -217,8 +217,9 @@ export function locationsSubmitted() {
       // Decide whether to use the text or location:
       let useLocation = false;
 
-      // If text WAS an address string from the geocoder, and the user explicitly blanked it
-      // out, let them blank it out. But otherwise, empty text means fall back to location.
+      // If text WAS an address string from the geocoder (or hydrated from URL), and the
+      // user explicitly blanked it out, let them blank it out. But otherwise, empty text
+      // means fall back to location.
       if (
         text === '' &&
         location &&
@@ -231,6 +232,12 @@ export function locationsSubmitted() {
         text === describePlace(location.point)
       ) {
         // Stick with geocoded location if the text is its exact description
+        useLocation = true;
+      } else if (
+        location &&
+        location.source === LocationSourceType.UrlWithString &&
+        text === location.fromInputText
+      ) {
         useLocation = true;
       }
 
