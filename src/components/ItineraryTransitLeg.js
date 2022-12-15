@@ -26,7 +26,7 @@ export default function ItineraryTransitLeg({ leg, onStopClick }) {
     <>
       <ItineraryHeader icon={icon} iconColor={leg.route_color}>
         <span>
-          Ride the {leg.route_name} {mode} ({agency})
+          Ride the {leg.route_name || leg.route_id} {mode} ({agency})
         </span>
         <span>
           {pluralizedStopCount(stopsTraveled)} &middot;{' '}
