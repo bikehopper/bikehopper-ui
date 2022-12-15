@@ -35,7 +35,7 @@ export default function RoutesOverview(props) {
                   <li className="RoutesOverview_leg">
                     <RouteLeg
                       type={leg.type}
-                      routeName={leg.route_name}
+                      routeName={leg.route_name || leg.route_id}
                       routeColor={leg.route_color}
                       agencyName={leg.agency_name}
                       duration={
