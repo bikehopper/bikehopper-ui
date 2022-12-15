@@ -1,4 +1,6 @@
 import { DateTime } from 'luxon';
+import delay from './delay';
+import { DEFAULT_VIEWPORT_BOUNDS } from './region';
 
 function getApiPath() {
   const apiDomain = import.meta.env.VITE_API_DOMAIN;
@@ -95,6 +97,12 @@ function parse(route) {
   return route;
 }
 
+let _lastNominatimReqTime = 0;
+// All BikeHopper users together are supposed to not hit the public Nominatim more than
+// 1x/sec. This should only be used for demo purposes and never for a public site. We'll
+// rate limit to every 3 sec per user:
+const NOMINATIM_RATE_LIMIT = 3000;
+
 export async function geocode(
   placeString,
   {
@@ -107,15 +115,33 @@ export async function geocode(
     signal,
   },
 ) {
-  let url = `${getApiPath()}/api/v1/geocode/geocode?q=${encodeURIComponent(
-    placeString,
-  )}&lang=${lang}&limit=${limit}`;
+  let url;
+  if (process.env.REACT_APP_USE_PUBLIC_NOMINATIM) {
+    // Note: This flag is for demo/dev purposes only and will not produce as high quality
+    // results as the default of hitting (our own instance of) Photon.
+    const dontHitBefore = _lastNominatimReqTime + NOMINATIM_RATE_LIMIT;
+    const now = Date.now();
+    if (now < dontHitBefore) await delay(dontHitBefore - now);
+    url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+      placeString,
+    )}&limit=1&viewbox=${DEFAULT_VIEWPORT_BOUNDS.join(',')}&format=geojson`;
+    // TODO figure out why bounded=1 messes up results
+    // Things come up without it but disappear with it...?
+    _lastNominatimReqTime = Date.now();
+    // "Lincoln Park Zoo, Chicago" to "Warwick Allerton, Chicago" works....
+    //
+    // but leave off ", Chicago" and all bets are off
+  } else {
+    url = `${getApiPath()}/api/v1/geocode/geocode?q=${encodeURIComponent(
+      placeString,
+    )}&lang=${lang}&limit=${limit}`;
 
-  if (latitude != null && longitude != null) {
-    zoom = Math.round(zoom); // Photon doesn't accept float zoom values
-    url += `&lat=${latitude.toFixed(POINT_PRECISION)}&lon=${longitude.toFixed(
-      POINT_PRECISION,
-    )}&zoom=${zoom}&location_bias_scale=${locationBias}`;
+    if (latitude != null && longitude != null) {
+      zoom = Math.round(zoom); // Photon doesn't accept float zoom values
+      url += `&lat=${latitude.toFixed(POINT_PRECISION)}&lon=${longitude.toFixed(
+        POINT_PRECISION,
+      )}&zoom=${zoom}&location_bias_scale=${locationBias}`;
+    }
   }
 
   const geocoding = await fetch(url, {

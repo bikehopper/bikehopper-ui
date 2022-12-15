@@ -120,6 +120,13 @@ export function geocodeTypedLocation(text, key, { fromTextAutocomplete } = {}) {
     _LOCATION_TYPED_ACTION_LAST_TEXT_FOR_KEY[key] = text;
 
     if (fromTextAutocomplete) {
+      if (process.env.REACT_APP_USE_PUBLIC_NOMINATIM) {
+        // Public Nominatim is for development / demo only, and to comply with
+        // the API guidelines, we must limit requests to 1/sec and not use it
+        // for an autocomplete.
+        return;
+      }
+
       // This is functioning as an autocomplete: we don't know for sure if the
       // user is done typing. Therefore, debounce.
       await delay(700);

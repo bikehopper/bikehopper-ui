@@ -9,6 +9,12 @@ export default function describePlace(
   if (!feature || feature.type !== 'Feature' || !feature.properties)
     return fallback;
 
+  // Nominatim uses a different format. This flag is only for dev/demo, so this
+  // display might be verbose / isn't tuned to be user friendly
+  if (process.env.REACT_APP_USE_PUBLIC_NOMINATIM) {
+    return feature.properties?.display_name || fallback;
+  }
+
   const {
     name = '',
     housenumber,
