@@ -43,6 +43,7 @@ export async function fetchRoute({
   const params = new URLSearchParams({
     locale: 'en-US',
     elevation: true,
+    include_edges: window.debug, // TODO: pipe debug through the whole app
     useMiles: false,
     layer: 'OpenStreetMap',
     profile,

@@ -22,6 +22,7 @@ export default function SelectionListItem(props) {
         SelectionListItem_link: true,
         [props.className]: !!props.className,
       })}
+      tabIndex={0}
     >
       {props.children}
     </a>
