@@ -23,7 +23,8 @@ export default function Routes(props) {
     legIdx,
     stepIdx,
     destinationDescription,
-    outOfArea,
+    outOfAreaStart,
+    outOfAreaEnd,
   } = useSelector(({ routes, routeParams }) => {
     let destinationDescription = 'destination';
     if (routeParams.end && routeParams.end.point) {
@@ -33,19 +34,17 @@ export default function Routes(props) {
     } else {
       console.error('rendering routes: expected end location');
     }
-    const startOutOfArea =
+
+    const outOfAreaStart =
       TRANSIT_SERVICE_AREA &&
       routeParams?.start?.point &&
       !pointInPolygon(routeParams.start.point, TRANSIT_SERVICE_AREA);
-    const endOutOfArea =
+
+    const outOfAreaEnd =
       TRANSIT_SERVICE_AREA &&
       routeParams?.end?.point &&
       !pointInPolygon(routeParams.end.point, TRANSIT_SERVICE_AREA);
-    let outOfArea = false;
-    if (startOutOfArea) {
-      if (endOutOfArea) outOfArea = 'start and end points';
-      else outOfArea = 'start point';
-    } else if (endOutOfArea) outOfArea = 'end point';
+
     return {
       routes: routes.routes,
       activeRoute: routes.activeRoute,
@@ -53,7 +52,8 @@ export default function Routes(props) {
       legIdx: routes.viewingStep && routes.viewingStep[0],
       stepIdx: routes.viewingStep && routes.viewingStep[1],
       destinationDescription,
-      outOfArea,
+      outOfAreaStart,
+      outOfAreaEnd,
     };
   }, shallowEqual);
 
@@ -79,7 +79,8 @@ export default function Routes(props) {
         routes={routes}
         activeRoute={activeRoute}
         onRouteClick={handleRouteClick}
-        outOfArea={outOfArea}
+        outOfAreaStart={outOfAreaStart}
+        outOfAreaEnd={outOfAreaEnd}
       />
     );
   } else if (stepIdx == null) {

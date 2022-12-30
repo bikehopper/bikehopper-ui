@@ -11,14 +11,23 @@ import { ReactComponent as NavArrowRight } from 'iconoir/icons/nav-arrow-right.s
 import './RoutesOverview.css';
 
 export default function RoutesOverview(props) {
-  const { routes, activeRoute, outOfArea, onRouteClick } = props;
+  const { routes, activeRoute, outOfAreaStart, outOfAreaEnd, onRouteClick } =
+    props;
+
+  let outOfArea = [
+    outOfAreaStart ? 'start point' : '',
+    outOfAreaEnd ? 'end point' : '',
+  ]
+    .filter((s) => s !== '')
+    .join(' and ');
 
   return (
     <SelectionList>
       {outOfArea && (
         <SelectionListItem key="outOfAreaWarning">
-          Transit options may be missing. The area for which we have local
-          transit data doesn't include your {outOfArea}.
+          Transit options may be missing. Your {outOfArea} fall
+          {outOfAreaStart && outOfAreaEnd ? '' : 's'} outside the area where
+          BikeHopper has local transit data.
         </SelectionListItem>
       )}
       {routes.map((route, index) => (
