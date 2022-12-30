@@ -7,9 +7,13 @@ const turfBuffer = require('@turf/buffer');
 
 // run this with an unzipped 511 GTFS dump saved in the current directory
 
-// we want to filter out stops only served by ACE and Capitol Corridor JPA
-// since they go far outside the area we have local transit for (e.g. Sacramento,
-// Stockton)
+// for non-Bay Area regions, you will want to change the next few lines that
+// filter specific parts of the Bay Area transit data, but the rest of this
+// algorithm should be usable
+
+// Bay Area: we want to filter out stops only served by ACE and Capitol
+// Corridor JPA since they go far outside the area we have local transit for
+// (e.g. Sacramento, Stockton)
 const FILTERED_AGENCY_IDS = new Set(['CE', 'AM']);
 
 // also let's manually filter the SolTrans B, which stops in Davis and Sacramento
