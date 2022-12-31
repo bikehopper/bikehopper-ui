@@ -81,6 +81,62 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
     // TODO handle errors as well
   };
 
+  const handleMapLoad = () => {
+    if (props.onMapLoad) props.onMapLoad();
+    // Make road labels larger
+    mapRef.current
+      .getMap()
+      // This expression is copied over from mapbox-streets-v11 style,
+      // but with all the size values increated by 2
+      .setLayoutProperty('road-label', 'text-size', [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        10,
+        [
+          'match',
+          ['get', 'class'],
+          ['motorway', 'trunk', 'primary', 'secondary', 'tertiary'],
+          12,
+          [
+            'motorway_link',
+            'trunk_link',
+            'primary_link',
+            'secondary_link',
+            'tertiary_link',
+            'pedestrian',
+            'street',
+            'street_limited',
+          ],
+          11,
+          8.5,
+        ],
+        18,
+        [
+          'match',
+          ['get', 'class'],
+          ['motorway', 'trunk', 'primary', 'secondary', 'tertiary'],
+          18,
+          [
+            'motorway_link',
+            'trunk_link',
+            'primary_link',
+            'secondary_link',
+            'tertiary_link',
+            'pedestrian',
+            'street',
+            'street_limited',
+          ],
+          18,
+          15,
+        ],
+      ]);
+
+    mapRef.current
+      .getMap()
+      .setPaintProperty('road-label', 'text-halo-width', 3);
+  };
+
   const resizeRef = useResizeObserver(
     useCallback(
       ([width, height]) => {
@@ -216,7 +272,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
           width: '100%',
           height: '100%',
         }}
-        onLoad={props.onMapLoad}
+        onLoad={handleMapLoad}
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
         interactiveLayerIds={[
@@ -242,8 +298,9 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
 
         <Source id="routeSource" type="geojson" data={features}>
           {/* Order matters: lowest to highest */}
-          <Layer {...getInactiveStyle(activePath)} />
+          <Layer beforeId="road-label" {...getInactiveStyle(activePath)} />
           <Layer
+            beforeId="road-label"
             {...getLegOutlineStyle(
               'routeDropShadow',
               activePath,
@@ -254,6 +311,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
             )}
           />
           <Layer
+            beforeId="road-label"
             {...getLegOutlineStyle(
               'routeOutline',
               activePath,
@@ -263,10 +321,10 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
               1,
             )}
           />
-          <Layer {...getTransitStyle(activePath)} />
-          <Layer {...getStandardBikeStyle(activePath)} />
-          <Layer {...getSharedLaneStyle(activePath)} />
-          <Layer {...getTransitionStyle(activePath)} />
+          <Layer beforeId="road-label" {...getTransitStyle(activePath)} />
+          <Layer beforeId="road-label" {...getStandardBikeStyle(activePath)} />
+          <Layer beforeId="road-label" {...getSharedLaneStyle(activePath)} />
+          <Layer beforeId="road-label" {...getTransitionStyle(activePath)} />
           <Layer {...getTransitLabelStyle(activePath)} />
           <Layer {...getBikeLabelStyle(activePath)} />
         </Source>
@@ -483,22 +541,12 @@ function getLabelTextField() {
     'case',
     // Bikeable highways display the type with optional street name
     propIs('road_class', ...BIKEABLE_HIGHWAYS),
-    [
-      'case',
-      hasProp('street_name', ''),
-      ['concat', ['get', 'road_class'], '   (', ['get', 'street_name'], ')'],
-      ['get', 'road_class'],
-    ],
+    ['get', 'road_class'],
     // Cycleways display the type with optional street name
     hasProp('cycleway', 'missing', 'no'),
-    [
-      'case',
-      hasProp('street_name', ''),
-      ['concat', ['get', 'cycleway'], '   (', ['get', 'street_name'], ')'],
-      ['get', 'cycleway'],
-    ],
+    ['get', 'cycleway'],
     // Default to public transit route or street name
-    ['coalesce', ['get', 'route_name'], ['get', 'street_name'], ''],
+    ['coalesce', ['get', 'route_name'], ''],
   ];
   return ['format', text];
 }
