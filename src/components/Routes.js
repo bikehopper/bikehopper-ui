@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import pointInPolygon from '@turf/boolean-point-in-polygon';
+import { TRANSIT_SERVICE_AREA } from '../lib/region';
 import {
   routeClicked,
   itineraryBackClicked,
@@ -21,6 +23,8 @@ export default function Routes(props) {
     legIdx,
     stepIdx,
     destinationDescription,
+    outOfAreaStart,
+    outOfAreaEnd,
   } = useSelector(({ routes, routeParams }) => {
     let destinationDescription = 'destination';
     if (routeParams.end && routeParams.end.point) {
@@ -30,6 +34,17 @@ export default function Routes(props) {
     } else {
       console.error('rendering routes: expected end location');
     }
+
+    const outOfAreaStart =
+      TRANSIT_SERVICE_AREA &&
+      routeParams?.start?.point &&
+      !pointInPolygon(routeParams.start.point, TRANSIT_SERVICE_AREA);
+
+    const outOfAreaEnd =
+      TRANSIT_SERVICE_AREA &&
+      routeParams?.end?.point &&
+      !pointInPolygon(routeParams.end.point, TRANSIT_SERVICE_AREA);
+
     return {
       routes: routes.routes,
       activeRoute: routes.activeRoute,
@@ -37,6 +52,8 @@ export default function Routes(props) {
       legIdx: routes.viewingStep && routes.viewingStep[0],
       stepIdx: routes.viewingStep && routes.viewingStep[1],
       destinationDescription,
+      outOfAreaStart,
+      outOfAreaEnd,
     };
   }, shallowEqual);
 
@@ -62,6 +79,8 @@ export default function Routes(props) {
         routes={routes}
         activeRoute={activeRoute}
         onRouteClick={handleRouteClick}
+        outOfAreaStart={outOfAreaStart}
+        outOfAreaEnd={outOfAreaEnd}
       />
     );
   } else if (stepIdx == null) {
