@@ -13,6 +13,8 @@ import { ReactComponent as BusIcon } from 'iconoir/icons/bus-outline.svg';
 import { ReactComponent as TrainIcon } from 'iconoir/icons/train-outline.svg';
 import { ReactComponent as TramIcon } from 'iconoir/icons/tram.svg';
 import { ReactComponent as MetroIcon } from 'iconoir/icons/metro.svg';
+// There's no ferry icon in iconoir! Sea waves is the best I can do.
+import { ReactComponent as FerryIcon } from 'iconoir/icons/sea-waves.svg';
 import { ReactComponent as ArriveIcon } from 'iconoir/icons/triangle-flag.svg';
 import { ReactComponent as UnknownIcon } from 'iconoir/icons/question-mark-circle.svg';
 import './ItineraryHeader.css';
@@ -23,6 +25,7 @@ export const ItineraryHeaderIcons = {
   TRAM: 'tram',
   TRAIN: 'train',
   METRO: 'metro',
+  FERRY: 'ferry',
   ARRIVE: 'arrive',
   UNKNOWN: 'unknown',
 };
@@ -39,6 +42,8 @@ function getIconSVGComponent(iconType) {
       return TrainIcon;
     case ItineraryHeaderIcons.METRO:
       return MetroIcon;
+    case ItineraryHeaderIcons.FERRY:
+      return FerryIcon;
     case ItineraryHeaderIcons.ARRIVE:
       return ArriveIcon;
     default:
