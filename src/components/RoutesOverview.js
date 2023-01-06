@@ -52,6 +52,7 @@ export default function RoutesOverview(props) {
                       type={leg.type}
                       routeName={leg.route_name || leg.route_id}
                       routeColor={leg.route_color}
+                      routeType={leg.route_type}
                       agencyName={leg.agency_name}
                       duration={
                         /* hide duration if route has only one leg */

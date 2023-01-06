@@ -1,8 +1,13 @@
 import * as React from 'react';
+import {
+  describeRouteType,
+  getIconForRouteType,
+  ModeIcons,
+} from '../lib/modeDescriptions';
 import { formatTime, formatDurationBetween } from '../lib/time';
 import { getAgencyDisplayName } from '../lib/region';
 import BorderlessButton from './BorderlessButton';
-import ItineraryHeader, { ItineraryHeaderIcons } from './ItineraryHeader';
+import ItineraryHeader from './ItineraryHeader';
 import ItineraryDivider from './ItineraryDivider';
 import ItinerarySpacer from './ItinerarySpacer';
 import ItineraryStep from './ItineraryStep';
@@ -15,44 +20,8 @@ export default function ItineraryTransitLeg({ leg, onStopClick }) {
   const departure = formatTime(leg.departure_time);
   const arrival = formatTime(leg.arrival_time);
 
-  let mode, icon;
-  switch (leg.route_type) {
-    case 0: // tram, streetcar, light rail
-    case 12: // monorail
-      mode = 'train'; // The more specific word 'tram' might confuse in a US context
-      icon = ItineraryHeaderIcons.TRAM;
-      break;
-    case 1: // subway, metro
-      mode = 'train';
-      icon = ItineraryHeaderIcons.METRO;
-      break;
-    case 2: // rail (intercity, long distance)
-      mode = 'train';
-      icon = ItineraryHeaderIcons.TRAIN;
-      break;
-    case 3: // bus
-    case 11: // trolleybus
-      mode = 'bus';
-      icon = ItineraryHeaderIcons.BUS;
-      break;
-    case 4: // ferry
-      mode = 'ferry';
-      icon = ItineraryHeaderIcons.FERRY;
-      break;
-    case 5: // cable tram
-    case 6: // aerial lift, suspended cable car
-      mode = 'cable car';
-      icon = ItineraryHeaderIcons.TRAM;
-      break;
-    case 7: // funicular
-      mode = 'funicular';
-      icon = ItineraryHeaderIcons.TRAM;
-      break;
-    default:
-      mode = 'line';
-      icon = ItineraryHeaderIcons.BUS;
-  }
-
+  const mode = describeRouteType(leg.route_type);
+  const icon = getIconForRouteType(leg.route_type) || ModeIcons.BUS;
   const agency = getAgencyDisplayName(leg.agency_name);
 
   const stopsTraveled = stops.length - 1;
