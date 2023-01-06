@@ -1,9 +1,10 @@
 import * as React from 'react';
+import { ModeIcons } from '../lib/modeDescriptions';
 import { formatTime, formatDurationBetween } from '../lib/time';
 import { getAgencyDisplayName } from '../lib/region';
 import Icon from './Icon';
 import ItineraryBikeLeg from './ItineraryBikeLeg';
-import ItineraryHeader, { ItineraryHeaderIcons } from './ItineraryHeader';
+import ItineraryHeader from './ItineraryHeader';
 import ItineraryTransitLeg from './ItineraryTransitLeg';
 
 import { ReactComponent as NavLeftArrow } from 'iconoir/icons/nav-arrow-left.svg';
@@ -74,7 +75,7 @@ export default function Itinerary({
       </div>
       <div className="Itinerary_timeline">
         {renderedLegs}
-        <ItineraryHeader icon={ItineraryHeaderIcons.ARRIVE} iconColor="#ea526f">
+        <ItineraryHeader icon={ModeIcons.ARRIVE} iconColor="#ea526f">
           Arrive at destination
         </ItineraryHeader>
       </div>

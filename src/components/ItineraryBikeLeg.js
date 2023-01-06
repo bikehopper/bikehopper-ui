@@ -1,10 +1,11 @@
 import * as React from 'react';
 import formatDistance from '../lib/formatDistance';
 import { describeBikeInfra } from '../lib/geometry';
+import { ModeIcons } from '../lib/modeDescriptions';
 import { formatDurationBetween } from '../lib/time';
 import InstructionSigns from '../lib/InstructionSigns';
 import ItineraryBikeStep from './ItineraryBikeStep';
-import ItineraryHeader, { ItineraryHeaderIcons } from './ItineraryHeader';
+import ItineraryHeader from './ItineraryHeader';
 import ItineraryDivider from './ItineraryDivider';
 import ItinerarySpacer from './ItinerarySpacer';
 
@@ -26,7 +27,7 @@ export default function ItineraryBikeLeg({ leg, legDestination, onStepClick }) {
 
   return (
     <>
-      <ItineraryHeader icon={ItineraryHeaderIcons.BIKE}>
+      <ItineraryHeader icon={ModeIcons.BIKE}>
         <span>Bike to {legDestination}</span>
         <span>
           {formatDistance(leg.distance)} &middot;{' '}

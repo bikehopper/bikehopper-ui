@@ -5,6 +5,16 @@
 }
 
 .RouteLeg_transitMode {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.RouteLeg_transitModeIcon {
+  margin-right: 4px;
+}
+
+.RouteLeg_transitModeName {
   padding: 4px;
   margin-bottom: 2px;
   font-size: 15px;
