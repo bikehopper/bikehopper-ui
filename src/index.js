@@ -1,6 +1,6 @@
 import Bowser from 'bowser';
 import * as React from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
@@ -17,7 +17,9 @@ if (
   document.body.className += ' isIOSChromeOrSafari';
 }
 
-render(
+const root = createRoot(document.getElementById('root'));
+
+root.render(
   <React.StrictMode>
     <Router>
       <Provider store={store}>
@@ -25,7 +27,6 @@ render(
       </Provider>
     </Router>
   </React.StrictMode>,
-  document.getElementById('root'),
 );
 
 // If you want to start measuring performance in your app, pass a function
