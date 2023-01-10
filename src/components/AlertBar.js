@@ -5,8 +5,8 @@ import { AlertSeverity, dismissAlert } from '../features/alerts';
 import Icon from './Icon';
 
 import { ReactComponent as Cancel } from 'iconoir/icons/cancel.svg';
-import { ReactComponent as WarningCircle } from 'iconoir/icons/warning-circled-outline.svg';
-import { ReactComponent as WarningTriangle } from 'iconoir/icons/warning-triangle-outline.svg';
+import { ReactComponent as WarningCircle } from 'iconoir/icons/warning-circle.svg';
+import { ReactComponent as WarningTriangle } from 'iconoir/icons/warning-triangle.svg';
 import './AlertBar.css';
 
 export default function AlertBar(props) {

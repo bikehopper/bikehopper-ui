@@ -1,6 +1,6 @@
 import { ReactComponent as BikeIcon } from 'iconoir/icons/bicycle.svg';
-import { ReactComponent as BusIcon } from 'iconoir/icons/bus-outline.svg';
-import { ReactComponent as TrainIcon } from 'iconoir/icons/train-outline.svg';
+import { ReactComponent as BusIcon } from 'iconoir/icons/bus.svg';
+import { ReactComponent as TrainIcon } from 'iconoir/icons/train.svg';
 import { ReactComponent as TramIcon } from 'iconoir/icons/tram.svg';
 import { ReactComponent as MetroIcon } from 'iconoir/icons/metro.svg';
 // There's no ferry icon in iconoir! Sea waves is the best I can do.

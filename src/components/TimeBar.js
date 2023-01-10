@@ -7,7 +7,7 @@ import Dropdown from 'react-dropdown';
 import usePrevious from '../hooks/usePrevious';
 import { initialTimeSet, departureTypeSelected } from '../features/routeParams';
 
-import { ReactComponent as ClockOutline } from 'iconoir/icons/clock-outline.svg';
+import { ReactComponent as ClockOutline } from 'iconoir/icons/clock.svg';
 import 'react-dropdown/style.css';
 import './TimeBar.css';
 

@@ -21,13 +21,13 @@ import { ReactComponent as Golf } from 'iconoir/icons/golf.svg';
 import { ReactComponent as Gym } from 'iconoir/icons/gym.svg';
 import { ReactComponent as Home } from 'iconoir/icons/home.svg';
 import { ReactComponent as Hospital } from 'iconoir/icons/hospital.svg';
-import { ReactComponent as PharmacyCircledCross } from 'iconoir/icons/pharmacy-circled-cross.svg';
+import { ReactComponent as PharmacyCrossCircle } from 'iconoir/icons/pharmacy-cross-circle.svg';
 import { ReactComponent as Pin } from 'iconoir/icons/pin-alt.svg';
 import { ReactComponent as PineTree } from 'iconoir/icons/pine-tree.svg';
 import { ReactComponent as Position } from 'iconoir/icons/position.svg';
 import { ReactComponent as Sandals } from 'iconoir/icons/sandals.svg';
 import { ReactComponent as Shop } from 'iconoir/icons/shop.svg';
-import { ReactComponent as StarOutline } from 'iconoir/icons/star-outline.svg';
+import { ReactComponent as StarOutline } from 'iconoir/icons/star.svg';
 import { ReactComponent as Swimming } from 'iconoir/icons/swimming.svg';
 import { ReactComponent as Trekking } from 'iconoir/icons/trekking.svg';
 
@@ -207,7 +207,7 @@ function _getSvgForFeature(feature) {
     (key === 'amenity' && value === 'pharmacy') ||
     (key === 'shop' && value === 'chemist')
   ) {
-    Klass = PharmacyCircledCross;
+    Klass = PharmacyCrossCircle;
   } else if (key === 'amenity' && value === 'hospital') {
     Klass = Hospital;
   } else if (key === 'highway' && value === 'cycleway') {
