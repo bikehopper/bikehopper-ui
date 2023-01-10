@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import pointInPolygon from '@turf/boolean-point-in-polygon';
+import usePrevious from '../hooks/usePrevious';
 import { TRANSIT_SERVICE_AREA } from '../lib/region';
 import {
   routeClicked,
@@ -20,8 +21,7 @@ export default function Routes(props) {
     routes,
     activeRoute,
     details,
-    legIdx,
-    stepIdx,
+    viewingStep,
     destinationDescription,
     outOfAreaStart,
     outOfAreaEnd,
@@ -49,13 +49,14 @@ export default function Routes(props) {
       routes: routes.routes,
       activeRoute: routes.activeRoute,
       details: routes.viewingDetails,
-      legIdx: routes.viewingStep && routes.viewingStep[0],
-      stepIdx: routes.viewingStep && routes.viewingStep[1],
+      viewingStep: routes.viewingStep,
       destinationDescription,
       outOfAreaStart,
       outOfAreaEnd,
     };
   }, shallowEqual);
+
+  const prevViewingStep = usePrevious(viewingStep);
 
   const handleRouteClick = (index) => {
     dispatch(routeClicked(index, 'list'));
@@ -83,16 +84,18 @@ export default function Routes(props) {
         outOfAreaEnd={outOfAreaEnd}
       />
     );
-  } else if (stepIdx == null) {
+  } else if (viewingStep == null) {
     return (
       <Itinerary
         route={routes[activeRoute]}
         onBackClick={handleBackClick}
         onStepClick={handleStepClick}
         destinationDescription={destinationDescription}
+        scrollToStep={prevViewingStep}
       />
     );
   } else {
+    const [legIdx, stepIdx] = viewingStep;
     const leg = routes[activeRoute].legs[legIdx];
 
     if (leg.type !== 'pt') {

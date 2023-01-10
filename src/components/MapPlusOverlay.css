@@ -28,6 +28,7 @@
   flex-grow: 1;
   flex-direction: column;
   overflow-y: scroll;
+  position: relative; /* make this the offsetParent so stuff can be scrolled into view */
 }
 
 .MapPlusOverlay_bottomPane {
