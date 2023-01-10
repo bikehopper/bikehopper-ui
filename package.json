@@ -67,7 +67,6 @@
     "redux-thunk": "^2.4.1",
     "resolve": "^1.20.0",
     "resolve-url-loader": "^5.0.0",
-    "sass-loader": "^12.3.0",
     "semver": "^7.3.5",
     "source-map-loader": "^4.0.1",
     "style-loader": "^3.3.1",
