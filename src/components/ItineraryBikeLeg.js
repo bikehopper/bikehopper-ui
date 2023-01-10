@@ -4,12 +4,18 @@ import { describeBikeInfra } from '../lib/geometry';
 import { ModeIcons } from '../lib/modeDescriptions';
 import { formatDurationBetween } from '../lib/time';
 import InstructionSigns from '../lib/InstructionSigns';
+import useScrollToRef from '../hooks/useScrollToRef';
 import ItineraryBikeStep from './ItineraryBikeStep';
 import ItineraryHeader from './ItineraryHeader';
 import ItineraryDivider from './ItineraryDivider';
 import ItinerarySpacer from './ItinerarySpacer';
 
-export default function ItineraryBikeLeg({ leg, legDestination, onStepClick }) {
+export default function ItineraryBikeLeg({
+  leg,
+  legDestination,
+  onStepClick,
+  scrollToStep,
+}) {
   const instructionsWithBikeInfra = React.useMemo(() => {
     return leg.instructions.map((step) => {
       return {
@@ -24,6 +30,8 @@ export default function ItineraryBikeLeg({ leg, legDestination, onStepClick }) {
       };
     });
   }, [leg]);
+
+  const scrollToRef = useScrollToRef();
 
   return (
     <>
@@ -44,6 +52,7 @@ export default function ItineraryBikeLeg({ leg, legDestination, onStepClick }) {
                 step={step}
                 isFirstStep={stepIdx === 0}
                 onClick={onStepClick.bind(null, stepIdx)}
+                rootRef={stepIdx === scrollToStep ? scrollToRef : null}
               />,
               <ItineraryDivider
                 key={stepIdx + 'd'}

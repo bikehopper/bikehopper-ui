@@ -15,7 +15,10 @@ export default function Itinerary({
   destinationDescription,
   onBackClick,
   onStepClick,
+  scrollToStep,
 }) {
+  const [scrollToLegIdx, scrollToStepIdx] = scrollToStep || [];
+
   const renderedLegs = route.legs.map((leg, idx, legs) => {
     if (leg.type === 'pt') {
       return (
@@ -23,6 +26,7 @@ export default function Itinerary({
           key={idx}
           leg={leg}
           onStopClick={onStepClick.bind(null, idx)}
+          scrollTo={scrollToLegIdx === idx}
         />
       );
     } else {
@@ -37,6 +41,7 @@ export default function Itinerary({
           leg={leg}
           legDestination={legDestination}
           onStepClick={onStepClick.bind(null, idx)}
+          scrollToStep={scrollToLegIdx === idx ? scrollToStepIdx : null}
         />
       );
     }

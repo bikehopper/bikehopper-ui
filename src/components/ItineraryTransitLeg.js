@@ -6,6 +6,7 @@ import {
 } from '../lib/modeDescriptions';
 import { formatTime, formatDurationBetween } from '../lib/time';
 import { getAgencyDisplayName } from '../lib/region';
+import useScrollToRef from '../hooks/useScrollToRef';
 import BorderlessButton from './BorderlessButton';
 import ItineraryHeader from './ItineraryHeader';
 import ItineraryDivider from './ItineraryDivider';
@@ -14,7 +15,9 @@ import ItineraryStep from './ItineraryStep';
 
 import { ReactComponent as Circle } from 'iconoir/icons/circle.svg';
 
-export default function ItineraryTransitLeg({ leg, onStopClick }) {
+import './ItineraryTransitLeg.css';
+
+export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
   const { stops } = leg;
 
   const departure = formatTime(leg.departure_time);
@@ -26,8 +29,11 @@ export default function ItineraryTransitLeg({ leg, onStopClick }) {
 
   const stopsTraveled = stops.length - 1;
   const stopsBetweenStartAndEnd = stopsTraveled - 1;
+
+  const scrollToRef = useScrollToRef();
+
   return (
-    <>
+    <div className="ItineraryTransitLeg" ref={scrollTo ? scrollToRef : null}>
       <ItineraryHeader icon={icon} iconColor={leg.route_color}>
         <span>
           Ride the {leg.route_name || leg.route_id} {mode} ({agency})
@@ -61,7 +67,7 @@ export default function ItineraryTransitLeg({ leg, onStopClick }) {
       </ItineraryStep>
       <ItineraryDivider />
       <ItinerarySpacer />
-    </>
+    </div>
   );
 }
 

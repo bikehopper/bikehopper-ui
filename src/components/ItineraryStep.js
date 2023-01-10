@@ -5,11 +5,15 @@ import ItineraryRow from './ItineraryRow';
 
 import './ItineraryStep.css';
 
-export default function ItineraryStep(props) {
-  const { IconSVGComponent, smallIcon } = props;
+export default function ItineraryStep({
+  IconSVGComponent,
+  smallIcon,
+  rootRef,
+  children,
+}) {
   const iconSize = smallIcon ? 15 : 30;
   return (
-    <ItineraryRow>
+    <ItineraryRow rootRef={rootRef}>
       <span
         className={classnames({
           ItineraryStep_iconContainer: true,
@@ -29,7 +33,7 @@ export default function ItineraryStep(props) {
           />
         </Icon>
       </span>
-      <p className="ItineraryStep_content">{props.children}</p>
+      <p className="ItineraryStep_content">{children}</p>
     </ItineraryRow>
   );
 }

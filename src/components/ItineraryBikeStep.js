@@ -10,7 +10,12 @@ import { ReactComponent as ArrowUp } from 'iconoir/icons/arrow-up.svg';
 import { ReactComponent as TriangleFlag } from 'iconoir/icons/triangle-flag.svg';
 import { ReactComponent as QuestionMarkCircle } from 'iconoir/icons/question-mark-circle.svg';
 
-export default function ItineraryBikeStep({ step, isFirstStep, onClick }) {
+export default function ItineraryBikeStep({
+  step,
+  isFirstStep,
+  onClick,
+  rootRef,
+}) {
   let IconComponent = QuestionMarkCircle;
   let verb = 'Proceed';
   let direction = null;
@@ -111,7 +116,7 @@ export default function ItineraryBikeStep({ step, isFirstStep, onClick }) {
   }
 
   return (
-    <ItineraryStep IconSVGComponent={IconComponent}>
+    <ItineraryStep IconSVGComponent={IconComponent} rootRef={rootRef}>
       <BorderlessButton onClick={onClick}>{contents}</BorderlessButton>
     </ItineraryStep>
   );
