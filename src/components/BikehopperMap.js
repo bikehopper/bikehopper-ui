@@ -15,6 +15,7 @@ import {
 } from '../lib/geometry';
 import lngLatToCoords from '../lib/lngLatToCoords';
 import { geolocated } from '../features/geolocation';
+import { mapLoaded } from '../features/misc';
 import { locationDragged } from '../features/routeParams';
 import { routeClicked } from '../features/routes';
 import { mapMoved } from '../features/viewport';
@@ -55,6 +56,11 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
     }),
     shallowEqual,
   );
+
+  const handleMapLoad = (evt) => {
+    if (props.onMapLoad) props.onMapLoad(evt);
+    dispatch(mapLoaded());
+  };
 
   const handleRouteClick = (evt) => {
     if (evt.features?.length) {
@@ -216,7 +222,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
           width: '100%',
           height: '100%',
         }}
-        onLoad={props.onMapLoad}
+        onLoad={handleMapLoad}
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
         interactiveLayerIds={[
