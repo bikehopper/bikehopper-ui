@@ -69,7 +69,9 @@ body.isIOSChromeOrSafari .MapPlusOverlay_bottomPane {
 /* The transparent section of the overlay, through which the map can
  * be viewed and interacted with. */
 .MapPlusOverlay_window {
-  flex-basis: calc(100% - 140px);
+  flex-basis: calc(
+    100% - 140px
+  ); /* keep in sync w lib/layout BOTTOM_DRAWER_MIN_HEIGHT */
   flex-shrink: 0;
   flex-grow: 1;
 }

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import pointInPolygon from '@turf/boolean-point-in-polygon';
 import usePrevious from '../hooks/usePrevious';
+import { BOTTOM_DRAWER_MIN_HEIGHT } from '../lib/layout';
 import { TRANSIT_SERVICE_AREA } from '../lib/region';
 import {
   routeClicked,
@@ -74,6 +75,27 @@ export default function Routes(props) {
     dispatch(itineraryStepBackClicked());
   };
 
+  const wasViewingDetails = usePrevious(details);
+  const itineraryRootRef = React.useRef();
+
+  React.useEffect(() => {
+    const el = itineraryRootRef.current;
+
+    // When entering the itinerary view, pop the bottom drawer up a bit
+    if (el && details && !wasViewingDetails) {
+      const container = el.offsetParent;
+      container.scrollTo({
+        // Show up to 325px of the itinerary, but never take up more than half the
+        // vertical height of the map.
+        top: Math.min(
+          400 - BOTTOM_DRAWER_MIN_HEIGHT,
+          container.clientHeight / 2 - BOTTOM_DRAWER_MIN_HEIGHT,
+        ),
+        behavior: 'smooth',
+      });
+    }
+  }, [details, wasViewingDetails]);
+
   if (!details) {
     return (
       <RoutesOverview
@@ -92,6 +114,7 @@ export default function Routes(props) {
         onStepClick={handleStepClick}
         destinationDescription={destinationDescription}
         scrollToStep={prevViewingStep}
+        rootRef={itineraryRootRef}
       />
     );
   } else {
