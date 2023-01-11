@@ -1,5 +1,6 @@
 import { createBrowserHistory } from 'history';
 import describePlace from '../lib/describePlace';
+import { isPWA } from '../lib/pwa';
 import {
   LocationSourceType,
   hydrateParamsFromUrl,
@@ -90,7 +91,17 @@ export default function routesUrlMiddleware(store) {
 function _initializeFromUrl(store) {
   history = createBrowserHistory();
 
-  const pathElements = history.location.pathname.split('/').slice(1);
+  let pathnameToInitializeFrom = history.location.pathname;
+
+  if (isPWA()) {
+    const lastPathname = localStorage.getItem('lastPathname');
+    if (lastPathname && lastPathname !== '/')
+      pathnameToInitializeFrom = lastPathname;
+
+    history.listen(_copyUrlToLocalStorage);
+  }
+
+  const pathElements = pathnameToInitializeFrom.split('/').slice(1);
   const POINT_RE = /^(?:([^@]+)@+)?(-?\d+\.\d*),(-?\d+\.\d*)$/;
 
   // See if path can be parsed as a route, such as
@@ -144,4 +155,10 @@ function _initializeFromUrl(store) {
 function _coordsEqual(a, b) {
   if (!a || !b) return a === b; // handle null input
   return a[0] === b[0] && a[1] === b[1];
+}
+
+// When running as a progressive web app, copy the location to localStorage
+// so we can restore it if the app pages out of memory.
+function _copyUrlToLocalStorage({ action, location }) {
+  localStorage.setItem('lastPathname', location.pathname);
 }
