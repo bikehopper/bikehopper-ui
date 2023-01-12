@@ -76,28 +76,39 @@ export default function Routes(props) {
   };
 
   const wasViewingDetails = usePrevious(details);
-  const itineraryRootRef = React.useRef();
+  const rootRef = React.useRef();
+  const scrollTopBeforeItineraryOpen = React.useRef();
 
   React.useEffect(() => {
-    const el = itineraryRootRef.current;
+    const el = rootRef.current;
 
     // When entering the itinerary view, pop the bottom drawer up a bit
     if (el && details && !wasViewingDetails) {
       const container = el.offsetParent;
-      container.scrollTo({
-        // Show up to 325px of the itinerary, but never take up more than half the
-        // vertical height of the map.
-        top: Math.min(
-          400 - BOTTOM_DRAWER_MIN_HEIGHT,
-          container.clientHeight / 2 - BOTTOM_DRAWER_MIN_HEIGHT,
-        ),
-        behavior: 'smooth',
-      });
+
+      // Show up to 325px of the itinerary, but never take up more than half the
+      // vertical height of the map.
+      const desiredTop = Math.min(
+        400 - BOTTOM_DRAWER_MIN_HEIGHT,
+        container.clientHeight / 2 - BOTTOM_DRAWER_MIN_HEIGHT,
+      );
+      scrollTopBeforeItineraryOpen.current = container.scrollTop;
+      if (container.scrollTop < desiredTop)
+        container.scrollTo({ top: desiredTop, behavior: 'smooth' });
+    } else if (el && !details && wasViewingDetails) {
+      // Undo the popping up
+      const container = el.offsetParent;
+      const desiredTop = scrollTopBeforeItineraryOpen.current;
+      if (desiredTop != null && container.scrollTop > desiredTop)
+        container.scrollTo({ top: desiredTop, behavior: 'smooth' });
+      scrollTopBeforeItineraryOpen.current = null;
     }
   }, [details, wasViewingDetails]);
 
+  let content;
+
   if (!details) {
-    return (
+    content = (
       <RoutesOverview
         routes={routes}
         activeRoute={activeRoute}
@@ -107,14 +118,13 @@ export default function Routes(props) {
       />
     );
   } else if (viewingStep == null) {
-    return (
+    content = (
       <Itinerary
         route={routes[activeRoute]}
         onBackClick={handleBackClick}
         onStepClick={handleStepClick}
         destinationDescription={destinationDescription}
         scrollToStep={prevViewingStep}
-        rootRef={itineraryRootRef}
       />
     );
   } else {
@@ -122,7 +132,7 @@ export default function Routes(props) {
     const leg = routes[activeRoute].legs[legIdx];
 
     if (leg.type !== 'pt') {
-      return (
+      content = (
         <ItinerarySingleStep
           leg={leg}
           stepIdx={stepIdx}
@@ -130,7 +140,7 @@ export default function Routes(props) {
         />
       );
     } else {
-      return (
+      content = (
         <ItinerarySingleTransitStop
           stop={leg.stops[stepIdx]}
           relationship={stepIdx === 0 ? 'board' : 'alight'}
@@ -139,4 +149,6 @@ export default function Routes(props) {
       );
     }
   }
+
+  return <div ref={rootRef}>{content}</div>;
 }

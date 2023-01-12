@@ -16,7 +16,6 @@ export default function Itinerary({
   onBackClick,
   onStepClick,
   scrollToStep,
-  rootRef,
 }) {
   const [scrollToLegIdx, scrollToStepIdx] = scrollToStep || [];
 
@@ -63,7 +62,7 @@ export default function Itinerary({
     .join(', ');
 
   return (
-    <div className="Itinerary" ref={rootRef}>
+    <div className="Itinerary">
       <div className="Itinerary_backBtnAndHeadings">
         <button onClick={onBackClick} className="Itinerary_backButton">
           <Icon label="Back to routes overview" className="Itinerary_backIcon">
