@@ -57,11 +57,6 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
     shallowEqual,
   );
 
-  const handleMapLoad = (evt) => {
-    if (props.onMapLoad) props.onMapLoad(evt);
-    dispatch(mapLoaded());
-  };
-
   const handleRouteClick = (evt) => {
     if (evt.features?.length) {
       dispatch(routeClicked(evt.features[0].properties.path_index, 'map'));
@@ -89,6 +84,8 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
 
   const handleMapLoad = () => {
     if (props.onMapLoad) props.onMapLoad();
+    dispatch(mapLoaded());
+
     // Make road labels larger
     mapRef.current
       .getMap()
