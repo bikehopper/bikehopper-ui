@@ -14,7 +14,6 @@ import {
   swapLocations,
 } from '../features/routeParams';
 import usePrevious from '../hooks/usePrevious';
-import { ReactComponent as Pin } from 'iconoir/icons/pin-alt.svg';
 import { ReactComponent as NavLeftArrow } from 'iconoir/icons/nav-arrow-left.svg';
 import { ReactComponent as SwapArrows } from 'iconoir/icons/data-transfer-both.svg';
 
@@ -166,31 +165,6 @@ export default function SearchBar(props) {
     if (evt.key === 'Enter') handleSubmit(evt);
   };
 
-  // If a feature was selected for either point, use its icon; else default to pin icon.
-  const ICON_CLASS = 'SearchBar_icon';
-  let startIcon = (
-    <Icon className={ICON_CLASS}>
-      <Pin />
-    </Icon>
-  );
-  let endIcon = startIcon;
-  if (
-    startLocation &&
-    startLocation.source === LocationSourceType.Geocoded &&
-    !startTextModified
-  ) {
-    startIcon = (
-      <PlaceIcon className={ICON_CLASS} place={startLocation.point} />
-    );
-  }
-  if (
-    endLocation &&
-    endLocation.source === LocationSourceType.Geocoded &&
-    !endTextModified
-  ) {
-    endIcon = <PlaceIcon className={ICON_CLASS} place={endLocation.point} />;
-  }
-
   return (
     <div className="SearchBar">
       <button onClick={handleBackClick} className="SearchBar_backButton">
@@ -201,7 +175,12 @@ export default function SearchBar(props) {
       <div className="SearchBar_inputs">
         <form onSubmit={handleSubmit}>
           <span className="SearchBar_inputContainer">
-            {startIcon}
+            <PlaceIcon
+              className="SearchBar_icon"
+              place={
+                startLocation && !startTextModified ? startLocation.point : null
+              }
+            />
             <input
               aria-label="Starting point"
               className="SearchBar_input"
@@ -217,7 +196,10 @@ export default function SearchBar(props) {
           </span>
           <span className="SearchBar_divider_dotted" />
           <span className="SearchBar_inputContainer">
-            {endIcon}
+            <PlaceIcon
+              className="SearchBar_icon"
+              place={endLocation && !endTextModified ? endLocation.point : null}
+            />
             <input
               aria-label="Destination"
               className="SearchBar_input"
