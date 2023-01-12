@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './Icon';
+import PlaceIcon from './PlaceIcon';
 import TimeBar from './TimeBar';
 import { isAutocompleteResultElement } from './SearchAutocompleteDropdown';
 import {
@@ -39,9 +40,10 @@ export default function SearchBar(props) {
   const startRef = React.useRef();
   const endRef = React.useRef();
 
-  // Has the text of either start or end been modified, since something that aborted or
+  // Has the text of start/end been modified, since something that aborted or
   // completed the edit?
-  const [textModified, setTextModified] = React.useState(false);
+  const [startTextModified, setStartTextModified] = React.useState(false);
+  const [endTextModified, setEndTextModified] = React.useState(false);
 
   const displayedStart = _getDisplayedText(
     startText,
@@ -55,31 +57,34 @@ export default function SearchBar(props) {
   );
 
   const handleStartChange = (evt) => {
-    setTextModified(true);
+    setStartTextModified(true);
     dispatch(changeLocationTextInput('start', evt.target.value));
   };
 
   const handleEndChange = (evt) => {
-    setTextModified(true);
+    setEndTextModified(true);
     dispatch(changeLocationTextInput('end', evt.target.value));
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    setTextModified(false);
+    setStartTextModified(false);
+    setEndTextModified(false);
     event.target.blur();
 
     dispatch(locationsSubmitted());
   };
 
   const handleBackClick = (event) => {
-    setTextModified(false);
+    setStartTextModified(false);
+    setEndTextModified(false);
     dispatch(clearRouteParams());
   };
 
   const handleSwapClick = (event) => {
     event.preventDefault();
-    setTextModified(false);
+    setStartTextModified(false);
+    setEndTextModified(false);
 
     dispatch(swapLocations());
   };
@@ -112,7 +117,7 @@ export default function SearchBar(props) {
     if (
       !isAutocompleteResultFocused &&
       !isOtherSearchInputFocused &&
-      !textModified &&
+      !(startTextModified || endTextModified) &&
       haveLocations
     ) {
       dispatch(blurSearchWithUnchangedLocations());
@@ -136,14 +141,16 @@ export default function SearchBar(props) {
       if (!endLocation) {
         endRef.current.focus();
       } else {
-        setTextModified(false);
+        setStartTextModified(false);
+        setEndTextModified(false);
         startRef.current.blur();
       }
     } else if (editingLocation === 'end' && justFilledEnd) {
       if (!startLocation) {
         startRef.current.focus();
       } else {
-        setTextModified(false);
+        setStartTextModified(false);
+        setEndTextModified(false);
         endRef.current.blur();
       }
     }
@@ -159,6 +166,31 @@ export default function SearchBar(props) {
     if (evt.key === 'Enter') handleSubmit(evt);
   };
 
+  // If a feature was selected for either point, use its icon; else default to pin icon.
+  const ICON_CLASS = 'SearchBar_icon';
+  let startIcon = (
+    <Icon className={ICON_CLASS}>
+      <Pin />
+    </Icon>
+  );
+  let endIcon = startIcon;
+  if (
+    startLocation &&
+    startLocation.source === LocationSourceType.Geocoded &&
+    !startTextModified
+  ) {
+    startIcon = (
+      <PlaceIcon className={ICON_CLASS} place={startLocation.point} />
+    );
+  }
+  if (
+    endLocation &&
+    endLocation.source === LocationSourceType.Geocoded &&
+    !endTextModified
+  ) {
+    endIcon = <PlaceIcon className={ICON_CLASS} place={endLocation.point} />;
+  }
+
   return (
     <div className="SearchBar">
       <button onClick={handleBackClick} className="SearchBar_backButton">
@@ -169,9 +201,7 @@ export default function SearchBar(props) {
       <div className="SearchBar_inputs">
         <form onSubmit={handleSubmit}>
           <span className="SearchBar_inputContainer">
-            <Icon className="SearchBar_icon">
-              <Pin />
-            </Icon>
+            {startIcon}
             <input
               aria-label="Starting point"
               className="SearchBar_input"
@@ -187,9 +217,7 @@ export default function SearchBar(props) {
           </span>
           <span className="SearchBar_divider_dotted" />
           <span className="SearchBar_inputContainer">
-            <Icon className="SearchBar_icon">
-              <Pin />
-            </Icon>
+            {endIcon}
             <input
               aria-label="Destination"
               className="SearchBar_input"
