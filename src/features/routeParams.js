@@ -244,10 +244,11 @@ export function locationsSubmitted() {
       if (!useLocation) {
         text = text.trim();
 
-        let cacheEntry = getState().geocoding.cache['@' + text];
+        let geocodingState = getState().geocoding;
+        let cacheEntry = geocodingState.typeaheadCache['@' + text];
         if (cacheEntry && cacheEntry.status === 'succeeded') {
           return {
-            point: cacheEntry.features[0],
+            point: geocodingState.osmCache[cacheEntry.osmIds[0]],
             source: LocationSourceType.Geocoded,
           };
         }
@@ -257,10 +258,11 @@ export function locationsSubmitted() {
         })(dispatch, getState);
 
         // check again if geocoding succeeded (there's no direct return value)
-        cacheEntry = getState().geocoding.cache['@' + text];
+        geocodingState = getState().geocoding;
+        cacheEntry = geocodingState.typeaheadCache['@' + text];
         if (cacheEntry && cacheEntry.status === 'succeeded') {
           return {
-            point: cacheEntry.features[0],
+            point: geocodingState.osmCache[cacheEntry.osmIds[0]],
             source: LocationSourceType.Geocoded,
           };
         }

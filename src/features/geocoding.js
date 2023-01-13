@@ -1,37 +1,66 @@
 import produce from 'immer';
+import uniqBy from 'lodash/uniqBy';
 import * as BikehopperClient from '../lib/BikehopperClient';
 import delay from '../lib/delay';
 
 const GEOCODE_RESULT_LIMIT = 8;
 
+const RECENTLY_USED_LIMIT = 8;
+const RECENTLY_USED_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+
 const DEFAULT_STATE = {
-  // maps location strings to geocoded results.
+  // maps location strings to {
+  //    status: 'fetching' | 'failed' | 'succeeded',
+  //    time: /* time as returned from Date.now() */,
+  //    osmIds: OSM ID strings,
+  // }
   // all location strings are prefixed with '@' to avoid collisions w built-in attributes.
-  cache: {},
+  typeaheadCache: {},
+
+  // maps OSM IDs (stringified) to Photon GeoJSON hashes
+  osmCache: {},
+
+  // recently used locations
+  // each record contains {
+  //    feature: /* Photon GeoJSON feature */,
+  //    lastUsed: /* time of last use as returned from Date.now() */
+  // }
+  recentlyUsed: [],
 };
 
 export function geocodingReducer(state = DEFAULT_STATE, action) {
   switch (action.type) {
     case 'geocode_attempted':
       return produce(state, (draft) => {
-        draft.cache['@' + action.text] = {
+        draft.typeaheadCache['@' + action.text] = {
           status: 'fetching',
           time: action.time,
         };
       });
     case 'geocode_failed':
       return produce(state, (draft) => {
-        draft.cache['@' + action.text] = {
+        draft.typeaheadCache['@' + action.text] = {
           status: 'failed',
           time: action.time,
         };
       });
     case 'geocode_succeeded':
       return produce(state, (draft) => {
-        draft.cache['@' + action.text] = {
+        const osmIds = [];
+        // TODO: Denormalize and somehow save both osm_key/osm_value pairs when we get dupes
+        const dedupedFeatures = uniqBy(action.features, 'properties.osm_id');
+
+        for (const feat of dedupedFeatures) {
+          const id = feat.properties.osm_id;
+          if (id !== osmIds[osmIds.length - 1]) {
+            osmIds.push(id);
+            draft.osmCache[id] = feat;
+          }
+        }
+        draft.typeaheadCache['@' + action.text] = {
           status: 'succeeded',
           time: action.time,
-          features: action.features,
+          osmIds,
         };
       });
     default:

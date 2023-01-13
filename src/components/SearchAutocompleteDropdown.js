@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import uniqBy from 'lodash/uniqBy';
 import {
   LocationSourceType,
   selectCurrentLocation,
@@ -46,7 +45,8 @@ export default function SearchAutocompleteDropdown(props) {
       if (!startOrEnd) throw new Error('expected to be editing start or end');
 
       let inputText = state.routeParams[startOrEnd + 'InputText'];
-      let cache = inputText && state.geocoding.cache['@' + inputText.trim()];
+      let cache =
+        inputText && state.geocoding.typeaheadCache['@' + inputText.trim()];
       let fallbackToGeocodedLocationSourceText = false;
       if (!cache || cache.status !== 'succeeded') {
         // If the location we're editing has a geocoded location already selected, display the
@@ -60,7 +60,7 @@ export default function SearchAutocompleteDropdown(props) {
             inputText === describePlace(relevantLocation.point))
         ) {
           inputText = relevantLocation.fromInputText;
-          cache = state.geocoding.cache['@' + inputText.trim()];
+          cache = state.geocoding.typeaheadCache['@' + inputText.trim()];
           fallbackToGeocodedLocationSourceText = true;
         } else {
           // Still nothing? Try prefixes of the input text. Example: current input text is
@@ -73,7 +73,7 @@ export default function SearchAutocompleteDropdown(props) {
             strippedChars++ < 8
           ) {
             inputText = inputText.substr(0, inputText.length - 1);
-            cache = state.geocoding.cache['@' + inputText.trim()];
+            cache = state.geocoding.typeaheadCache['@' + inputText.trim()];
           }
         }
       }
@@ -96,16 +96,16 @@ export default function SearchAutocompleteDropdown(props) {
         startOrEnd,
         inputText,
         geocodedFeatures:
-          cache && cache.status === 'succeeded' ? cache.features : [],
+          cache && cache.status === 'succeeded'
+            ? cache.osmIds.map((id) => state.geocoding.osmCache[id])
+            : [],
         showCurrentLocationOption,
       };
     }, shallowEqual);
 
-  const dedupedFeatures = uniqBy(geocodedFeatures, 'properties.osm_id');
-
   const handleClick = (index) => {
     dispatch(
-      selectGeocodedLocation(startOrEnd, dedupedFeatures[index], inputText),
+      selectGeocodedLocation(startOrEnd, geocodedFeatures[index], inputText),
     );
   };
 
@@ -128,7 +128,7 @@ export default function SearchAutocompleteDropdown(props) {
           </span>
         </SelectionListItem>
       )}
-      {dedupedFeatures.map((feature, index) => (
+      {geocodedFeatures.map((feature, index) => (
         <SelectionListItem
           buttonClassName={LIST_ITEM_CLASSNAME}
           key={feature.properties.osm_id + ':' + feature.properties.type}
