@@ -95,7 +95,11 @@ function _initializeFromUrl(store) {
   let pathnameToInitializeFrom = history.location.pathname;
 
   if (isPWA()) {
-    const lastPathname = localStorage.getItem('lastPathname');
+    let lastPathname;
+    try {
+      lastPathname = localStorage.getItem('lastPathname');
+    } catch (e) {}
+
     if (lastPathname && lastPathname !== '/')
       pathnameToInitializeFrom = lastPathname;
 
@@ -161,5 +165,7 @@ function _coordsEqual(a, b) {
 // When running as a progressive web app, copy the location to localStorage
 // so we can restore it if the app pages out of memory.
 function _copyUrlToLocalStorage({ action, location }) {
-  localStorage.setItem('lastPathname', location.pathname);
+  try {
+    localStorage.setItem('lastPathname', location.pathname);
+  } catch (e) {}
 }
