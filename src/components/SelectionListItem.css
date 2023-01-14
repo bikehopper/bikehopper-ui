@@ -5,11 +5,21 @@
   flex-direction: row;
 }
 
-.SelectionListItem_active {
+.SelectionListItem__active {
   background-color: #efefef;
 }
 
-.SelectionListItem_link {
+.SelectionListItem_button {
+  /* reset; below based on BorderlessButton, but we don't want zero padding */
+  border: none;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  cursor: pointer;
+  text-align: left;
+  /* end reset */
+
   padding: 8px 24px;
   flex-grow: 1;
 }

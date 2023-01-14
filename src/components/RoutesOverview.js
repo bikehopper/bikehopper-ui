@@ -22,64 +22,66 @@ export default function RoutesOverview(props) {
     .join(' and ');
 
   return (
-    <SelectionList>
+    <div className="RoutesOverview">
       {outOfArea && (
-        <SelectionListItem key="outOfAreaWarning">
+        <div className="RoutesOverview_outOfAreaWarning">
           Transit options may be missing. Your {outOfArea} fall
           {outOfAreaStart && outOfAreaEnd ? '' : 's'} outside the area where
           BikeHopper has local transit data.
-        </SelectionListItem>
+        </div>
       )}
-      {routes.map((route, index) => (
-        <SelectionListItem
-          active={activeRoute === index}
-          onClick={onRouteClick.bind(null, index)}
-          key={route.nonce}
-        >
-          <div className="RoutesOverview_row">
-            <ul className="RoutesOverview_routeLegs">
-              {route.legs.filter(isSignificantLeg).map((leg, index) => (
-                <React.Fragment key={route.nonce + ':' + index}>
-                  {index > 0 && (
-                    <li className="RoutesOverview_legSeparator">
-                      <Icon>
-                        <NavArrowRight />
-                      </Icon>
+      <SelectionList>
+        {routes.map((route, index) => (
+          <SelectionListItem
+            active={activeRoute === index}
+            onClick={onRouteClick.bind(null, index)}
+            key={route.nonce}
+          >
+            <div className="RoutesOverview_row">
+              <ul className="RoutesOverview_routeLegs">
+                {route.legs.filter(isSignificantLeg).map((leg, index) => (
+                  <React.Fragment key={route.nonce + ':' + index}>
+                    {index > 0 && (
+                      <li className="RoutesOverview_legSeparator">
+                        <Icon>
+                          <NavArrowRight />
+                        </Icon>
+                      </li>
+                    )}
+                    <li className="RoutesOverview_leg">
+                      <RouteLeg
+                        type={leg.type}
+                        routeName={leg.route_name || leg.route_id}
+                        routeColor={leg.route_color}
+                        routeType={leg.route_type}
+                        agencyName={leg.agency_name}
+                        duration={
+                          /* hide duration if route has only one leg */
+                          route.legs.length > 1 &&
+                          new Date(leg.arrival_time) -
+                            new Date(leg.departure_time)
+                        }
+                      />
                     </li>
-                  )}
-                  <li className="RoutesOverview_leg">
-                    <RouteLeg
-                      type={leg.type}
-                      routeName={leg.route_name || leg.route_id}
-                      routeColor={leg.route_color}
-                      routeType={leg.route_type}
-                      agencyName={leg.agency_name}
-                      duration={
-                        /* hide duration if route has only one leg */
-                        route.legs.length > 1 &&
-                        new Date(leg.arrival_time) -
-                          new Date(leg.departure_time)
-                      }
-                    />
-                  </li>
-                </React.Fragment>
-              ))}
-            </ul>
-            <p className="RoutesOverview_timeEstimate">
-              {formatInterval(
-                new Date(route.legs[route.legs.length - 1].arrival_time) -
-                  new Date(route.legs[0].departure_time),
-              )}
-            </p>
-          </div>
-          <DepartArriveTime
-            className="RoutesOverview_departArriveTime"
-            depart={route.legs[0].departure_time}
-            arrive={route.legs[route.legs.length - 1].arrival_time}
-          />
-        </SelectionListItem>
-      ))}
-    </SelectionList>
+                  </React.Fragment>
+                ))}
+              </ul>
+              <p className="RoutesOverview_timeEstimate">
+                {formatInterval(
+                  new Date(route.legs[route.legs.length - 1].arrival_time) -
+                    new Date(route.legs[0].departure_time),
+                )}
+              </p>
+            </div>
+            <DepartArriveTime
+              className="RoutesOverview_departArriveTime"
+              depart={route.legs[0].departure_time}
+              arrive={route.legs[route.legs.length - 1].arrival_time}
+            />
+          </SelectionListItem>
+        ))}
+      </SelectionList>
+    </div>
   );
 }
 

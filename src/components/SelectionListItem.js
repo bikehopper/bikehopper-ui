@@ -3,30 +3,25 @@ import classnames from 'classnames';
 
 import './SelectionListItem.css';
 
-export default function SelectionListItem(props) {
-  const handleClick = (evt) => {
-    evt.preventDefault();
-    props.onClick(evt);
-  };
+// This is only for clickable stuff! Do not use without an onClick
 
+export default function SelectionListItem(props) {
   return (
     <li
       className={classnames({
         SelectionListItem: true,
-        SelectionListItem_active: props.active,
+        SelectionListItem__active: props.active,
       })}
     >
-      <a
-        href="#"
-        onClick={handleClick}
+      <button
+        onClick={props.onClick}
         className={classnames({
-          SelectionListItem_link: true,
+          SelectionListItem_button: true,
           [props.className]: !!props.className,
         })}
-        tabIndex={0}
       >
         {props.children}
-      </a>
+      </button>
     </li>
   );
 }
