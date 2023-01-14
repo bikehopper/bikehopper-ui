@@ -23,3 +23,33 @@
   padding: 8px 24px;
   flex-grow: 1;
 }
+
+.SelectionListItem_button__removable {
+  padding-right: 12px;
+}
+
+.SelectionListItem_remove {
+  /* reset; below based on BorderlessButton, but we don't want zero padding */
+  border: none;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  cursor: pointer;
+  text-align: left;
+  /* end reset */
+
+  /* Padding = clickable as part of the button, margin = not clickable.  Using
+   * a little bit of side padding to avoid making the tap target too small, but
+   * mostly margin, since if you tap over at the far right, you may not intend
+   * to remove the item. There's a little gap in between the button to select
+   * the item and the button to remove the item; if it's not clear whether you
+   * mean to select or remove, best do nothing.
+   */
+  padding: 8px 4px;
+  margin: 0 12px;
+}
+
+.SelectionListItem_removeIcon {
+  top: 2px;
+}

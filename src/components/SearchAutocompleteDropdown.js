@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import uniq from 'lodash/uniq';
+import { removeRecentlyUsedLocation } from '../features/geocoding';
 import {
   LocationSourceType,
   selectCurrentLocation,
@@ -99,24 +99,31 @@ export default function SearchAutocompleteDropdown(props) {
         (fallbackToGeocodedLocationSourceText ||
           'current location'.indexOf(inputText.toLowerCase()) === 0);
 
-      const shownFeatureIds = [];
+      let recentlyUsedFeatureIds = [];
+      let autocompleteFeatureIds = [];
 
       if (inputText === '') {
         // Suggest recently used locations
-        shownFeatureIds.push(...state.geocoding.recentlyUsed.map((r) => r.id));
+        // NOTE: This is currently only done if input text is empty, but we
+        // could switch to always showing recently used locations that match
+        // the text typed, alongside Photon results.
+        recentlyUsedFeatureIds = state.geocoding.recentlyUsed.map((r) => r.id);
       } else if (cache && cache.status === 'succeeded') {
-        // Search results
-        shownFeatureIds.push(...cache.osmIds);
+        autocompleteFeatureIds = cache.osmIds;
       }
 
-      // Limit result size, remove duplicates, don't show the location already
-      // selected as start point as a candidate for end point (or vice versa),
-      // and hydrate.
+      // Limit result size, don't show the location already selected as start
+      // point as a candidate for end point (or vice versa), and hydrate.
       const otherId = state.routeParams[other]?.point?.properties?.osm_id;
-      const shownFeatures = uniq(shownFeatureIds)
-        .filter((id) => id !== otherId)
-        .slice(0, 8)
-        .map((id) => state.geocoding.osmCache[id]);
+      const shownFeatures = [
+        ...autocompleteFeatureIds.map((id) => state.geocoding.osmCache[id]),
+        ...recentlyUsedFeatureIds.map((id) => ({
+          ...state.geocoding.osmCache[id],
+          fromRecentlyUsed: true,
+        })),
+      ]
+        .filter((feat) => feat.properties.osm_id !== otherId)
+        .slice(0, 8);
 
       return {
         startOrEnd,
@@ -128,6 +135,10 @@ export default function SearchAutocompleteDropdown(props) {
 
   const handleClick = (index) => {
     dispatch(selectGeocodedLocation(startOrEnd, features[index], inputText));
+  };
+
+  const handleRemoveClick = (index) => {
+    dispatch(removeRecentlyUsedLocation(features[index].properties.osm_id));
   };
 
   const handleCurrentLocationClick = () => {
@@ -154,6 +165,11 @@ export default function SearchAutocompleteDropdown(props) {
           buttonClassName={LIST_ITEM_CLASSNAME}
           key={feature.properties.osm_id + ':' + feature.properties.type}
           onClick={handleClick.bind(null, index)}
+          onRemoveClick={
+            feature.fromRecentlyUsed
+              ? handleRemoveClick.bind(null, index)
+              : null
+          }
         >
           <Icon className="SearchAutocompleteDropdown_icon">
             {_getSvgForFeature(feature)}

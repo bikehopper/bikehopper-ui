@@ -81,6 +81,13 @@ export function geocodingReducer(state = DEFAULT_STATE, action) {
             .filter((r) => r != null),
         );
       });
+    case 'recently_used_location_removed':
+      return produce(state, (draft) => {
+        const indexToRemove = draft.recentlyUsed.findIndex(
+          (r) => r.id === action.id,
+        );
+        if (indexToRemove !== -1) draft.recentlyUsed.splice(indexToRemove, 1);
+      });
     default:
       return state;
   }
@@ -179,6 +186,13 @@ export function geocodeTypedLocation(text, key, { fromTextAutocomplete } = {}) {
       features: resultPoints,
       time: Date.now(),
     });
+  };
+}
+
+export function removeRecentlyUsedLocation(id) {
+  return {
+    type: 'recently_used_location_removed',
+    id,
   };
 }
 
