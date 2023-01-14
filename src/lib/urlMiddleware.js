@@ -23,7 +23,8 @@ export default function routesUrlMiddleware(store) {
     const routeStateAfter = stateAfter.routes;
 
     if (!history) {
-      _initializeFromUrl(store);
+      // wait until map is loaded before initializing
+      if (action.type === 'map_loaded') _initializeFromUrl(store);
       return;
     }
 
