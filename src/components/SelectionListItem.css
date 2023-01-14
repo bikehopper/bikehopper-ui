@@ -1,16 +1,12 @@
 .SelectionListItem {
-  padding: 8px 24px;
   border-bottom: 1px solid #c4c4c4;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
 }
 
 .SelectionListItem_active {
   background-color: #efefef;
-}
-
-.SelectionListItem_hasLinkChild {
-  padding: 0;
-  display: flex;
-  flex-direction: row;
 }
 
 .SelectionListItem_link {
