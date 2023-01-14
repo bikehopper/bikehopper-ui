@@ -31,6 +31,17 @@ const DEFAULT_STATE = {
 
 export function geocodingReducer(state = DEFAULT_STATE, action) {
   switch (action.type) {
+    case 'hydrate_from_localstorage':
+      return produce(state, (draft) => {
+        // This happens at app start, so it should be safe to replace rather than
+        // expand the cache.
+        draft.osmCache = action.geocodingOsmCache;
+        // Call the update function to purge any that are too old
+        draft.recentlyUsed = _updateRecentlyUsed(
+          action.geocodingRecentlyUsed,
+          [],
+        );
+      });
     case 'geocode_attempted':
       return produce(state, (draft) => {
         draft.typeaheadCache['@' + action.text] = {
