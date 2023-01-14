@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import uniq from 'lodash/uniq';
 import {
   LocationSourceType,
   selectCurrentLocation,
@@ -37,18 +38,19 @@ const LIST_ITEM_CLASSNAME = 'SearchAutocompleteDropdown_place';
 export default function SearchAutocompleteDropdown(props) {
   const dispatch = useDispatch();
 
-  const { startOrEnd, inputText, geocodedFeatures, showCurrentLocationOption } =
+  const { startOrEnd, inputText, features, showCurrentLocationOption } =
     useSelector((state) => {
       const startOrEnd = state.routeParams.editingLocation;
 
       // TODO: Remove this after verifying it doesn't happen
       if (!startOrEnd) throw new Error('expected to be editing start or end');
 
-      let inputText = state.routeParams[startOrEnd + 'InputText'];
+      const inputText = state.routeParams[startOrEnd + 'InputText'];
       let cache =
         inputText && state.geocoding.typeaheadCache['@' + inputText.trim()];
       let fallbackToGeocodedLocationSourceText = false;
       if (!cache || cache.status !== 'succeeded') {
+        let autocompletedText = inputText;
         // If the location we're editing has a geocoded location already selected, display the
         // other options from the input text that was used to pick that.
         const relevantLocation = state.routeParams[startOrEnd];
@@ -59,8 +61,9 @@ export default function SearchAutocompleteDropdown(props) {
           (inputText === '' ||
             inputText === describePlace(relevantLocation.point))
         ) {
-          inputText = relevantLocation.fromInputText;
-          cache = state.geocoding.typeaheadCache['@' + inputText.trim()];
+          autocompletedText = relevantLocation.fromInputText;
+          cache =
+            state.geocoding.typeaheadCache['@' + autocompletedText.trim()];
           fallbackToGeocodedLocationSourceText = true;
         } else {
           // Still nothing? Try prefixes of the input text. Example: current input text is
@@ -68,12 +71,16 @@ export default function SearchAutocompleteDropdown(props) {
           // which came back while you were typing.
           let strippedChars = 0;
           while (
-            inputText &&
+            autocompletedText &&
             (!cache || cache.status !== 'succeeded') &&
             strippedChars++ < 8
           ) {
-            inputText = inputText.substr(0, inputText.length - 1);
-            cache = state.geocoding.typeaheadCache['@' + inputText.trim()];
+            autocompletedText = autocompletedText.substr(
+              0,
+              autocompletedText.length - 1,
+            );
+            cache =
+              state.geocoding.typeaheadCache['@' + autocompletedText.trim()];
           }
         }
       }
@@ -92,21 +99,35 @@ export default function SearchAutocompleteDropdown(props) {
         (fallbackToGeocodedLocationSourceText ||
           'current location'.indexOf(inputText.toLowerCase()) === 0);
 
+      const shownFeatureIds = [];
+
+      if (inputText === '') {
+        // Suggest recently used locations
+        shownFeatureIds.push(...state.geocoding.recentlyUsed.map((r) => r.id));
+      } else if (cache && cache.status === 'succeeded') {
+        // Search results
+        shownFeatureIds.push(...cache.osmIds);
+      }
+
+      // Limit result size, remove duplicates, don't show the location already
+      // selected as start point as a candidate for end point (or vice versa),
+      // and hydrate.
+      const otherId = state.routeParams[other]?.point?.properties?.osm_id;
+      const shownFeatures = uniq(shownFeatureIds)
+        .filter((id) => id !== otherId)
+        .slice(0, 8)
+        .map((id) => state.geocoding.osmCache[id]);
+
       return {
         startOrEnd,
         inputText,
-        geocodedFeatures:
-          cache && cache.status === 'succeeded'
-            ? cache.osmIds.map((id) => state.geocoding.osmCache[id])
-            : [],
+        features: shownFeatures,
         showCurrentLocationOption,
       };
     }, shallowEqual);
 
   const handleClick = (index) => {
-    dispatch(
-      selectGeocodedLocation(startOrEnd, geocodedFeatures[index], inputText),
-    );
+    dispatch(selectGeocodedLocation(startOrEnd, features[index], inputText));
   };
 
   const handleCurrentLocationClick = () => {
@@ -128,7 +149,7 @@ export default function SearchAutocompleteDropdown(props) {
           </span>
         </SelectionListItem>
       )}
-      {geocodedFeatures.map((feature, index) => (
+      {features.map((feature, index) => (
         <SelectionListItem
           buttonClassName={LIST_ITEM_CLASSNAME}
           key={feature.properties.osm_id + ':' + feature.properties.type}

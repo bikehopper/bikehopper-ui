@@ -6,7 +6,8 @@ import delay from '../lib/delay';
 const GEOCODE_RESULT_LIMIT = 8;
 
 const RECENTLY_USED_LIMIT = 8;
-const RECENTLY_USED_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+// expire after just over a week, so if you travel somewhere weekly, you'll retain it
+const RECENTLY_USED_MAX_AGE_MS = (7 * 24 + 6) * 60 * 60 * 1000;
 
 const DEFAULT_STATE = {
   // maps location strings to {
@@ -22,7 +23,7 @@ const DEFAULT_STATE = {
 
   // recently used locations
   // each record contains {
-  //    feature: /* Photon GeoJSON feature */,
+  //    id: /* OSM ID, should be in osmCache */,
   //    lastUsed: /* time of last use as returned from Date.now() */
   // }
   recentlyUsed: [],
@@ -62,6 +63,23 @@ export function geocodingReducer(state = DEFAULT_STATE, action) {
           time: action.time,
           osmIds,
         };
+      });
+    case 'geocoded_location_selected':
+      return produce(state, (draft) => {
+        draft.recentlyUsed = _updateRecentlyUsed(state.recentlyUsed, [
+          action.point.properties.osm_id,
+        ]);
+      });
+    case 'locations_set':
+      return produce(state, (draft) => {
+        // Update the recently-used list, adding or bumping any geocoded locations used
+        // (can be neither, one of the two, or both start and end point)
+        draft.recentlyUsed = _updateRecentlyUsed(
+          state.recentlyUsed,
+          [action.start, action.end]
+            .map((loc) => loc?.point?.properties?.osm_id)
+            .filter((r) => r != null),
+        );
       });
     default:
       return state;
@@ -162,4 +180,20 @@ export function geocodeTypedLocation(text, key, { fromTextAutocomplete } = {}) {
       time: Date.now(),
     });
   };
+}
+
+// update the recently used list with zero or more (in practice 0-2) just used OSM IDs
+function _updateRecentlyUsed(recentlyUsed, justUsedIds) {
+  const now = Date.now();
+  return [
+    ...justUsedIds.map((id) => ({
+      id,
+      lastUsed: now,
+    })),
+    ...recentlyUsed.filter(
+      (record) =>
+        !justUsedIds.includes(record.id) &&
+        now < record.lastUsed + RECENTLY_USED_MAX_AGE_MS,
+    ),
+  ].slice(0, RECENTLY_USED_LIMIT);
 }
