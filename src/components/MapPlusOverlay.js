@@ -264,7 +264,7 @@ function MapPlusOverlay(props) {
       <BikehopperMap
         ref={mapRef}
         onMapLoad={handleMapLoad}
-        overlayRef={mapOverlayTransparentRef}
+        overlayRef={mapOverlayRef}
       />
       <div
         className={classnames({

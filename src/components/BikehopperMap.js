@@ -20,7 +20,10 @@ import { locationDragged } from '../features/routeParams';
 import { routeClicked } from '../features/routes';
 import { mapMoved } from '../features/viewport';
 import useResizeObserver from '../hooks/useResizeObserver';
-import { BOTTOM_DRAWER_DEFAULT_SCROLL } from '../lib/layout';
+import {
+  BOTTOM_DRAWER_DEFAULT_SCROLL,
+  BOTTOM_DRAWER_MIN_HEIGHT,
+} from '../lib/layout';
 import MarkerSVG from './MarkerSVG';
 import delay from '../lib/delay';
 import * as VisualViewportTracker from '../lib/VisualViewportTracker';
@@ -169,31 +172,29 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
     maxx = Math.max(maxx, startCoords[0], endCoords[0]);
     maxy = Math.max(maxy, startCoords[1], endCoords[1]);
 
-    // Before centering the map, we must resize the map, because on mobile,
-    // showing the bottom pane with the routes overview will have resized the
-    // map's container.
-    //
-    // This does result in an unnecessary, second resize call from the resize
-    // observer above. Alas, there's no obvious way to make the resize observer
-    // fire before this, and we need that observer to handle resizes that
-    // happen for other reasons (device orientation change, desktop browser
-    // window resize, etc).
-    const resizeAndFitBounds = () => {
+    // Callback to be executed possibly asynchronously, to take the bottom drawer,
+    // top drawer, and padding into account and actually fit the bounds.
+    const doFitBounds = () => {
       const padding = {
-        top: 20,
+        top: 40,
         left: 40,
         right: 40,
-        bottom: 20,
+        bottom: 40,
       };
       if (props.overlayRef.current) {
         const overlayEl = props.overlayRef.current;
         const clientRect = overlayEl.getBoundingClientRect();
         padding.top += clientRect.top;
+        // When the bottom drawer first appears, it should be adjusted to this
+        // height. (That scroll can happen either before or after this code is
+        // executed.) Note that this sometimes leaves more space than needed
+        // because the bottom drawer's actual height may be less than the
+        // default height if there are only 1 or 2 routes. We might ideally
+        // prefer to make sure the scroll happened first, and then measure the
+        // bottom drawer.
         padding.bottom +=
-          window.innerHeight - clientRect.bottom + BOTTOM_DRAWER_DEFAULT_SCROLL;
-        overlayEl.parentElement.scrollTop = 0;
+          BOTTOM_DRAWER_DEFAULT_SCROLL + BOTTOM_DRAWER_MIN_HEIGHT;
       }
-      map.resize();
       map.fitBounds(
         [
           [minx, miny],
@@ -208,15 +209,15 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
     if (VisualViewportTracker.isKeyboardUp()) {
       // On mobile Safari we have to wait for the virtual keyboard to go away,
       // or we'll run this prematurely, with the map the wrong size.
-      (async function waitToResizeAndFitBounds() {
+      (async function waitToFitBounds() {
         await Promise.race([
           VisualViewportTracker.waitForKeyboardDown(),
           delay(400),
         ]);
-        resizeAndFitBounds();
+        doFitBounds();
       })();
     } else {
-      resizeAndFitBounds();
+      doFitBounds();
     }
   }, [routes, mapRef, props.overlayRef, startCoords, endCoords]);
 
