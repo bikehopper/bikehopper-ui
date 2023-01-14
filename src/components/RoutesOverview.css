@@ -3,6 +3,14 @@
   flex-direction: column;
 }
 
+.RoutesOverview_list {
+  border-radius: 9px 9px 0 0;
+}
+
+.RoutesOverview_firstItem {
+  border-radius: 9px 9px 0 0;
+}
+
 .RoutesOverview_outOfAreaWarning {
   /* padding and bottom border to match SelectionListItem */
   padding: 8px 24px;

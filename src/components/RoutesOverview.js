@@ -1,4 +1,5 @@
 import * as React from 'react';
+import classnames from 'classnames';
 import { formatInterval } from '../lib/time';
 import DepartArriveTime from './DepartArriveTime';
 import Icon from './Icon';
@@ -30,12 +31,15 @@ export default function RoutesOverview(props) {
           BikeHopper has local transit data.
         </div>
       )}
-      <SelectionList>
+      <SelectionList className="RoutesOverview_list">
         {routes.map((route, index) => (
           <SelectionListItem
             active={activeRoute === index}
             onClick={onRouteClick.bind(null, index)}
             key={route.nonce}
+            className={classnames({
+              RoutesOverview_firstItem: index === 0,
+            })}
           >
             <div className="RoutesOverview_row">
               <ul className="RoutesOverview_routeLegs">

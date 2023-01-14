@@ -11,14 +11,15 @@ export default function SelectionListItem(props) {
       className={classnames({
         SelectionListItem: true,
         SelectionListItem__active: props.active,
+        [props.className]: true,
       })}
     >
       <button
         onClick={props.onClick}
-        className={classnames({
-          SelectionListItem_button: true,
-          [props.className]: !!props.className,
-        })}
+        className={classnames(
+          'SelectionListItem_button',
+          props.buttonClassName,
+        )}
       >
         {props.children}
       </button>
