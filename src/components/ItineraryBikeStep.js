@@ -9,6 +9,7 @@ import { ReactComponent as LongArrowUpRight } from 'iconoir/icons/long-arrow-up-
 import { ReactComponent as ArrowUp } from 'iconoir/icons/arrow-up.svg';
 import { ReactComponent as TriangleFlag } from 'iconoir/icons/triangle-flag.svg';
 import { ReactComponent as QuestionMarkCircle } from 'iconoir/icons/help-circle.svg';
+import { ReactComponent as ArrowTrCircle } from 'iconoir/icons/arrow-tr-circle.svg';
 
 export default function ItineraryBikeStep({
   step,
@@ -18,6 +19,7 @@ export default function ItineraryBikeStep({
 }) {
   let IconComponent = QuestionMarkCircle;
   let verb = 'Proceed';
+  let preposition = 'on';
   let direction = null;
   let fallbackToGraphHopperInstructionText = false;
 
@@ -39,16 +41,19 @@ export default function ItineraryBikeStep({
       IconComponent = LongArrowUpLeft;
       verb = 'Turn';
       direction = 'sharp left';
+      preposition = 'onto';
       break;
     case InstructionSigns.TURN_LEFT:
       IconComponent = LongArrowUpLeft;
       verb = 'Turn';
       direction = 'left';
+      preposition = 'onto';
       break;
     case InstructionSigns.TURN_SLIGHT_LEFT:
       IconComponent = LongArrowUpLeft;
       verb = 'Turn';
       direction = 'slight left';
+      preposition = 'onto';
       break;
     case InstructionSigns.CONTINUE_ON_STREET:
       IconComponent = ArrowUp;
@@ -78,16 +83,25 @@ export default function ItineraryBikeStep({
       IconComponent = LongArrowUpRight;
       verb = 'Turn';
       direction = 'sharp right';
+      preposition = 'onto';
       break;
     case InstructionSigns.TURN_RIGHT:
       IconComponent = LongArrowUpRight;
       verb = 'Turn';
       direction = 'right';
+      preposition = 'onto';
       break;
     case InstructionSigns.TURN_SLIGHT_RIGHT:
       IconComponent = LongArrowUpRight;
       verb = 'Turn';
       direction = 'slight right';
+      preposition = 'onto';
+      break;
+    case InstructionSigns.USE_ROUNDABOUT:
+      IconComponent = ArrowTrCircle;
+      verb = 'At roundabout, take';
+      direction = `exit ${step.exit_number}`;
+      preposition = 'onto';
       break;
     default:
       // There are a couple rarely used sign types not covered above. If/when
@@ -96,7 +110,6 @@ export default function ItineraryBikeStep({
       fallbackToGraphHopperInstructionText = true;
   }
 
-  const preposition = verb === 'Turn' ? 'onto' : 'on';
   // Street name may be null. TODO: Describe (as "path", "service road",
   // "unnamed road") if street name is absent
   const streetName = step.street_name;
