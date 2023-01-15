@@ -21,7 +21,6 @@ import { routeClicked } from '../features/routes';
 import { mapMoved } from '../features/viewport';
 import useResizeObserver from '../hooks/useResizeObserver';
 import { BOTTOM_DRAWER_DEFAULT_SCROLL } from '../lib/layout';
-import MarkerSVG from './MarkerSVG';
 import delay from '../lib/delay';
 import * as VisualViewportTracker from '../lib/VisualViewportTracker';
 
@@ -338,11 +337,9 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
             latitude={startCoords[1]}
             draggable={true}
             onDragEnd={handleStartMarkerDrag}
-            offsetLeft={-13}
-            offsetTop={-39}
-          >
-            <MarkerSVG fillColor="#2fa7cc" />
-          </Marker>
+            anchor="bottom"
+            color="#2fa7cc"
+          />
         )}
         {endCoords && (
           <Marker
@@ -351,11 +348,9 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
             latitude={endCoords[1]}
             draggable={true}
             onDragEnd={handleEndMarkerDrag}
-            offsetLeft={-13}
-            offsetTop={-39}
-          >
-            <MarkerSVG fillColor="#ea526f" />
-          </Marker>
+            anchor="bottom"
+            color="#ea526f"
+          />
         )}
       </MapGL>
     </div>
