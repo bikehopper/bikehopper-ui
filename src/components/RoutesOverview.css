@@ -59,3 +59,17 @@
   margin: 8px 0 0;
   font-size: 14px;
 }
+
+.RoutesOverview_acknowledgement {
+  font-size: 14px;
+  margin: 24px;
+}
+
+.RoutesOverview_acknowledgementLink {
+  color: #0a72aa;
+  text-decoration: underline;
+}
+
+.RoutesOverview_acknowledgementLink:active {
+  color: #0c85c7;
+}
