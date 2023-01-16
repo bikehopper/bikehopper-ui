@@ -337,8 +337,6 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
             latitude={startCoords[1]}
             draggable={true}
             onDragEnd={handleStartMarkerDrag}
-            offsetLeft={-13}
-            offsetTop={-39}
             color="#2fa7cc"
           />
         )}
@@ -349,8 +347,6 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
             latitude={endCoords[1]}
             draggable={true}
             onDragEnd={handleEndMarkerDrag}
-            offsetLeft={-13}
-            offsetTop={-39}
             color="#ea526f"
           />
         )}
