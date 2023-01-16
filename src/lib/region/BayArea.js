@@ -75,3 +75,8 @@ export const TRANSIT_SERVICE_AREA = {
   properties: {},
   type: 'Feature',
 };
+
+export const TRANSIT_DATA_ACKNOWLEDGEMENT = {
+  text: 'Data provided by 511.org',
+  url: 'http://www.511.org',
+};

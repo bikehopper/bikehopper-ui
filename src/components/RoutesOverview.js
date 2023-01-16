@@ -1,5 +1,6 @@
 import * as React from 'react';
 import classnames from 'classnames';
+import { TRANSIT_DATA_ACKNOWLEDGEMENT } from '../lib/region';
 import { formatInterval } from '../lib/time';
 import DepartArriveTime from './DepartArriveTime';
 import Icon from './Icon';
@@ -21,6 +22,8 @@ export default function RoutesOverview(props) {
   ]
     .filter((s) => s !== '')
     .join(' and ');
+
+  let containsTransitLeg = false;
 
   return (
     <div className="RoutesOverview">
@@ -53,6 +56,10 @@ export default function RoutesOverview(props) {
                       </li>
                     )}
                     <li className="RoutesOverview_leg">
+                      {
+                        (leg.type === 'pt' ? (containsTransitLeg = true) : null,
+                        null)
+                      }
                       <RouteLeg
                         type={leg.type}
                         routeName={leg.route_name || leg.route_id}
@@ -85,6 +92,17 @@ export default function RoutesOverview(props) {
           </SelectionListItem>
         ))}
       </SelectionList>
+      {containsTransitLeg && TRANSIT_DATA_ACKNOWLEDGEMENT?.text && (
+        <p className="RoutesOverview_acknowledgement">
+          <a
+            target="_blank"
+            href={TRANSIT_DATA_ACKNOWLEDGEMENT.url}
+            className="RoutesOverview_acknowledgementLink"
+          >
+            {TRANSIT_DATA_ACKNOWLEDGEMENT.text}
+          </a>
+        </p>
+      )}
     </div>
   );
 }
