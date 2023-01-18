@@ -64,6 +64,7 @@ body.isIOSChromeOrSafari .MapPlusOverlay_bottomPane {
 
 .MapPlusOverlay_bottomPane__withMapHidden {
   flex-grow: 1;
+  border-radius: 0;
 }
 
 /* The transparent section of the overlay, through which the map can

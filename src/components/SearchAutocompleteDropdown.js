@@ -117,7 +117,7 @@ export default function SearchAutocompleteDropdown(props) {
     <SelectionList className="SearchAutocompleteDropdown">
       {showCurrentLocationOption && (
         <SelectionListItem
-          className={LIST_ITEM_CLASSNAME}
+          buttonClassName={LIST_ITEM_CLASSNAME}
           onClick={handleCurrentLocationClick}
         >
           <Icon className="SearchAutocompleteDropdown_icon">
@@ -130,7 +130,7 @@ export default function SearchAutocompleteDropdown(props) {
       )}
       {dedupedFeatures.map((feature, index) => (
         <SelectionListItem
-          className={LIST_ITEM_CLASSNAME}
+          buttonClassName={LIST_ITEM_CLASSNAME}
           key={feature.properties.osm_id + ':' + feature.properties.type}
           onClick={handleClick.bind(null, index)}
         >
