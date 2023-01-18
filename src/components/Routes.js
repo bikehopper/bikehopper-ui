@@ -81,12 +81,12 @@ export default function Routes(props) {
 
   React.useEffect(() => {
     const el = rootRef.current;
+    const container = el?.offsetParent;
+    if (!el || !container) return;
 
     // When entering the itinerary view, pop the bottom drawer up a bit
-    if (el && details && !wasViewingDetails) {
-      const container = el.offsetParent;
-
-      // Show up to 325px of the itinerary, but never take up more than half the
+    if (details && !wasViewingDetails) {
+      // Show up to 400px of the itinerary, but never take up more than half the
       // vertical height of the map.
       const desiredTop = Math.min(
         400 - BOTTOM_DRAWER_MIN_HEIGHT,
@@ -95,9 +95,8 @@ export default function Routes(props) {
       scrollTopBeforeItineraryOpen.current = container.scrollTop;
       if (container.scrollTop < desiredTop)
         container.scrollTo({ top: desiredTop, behavior: 'smooth' });
-    } else if (el && !details && wasViewingDetails) {
+    } else if (!details && wasViewingDetails) {
       // Undo the popping up
-      const container = el.offsetParent;
       const desiredTop = scrollTopBeforeItineraryOpen.current;
       if (desiredTop != null && container.scrollTop > desiredTop)
         container.scrollTo({ top: desiredTop, behavior: 'smooth' });
