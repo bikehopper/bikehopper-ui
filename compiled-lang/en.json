@@ -1,0 +1,30 @@
+{
+  "PuFtyh": [
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "Welcome to BikeHopper!"
+        }
+      ],
+      "type": 8,
+      "value": "strong"
+    },
+    {
+      "type": 0,
+      "value": " This is a new bike navigation app that suggests ways to combine biking and transit, expanding your options for getting around without a car."
+    }
+  ],
+  "Tqzrb2": [
+    {
+      "type": 0,
+      "value": "Get directions"
+    }
+  ],
+  "vcNM7g": [
+    {
+      "type": 0,
+      "value": "Enter a destination"
+    }
+  ]
+}

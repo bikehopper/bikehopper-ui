@@ -59,6 +59,7 @@
     "react-dev-utils": "^12.0.0",
     "react-dom": "^18.2.0",
     "react-dropdown": "^1.10.0",
+    "react-intl": "^6.2.5",
     "react-map-gl": "^7.0.6",
     "react-redux": "^8.0.5",
     "react-refresh": "^0.14.0",
@@ -82,6 +83,8 @@
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
+    "extract": "formatjs extract 'src/**/*.js' --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
+    "compile": "formatjs compile",
     "prepare": "husky install"
   },
   "proxy": "https://api-staging.bikehopper.org",
@@ -161,6 +164,8 @@
     ]
   },
   "devDependencies": {
+    "@formatjs/cli": "^5.1.12",
+    "babel-plugin-formatjs": "^10.3.35",
     "csv": "^6.2.5",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-react-app": "^7.0.0",

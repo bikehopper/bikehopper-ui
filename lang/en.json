@@ -1,0 +1,13 @@
+{
+  "PuFtyh": {
+    "defaultMessage": "<strong>Welcome to BikeHopper!</strong> This is a new bike navigation app that suggests ways to combine biking and transit, expanding your options for getting around without a car."
+  },
+  "Tqzrb2": {
+    "defaultMessage": "Get directions",
+    "description": "form header"
+  },
+  "vcNM7g": {
+    "defaultMessage": "Enter a destination",
+    "description": "input placeholder"
+  }
+}

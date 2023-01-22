@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { IntlProvider } from 'react-intl';
 import AlertBar from './AlertBar';
 import DirectionsNullState from './DirectionsNullState';
 import MapPlusOverlay from './MapPlusOverlay';
@@ -13,7 +14,7 @@ import {
 
 import './App.css';
 
-function App() {
+function App(props) {
   const { hasRoutes, hasLocations, isEditingLocations } = useSelector(
     (state) => ({
       hasLocations: !!(
@@ -56,14 +57,16 @@ function App() {
   );
 
   return (
-    <div className="App">
-      <AlertBar />
-      <MapPlusOverlay
-        topContent={topBar}
-        hideMap={isEditingLocations}
-        bottomContent={bottomContent}
-      />
-    </div>
+    <IntlProvider messages={props.messages} locale="en" defaultLocale="en">
+      <div className="App">
+        <AlertBar />
+        <MapPlusOverlay
+          topContent={topBar}
+          hideMap={isEditingLocations}
+          bottomContent={bottomContent}
+        />
+      </div>
+    </IntlProvider>
   );
 }
 

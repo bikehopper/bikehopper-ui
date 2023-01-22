@@ -9,27 +9,53 @@ import store from './store';
 
 import './index.css';
 
-const ua = Bowser.parse(navigator.userAgent);
-if (
-  ua.os.name === 'iOS' &&
-  (ua.browser.name === 'Chrome' || ua.browser.name === 'Safari')
-) {
-  document.body.className += ' isIOSChromeOrSafari';
+function loadMessages(locale) {
+  if (/^es\b/.test(locale)) {
+    // all variants of Spanish
+    return import('../compiled-lang/es.json');
+  } else {
+    // default to English
+    return import('../compiled-lang/en.json');
+  }
 }
 
-const root = createRoot(document.getElementById('root'));
+function selectLocale() {
+  // override via query params
+  const overrideLocale = new URLSearchParams(document.location.search).get(
+    'locale',
+  );
+  if (overrideLocale) return overrideLocale;
 
-root.render(
-  <React.StrictMode>
-    <Router>
-      <Provider store={store}>
-        <App />
-      </Provider>
-    </Router>
-  </React.StrictMode>,
-);
+  // browser default
+  return navigator.language;
+}
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+async function bootstrapApp() {
+  const ua = Bowser.parse(navigator.userAgent);
+  if (
+    ua.os.name === 'iOS' &&
+    (ua.browser.name === 'Chrome' || ua.browser.name === 'Safari')
+  ) {
+    document.body.className += ' isIOSChromeOrSafari';
+  }
+
+  const root = createRoot(document.getElementById('root'));
+  const messages = await loadMessages(selectLocale());
+
+  root.render(
+    <React.StrictMode>
+      <Router>
+        <Provider store={store}>
+          <App messages={messages} />
+        </Provider>
+      </Router>
+    </React.StrictMode>,
+  );
+
+  // If you want to start measuring performance in your app, pass a function
+  // to log results (for example: reportWebVitals(console.log))
+  // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+  reportWebVitals();
+}
+
+bootstrapApp();
