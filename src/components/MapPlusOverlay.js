@@ -1,6 +1,8 @@
 import Bowser from 'bowser';
 import * as React from 'react';
+import { useSelector } from 'react-redux';
 import classnames from 'classnames';
+import MoonLoader from 'react-spinners/MoonLoader';
 import useResizeObserver from '../hooks/useResizeObserver';
 import { BOTTOM_DRAWER_DEFAULT_SCROLL } from '../lib/layout';
 import BikehopperMap from './BikehopperMap';
@@ -24,6 +26,9 @@ const _isTouch = 'ontouchstart' in window;
 
 function MapPlusOverlay(props) {
   const { bottomContent, topContent, hideMap } = props;
+  const loading = useSelector(
+    (state) => state.routes.routeStatus === 'fetching',
+  );
 
   const mapRef = React.useRef();
   const mapControlBottomLeftRef = React.useRef();
@@ -264,7 +269,7 @@ function MapPlusOverlay(props) {
       <BikehopperMap
         ref={mapRef}
         onMapLoad={handleMapLoad}
-        overlayRef={mapOverlayTransparentRef}
+        overlayRef={mapOverlayRef}
       />
       <div
         className={classnames({
@@ -300,6 +305,9 @@ function MapPlusOverlay(props) {
               {bottomContent}
             </div>
           )}
+          <div className="MapPlusOverlay_spinnerContainer">
+            <MoonLoader loading={loading && !bottomContent} size={60} />
+          </div>
         </div>
       </div>
     </div>

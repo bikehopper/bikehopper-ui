@@ -14,15 +14,17 @@ import {
   BIKEABLE_HIGHWAYS,
 } from '../lib/geometry';
 import lngLatToCoords from '../lib/lngLatToCoords';
+import usePrevious from '../hooks/usePrevious';
 import { geolocated } from '../features/geolocation';
 import { mapLoaded } from '../features/misc';
 import { locationDragged } from '../features/routeParams';
 import { routeClicked } from '../features/routes';
 import { mapMoved } from '../features/viewport';
 import useResizeObserver from '../hooks/useResizeObserver';
-import { BOTTOM_DRAWER_DEFAULT_SCROLL } from '../lib/layout';
-import delay from '../lib/delay';
-import * as VisualViewportTracker from '../lib/VisualViewportTracker';
+import {
+  BOTTOM_DRAWER_DEFAULT_SCROLL,
+  BOTTOM_DRAWER_MIN_HEIGHT,
+} from '../lib/layout';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './BikehopperMap.css';
@@ -31,6 +33,7 @@ import { DEFAULT_BIKE_COLOR, DEFAULT_INACTIVE_COLOR } from '../lib/colors';
 const BikehopperMap = React.forwardRef((props, mapRef) => {
   const dispatch = useDispatch();
   const {
+    routeStatus,
     startCoords,
     endCoords,
     routes,
@@ -40,6 +43,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
   } = useSelector(
     (state) => ({
       routes: state.routes.routes,
+      routeStatus: state.routes.routeStatus,
       // If we have fetched routes, display start and end markers at the coords
       // the routes are for; if not, but we do have start and/or end locations
       // with coords, display marker(s) at that location/those locations.
@@ -55,6 +59,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
     }),
     shallowEqual,
   );
+  const prevRouteStatus = usePrevious(routeStatus);
 
   const handleRouteClick = (evt) => {
     if (evt.features?.length) {
@@ -148,76 +153,100 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
     ),
   );
 
-  // center viewport on route paths
+  // Center viewport on points or routes
   useLayoutEffect(() => {
     const map = mapRef.current?.getMap();
-    if (!map || !routes?.length) return;
+    const overlayEl = props.overlayRef.current;
+    if (!map || !overlayEl) return;
 
-    // merge all bboxes
+    // We only want to center in specific situations
+    const haveNewRoutes =
+      routes && routeStatus === 'succeeded' && prevRouteStatus !== 'succeeded';
+    const newlyFetching =
+      startCoords &&
+      endCoords &&
+      routeStatus === 'fetching' &&
+      prevRouteStatus !== 'fetching';
+    if (!(haveNewRoutes || newlyFetching)) return;
 
-    const bboxes = routes.map((path) => path.bbox);
-    let [minx, miny, maxx, maxy] = bboxes.reduce((acc, cur) => [
-      Math.min(acc[0], cur[0]), // minx
-      Math.min(acc[1], cur[1]), // miny
-      Math.max(acc[2], cur[2]), // maxx
-      Math.max(acc[3], cur[3]), // maxy
-    ]);
+    // Start with the points themselves
+    let bbox = [
+      Math.min(startCoords[0], endCoords[0]),
+      Math.min(startCoords[1], endCoords[1]),
+      Math.max(startCoords[0], endCoords[0]),
+      Math.max(startCoords[1], endCoords[1]),
+    ];
 
-    minx = Math.min(minx, startCoords[0], endCoords[0]);
-    miny = Math.min(miny, startCoords[1], endCoords[1]);
-    maxx = Math.max(maxx, startCoords[0], endCoords[0]);
-    maxy = Math.max(maxy, startCoords[1], endCoords[1]);
+    // If we have routes, merge all route bounding boxes
+    const routeBboxes = (routes || []).map((path) => path.bbox);
+    bbox = routeBboxes.reduce(
+      (acc, cur) => [
+        Math.min(acc[0], cur[0]), // minx
+        Math.min(acc[1], cur[1]), // miny
+        Math.max(acc[2], cur[2]), // maxx
+        Math.max(acc[3], cur[3]), // maxy
+      ],
+      bbox,
+    );
 
-    // Before centering the map, we must resize the map, because on mobile,
-    // showing the bottom pane with the routes overview will have resized the
-    // map's container.
-    //
-    // This does result in an unnecessary, second resize call from the resize
-    // observer above. Alas, there's no obvious way to make the resize observer
-    // fire before this, and we need that observer to handle resizes that
-    // happen for other reasons (device orientation change, desktop browser
-    // window resize, etc).
-    const resizeAndFitBounds = () => {
-      const padding = {
-        top: 20,
-        left: 40,
-        right: 40,
-        bottom: 20,
-      };
-      if (props.overlayRef.current) {
-        const overlayEl = props.overlayRef.current;
-        const clientRect = overlayEl.getBoundingClientRect();
-        padding.top += clientRect.top;
-        padding.bottom +=
-          window.innerHeight - clientRect.bottom + BOTTOM_DRAWER_DEFAULT_SCROLL;
-        overlayEl.parentElement.scrollTop = 0;
-      }
-      map.resize();
-      map.fitBounds(
-        [
-          [minx, miny],
-          [maxx, maxy],
-        ],
-        {
-          padding,
-        },
-      );
+    const padding = {
+      top: 40,
+      left: 40,
+      right: 40,
+      bottom: 40,
     };
+    const clientRect = overlayEl.getBoundingClientRect();
+    padding.top += clientRect.top;
+    // When the bottom drawer first appears, it should be adjusted to this
+    // height. (That scroll can happen either before or after this code is
+    // executed.) Note that this sometimes leaves more space than needed
+    // because the bottom drawer's actual height may be less than the
+    // default height if there are only 1 or 2 routes. We might ideally
+    // prefer to make sure the scroll happened first, and then measure the
+    // bottom drawer.
+    padding.bottom += BOTTOM_DRAWER_DEFAULT_SCROLL + BOTTOM_DRAWER_MIN_HEIGHT;
 
-    if (VisualViewportTracker.isKeyboardUp()) {
-      // On mobile Safari we have to wait for the virtual keyboard to go away,
-      // or we'll run this prematurely, with the map the wrong size.
-      (async function waitToResizeAndFitBounds() {
-        await Promise.race([
-          VisualViewportTracker.waitForKeyboardDown(),
-          delay(400),
-        ]);
-        resizeAndFitBounds();
-      })();
-    } else {
-      resizeAndFitBounds();
+    // If we only have points, no route yet, then don't zoom if the current
+    // view already reasonably shows those points.
+    if (!routes) {
+      const { x: startX, y: startY } = map.project(startCoords);
+      const { x: endX, y: endY } = map.project(endCoords);
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      const startVisible =
+        startX > padding.left &&
+        startY > padding.top &&
+        startX < w - padding.right &&
+        startY < h - padding.bottom;
+
+      const endVisible =
+        endX > padding.left &&
+        endY > padding.top &&
+        endX < w - padding.right &&
+        endY < h - padding.bottom;
+
+      const pixelDistance = Math.sqrt(
+        (startX - endX) * (startX - endX) + (startY - endY) * (startY - endY),
+      );
+
+      const reasonablyFarApart = pixelDistance > 45;
+
+      if (startVisible && endVisible && reasonablyFarApart) return;
     }
-  }, [routes, mapRef, props.overlayRef, startCoords, endCoords]);
+
+    map.fitBounds([bbox.slice(0, 2), bbox.slice(2)], {
+      padding,
+    });
+  }, [
+    routes,
+    mapRef,
+    props.overlayRef,
+    startCoords,
+    endCoords,
+    routeStatus,
+    prevRouteStatus,
+  ]);
 
   // When viewing a specific step of a route, zoom to where it starts.
   React.useEffect(() => {
