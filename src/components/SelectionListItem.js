@@ -1,45 +1,47 @@
 import * as React from 'react';
 import classnames from 'classnames';
+import Icon from './Icon';
+
+import { ReactComponent as CancelIcon } from 'iconoir/icons/cancel.svg';
 
 import './SelectionListItem.css';
 
-export default function SelectionListItem(props) {
-  const clickable = !!props.onClick;
+// This is only for clickable stuff! Do not use without an onClick.
+// Optionally it can have an onRemoveClick in which case there will be an X-out.
 
-  const handleClick = (evt) => {
-    evt.preventDefault();
-    props.onClick(evt);
-  };
-
-  /* eslint-disable jsx-a11y/anchor-is-valid */
-  // (The fix for this rule is to make this a <button>, but then it's a huge
-  // pain to remove all the default CSS.)
-  const contents = props.onClick ? (
-    <a
-      href="#"
-      onClick={handleClick}
-      className={classnames({
-        SelectionListItem_link: true,
-        [props.className]: !!props.className,
-      })}
-      tabIndex={0}
-    >
-      {props.children}
-    </a>
-  ) : (
-    props.children
-  );
-
+export default function SelectionListItem({
+  active,
+  className,
+  buttonClassName,
+  onClick,
+  children,
+  onRemoveClick,
+}) {
   return (
     <li
       className={classnames({
         SelectionListItem: true,
-        SelectionListItem_active: props.active,
-        SelectionListItem_hasLinkChild: clickable,
-        [props.className]: !clickable && !!props.className,
+        SelectionListItem__active: active,
+        [className]: true,
       })}
     >
-      {contents}
+      <button
+        onClick={onClick}
+        className={classnames({
+          SelectionListItem_button: true,
+          SelectionListItem_button__removable: !!onRemoveClick,
+          [buttonClassName]: true,
+        })}
+      >
+        {children}
+      </button>
+      {onRemoveClick && (
+        <button onClick={onRemoveClick} className="SelectionListItem_remove">
+          <Icon label="Remove" className="SelectionListItem_removeIcon">
+            <CancelIcon width="20" height="20" />
+          </Icon>
+        </button>
+      )}
     </li>
   );
 }

@@ -25,7 +25,6 @@ import {
   BOTTOM_DRAWER_DEFAULT_SCROLL,
   BOTTOM_DRAWER_MIN_HEIGHT,
 } from '../lib/layout';
-import MarkerSVG from './MarkerSVG';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './BikehopperMap.css';
@@ -367,11 +366,8 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
             latitude={startCoords[1]}
             draggable={true}
             onDragEnd={handleStartMarkerDrag}
-            offsetLeft={-13}
-            offsetTop={-39}
-          >
-            <MarkerSVG fillColor="#2fa7cc" />
-          </Marker>
+            color="#2fa7cc"
+          />
         )}
         {endCoords && (
           <Marker
@@ -380,11 +376,8 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
             latitude={endCoords[1]}
             draggable={true}
             onDragEnd={handleEndMarkerDrag}
-            offsetLeft={-13}
-            offsetTop={-39}
-          >
-            <MarkerSVG fillColor="#ea526f" />
-          </Marker>
+            color="#ea526f"
+          />
         )}
       </MapGL>
     </div>

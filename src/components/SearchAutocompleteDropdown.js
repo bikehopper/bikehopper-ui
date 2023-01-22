@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import uniqBy from 'lodash/uniqBy';
+import { removeRecentlyUsedLocation } from '../features/geocoding';
 import {
   LocationSourceType,
   selectCurrentLocation,
@@ -8,28 +8,11 @@ import {
 } from '../features/routeParams';
 import describePlace from '../lib/describePlace';
 import Icon from './Icon';
+import PlaceIcon from './PlaceIcon';
 import SelectionList from './SelectionList';
 import SelectionListItem from './SelectionListItem';
-import { ReactComponent as Building } from 'iconoir/icons/building.svg';
-import { ReactComponent as Chocolate } from 'iconoir/icons/chocolate.svg';
-import { ReactComponent as CoffeeCup } from 'iconoir/icons/coffee-cup.svg';
-import { ReactComponent as Cutlery } from 'iconoir/icons/clutery.svg';
-import { ReactComponent as Cycling } from 'iconoir/icons/cycling.svg';
-import { ReactComponent as Flower } from 'iconoir/icons/flower.svg';
-import { ReactComponent as GlassHalf } from 'iconoir/icons/glass-half.svg';
-import { ReactComponent as Golf } from 'iconoir/icons/golf.svg';
-import { ReactComponent as Gym } from 'iconoir/icons/gym.svg';
-import { ReactComponent as Home } from 'iconoir/icons/home.svg';
-import { ReactComponent as Hospital } from 'iconoir/icons/hospital.svg';
-import { ReactComponent as PharmacyCrossCircle } from 'iconoir/icons/pharmacy-cross-circle.svg';
-import { ReactComponent as Pin } from 'iconoir/icons/pin-alt.svg';
-import { ReactComponent as PineTree } from 'iconoir/icons/pine-tree.svg';
+
 import { ReactComponent as Position } from 'iconoir/icons/position.svg';
-import { ReactComponent as Sandals } from 'iconoir/icons/sandals.svg';
-import { ReactComponent as Shop } from 'iconoir/icons/shop.svg';
-import { ReactComponent as StarOutline } from 'iconoir/icons/star.svg';
-import { ReactComponent as Swimming } from 'iconoir/icons/swimming.svg';
-import { ReactComponent as Trekking } from 'iconoir/icons/trekking.svg';
 
 import './SearchAutocompleteDropdown.css';
 
@@ -38,17 +21,19 @@ const LIST_ITEM_CLASSNAME = 'SearchAutocompleteDropdown_place';
 export default function SearchAutocompleteDropdown(props) {
   const dispatch = useDispatch();
 
-  const { startOrEnd, inputText, geocodedFeatures, showCurrentLocationOption } =
+  const { startOrEnd, inputText, features, showCurrentLocationOption } =
     useSelector((state) => {
       const startOrEnd = state.routeParams.editingLocation;
 
       // TODO: Remove this after verifying it doesn't happen
       if (!startOrEnd) throw new Error('expected to be editing start or end');
 
-      let inputText = state.routeParams[startOrEnd + 'InputText'];
-      let cache = inputText && state.geocoding.cache['@' + inputText.trim()];
+      const inputText = state.routeParams[startOrEnd + 'InputText'];
+      let cache =
+        inputText && state.geocoding.typeaheadCache['@' + inputText.trim()];
       let fallbackToGeocodedLocationSourceText = false;
       if (!cache || cache.status !== 'succeeded') {
+        let autocompletedText = inputText;
         // If the location we're editing has a geocoded location already selected, display the
         // other options from the input text that was used to pick that.
         const relevantLocation = state.routeParams[startOrEnd];
@@ -59,8 +44,9 @@ export default function SearchAutocompleteDropdown(props) {
           (inputText === '' ||
             inputText === describePlace(relevantLocation.point))
         ) {
-          inputText = relevantLocation.fromInputText;
-          cache = state.geocoding.cache['@' + inputText.trim()];
+          autocompletedText = relevantLocation.fromInputText;
+          cache =
+            state.geocoding.typeaheadCache['@' + autocompletedText.trim()];
           fallbackToGeocodedLocationSourceText = true;
         } else {
           // Still nothing? Try prefixes of the input text. Example: current input text is
@@ -68,12 +54,16 @@ export default function SearchAutocompleteDropdown(props) {
           // which came back while you were typing.
           let strippedChars = 0;
           while (
-            inputText &&
+            autocompletedText &&
             (!cache || cache.status !== 'succeeded') &&
             strippedChars++ < 8
           ) {
-            inputText = inputText.substr(0, inputText.length - 1);
-            cache = state.geocoding.cache['@' + inputText.trim()];
+            autocompletedText = autocompletedText.substr(
+              0,
+              autocompletedText.length - 1,
+            );
+            cache =
+              state.geocoding.typeaheadCache['@' + autocompletedText.trim()];
           }
         }
       }
@@ -92,21 +82,46 @@ export default function SearchAutocompleteDropdown(props) {
         (fallbackToGeocodedLocationSourceText ||
           'current location'.indexOf(inputText.toLowerCase()) === 0);
 
+      let recentlyUsedFeatureIds = [];
+      let autocompleteFeatureIds = [];
+
+      if (inputText === '') {
+        // Suggest recently used locations
+        // NOTE: This is currently only done if input text is empty, but we
+        // could switch to always showing recently used locations that match
+        // the text typed, alongside Photon results.
+        recentlyUsedFeatureIds = state.geocoding.recentlyUsed.map((r) => r.id);
+      } else if (cache && cache.status === 'succeeded') {
+        autocompleteFeatureIds = cache.osmIds;
+      }
+
+      // Limit result size, don't show the location already selected as start
+      // point as a candidate for end point (or vice versa), and hydrate.
+      const otherId = state.routeParams[other]?.point?.properties?.osm_id;
+      const shownFeatures = [
+        ...autocompleteFeatureIds.map((id) => state.geocoding.osmCache[id]),
+        ...recentlyUsedFeatureIds.map((id) => ({
+          ...state.geocoding.osmCache[id],
+          fromRecentlyUsed: true,
+        })),
+      ]
+        .filter((feat) => feat.properties.osm_id !== otherId)
+        .slice(0, 8);
+
       return {
         startOrEnd,
         inputText,
-        geocodedFeatures:
-          cache && cache.status === 'succeeded' ? cache.features : [],
+        features: shownFeatures,
         showCurrentLocationOption,
       };
     }, shallowEqual);
 
-  const dedupedFeatures = uniqBy(geocodedFeatures, 'properties.osm_id');
-
   const handleClick = (index) => {
-    dispatch(
-      selectGeocodedLocation(startOrEnd, dedupedFeatures[index], inputText),
-    );
+    dispatch(selectGeocodedLocation(startOrEnd, features[index], inputText));
+  };
+
+  const handleRemoveClick = (index) => {
+    dispatch(removeRecentlyUsedLocation(features[index].properties.osm_id));
   };
 
   const handleCurrentLocationClick = () => {
@@ -117,7 +132,7 @@ export default function SearchAutocompleteDropdown(props) {
     <SelectionList className="SearchAutocompleteDropdown">
       {showCurrentLocationOption && (
         <SelectionListItem
-          className={LIST_ITEM_CLASSNAME}
+          buttonClassName={LIST_ITEM_CLASSNAME}
           onClick={handleCurrentLocationClick}
         >
           <Icon className="SearchAutocompleteDropdown_icon">
@@ -128,15 +143,21 @@ export default function SearchAutocompleteDropdown(props) {
           </span>
         </SelectionListItem>
       )}
-      {dedupedFeatures.map((feature, index) => (
+      {features.map((feature, index) => (
         <SelectionListItem
-          className={LIST_ITEM_CLASSNAME}
+          buttonClassName={LIST_ITEM_CLASSNAME}
           key={feature.properties.osm_id + ':' + feature.properties.type}
           onClick={handleClick.bind(null, index)}
+          onRemoveClick={
+            feature.fromRecentlyUsed
+              ? handleRemoveClick.bind(null, index)
+              : null
+          }
         >
-          <Icon className="SearchAutocompleteDropdown_icon">
-            {_getSvgForFeature(feature)}
-          </Icon>
+          <PlaceIcon
+            className="SearchAutocompleteDropdown_icon"
+            place={feature}
+          />
           <span className="SearchAutocompleteDropdown_placeDescription">
             {describePlace(feature)}
           </span>
@@ -150,76 +171,4 @@ export default function SearchAutocompleteDropdown(props) {
 export function isAutocompleteResultElement(domElement) {
   if (!domElement) return false;
   return Array.from(domElement.classList).includes(LIST_ITEM_CLASSNAME);
-}
-
-function _getSvgForFeature(feature) {
-  const { osm_key: key, osm_value: value, type } = feature?.properties || {};
-
-  let Klass = Pin;
-
-  if (
-    (key === 'boundary' && value === 'national_park') ||
-    (key === 'leisure' && ['park', 'nature_reserve'].includes(value))
-  ) {
-    // park
-    Klass = PineTree;
-  } else if (
-    (key === 'natural' && ['beach', 'shingle'].includes(value)) ||
-    (key === 'leisure' && value === 'beach_resort')
-  ) {
-    // beach
-    Klass = Sandals;
-  } else if (
-    (key === 'natural' && ['peak', 'hill', 'rock', 'saddle'].includes(value)) ||
-    (key === 'highway' && value === 'footway' && type === 'street')
-  ) {
-    // mountain, trail
-    Klass = Trekking;
-  } else if (key === 'leisure' && value === 'garden') {
-    Klass = Flower;
-  } else if (key === 'leisure' && value === 'golf_course') {
-    Klass = Golf;
-  } else if (
-    key === 'leisure' &&
-    ['swimming_area', 'swimming_pool', 'water_park'].includes(value)
-  ) {
-    Klass = Swimming;
-  } else if (key === 'tourism' && value === 'attraction') {
-    Klass = StarOutline;
-  } else if (key === 'amenity' && value === 'cafe') {
-    Klass = CoffeeCup;
-  } else if (
-    key === 'amenity' &&
-    ['restaurant', 'fast_food', 'food_court'].includes(value)
-  ) {
-    Klass = Cutlery;
-  } else if (
-    key === 'amenity' &&
-    ['bar', 'biergarten', 'pub'].includes(value)
-  ) {
-    Klass = GlassHalf;
-  } else if (key === 'place' && value === 'house') {
-    // note: we can't rely on type === 'house', shops have that
-    Klass = Home;
-  } else if (key === 'shop' && value === 'chocolate') {
-    Klass = Chocolate;
-  } else if (
-    (key === 'amenity' && value === 'pharmacy') ||
-    (key === 'shop' && value === 'chemist')
-  ) {
-    Klass = PharmacyCrossCircle;
-  } else if (key === 'amenity' && value === 'hospital') {
-    Klass = Hospital;
-  } else if (key === 'highway' && value === 'cycleway') {
-    Klass = Cycling;
-  } else if (key === 'leisure' && value === 'fitness_centre') {
-    Klass = Gym;
-  } else if (key === 'shop') {
-    // fallback for other types of shops than above
-    Klass = Shop;
-  } else if (key === 'amenity' && value === 'townhall') {
-    Klass = Building; // might not be a great fit for city halls, but best I can do
-  }
-
-  return <Klass />;
 }

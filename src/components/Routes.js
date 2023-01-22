@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import pointInPolygon from '@turf/boolean-point-in-polygon';
 import usePrevious from '../hooks/usePrevious';
+import { BOTTOM_DRAWER_MIN_HEIGHT } from '../lib/layout';
 import { TRANSIT_SERVICE_AREA } from '../lib/region';
 import {
   routeClicked,
@@ -74,8 +75,39 @@ export default function Routes(props) {
     dispatch(itineraryStepBackClicked());
   };
 
+  const wasViewingDetails = usePrevious(details);
+  const rootRef = React.useRef();
+  const scrollTopBeforeItineraryOpen = React.useRef();
+
+  React.useEffect(() => {
+    const el = rootRef.current;
+    const container = el?.offsetParent;
+    if (!el || !container) return;
+
+    // When entering the itinerary view, pop the bottom drawer up a bit
+    if (details && !wasViewingDetails) {
+      // Show up to 400px of the itinerary, but never take up more than half the
+      // vertical height of the map.
+      const desiredTop = Math.min(
+        400 - BOTTOM_DRAWER_MIN_HEIGHT,
+        container.clientHeight / 2 - BOTTOM_DRAWER_MIN_HEIGHT,
+      );
+      scrollTopBeforeItineraryOpen.current = container.scrollTop;
+      if (container.scrollTop < desiredTop)
+        container.scrollTo({ top: desiredTop, behavior: 'smooth' });
+    } else if (!details && wasViewingDetails) {
+      // Undo the popping up
+      const desiredTop = scrollTopBeforeItineraryOpen.current;
+      if (desiredTop != null && container.scrollTop > desiredTop)
+        container.scrollTo({ top: desiredTop, behavior: 'smooth' });
+      scrollTopBeforeItineraryOpen.current = null;
+    }
+  }, [details, wasViewingDetails]);
+
+  let content;
+
   if (!details) {
-    return (
+    content = (
       <RoutesOverview
         routes={routes}
         activeRoute={activeRoute}
@@ -85,7 +117,7 @@ export default function Routes(props) {
       />
     );
   } else if (viewingStep == null) {
-    return (
+    content = (
       <Itinerary
         route={routes[activeRoute]}
         onBackClick={handleBackClick}
@@ -99,7 +131,7 @@ export default function Routes(props) {
     const leg = routes[activeRoute].legs[legIdx];
 
     if (leg.type !== 'pt') {
-      return (
+      content = (
         <ItinerarySingleStep
           leg={leg}
           stepIdx={stepIdx}
@@ -107,7 +139,7 @@ export default function Routes(props) {
         />
       );
     } else {
-      return (
+      content = (
         <ItinerarySingleTransitStop
           stop={leg.stops[stepIdx]}
           relationship={stepIdx === 0 ? 'board' : 'alight'}
@@ -116,4 +148,6 @@ export default function Routes(props) {
       );
     }
   }
+
+  return <div ref={rootRef}>{content}</div>;
 }
