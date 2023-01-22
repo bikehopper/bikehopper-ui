@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { ReactComponent as MagnifyingGlass } from 'iconoir/icons/search.svg';
 import Icon from './Icon';
 import { SUPPORTED_REGION_DISPLAY } from '../lib/region';
@@ -6,12 +7,19 @@ import { SUPPORTED_REGION_DISPLAY } from '../lib/region';
 import './DirectionsNullState.css';
 
 export default function DirectionsNullState(props) {
+  const intl = useIntl();
+
   // The <input> rendered here is fake: its only function is to get focused and then
   // switch to a different UI that has the real input box.
 
   return (
     <div className="DirectionsNullState">
-      <h2 className="DirectionsNullState_header">Get directions</h2>
+      <h2 className="DirectionsNullState_header">
+        <FormattedMessage
+          defaultMessage="Get directions"
+          description="form header"
+        />
+      </h2>
       <span className="DirectionsNullState_inputContainer">
         <Icon className="DirectionsNullState_inputIcon">
           <MagnifyingGlass />
@@ -19,14 +27,24 @@ export default function DirectionsNullState(props) {
         <input
           aria-label="Destination"
           className="DirectionsNullState_input"
-          placeholder="Enter a destination"
+          placeholder={intl.formatMessage({
+            defaultMessage: 'Enter a destination',
+            description: 'input placeholder',
+          })}
           onFocus={props.onInputFocus}
         />
       </span>
       <p className="DirectionsNullState_para">
-        <strong>Welcome to BikeHopper!</strong> This is a new bike navigation
-        app that suggests ways to combine biking and transit, expanding your
-        options for getting around without a car.
+        <FormattedMessage
+          defaultMessage={
+            '<strong>Welcome to BikeHopper!</strong> This is a new bike navigation' +
+            ' app that suggests ways to combine biking and transit, expanding your' +
+            ' options for getting around without a car.'
+          }
+          values={{
+            strong: (chunks) => <strong>{chunks}</strong>,
+          }}
+        />
       </p>
       <p className="DirectionsNullState_para">
         {SUPPORTED_REGION_DISPLAY && (
