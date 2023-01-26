@@ -3,7 +3,10 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './Icon';
 import PlaceIcon from './PlaceIcon';
 import TimeBar from './TimeBar';
-import { isAutocompleteResultElement } from './SearchAutocompleteDropdown';
+import {
+  isAutocompleteResultElement,
+  getLastAutocompleteResultMousedownTime,
+} from './SearchAutocompleteDropdown';
 import {
   blurSearchWithUnchangedLocations,
   changeLocationTextInput,
@@ -106,15 +109,21 @@ export default function SearchBar(props) {
     const isOtherSearchInputFocused =
       event.relatedTarget === startRef.current ||
       event.relatedTarget === endRef.current;
-    const isAutocompleteResultFocused = isAutocompleteResultElement(
-      event.relatedTarget,
-    );
+
+    // This is a huge hack. Mobile Safari does not focus a <button> when it's tapped,
+    // so we cannot rely on focus alone to see if the blur was the result of tapping
+    // an autocomplete result. However, the mousedown on the button does happen before
+    // the blur, so that's what we use here.
+    const isAutocompleteResultTapped =
+      isAutocompleteResultElement(event.relatedTarget) ||
+      Date.now() - getLastAutocompleteResultMousedownTime() < 1000;
+
     const haveLocations = !!(startLocation && endLocation);
 
     // If you focused a search input but then blurred it without editing anything, then
     // we may want to cancel the edit so you can go back to existing routes.
     if (
-      !isAutocompleteResultFocused &&
+      !isAutocompleteResultTapped &&
       !isOtherSearchInputFocused &&
       !(startTextModified || endTextModified) &&
       haveLocations

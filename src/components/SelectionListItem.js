@@ -14,6 +14,7 @@ export default function SelectionListItem({
   className,
   buttonClassName,
   onClick,
+  onMouseDown,
   children,
   onRemoveClick,
 }) {
@@ -27,6 +28,7 @@ export default function SelectionListItem({
     >
       <button
         onClick={onClick}
+        onMouseDown={onMouseDown}
         className={classnames({
           SelectionListItem_button: true,
           SelectionListItem_button__removable: !!onRemoveClick,
@@ -36,7 +38,11 @@ export default function SelectionListItem({
         {children}
       </button>
       {onRemoveClick && (
-        <button onClick={onRemoveClick} className="SelectionListItem_remove">
+        <button
+          onClick={onRemoveClick}
+          onMouseDown={onMouseDown}
+          className="SelectionListItem_remove"
+        >
           <Icon label="Remove" className="SelectionListItem_removeIcon">
             <CancelIcon width="20" height="20" />
           </Icon>
