@@ -268,10 +268,9 @@ export function locationsSubmitted() {
         }
 
         return null;
-      } else if (location.point) {
-        // If we already have a point, pass through
-        return location;
       } else if (location.source === LocationSourceType.UserGeolocation) {
+        // Always geolocate anew; never use the stored point. Geolocation does its own
+        // short-term caching.
         await dispatch(geolocate());
 
         const { lng, lat } = getState().geolocation;
@@ -280,6 +279,9 @@ export function locationsSubmitted() {
           point: turf.point([lng, lat]),
           source: LocationSourceType.UserGeolocation,
         };
+      } else if (location.point) {
+        // If we already have a point, not from geolocation, pass through
+        return location;
       } else {
         console.error('expected location.point');
         return null;
