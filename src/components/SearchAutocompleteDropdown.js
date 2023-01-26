@@ -18,6 +18,8 @@ import './SearchAutocompleteDropdown.css';
 
 const LIST_ITEM_CLASSNAME = 'SearchAutocompleteDropdown_place';
 
+let _resultMousedownTime = 0;
+
 export default function SearchAutocompleteDropdown(props) {
   const dispatch = useDispatch();
 
@@ -128,12 +130,17 @@ export default function SearchAutocompleteDropdown(props) {
     dispatch(selectCurrentLocation(startOrEnd));
   };
 
+  const handleResultMousedown = () => {
+    _resultMousedownTime = Date.now();
+  };
+
   return (
     <SelectionList className="SearchAutocompleteDropdown">
       {showCurrentLocationOption && (
         <SelectionListItem
           buttonClassName={LIST_ITEM_CLASSNAME}
           onClick={handleCurrentLocationClick}
+          onMouseDown={handleResultMousedown}
         >
           <Icon className="SearchAutocompleteDropdown_icon">
             <Position />
@@ -148,6 +155,7 @@ export default function SearchAutocompleteDropdown(props) {
           buttonClassName={LIST_ITEM_CLASSNAME}
           key={feature.properties.osm_id + ':' + feature.properties.type}
           onClick={handleClick.bind(null, index)}
+          onMouseDown={handleResultMousedown}
           onRemoveClick={
             feature.fromRecentlyUsed
               ? handleRemoveClick.bind(null, index)
@@ -171,4 +179,10 @@ export default function SearchAutocompleteDropdown(props) {
 export function isAutocompleteResultElement(domElement) {
   if (!domElement) return false;
   return Array.from(domElement.classList).includes(LIST_ITEM_CLASSNAME);
+}
+
+// Hack for letting search bar see if an autocomplete result was just tapped on
+// but the browser in question does not focus it
+export function getLastAutocompleteResultMousedownTime() {
+  return _resultMousedownTime;
 }
