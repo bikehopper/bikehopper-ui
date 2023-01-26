@@ -22,7 +22,7 @@ export default function SelectionListItem({
       className={classnames({
         SelectionListItem: true,
         SelectionListItem__active: active,
-        [className]: true,
+        [className]: !!className,
       })}
     >
       <button
@@ -30,7 +30,7 @@ export default function SelectionListItem({
         className={classnames({
           SelectionListItem_button: true,
           SelectionListItem_button__removable: !!onRemoveClick,
-          [buttonClassName]: true,
+          [buttonClassName]: !!buttonClassName,
         })}
       >
         {children}
