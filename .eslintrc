@@ -1,6 +1,17 @@
 {
   "extends": "react-app",
+  "plugins": ["formatjs"],
   "rules": {
-    "react/jsx-no-target-blank": "off"
+    "react/jsx-no-target-blank": "off",
+    "formatjs/enforce-default-message": "error",
+    "formatjs/enforce-description": "error",
+    "formatjs/no-complex-selectors": [
+      "error",
+      {
+        "limit": 3
+      }
+    ],
+    "formatjs/no-id": "error",
+    "formatjs/no-literal-string-in-jsx": "off"
   }
 }
