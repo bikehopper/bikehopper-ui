@@ -21,23 +21,14 @@ export default function RoutesOverview({
 }) {
   const intl = useIntl();
 
-  let outOfArea = [
-    outOfAreaStart ? 'start point' : '',
-    outOfAreaEnd ? 'end point' : '',
-  ]
-    .filter((s) => s !== '')
-    .join(' and ');
-
   let containsTransitLeg = false;
+
+  const outOfAreaMsg = _outOfAreaMsg(intl, outOfAreaStart, outOfAreaEnd);
 
   return (
     <div className="RoutesOverview">
-      {outOfArea && (
-        <div className="RoutesOverview_outOfAreaWarning">
-          Transit options may be missing. Your {outOfArea} fall
-          {outOfAreaStart && outOfAreaEnd ? '' : 's'} outside the area where
-          BikeHopper has local transit data.
-        </div>
+      {outOfAreaMsg && (
+        <div className="RoutesOverview_outOfAreaWarning">{outOfAreaMsg}</div>
       )}
       <SelectionList className="RoutesOverview_list">
         {routes.map((route, index) => (
@@ -51,7 +42,7 @@ export default function RoutesOverview({
           >
             <div className="RoutesOverview_row">
               <ul className="RoutesOverview_routeLegs">
-                {route.legs.filter(isSignificantLeg).map((leg, index) => (
+                {route.legs.filter(_isSignificantLeg).map((leg, index) => (
                   <React.Fragment key={route.nonce + ':' + index}>
                     {index > 0 && (
                       <li className="RoutesOverview_legSeparator">
@@ -123,7 +114,7 @@ export default function RoutesOverview({
   );
 }
 
-function isSignificantLeg(leg) {
+function _isSignificantLeg(leg) {
   // For filtering out short, interpolated legs
   const THRESHOLD_IN_METERS = 120;
   return !(
@@ -131,4 +122,36 @@ function isSignificantLeg(leg) {
     leg.interpolated &&
     leg.distance < THRESHOLD_IN_METERS
   );
+}
+
+function _outOfAreaMsg(intl, start, end) {
+  // Yeah, this is tedious, but for i18n we gotta write it all out.
+  if (start && end)
+    return intl.formatMessage({
+      defaultMessage:
+        'Transit options may be missing.' +
+        ' Your starting point and destination fall outside the area' +
+        ' where BikeHopper has local transit data.',
+      description: 'warning shown above routes',
+    });
+
+  if (start)
+    return intl.formatMessage({
+      defaultMessage:
+        'Transit options may be missing.' +
+        ' Your starting point falls outside the area' +
+        ' where BikeHopper has local transit data.',
+      description: 'warning shown above routes',
+    });
+
+  if (end)
+    return intl.formatMessage({
+      defaultMessage:
+        'Transit options may be missing.' +
+        ' Your destination falls outside the area' +
+        ' where BikeHopper has local transit data.',
+      description: 'warning shown above routes',
+    });
+
+  return null;
 }
