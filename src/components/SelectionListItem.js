@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useIntl } from 'react-intl';
 import classnames from 'classnames';
 import Icon from './Icon';
 
@@ -18,6 +19,8 @@ export default function SelectionListItem({
   children,
   onRemoveClick,
 }) {
+  const intl = useIntl();
+
   return (
     <li
       className={classnames({
@@ -43,7 +46,13 @@ export default function SelectionListItem({
           onMouseDown={onMouseDown}
           className="SelectionListItem_remove"
         >
-          <Icon label="Remove" className="SelectionListItem_removeIcon">
+          <Icon
+            label={intl.formatMessage({
+              defaultMessage: 'Remove',
+              description: 'button to remove something from a list',
+            })}
+            className="SelectionListItem_removeIcon"
+          >
             <CancelIcon width="20" height="20" />
           </Icon>
         </button>
