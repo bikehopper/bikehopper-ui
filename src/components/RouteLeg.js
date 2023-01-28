@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { DEFAULT_PT_COLOR, getTextColor } from '../lib/colors';
 import {
+  describeRouteType,
   getIconForRouteType,
   getSvgComponentForIcon,
 } from '../lib/modeDescriptions';
@@ -28,11 +29,12 @@ export default function RouteLeg(props) {
     mode = (
       <div className="RouteLeg_transitMode">
         {TransitIcon && (
-          <TransitIcon
-            width="20"
-            height="20"
+          <Icon
             className="RouteLeg_transitModeIcon"
-          />
+            label={describeRouteType(props.routeType)}
+          >
+            <TransitIcon width="20" height="20" />
+          </Icon>
         )}
         <span
           className="RouteLeg_transitModeName"
