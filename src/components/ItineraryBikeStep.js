@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import BorderlessButton from './BorderlessButton';
 import InstructionSigns from '../lib/InstructionSigns';
 import ItineraryStep from './ItineraryStep';
@@ -11,17 +12,28 @@ import { ReactComponent as TriangleFlag } from 'iconoir/icons/triangle-flag.svg'
 import { ReactComponent as QuestionMarkCircle } from 'iconoir/icons/help-circle.svg';
 import { ReactComponent as ArrowTrCircle } from 'iconoir/icons/arrow-tr-circle.svg';
 
+let _warnedOfFallback = false;
+
 export default function ItineraryBikeStep({
   step,
   isFirstStep,
   onClick,
   rootRef,
 }) {
+  const intl = useIntl();
+
   let IconComponent = QuestionMarkCircle;
-  let verb = 'Proceed';
-  let preposition = 'on';
-  let direction = null;
+  let msg;
   let fallbackToGraphHopperInstructionText = false;
+
+  const street = step.street_name;
+  // TODO: if no name, set street to something like 'path', 'service road', 'unnamed road'
+  // and haveStreet to 'description'.
+  // TODO: The below messages don't work right for street descriptions like 'path', 'service
+  // road' because "on"/"onto" are hardcoded and can't be changed based on the gender of
+  // such a noun. Rethink.
+  const haveStreet = street ? 'name' : 'none';
+  const strong = React.useCallback((txt) => <strong>{txt}</strong>, []);
 
   // TODO: Get better icons for u-turn, sharp left/right, slight left/right, etc.
   switch (step.sign) {
@@ -29,42 +41,157 @@ export default function ItineraryBikeStep({
     case InstructionSigns.U_TURN_RIGHT:
     case InstructionSigns.U_TURN_UNKNOWN:
       IconComponent = MapsTurnBack;
-      verb = 'Make a';
-      direction = 'U-turn';
+      msg = (
+        <FormattedMessage
+          defaultMessage={
+            'Make a <dir>U-turn</dir>' +
+            '{haveStreet, select,' +
+            '  name { on <name>{street}</name>}' +
+            '  description { on {street}}' +
+            '  other {}' +
+            '}'
+          }
+          description="instruction"
+          values={{
+            street,
+            haveStreet,
+            dir: strong,
+            name: strong,
+          }}
+        />
+      );
       break;
     case InstructionSigns.KEEP_LEFT:
       IconComponent = LongArrowUpLeft;
-      verb = 'Keep';
-      direction = 'left';
+      msg = (
+        <FormattedMessage
+          defaultMessage={
+            'Keep <dir>left</dir>' +
+            '{haveStreet, select,' +
+            '  name { on <name>{street}</name>}' +
+            '  description { on {street}}' +
+            '  other {}' +
+            '}'
+          }
+          description="instruction"
+          values={{
+            street,
+            haveStreet,
+            dir: strong,
+            name: strong,
+          }}
+        />
+      );
       break;
     case InstructionSigns.TURN_SHARP_LEFT:
       IconComponent = LongArrowUpLeft;
-      verb = 'Turn';
-      direction = 'sharp left';
-      preposition = 'onto';
+      msg = (
+        <FormattedMessage
+          defaultMessage={
+            'Turn <dir>sharp left</dir>' +
+            '{haveStreet, select,' +
+            '  name { onto <name>{street}</name>}' +
+            '  description { onto {street}}' +
+            '  other {}' +
+            '}'
+          }
+          description="instruction"
+          values={{
+            street,
+            haveStreet,
+            dir: strong,
+            name: strong,
+          }}
+        />
+      );
       break;
     case InstructionSigns.TURN_LEFT:
       IconComponent = LongArrowUpLeft;
-      verb = 'Turn';
-      direction = 'left';
-      preposition = 'onto';
+      msg = (
+        <FormattedMessage
+          defaultMessage={
+            'Turn <dir>left</dir>' +
+            '{haveStreet, select,' +
+            '  name { onto <name>{street}</name>}' +
+            '  description { onto {street}}' +
+            '  other {}' +
+            '}'
+          }
+          description="instruction"
+          values={{
+            street,
+            haveStreet,
+            dir: strong,
+            name: strong,
+          }}
+        />
+      );
       break;
     case InstructionSigns.TURN_SLIGHT_LEFT:
       IconComponent = LongArrowUpLeft;
-      verb = 'Turn';
-      direction = 'slight left';
-      preposition = 'onto';
+      msg = (
+        <FormattedMessage
+          defaultMessage={
+            'Turn <dir>slight left</dir>' +
+            '{haveStreet, select,' +
+            '  name { onto <name>{street}</name>}' +
+            '  description { onto {street}}' +
+            '  other {}' +
+            '}'
+          }
+          description="instruction"
+          values={{
+            street,
+            haveStreet,
+            dir: strong,
+            name: strong,
+          }}
+        />
+      );
       break;
     case InstructionSigns.CONTINUE_ON_STREET:
       IconComponent = ArrowUp;
-      if (!isFirstStep) {
-        verb = 'Continue';
-        if (step.heading != null) {
-          direction = describeCardinalDirection(step.heading);
-        }
-      } else if (step.heading != null) {
-        verb = 'Head';
-        direction = describeCardinalDirection(step.heading);
+      if (!isFirstStep || step.heading == null) {
+        msg = (
+          <FormattedMessage
+            defaultMessage={
+              'Continue' +
+              '{haveStreet, select,' +
+              '  name { on <name>{street}</name>}' +
+              '  description { on {street}}' +
+              '  other {}' +
+              '}'
+            }
+            description="instruction"
+            values={{
+              street,
+              haveStreet,
+              name: strong,
+            }}
+          />
+        );
+      } else {
+        const direction = _describeCardinalDirection(step.heading, intl);
+        msg = (
+          <FormattedMessage
+            defaultMessage={
+              'Head <dir>{direction}</dir>' +
+              '{haveStreet, select,' +
+              '  name { on <name>{street}</name>}' +
+              '  description { on {street}}' +
+              '  other {}' +
+              '}'
+            }
+            description="instruction. direction is a cardinal direction like north"
+            values={{
+              direction,
+              street,
+              haveStreet,
+              name: strong,
+              dir: strong,
+            }}
+          />
+        );
       }
       break;
     case InstructionSigns.FINISH:
@@ -76,32 +203,113 @@ export default function ItineraryBikeStep({
       break;
     case InstructionSigns.KEEP_RIGHT:
       IconComponent = LongArrowUpRight;
-      verb = 'Keep';
-      direction = 'right';
+      msg = (
+        <FormattedMessage
+          defaultMessage={
+            'Keep <dir>right</dir>' +
+            '{haveStreet, select,' +
+            '  name { on <name>{street}</name>}' +
+            '  description { on {street}}' +
+            '  other {}' +
+            '}'
+          }
+          description="instruction"
+          values={{
+            street,
+            haveStreet,
+            dir: strong,
+            name: strong,
+          }}
+        />
+      );
       break;
     case InstructionSigns.TURN_SHARP_RIGHT:
       IconComponent = LongArrowUpRight;
-      verb = 'Turn';
-      direction = 'sharp right';
-      preposition = 'onto';
+      msg = (
+        <FormattedMessage
+          defaultMessage={
+            'Turn <dir>sharp right</dir>' +
+            '{haveStreet, select,' +
+            '  name { onto <name>{street}</name>}' +
+            '  description { onto {street}}' +
+            '  other {}' +
+            '}'
+          }
+          description="instruction"
+          values={{
+            street,
+            haveStreet,
+            dir: strong,
+            name: strong,
+          }}
+        />
+      );
       break;
     case InstructionSigns.TURN_RIGHT:
       IconComponent = LongArrowUpRight;
-      verb = 'Turn';
-      direction = 'right';
-      preposition = 'onto';
+      msg = (
+        <FormattedMessage
+          defaultMessage={
+            'Turn <dir>right</dir>' +
+            '{haveStreet, select,' +
+            '  name { onto <name>{street}</name>}' +
+            '  description { onto {street}}' +
+            '  other {}' +
+            '}'
+          }
+          description="instruction"
+          values={{
+            street,
+            haveStreet,
+            dir: strong,
+            name: strong,
+          }}
+        />
+      );
       break;
     case InstructionSigns.TURN_SLIGHT_RIGHT:
       IconComponent = LongArrowUpRight;
-      verb = 'Turn';
-      direction = 'slight right';
-      preposition = 'onto';
+      msg = (
+        <FormattedMessage
+          defaultMessage={
+            'Turn <dir>slight right</dir>' +
+            '{haveStreet, select,' +
+            '  name { onto <name>{street}</name>}' +
+            '  description { onto {street}}' +
+            '  other {}' +
+            '}'
+          }
+          description="instruction"
+          values={{
+            street,
+            haveStreet,
+            dir: strong,
+            name: strong,
+          }}
+        />
+      );
       break;
     case InstructionSigns.USE_ROUNDABOUT:
       IconComponent = ArrowTrCircle;
-      verb = 'At roundabout, take';
-      direction = `exit ${step.exit_number}`;
-      preposition = 'onto';
+      msg = (
+        <FormattedMessage
+          defaultMessage={
+            'At roundabout, take exit {num}' +
+            '{haveStreet, select,' +
+            '  name { onto <name>{street}</name>}' +
+            '  description { onto {street}}' +
+            '  other {}' +
+            '}'
+          }
+          description="instruction"
+          values={{
+            street,
+            haveStreet,
+            num: strong(step.exit_number),
+            name: strong,
+          }}
+        />
+      );
       break;
     default:
       // There are a couple rarely used sign types not covered above. If/when
@@ -110,33 +318,74 @@ export default function ItineraryBikeStep({
       fallbackToGraphHopperInstructionText = true;
   }
 
-  // Street name may be null. TODO: Describe (as "path", "service road",
-  // "unnamed road") if street name is absent
-  const streetName = step.street_name;
-
-  let contents;
   if (fallbackToGraphHopperInstructionText) {
-    contents = step.text;
-  } else {
-    contents = [
-      verb,
-      direction && [' ', <strong key="direction">{direction}</strong>],
-      streetName && [
-        ` ${preposition} `,
-        <strong key="street">{streetName}</strong>,
-      ],
-    ].flat();
+    msg = step.text;
+    if (process.env.NODE_ENV !== 'production' && !_warnedOfFallback) {
+      console.error(
+        `Falling back to GraphHopper instruction text. This will not be translated: ${step.text}`,
+      );
+      _warnedOfFallback = true;
+    }
   }
 
   return (
     <ItineraryStep IconSVGComponent={IconComponent} rootRef={rootRef}>
-      <BorderlessButton onClick={onClick}>{contents}</BorderlessButton>
+      <BorderlessButton onClick={onClick}>{msg}</BorderlessButton>
     </ItineraryStep>
   );
 }
 
+function _describeCardinalDirection(heading, intl) {
+  switch (_describeCardinalDirectionUntranslated(heading)) {
+    case 'north':
+      return intl.formatMessage({
+        defaultMessage: 'north',
+        description: 'cardinal direction, used in a sentence like "Head north"',
+      });
+    case 'northeast':
+      return intl.formatMessage({
+        defaultMessage: 'northeast',
+        description:
+          'cardinal direction, used in a sentence like "Head northeast"',
+      });
+    case 'east':
+      return intl.formatMessage({
+        defaultMessage: 'east',
+        description: 'cardinal direction, used in a sentence like "Head east"',
+      });
+    case 'southeast':
+      return intl.formatMessage({
+        defaultMessage: 'southeast',
+        description:
+          'cardinal direction, used in a sentence like "Head southeast"',
+      });
+    case 'south':
+      return intl.formatMessage({
+        defaultMessage: 'south',
+        description: 'cardinal direction, used in a sentence like "Head south"',
+      });
+    case 'southwest':
+      return intl.formatMessage({
+        defaultMessage: 'southwest',
+        description:
+          'cardinal direction, used in a sentence like "Head southwest"',
+      });
+    case 'west':
+      return intl.formatMessage({
+        defaultMessage: 'west',
+        description: 'cardinal direction, used in a sentence like "Head west"',
+      });
+    default:
+      return intl.formatMessage({
+        defaultMessage: 'northwest',
+        description:
+          'cardinal direction, used in a sentence like "Head northwest"',
+      });
+  }
+}
+
 // Convert a heading in degrees (0-360) into a description like "northwest"
-function describeCardinalDirection(heading) {
+function _describeCardinalDirectionUntranslated(heading) {
   if (heading > 337.5 || heading <= 22.5) return 'north';
   else if (heading <= 67.5) return 'northeast';
   else if (heading <= 112.5) return 'east';
