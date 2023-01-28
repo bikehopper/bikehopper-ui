@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useIntl } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './Icon';
 import PlaceIcon from './PlaceIcon';
@@ -26,6 +27,7 @@ const CURRENT_LOCATION_STRING = 'Current Location';
 
 export default function SearchBar(props) {
   const dispatch = useDispatch();
+  const intl = useIntl();
 
   const { startLocation, startText, endLocation, endText, editingLocation } =
     useSelector(
@@ -48,11 +50,13 @@ export default function SearchBar(props) {
   const [endTextModified, setEndTextModified] = React.useState(false);
 
   const displayedStart = _getDisplayedText(
+    intl,
     startText,
     startLocation,
     editingLocation === 'start',
   );
   const displayedEnd = _getDisplayedText(
+    intl,
     endText,
     endLocation,
     editingLocation === 'end',
@@ -174,10 +178,25 @@ export default function SearchBar(props) {
     if (evt.key === 'Enter') handleSubmit(evt);
   };
 
+  const startPointMsg = intl.formatMessage({
+    defaultMessage: 'Starting point',
+    description: 'label for input box for starting point of directions',
+  });
+  const endPointMsg = intl.formatMessage({
+    defaultMessage: 'Destination',
+    description: 'label for input box for ending point of directions',
+  });
+
   return (
     <div className="SearchBar">
       <button onClick={handleBackClick} className="SearchBar_backButton">
-        <Icon label="back" className="SearchBar_backIcon">
+        <Icon
+          label={intl.formatMessage({
+            defaultMessage: 'Back',
+            description: 'button to go back out of entering locations',
+          })}
+          className="SearchBar_backIcon"
+        >
           <NavLeftArrow />
         </Icon>
       </button>
@@ -191,10 +210,10 @@ export default function SearchBar(props) {
               }
             />
             <input
-              aria-label="Starting point"
+              aria-label={startPointMsg}
               className="SearchBar_input"
               type="text"
-              placeholder="Starting point"
+              placeholder={startPointMsg}
               value={displayedStart}
               onChange={handleStartChange}
               onFocus={handleFocus.bind(null, 'start')}
@@ -210,10 +229,10 @@ export default function SearchBar(props) {
               place={endLocation && !endTextModified ? endLocation.point : null}
             />
             <input
-              aria-label="Destination"
+              aria-label={endPointMsg}
               className="SearchBar_input"
               type="text"
-              placeholder="Destination"
+              placeholder={endPointMsg}
               value={displayedEnd}
               onChange={handleEndChange}
               onFocus={handleFocus.bind(null, 'end')}
@@ -228,7 +247,13 @@ export default function SearchBar(props) {
         <TimeBar />
       </div>
       <button onClick={handleSwapClick} className="SearchBar_swapButton">
-        <Icon label="swap" className="SearchBar_swapIcon">
+        <Icon
+          label={intl.formatMessage({
+            defaultMessage: 'Swap',
+            description: 'button to swap start and end point',
+          })}
+          className="SearchBar_swapIcon"
+        >
           <SwapArrows />
         </Icon>
       </button>
@@ -236,7 +261,7 @@ export default function SearchBar(props) {
   );
 }
 
-function _getDisplayedText(text, loc, isFocused) {
+function _getDisplayedText(intl, text, loc, isFocused) {
   if (!loc) return text;
 
   switch (loc.source) {
@@ -247,13 +272,25 @@ function _getDisplayedText(text, loc, isFocused) {
     case LocationSourceType.Marker:
     case LocationSourceType.UrlWithoutString:
       if (text !== '') return text;
-      return isFocused ? '' : 'Custom';
+      return isFocused
+        ? ''
+        : intl.formatMessage({
+            defaultMessage: 'Custom',
+            description:
+              'description of a route start/end point that was selected on the map',
+          });
     case LocationSourceType.UserGeolocation:
       if (text !== '') return text;
       return CURRENT_LOCATION_STRING;
     default:
       console.error('unexpected location type', loc.source);
       if (text !== '') return text;
-      return isFocused ? '' : 'Point';
+      return isFocused
+        ? ''
+        : intl.formatMessage({
+            defaultMessage: 'Point',
+            description:
+              'generic description of a location we don’t have more info about',
+          });
   }
 }
