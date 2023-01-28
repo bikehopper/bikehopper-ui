@@ -1,3 +1,5 @@
+// TODO: localize this
+
 export default function formatDistance(meters) {
   const feet = meters / 0.3048;
   const miles = feet / 5280;
