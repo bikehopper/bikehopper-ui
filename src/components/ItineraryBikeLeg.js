@@ -33,6 +33,7 @@ export default function ItineraryBikeLeg({
   }, [leg]);
 
   const scrollToRef = useScrollToRef();
+  const spacer = ' \u00B7 ';
 
   return (
     <>
@@ -45,7 +46,8 @@ export default function ItineraryBikeLeg({
           />
         </span>
         <span>
-          {/* TODO: localize this */ formatDistance(leg.distance)} &middot;{' '}
+          {/* TODO: localize this */ formatDistance(leg.distance)}
+          {spacer}
           {
             /* TODO: localize this */ formatDurationBetween(
               leg.departure_time,
