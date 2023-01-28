@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
 import formatDistance from '../lib/formatDistance';
 import { describeBikeInfra } from '../lib/geometry';
 import { ModeIcons } from '../lib/modeDescriptions';
@@ -36,10 +37,21 @@ export default function ItineraryBikeLeg({
   return (
     <>
       <ItineraryHeader icon={ModeIcons.BIKE}>
-        <span>Bike to {legDestination}</span>
         <span>
-          {formatDistance(leg.distance)} &middot;{' '}
-          {formatDurationBetween(leg.departure_time, leg.arrival_time)}
+          <FormattedMessage
+            defaultMessage="Bike to {place}"
+            description="header for step by step bike directions"
+            values={{ place: legDestination }}
+          />
+        </span>
+        <span>
+          {/* TODO: localize this */ formatDistance(leg.distance)} &middot;{' '}
+          {
+            /* TODO: localize this */ formatDurationBetween(
+              leg.departure_time,
+              leg.arrival_time,
+            )
+          }
         </span>
       </ItineraryHeader>
       <ItineraryDivider />

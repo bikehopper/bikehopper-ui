@@ -1,8 +1,8 @@
 import * as React from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import classnames from 'classnames';
 import { TRANSIT_DATA_ACKNOWLEDGEMENT } from '../lib/region';
 import { formatInterval } from '../lib/time';
-import DepartArriveTime from './DepartArriveTime';
 import Icon from './Icon';
 import RouteLeg from './RouteLeg';
 import SelectionList from './SelectionList';
@@ -12,9 +12,14 @@ import { ReactComponent as NavArrowRight } from 'iconoir/icons/nav-arrow-right.s
 
 import './RoutesOverview.css';
 
-export default function RoutesOverview(props) {
-  const { routes, activeRoute, outOfAreaStart, outOfAreaEnd, onRouteClick } =
-    props;
+export default function RoutesOverview({
+  routes,
+  activeRoute,
+  outOfAreaStart,
+  outOfAreaEnd,
+  onRouteClick,
+}) {
+  const intl = useIntl();
 
   let outOfArea = [
     outOfAreaStart ? 'start point' : '',
@@ -84,11 +89,22 @@ export default function RoutesOverview(props) {
                 )}
               </p>
             </div>
-            <DepartArriveTime
-              className="RoutesOverview_departArriveTime"
-              depart={route.legs[0].departure_time}
-              arrive={route.legs[route.legs.length - 1].arrival_time}
-            />
+            <p className="RoutesOverview_departArriveTime">
+              <FormattedMessage
+                defaultMessage="{depart}–{arrive}"
+                description="compact departure and arrival time"
+                values={{
+                  depart: intl.formatTime(route.legs[0].departure_time, {
+                    hour: 'numeric',
+                    minute: 'numeric',
+                  }),
+                  arrive: intl.formatTime(
+                    route.legs[route.legs.length - 1].arrival_time,
+                    { hour: 'numeric', minute: 'numeric' },
+                  ),
+                }}
+              />
+            </p>
           </SelectionListItem>
         ))}
       </SelectionList>

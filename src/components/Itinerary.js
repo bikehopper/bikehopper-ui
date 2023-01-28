@@ -1,6 +1,7 @@
 import * as React from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { ModeIcons } from '../lib/modeDescriptions';
-import { formatTime, formatDurationBetween } from '../lib/time';
+import { formatDurationBetween } from '../lib/time';
 import { getAgencyDisplayName } from '../lib/region';
 import Icon from './Icon';
 import ItineraryBikeLeg from './ItineraryBikeLeg';
@@ -17,6 +18,7 @@ export default function Itinerary({
   onStepClick,
   scrollToStep,
 }) {
+  const intl = useIntl();
   const [scrollToLegIdx, scrollToStepIdx] = scrollToStep || [];
 
   const renderedLegs = route.legs.map((leg, idx, legs) => {
@@ -50,38 +52,83 @@ export default function Itinerary({
   const startTime = route.legs[0].departure_time;
   const endTime = route.legs[route.legs.length - 1].arrival_time;
   const durationText = formatDurationBetween(startTime, endTime);
-  const modesText = route.legs
+  const modeDescriptions = route.legs
     .reduce((modesArray, leg) => {
       let modeForLeg = 'unknown';
-      if (leg.type === 'bike2') modeForLeg = 'bike';
-      else if (leg.type === 'pt')
+      if (leg.type === 'bike2') {
+        modeForLeg = intl.formatMessage({
+          defaultMessage: 'bike',
+          description:
+            'Description of bike as a travel mode. Appears in a list of travel modes' +
+            ' along with transit agency names, such as "via bike, BART, AC Transit"' +
+            ' or just "via bike"',
+        });
+      } else if (leg.type === 'pt') {
         modeForLeg = getAgencyDisplayName(leg.agency_name);
+      }
       if (!modesArray.includes(modeForLeg)) modesArray.push(modeForLeg);
       return modesArray;
     }, [])
-    .join(', ');
+    .slice(0, 5);
+
+  const spacer = ' \u00B7 ';
+
+  const backToRoutesText = intl.formatMessage({
+    defaultMessage: 'Back to routes',
+    description:
+      'button to return from a detailed itinerary to routes overview',
+  });
 
   return (
     <div className="Itinerary">
       <div className="Itinerary_backBtnAndHeadings">
         <button onClick={onBackClick} className="Itinerary_backButton">
-          <Icon label="Back to routes overview" className="Itinerary_backIcon">
+          <Icon label={backToRoutesText} className="Itinerary_backIcon">
             <NavLeftArrow />
           </Icon>
         </button>
         <div className="Itinerary_headings">
           <h2 className="Itinerary_overallTimeHeading">
-            {formatTime(startTime)} to {formatTime(endTime)}
+            <FormattedMessage
+              defaultMessage="{startTime} to {endTime}"
+              description="start and end time for a trip"
+              values={{
+                startTime: intl.formatTime(startTime, {
+                  hour: 'numeric',
+                  minute: 'numeric',
+                }),
+                endTime: intl.formatTime(endTime, {
+                  hour: 'numeric',
+                  minute: 'numeric',
+                }),
+              }}
+            />
           </h2>
           <h3 className="Itinerary_overallSubheading">
-            {durationText} &middot; via {modesText}
+            {durationText}
+            {spacer}
+            <FormattedMessage
+              defaultMessage="via {modes}"
+              description={
+                'Short summary of the modes used for a trip.' +
+                ' Modes is a list which can include bike and/or ' +
+                ' transit agency names such as BART and AC Transit.'
+              }
+              values={{
+                /* TODO: add Intl.ListFormat polyfill */
+                modes: intl.formatList(modeDescriptions, { type: 'unit' }),
+              }}
+            />
           </h3>
         </div>
       </div>
       <div className="Itinerary_timeline">
         {renderedLegs}
         <ItineraryHeader icon={ModeIcons.ARRIVE} iconColor="#ea526f">
-          Arrive at destination
+          <FormattedMessage
+            defaultMessage="Arrive at destination"
+            description="header text at end of step by step travel instructions"
+          />
         </ItineraryHeader>
       </div>
       <div className="Itinerary_bottomBackBtnContainer">
@@ -89,7 +136,9 @@ export default function Itinerary({
           <Icon className="Itinerary_backIcon">
             <NavLeftArrow />
           </Icon>
-          <span className="Itinerary_bottomBackBtnText">Back to routes</span>
+          <span className="Itinerary_bottomBackBtnText">
+            {backToRoutesText}
+          </span>
         </button>
       </div>
     </div>

@@ -175,6 +175,8 @@ function _describeBikeInfraFromCyclewayAndRoadClass(cycleway, roadClass) {
 //
 // 'cyclewayValues' and 'roadClasses' are each arrays of triples [start, end, value]
 // in which the start and end refer to coordinate indexes in the lineString.
+//
+// TODO: localize this (how since it's outside of react? intl parameter?)
 export function describeBikeInfra(
   lineString,
   cyclewayValues,
