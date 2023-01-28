@@ -125,33 +125,19 @@ function _isSignificantLeg(leg) {
 }
 
 function _outOfAreaMsg(intl, start, end) {
-  // Yeah, this is tedious, but for i18n we gotta write it all out.
-  if (start && end)
-    return intl.formatMessage({
-      defaultMessage:
-        'Transit options may be missing.' +
-        ' Your starting point and destination fall outside the area' +
-        ' where BikeHopper has local transit data.',
-      description: 'warning shown above routes',
-    });
+  const which = start ? (end ? 'both' : 'start') : end ? 'end' : 'neither';
+  if (which === 'neither') return null;
 
-  if (start)
-    return intl.formatMessage({
+  return intl.formatMessage(
+    {
       defaultMessage:
-        'Transit options may be missing.' +
-        ' Your starting point falls outside the area' +
-        ' where BikeHopper has local transit data.',
+        'Transit options may be missing. Your {which, select,' +
+        '  start {starting point falls}' +
+        '  end {destination falls}' +
+        '  other {starting point and destination fall}' +
+        '} outside the area where BikeHopper has local transit data.',
       description: 'warning shown above routes',
-    });
-
-  if (end)
-    return intl.formatMessage({
-      defaultMessage:
-        'Transit options may be missing.' +
-        ' Your destination falls outside the area' +
-        ' where BikeHopper has local transit data.',
-      description: 'warning shown above routes',
-    });
-
-  return null;
+    },
+    { which },
+  );
 }
