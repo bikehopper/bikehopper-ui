@@ -41,6 +41,7 @@ export default function DirectionsNullState(props) {
             ' app that suggests ways to combine biking and transit, expanding your' +
             ' options for getting around without a car.'
           }
+          description="paragraph in welcome screen"
           values={{
             strong: (chunks) => <strong>{chunks}</strong>,
           }}
