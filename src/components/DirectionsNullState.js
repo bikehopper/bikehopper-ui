@@ -52,7 +52,7 @@ export default function DirectionsNullState(props) {
         />
       </p>
       <p className="DirectionsNullState_para">
-        {SupportedRegionText && [<SupportedRegionText />, ' ']}
+        {SupportedRegionText && [<SupportedRegionText key="text" />, ' ']}
         <FormattedMessage
           defaultMessage="Get started by entering a destination above."
           description="text in welcome screen. appears below an input box for destination"
