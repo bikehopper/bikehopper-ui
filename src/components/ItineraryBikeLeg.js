@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { BIKEHOPPER_THEME_COLOR } from '../lib/colors';
 import formatDistance from '../lib/formatDistance';
 import { describeBikeInfra } from '../lib/geometry';
-import { ModeIcons } from '../lib/modeDescriptions';
 import { formatDurationBetween } from '../lib/time';
 import InstructionSigns from '../lib/InstructionSigns';
 import useScrollToRef from '../hooks/useScrollToRef';
@@ -10,6 +10,8 @@ import ItineraryBikeStep from './ItineraryBikeStep';
 import ItineraryHeader from './ItineraryHeader';
 import ItineraryDivider from './ItineraryDivider';
 import ItinerarySpacer from './ItinerarySpacer';
+
+import { ReactComponent as BikeIcon } from 'iconoir/icons/bicycle.svg';
 
 export default function ItineraryBikeLeg({
   leg,
@@ -36,9 +38,12 @@ export default function ItineraryBikeLeg({
   const scrollToRef = useScrollToRef();
   const spacer = ' \u00B7 ';
 
+  // Clear out icon's SVG width/height attributes so it can be scaled with CSS
+  const bikeIcon = <BikeIcon width={null} height={null} />;
+
   return (
     <>
-      <ItineraryHeader icon={ModeIcons.BIKE}>
+      <ItineraryHeader icon={bikeIcon} iconColor={BIKEHOPPER_THEME_COLOR}>
         <span>
           <FormattedMessage
             defaultMessage="Bike to {place}"

@@ -1,10 +1,6 @@
 import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import {
-  describeRouteType,
-  getIconForRouteType,
-  ModeIcons,
-} from '../lib/modeDescriptions';
+import { DEFAULT_PT_COLOR } from '../lib/colors';
 import { formatTime, formatDurationBetween } from '../lib/time';
 import { getAgencyDisplayName } from '../lib/region';
 import useScrollToRef from '../hooks/useScrollToRef';
@@ -13,6 +9,7 @@ import ItineraryHeader from './ItineraryHeader';
 import ItineraryDivider from './ItineraryDivider';
 import ItinerarySpacer from './ItinerarySpacer';
 import ItineraryStep from './ItineraryStep';
+import ModeIcon from './ModeIcon';
 
 import { ReactComponent as Circle } from 'iconoir/icons/circle.svg';
 
@@ -26,10 +23,6 @@ export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
   const departure = formatTime(leg.departure_time);
   const arrival = formatTime(leg.arrival_time);
 
-  const mode = describeRouteType(leg.route_type);
-  const icon = getIconForRouteType(leg.route_type) || ModeIcons.BUS;
-  const agency = getAgencyDisplayName(leg.agency_name);
-
   const stopsTraveled = stops.length - 1;
   const stopsBetweenStartAndEnd = stopsTraveled - 1;
 
@@ -38,9 +31,16 @@ export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
 
   return (
     <div className="ItineraryTransitLeg" ref={scrollTo ? scrollToRef : null}>
-      <ItineraryHeader icon={icon} iconColor={leg.route_color}>
+      <ItineraryHeader
+        icon={<ModeIcon mode={leg.route_type} />}
+        iconColor={leg.route_color || DEFAULT_PT_COLOR}
+      >
         <span>
-          Ride the {leg.route_name || leg.route_id} {mode} ({agency})
+          <ItineraryTransitLegHeaderMessage
+            name={leg.route_name || leg.route_id}
+            mode={leg.route_type}
+            agency={getAgencyDisplayName(leg.agency_name)}
+          />
         </span>
         <span>
           {pluralizedStopCount(stopsTraveled)} &middot;{' '}
@@ -75,6 +75,14 @@ export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
   );
 }
 
+// Internal-only component that gives localized strings for all possible
+// transit modes.
+function ItineraryTransitLegHeaderMessage({ name, mode, agency }) {
+  // TODO localize this
+  return `Ride the ${name} ${mode} (${agency})`;
+}
+
 function pluralizedStopCount(numStops) {
+  // TODO localize this
   return `${numStops} stop${numStops > 1 ? 's' : ''}`;
 }

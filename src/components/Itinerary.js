@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { ModeIcons } from '../lib/modeDescriptions';
 import { formatDurationBetween } from '../lib/time';
 import { getAgencyDisplayName } from '../lib/region';
 import Icon from './Icon';
@@ -9,6 +8,7 @@ import ItineraryHeader from './ItineraryHeader';
 import ItineraryTransitLeg from './ItineraryTransitLeg';
 
 import { ReactComponent as NavLeftArrow } from 'iconoir/icons/nav-arrow-left.svg';
+import { ReactComponent as ArriveIcon } from 'iconoir/icons/triangle-flag.svg';
 import './Itinerary.css';
 
 export default function Itinerary({
@@ -79,6 +79,9 @@ export default function Itinerary({
       'button to return from a detailed itinerary to routes overview',
   });
 
+  // Clear out icon's SVG width/height attributes so it can be scaled with CSS
+  const arriveIcon = <ArriveIcon width={null} height={null} />;
+
   return (
     <div className="Itinerary">
       <div className="Itinerary_backBtnAndHeadings">
@@ -124,7 +127,7 @@ export default function Itinerary({
       </div>
       <div className="Itinerary_timeline">
         {renderedLegs}
-        <ItineraryHeader icon={ModeIcons.ARRIVE} iconColor="#ea526f">
+        <ItineraryHeader icon={arriveIcon} iconColor="#ea526f">
           <FormattedMessage
             defaultMessage="Arrive at destination"
             description="header text at end of step by step travel instructions"
