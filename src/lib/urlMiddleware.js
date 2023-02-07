@@ -73,7 +73,7 @@ export default function routesUrlMiddleware(store) {
           to = encodeURIComponent(toText.replace(/@/g, '_')) + '@' + to;
       }
 
-      let generatedPath = `/route/${from}/to/${to}${queryString}`;
+      let generatedPath = `/route/${from}/to/${to}`;
 
       // add the departure/arrival time, if not departing now
       if (params.initialTime != null) {
@@ -83,7 +83,7 @@ export default function routesUrlMiddleware(store) {
           '/' +
           new Date(params.initialTime).getTime();
       }
-      history.replace(generatedPath);
+      history.replace(generatedPath + queryString);
     } else {
       history.replace('/' + history.location.search);
     }
