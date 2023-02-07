@@ -57,7 +57,11 @@ function App(props) {
   );
 
   return (
-    <IntlProvider messages={props.messages} locale="en" defaultLocale="en">
+    <IntlProvider
+      messages={props.messages}
+      locale={props.locale}
+      defaultLocale="en"
+    >
       <div className="App">
         <AlertBar />
         <MapPlusOverlay

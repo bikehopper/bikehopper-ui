@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import {
   describeRouteType,
   getIconForRouteType,
@@ -18,6 +19,8 @@ import { ReactComponent as Circle } from 'iconoir/icons/circle.svg';
 import './ItineraryTransitLeg.css';
 
 export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
+  const intl = useIntl();
+
   const { stops } = leg;
 
   const departure = formatTime(leg.departure_time);
@@ -31,6 +34,7 @@ export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
   const stopsBetweenStartAndEnd = stopsTraveled - 1;
 
   const scrollToRef = useScrollToRef();
+  // TODO localize the rest of this file
 
   return (
     <div className="ItineraryTransitLeg" ref={scrollTo ? scrollToRef : null}>
@@ -40,7 +44,7 @@ export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
         </span>
         <span>
           {pluralizedStopCount(stopsTraveled)} &middot;{' '}
-          {formatDurationBetween(leg.departure_time, leg.arrival_time)}
+          {formatDurationBetween(leg.departure_time, leg.arrival_time, intl)}
         </span>
       </ItineraryHeader>
       <ItineraryDivider />

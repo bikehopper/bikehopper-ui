@@ -40,13 +40,14 @@ async function bootstrapApp() {
   }
 
   const root = createRoot(document.getElementById('root'));
-  const messages = await loadMessages(selectLocale());
+  const locale = selectLocale();
+  const messages = await loadMessages(locale);
 
   root.render(
     <React.StrictMode>
       <Router>
         <Provider store={store}>
-          <App messages={messages} />
+          <App messages={messages} locale={locale} />
         </Provider>
       </Router>
     </React.StrictMode>,

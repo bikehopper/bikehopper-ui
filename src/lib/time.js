@@ -25,13 +25,19 @@ export function formatInterval(milliseconds) {
   return hours === 0 ? `${days}d` : `${days}d ${hours}h`;
 }
 
-// Long description of the interval between two ISO time strings.
+// Long description of the interval between two JS Dates.
 // TODO: Reconcile this with the above somehow.
-export function formatDurationBetween(startTime, endTime) {
+export function formatDurationBetween(startTime, endTime, intl) {
+  console.log('formatting duration with locale', intl.locale);
   const duration = DateTime.fromJSDate(endTime)
+    .setLocale(intl.locale)
     .diff(DateTime.fromJSDate(startTime), ['days', 'hours', 'minutes'])
     .toObject();
   if (duration.days === 0) delete duration.days;
   if (duration.hours === 0) delete duration.hours;
-  return Duration.fromObject(duration).toHuman({ maximumFractionDigits: 0 });
+  const ret = Duration.fromObject(duration).toHuman({
+    maximumFractionDigits: 0,
+  });
+  console.log('result:', ret);
+  return ret;
 }

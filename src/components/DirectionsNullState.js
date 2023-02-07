@@ -8,6 +8,7 @@ import './DirectionsNullState.css';
 
 export default function DirectionsNullState(props) {
   const intl = useIntl();
+  console.log('dns locale', intl.locale);
 
   // The <input> rendered here is fake: its only function is to get focused and then
   // switch to a different UI that has the real input box.

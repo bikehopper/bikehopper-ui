@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import formatDistance from '../lib/formatDistance';
 import { describeBikeInfra } from '../lib/geometry';
 import { ModeIcons } from '../lib/modeDescriptions';
@@ -17,6 +17,7 @@ export default function ItineraryBikeLeg({
   onStepClick,
   scrollToStep,
 }) {
+  const intl = useIntl();
   const instructionsWithBikeInfra = React.useMemo(() => {
     return leg.instructions.map((step) => {
       return {
@@ -46,14 +47,9 @@ export default function ItineraryBikeLeg({
           />
         </span>
         <span>
-          {/* TODO: localize this */ formatDistance(leg.distance)}
+          {formatDistance(leg.distance, intl)}
           {spacer}
-          {
-            /* TODO: localize this */ formatDurationBetween(
-              leg.departure_time,
-              leg.arrival_time,
-            )
-          }
+          {formatDurationBetween(leg.departure_time, leg.arrival_time, intl)}
         </span>
       </ItineraryHeader>
       <ItineraryDivider />
@@ -72,7 +68,7 @@ export default function ItineraryBikeLeg({
                 key={stepIdx + 'd'}
                 transit={false}
                 detail={`${
-                  step.distance ? formatDistance(step.distance) : null
+                  step.distance ? formatDistance(step.distance, intl) : null
                 }`}
               >
                 {step.bikeInfra}

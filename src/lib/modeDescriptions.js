@@ -7,6 +7,8 @@ import { ReactComponent as MetroIcon } from 'iconoir/icons/metro.svg';
 import { ReactComponent as FerryIcon } from 'iconoir/icons/sea-waves.svg';
 import { ReactComponent as ArriveIcon } from 'iconoir/icons/triangle-flag.svg';
 
+// TODO: localize the mode names
+
 export const ModeIcons = {
   BIKE: 'bike',
   BUS: 'bus',

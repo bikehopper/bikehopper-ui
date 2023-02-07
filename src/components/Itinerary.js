@@ -51,7 +51,7 @@ export default function Itinerary({
 
   const startTime = route.legs[0].departure_time;
   const endTime = route.legs[route.legs.length - 1].arrival_time;
-  const durationText = formatDurationBetween(startTime, endTime);
+  const durationText = formatDurationBetween(startTime, endTime, intl);
   const modeDescriptions = route.legs
     .reduce((modesArray, leg) => {
       let modeForLeg = 'unknown';
