@@ -27,11 +27,6 @@ export default function ItineraryBikeStep({
   let fallbackToGraphHopperInstructionText = false;
 
   const street = step.street_name;
-  // TODO: if no name, set street to something like 'path', 'service road', 'unnamed road'
-  // and haveStreet to 'description'.
-  // TODO: The below messages don't work right for street descriptions like 'path', 'service
-  // road' because "on"/"onto" are hardcoded and can't be changed based on the gender of
-  // such a noun. Rethink.
   const haveStreet = street ? 'name' : 'none';
   const strong = React.useCallback((txt) => <strong>{txt}</strong>, []);
 
@@ -47,7 +42,6 @@ export default function ItineraryBikeStep({
             'Make a <dir>U-turn</dir>' +
             '{haveStreet, select,' +
             '  name { on <name>{street}</name>}' +
-            '  description { on {street}}' +
             '  other {}' +
             '}'
           }
@@ -69,7 +63,6 @@ export default function ItineraryBikeStep({
             'Keep <dir>left</dir>' +
             '{haveStreet, select,' +
             '  name { on <name>{street}</name>}' +
-            '  description { on {street}}' +
             '  other {}' +
             '}'
           }
@@ -91,7 +84,6 @@ export default function ItineraryBikeStep({
             'Turn <dir>sharp left</dir>' +
             '{haveStreet, select,' +
             '  name { onto <name>{street}</name>}' +
-            '  description { onto {street}}' +
             '  other {}' +
             '}'
           }
@@ -113,7 +105,6 @@ export default function ItineraryBikeStep({
             'Turn <dir>left</dir>' +
             '{haveStreet, select,' +
             '  name { onto <name>{street}</name>}' +
-            '  description { onto {street}}' +
             '  other {}' +
             '}'
           }
@@ -135,7 +126,6 @@ export default function ItineraryBikeStep({
             'Turn <dir>slight left</dir>' +
             '{haveStreet, select,' +
             '  name { onto <name>{street}</name>}' +
-            '  description { onto {street}}' +
             '  other {}' +
             '}'
           }
@@ -158,7 +148,6 @@ export default function ItineraryBikeStep({
               'Continue' +
               '{haveStreet, select,' +
               '  name { on <name>{street}</name>}' +
-              '  description { on {street}}' +
               '  other {}' +
               '}'
             }
@@ -178,7 +167,6 @@ export default function ItineraryBikeStep({
               'Head <dir>{direction}</dir>' +
               '{haveStreet, select,' +
               '  name { on <name>{street}</name>}' +
-              '  description { on {street}}' +
               '  other {}' +
               '}'
             }
@@ -209,7 +197,6 @@ export default function ItineraryBikeStep({
             'Keep <dir>right</dir>' +
             '{haveStreet, select,' +
             '  name { on <name>{street}</name>}' +
-            '  description { on {street}}' +
             '  other {}' +
             '}'
           }
@@ -231,7 +218,6 @@ export default function ItineraryBikeStep({
             'Turn <dir>sharp right</dir>' +
             '{haveStreet, select,' +
             '  name { onto <name>{street}</name>}' +
-            '  description { onto {street}}' +
             '  other {}' +
             '}'
           }
@@ -253,7 +239,6 @@ export default function ItineraryBikeStep({
             'Turn <dir>right</dir>' +
             '{haveStreet, select,' +
             '  name { onto <name>{street}</name>}' +
-            '  description { onto {street}}' +
             '  other {}' +
             '}'
           }
@@ -275,7 +260,6 @@ export default function ItineraryBikeStep({
             'Turn <dir>slight right</dir>' +
             '{haveStreet, select,' +
             '  name { onto <name>{street}</name>}' +
-            '  description { onto {street}}' +
             '  other {}' +
             '}'
           }
@@ -297,7 +281,6 @@ export default function ItineraryBikeStep({
             'At roundabout, take exit {num}' +
             '{haveStreet, select,' +
             '  name { onto <name>{street}</name>}' +
-            '  description { onto {street}}' +
             '  other {}' +
             '}'
           }

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
 
 /**
  * When you tap on an instruction (e.g. "Turn left on Valencia
@@ -8,12 +9,18 @@ import * as React from 'react';
  */
 
 export default function ItinerarySingleStep({ leg, stepIdx, onBackClick }) {
-  // TODO Make this nice and give the same description (with image) as
+  // TODO Make this nice and give the same localized description (with image) as
   // the step in the full itinerary.
+  const space = ' ';
   return (
     <p style={{ marginLeft: 32 }}>
-      {leg.instructions[stepIdx].text + ' '}
-      <button onClick={onBackClick}>Go back</button>
+      {leg.instructions[stepIdx].text + space}
+      <button onClick={onBackClick}>
+        <FormattedMessage
+          defaultMessage="Go back"
+          description="button to return to a previous screen"
+        />
+      </button>
     </p>
   );
 }
