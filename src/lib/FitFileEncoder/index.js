@@ -65,7 +65,6 @@ export default class FitFileEncoder {
     return earthRadius * c;
   }
 
-  // Should I transform it into an array of objects and just write that one array?
   writeRecordMessages() {
     this.recordMessages.forEach((recordMessage) => {
       this.encoder.writeRecord({

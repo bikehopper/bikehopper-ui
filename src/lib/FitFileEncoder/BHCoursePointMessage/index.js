@@ -36,11 +36,11 @@ export default class BHCoursePointMessage {
       case 0:
         return 'straight';
       case 1:
-        return 'slight_left';
+        return 'slight_right';
       case 2:
         return 'right';
       case 3:
-        return 'slight_right';
+        return 'sharp_right';
       case 4:
         return 'generic';
       case 5:
