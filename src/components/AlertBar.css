@@ -18,10 +18,6 @@
   background-color: #fffbca;
 }
 
-.AlertBar__info {
-  background-color: #57b570;
-}
-
 .AlertBar_icon {
   display: inline-block;
   flex-shrink: 0;

@@ -32,7 +32,6 @@ export default function AlertBar(props) {
         AlertBar: true,
         AlertBar__error: severity === AlertSeverity.ERROR,
         AlertBar__warning: severity === AlertSeverity.WARNING,
-        AlertBar__info: severity === AlertSeverity.INFO,
       })}
       role="alert"
       key={id}
@@ -41,7 +40,7 @@ export default function AlertBar(props) {
       }
     >
       <Icon className="AlertBar_icon">
-        {severity === AlertSeverity.ERROR || severity === AlertSeverity.INFO ? (
+        {severity === AlertSeverity.ERROR ? (
           <WarningCircle />
         ) : (
           <WarningTriangle />
