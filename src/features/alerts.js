@@ -1,7 +1,6 @@
 export const AlertSeverity = {
   WARNING: 'warning',
   ERROR: 'error',
-  INFO: 'info',
 };
 
 const DEFAULT_STATE = {
@@ -19,11 +18,6 @@ export function alertsReducer(state = DEFAULT_STATE, action) {
       return {
         ...state,
         alerts: state.alerts.filter((alert) => alert.id !== action.id),
-      };
-    case 'alert_toast':
-      return {
-        ...state,
-        alerts: [action.alert, ...state.alerts],
       };
     default:
       // Sorta unique to the alerts reducer: an action of ANY type can have an
@@ -58,36 +52,5 @@ export function dismissAlert(id) {
   return {
     type: 'alert_dismissed',
     id,
-  };
-}
-
-// Add an alert with a manually set nonce value.
-export function displayToastyAlert(alert) {
-  return {
-    type: 'alert_toast',
-    alert,
-  };
-}
-
-// Thunks.
-
-// Display a message and then remove it after ttl.
-export function displayToastyMessage(
-  message,
-  severity = AlertSeverity.INFO,
-  ttlMS = 1000,
-) {
-  return async function displayToastyMessageThunk(dispatch, getState) {
-    // Create an action and keep its ID so we can delete it later.
-    const mAction = _createAlert(severity, message);
-    dispatch(displayToastyAlert(mAction));
-    setTimeout(
-      (dispatch, id) => {
-        dispatch(dismissAlert(id));
-      },
-      ttlMS,
-      dispatch,
-      mAction.id,
-    );
   };
 }
