@@ -27,6 +27,8 @@ export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
   const stopsTraveled = stops.length - 1;
   const stopsBetweenStartAndEnd = stopsTraveled - 1;
 
+  const spacerWithMiddot = ' \u00B7 ';
+
   const scrollToRef = useScrollToRef();
   // TODO localize the rest of this file
 
@@ -44,7 +46,8 @@ export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
           />
         </span>
         <span>
-          {pluralizedStopCount(stopsTraveled)} &middot;{' '}
+          {pluralizedStopCount(stopsTraveled)}
+          {spacerWithMiddot}
           {formatDurationBetween(leg.departure_time, leg.arrival_time, intl)}
         </span>
       </ItineraryHeader>
