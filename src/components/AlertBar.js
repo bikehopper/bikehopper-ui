@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useIntl } from 'react-intl';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import classnames from 'classnames';
 import { AlertSeverity, dismissAlert } from '../features/alerts';
@@ -18,6 +19,7 @@ export default function AlertBar(props) {
   }, shallowEqual);
 
   const dispatch = useDispatch();
+  const intl = useIntl();
 
   if (!message) return null;
 
@@ -48,7 +50,13 @@ export default function AlertBar(props) {
       </Icon>
       <span className="AlertBar_msg">{message}</span>
       <button className="AlertBar_cancel" onClick={handleDismissClick}>
-        <Icon label="Dismiss" className="AlertBar_cancelIcon">
+        <Icon
+          label={intl.formatMessage({
+            defaultMessage: 'Dismiss',
+            description: 'button to dismiss alert',
+          })}
+          className="AlertBar_cancelIcon"
+        >
           <Cancel />
         </Icon>
       </button>

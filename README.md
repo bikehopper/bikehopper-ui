@@ -45,14 +45,20 @@ If you're actively making changes to [our fork of GraphHopper](https://github.co
 
 1. You'll need a local OSM cutout for Northern California.
 
-    ```sh
-    wget http://download.geofabrik.de/north-america/us/california/norcal-latest.osm.pbf
-    ```
+   ```sh
+   wget http://download.geofabrik.de/north-america/us/california/norcal-latest.osm.pbf
+   ```
 
-    Place the OSM cutout at `graphhopper/data/norcal-latest.osm.pbf`.
+   Place the OSM cutout at `graphhopper/data/norcal-latest.osm.pbf`.
 
 2. You'll also need GTFS data. Follow steps on this page, under "To Use the Feed and Ask Questions": https://www.interline.io/blog/mtc-regional-gtfs-feed-release/
 
-    Place the GTFS zip file at `graphhopper/data/GTFSTransitData_RG.zip`.
+   Place the GTFS zip file at `graphhopper/data/GTFSTransitData_RG.zip`.
 
 3. Edit the relevant variable in your `.env.development.local` to point to local GraphHopper.
+
+## Internationalization (WIP)
+
+This is not entirely working yet, but currently, when you add a new message into the code, run `npm run extract` to extract the default message and its description to the English-language file.
+
+And after syncing translations from Weblate, run the script `compile-langs.sh`. The lack of symmetry is just because this command was too complex to be put into package.json.
