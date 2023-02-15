@@ -83,8 +83,8 @@
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
-    "extract": "formatjs extract 'src/**/*.js' --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
-    "compile": "formatjs compile",
+    "extract": "formatjs extract 'src/**/*.js' --format=scripts/formatjs-formatter.js --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
+    "compile": "formatjs compile --format=scripts/formatjs-formatter.js",
     "prepare": "husky install"
   },
   "proxy": "https://api-staging.bikehopper.org",

@@ -1,18 +1,18 @@
 {
   "RRZB26": {
-    "defaultMessage": "<strong>Welcome to BikeHopper!</strong> This is a new bike navigation app that suggests ways to combine biking and transit, expanding your options for getting around without a car.",
-    "description": "paragraph in welcome screen"
+    "description": "paragraph in welcome screen",
+    "message": "<strong>Welcome to BikeHopper!</strong> This is a new bike navigation app that suggests ways to combine biking and transit, expanding your options for getting around without a car."
   },
   "Tqzrb2": {
-    "defaultMessage": "Get directions",
-    "description": "form header"
+    "description": "form header",
+    "message": "Get directions"
   },
   "vcNM7g": {
-    "defaultMessage": "Enter a destination",
-    "description": "input placeholder"
+    "description": "input placeholder",
+    "message": "Enter a destination"
   },
   "zOmTEh": {
-    "defaultMessage": "Dismiss",
-    "description": "button to dismiss alert"
+    "description": "button to dismiss alert",
+    "message": "Dismiss"
   }
 }
