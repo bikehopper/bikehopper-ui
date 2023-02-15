@@ -30,7 +30,6 @@ export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
   const spacerWithMiddot = ' \u00B7 ';
 
   const scrollToRef = useScrollToRef();
-  // TODO localize the rest of this file
 
   return (
     <div className="ItineraryTransitLeg" ref={scrollTo ? scrollToRef : null}>
@@ -46,7 +45,16 @@ export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
           />
         </span>
         <span>
-          {pluralizedStopCount(stopsTraveled)}
+          <FormattedMessage
+            defaultMessage={
+              '{numStops} {numStops, plural,' +
+              ' one {stop}' +
+              ' other {stops}' +
+              '}'
+            }
+            description="the number of stops for which you should stay on a transit vehicle"
+            values={{ numStops: stopsTraveled }}
+          />
           {spacerWithMiddot}
           {formatDurationBetween(leg.departure_time, leg.arrival_time, intl)}
         </span>
@@ -54,23 +62,54 @@ export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
       <ItineraryDivider />
       <ItineraryStep IconSVGComponent={Circle} smallIcon={true}>
         <BorderlessButton onClick={onStopClick.bind(null, 0)}>
-          Board at <strong>{stops[0].stop_name}</strong> &middot; {departure}
+          <FormattedMessage
+            defaultMessage="Board at {stop}"
+            description="instruction to board (a public transit vehicle) at the named stop"
+            values={{ stop: stops[0].stop_name }}
+          />
+          {spacerWithMiddot}
+          {departure}
         </BorderlessButton>
       </ItineraryStep>
       <ItineraryDivider
         transit={true}
         detail={
           stopsBetweenStartAndEnd > 0
-            ? pluralizedStopCount(stopsBetweenStartAndEnd) + ' before'
+            ? intl.formatMessage(
+                {
+                  defaultMessage:
+                    '{numStops} {numStops, plural,' +
+                    ' one {stop}' +
+                    ' other {stops}' +
+                    '} before',
+                  description:
+                    'the number of stops between two listed transit stops',
+                },
+                { numStops: stopsBetweenStartAndEnd },
+              )
             : null
         }
       >
-        Towards {leg.trip_headsign}
+        <FormattedMessage
+          defaultMessage="Towards {headsign}"
+          description={
+            'describes where a transit trip is headed.' +
+            ' Often, the headsign is the name of the final stop.' +
+            ' This appears in an itinerary, along with other details about the' +
+            ' transit vehicle to board.'
+          }
+          values={{ headsign: leg.trip_headsign }}
+        />
       </ItineraryDivider>
       <ItineraryStep IconSVGComponent={Circle} smallIcon={true}>
         <BorderlessButton onClick={onStopClick.bind(null, stops.length - 1)}>
-          Get off at <strong>{stops[stops.length - 1].stop_name}</strong>{' '}
-          &middot; {arrival}
+          <FormattedMessage
+            defaultMessage="Get off at {stop}"
+            description="instruction to exit (a public transit vehicle) at the named stop"
+            values={{ stop: stops[stops.length - 1].stop_name }}
+          />
+          {spacerWithMiddot}
+          {arrival}
         </BorderlessButton>
       </ItineraryStep>
       <ItineraryDivider />
@@ -196,9 +235,4 @@ function ItineraryTransitLegHeaderMessage({ name, mode, agency }) {
         />
       );
   }
-}
-
-function pluralizedStopCount(numStops) {
-  // TODO localize this
-  return `${numStops} stop${numStops > 1 ? 's' : ''}`;
 }
