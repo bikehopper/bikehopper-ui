@@ -17,7 +17,7 @@ export default function describePlace(
 
   const descriptionElements = [
     name,
-    housenumber != null ? housenumber + ' ' + street : street,
+    housenumber != null && street ? housenumber + ' ' + street : street,
     city,
     postcode,
   ];
