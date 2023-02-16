@@ -5,3 +5,5 @@
 /package-lock.json
 /scripts
 /config
+/compiled-lang
+/lang
