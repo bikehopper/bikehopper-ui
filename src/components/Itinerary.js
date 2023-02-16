@@ -118,7 +118,6 @@ export default function Itinerary({
                 ' transit agency names such as BART and AC Transit.'
               }
               values={{
-                /* TODO: add Intl.ListFormat polyfill */
                 modes: intl.formatList(modeDescriptions, { type: 'unit' }),
               }}
             />

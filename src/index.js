@@ -3,19 +3,25 @@ import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { shouldPolyfill as listFormatShouldPolyfill } from '@formatjs/intl-listformat/should-polyfill';
 import reportWebVitals from './reportWebVitals';
 import App from './components/App';
 import store from './store';
 
 import './index.css';
 
-function loadMessages(locale) {
+async function loadMessages(locale) {
+  if (listFormatShouldPolyfill(locale)) {
+    await import('@formatjs/intl-listformat/polyfill-force');
+    await import(`@formatjs/intl-listformat/locale-data/${locale}`);
+  }
+
   if (/^es\b/.test(locale)) {
     // all variants of Spanish
-    return import('../compiled-lang/es.json');
+    return await import('../compiled-lang/es.json');
   } else {
     // default to English
-    return import('../compiled-lang/en.json');
+    return await import('../compiled-lang/en.json');
   }
 }
 
@@ -24,7 +30,14 @@ function selectLocale() {
   const overrideLocale = new URLSearchParams(document.location.search).get(
     'locale',
   );
-  if (overrideLocale) return overrideLocale;
+  if (overrideLocale) {
+    try {
+      const canonical = Intl.getCanonicalLocales(overrideLocale)[0];
+      if (canonical) return canonical;
+    } catch (e) {
+      console.warn('ignoring unknown locale ' + overrideLocale);
+    }
+  }
 
   // browser default
   return navigator.language;
