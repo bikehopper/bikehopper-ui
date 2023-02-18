@@ -17,6 +17,9 @@ BikeHopper uses:
   [GraphHopper](https://www.graphhopper.com/))
 - A lightweight Node.js proxy we've written called
   [bikehopper-web-app](https://github.com/bikehopper/bikehopper-web-app)
+- [FormatJS](https://formatjs.io/) and [hosted
+  Weblate](https://hosted.weblate.org/projects/bikehopper/bikehopper-ui/) for
+  internationalization (WIP)
 
 BikeHopper is free software under the GNU Affero General Public
 License, which requires the source to be kept open. We discourage
