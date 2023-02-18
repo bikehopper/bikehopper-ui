@@ -38,6 +38,7 @@ export default function routesUrlMiddleware(store) {
       return;
     } else if (routeStateAfter.routes) {
       const params = stateAfter.routeParams;
+      const queryString = history.location.search; // preserve any query params
 
       let from = routeStateAfter.routeStartCoords.join(',');
       let to = routeStateAfter.routeEndCoords.join(',');
@@ -82,9 +83,9 @@ export default function routesUrlMiddleware(store) {
           '/' +
           new Date(params.initialTime).getTime();
       }
-      history.replace(generatedPath);
+      history.replace(generatedPath + queryString);
     } else {
-      history.replace('/');
+      history.replace('/' + history.location.search);
     }
   };
 }

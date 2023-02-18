@@ -12,6 +12,7 @@
 
 .RouteLeg_transitModeIcon {
   margin-right: 4px;
+  top: 0 !important; /* FIXME: why does Icon have hardcoded top 4px again? */
 }
 
 .RouteLeg_transitModeName {

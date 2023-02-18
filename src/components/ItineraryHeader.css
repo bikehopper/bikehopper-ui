@@ -12,6 +12,7 @@
   text-align: center;
   flex-direction: column;
   justify-content: space-around;
+  align-items: center;
 }
 
 .ItineraryHeader_iconContainer__isWhite {
@@ -20,6 +21,8 @@
 
 .ItineraryHeader_icon {
   top: 0;
+  width: 32px;
+  height: 32px;
 }
 
 .ItineraryHeader_header {

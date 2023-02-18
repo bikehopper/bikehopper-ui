@@ -12,6 +12,6 @@
       }
     ],
     "formatjs/no-id": "error",
-    "formatjs/no-literal-string-in-jsx": "off"
+    "formatjs/no-literal-string-in-jsx": "warn"
   }
 }

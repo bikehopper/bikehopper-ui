@@ -1,7 +1,8 @@
 import * as React from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { BIKEHOPPER_THEME_COLOR } from '../lib/colors';
 import formatDistance from '../lib/formatDistance';
 import { describeBikeInfra } from '../lib/geometry';
-import { ModeIcons } from '../lib/modeDescriptions';
 import { formatDurationBetween } from '../lib/time';
 import InstructionSigns from '../lib/InstructionSigns';
 import useScrollToRef from '../hooks/useScrollToRef';
@@ -10,12 +11,15 @@ import ItineraryHeader from './ItineraryHeader';
 import ItineraryDivider from './ItineraryDivider';
 import ItinerarySpacer from './ItinerarySpacer';
 
+import { ReactComponent as BikeIcon } from 'iconoir/icons/bicycle.svg';
+
 export default function ItineraryBikeLeg({
   leg,
   legDestination,
   onStepClick,
   scrollToStep,
 }) {
+  const intl = useIntl();
   const instructionsWithBikeInfra = React.useMemo(() => {
     return leg.instructions.map((step) => {
       return {
@@ -32,14 +36,25 @@ export default function ItineraryBikeLeg({
   }, [leg]);
 
   const scrollToRef = useScrollToRef();
+  const spacer = ' \u00B7 ';
+
+  // Clear out icon's SVG width/height attributes so it can be scaled with CSS
+  const bikeIcon = <BikeIcon width={null} height={null} />;
 
   return (
     <>
-      <ItineraryHeader icon={ModeIcons.BIKE}>
-        <span>Bike to {legDestination}</span>
+      <ItineraryHeader icon={bikeIcon} iconColor={BIKEHOPPER_THEME_COLOR}>
         <span>
-          {formatDistance(leg.distance)} &middot;{' '}
-          {formatDurationBetween(leg.departure_time, leg.arrival_time)}
+          <FormattedMessage
+            defaultMessage="Bike to {place}"
+            description="header for step by step bike directions"
+            values={{ place: legDestination }}
+          />
+        </span>
+        <span>
+          {formatDistance(leg.distance, intl)}
+          {spacer}
+          {formatDurationBetween(leg.departure_time, leg.arrival_time, intl)}
         </span>
       </ItineraryHeader>
       <ItineraryDivider />
@@ -58,7 +73,7 @@ export default function ItineraryBikeLeg({
                 key={stepIdx + 'd'}
                 transit={false}
                 detail={`${
-                  step.distance ? formatDistance(step.distance) : null
+                  step.distance ? formatDistance(step.distance, intl) : null
                 }`}
               >
                 {step.bikeInfra}

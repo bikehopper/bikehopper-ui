@@ -4,7 +4,7 @@
 // regions in the future.
 
 import {
-  SUPPORTED_REGION_DISPLAY,
+  SupportedRegionText,
   DEFAULT_VIEWPORT_BOUNDS,
   AGENCY_COMMON_NAMES,
   TRANSIT_SERVICE_AREA,
@@ -12,7 +12,7 @@ import {
 } from './BayArea';
 
 export {
-  SUPPORTED_REGION_DISPLAY,
+  SupportedRegionText,
   DEFAULT_VIEWPORT_BOUNDS,
   TRANSIT_SERVICE_AREA,
   TRANSIT_DATA_ACKNOWLEDGEMENT,

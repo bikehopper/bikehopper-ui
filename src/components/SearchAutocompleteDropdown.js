@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useIntl } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { removeRecentlyUsedLocation } from '../features/geocoding';
 import {
@@ -22,6 +23,14 @@ let _resultMousedownTime = 0;
 
 export default function SearchAutocompleteDropdown(props) {
   const dispatch = useDispatch();
+  const intl = useIntl();
+
+  const currentLocationString = intl.formatMessage({
+    defaultMessage: 'Current Location',
+    description:
+      'option that can be selected (or typed in) to get directions from or ' +
+      'to the current location of the user, as determined by GPS',
+  });
 
   const { startOrEnd, inputText, features, showCurrentLocationOption } =
     useSelector((state) => {
@@ -82,7 +91,9 @@ export default function SearchAutocompleteDropdown(props) {
       const showCurrentLocationOption =
         canUseCurrentLocation &&
         (fallbackToGeocodedLocationSourceText ||
-          'current location'.indexOf(inputText.toLowerCase()) === 0);
+          currentLocationString
+            .toLocaleLowerCase(intl.locale)
+            .startsWith(inputText.toLocaleLowerCase(intl.locale)));
 
       let recentlyUsedFeatureIds = [];
       let autocompleteFeatureIds = [];
@@ -146,7 +157,7 @@ export default function SearchAutocompleteDropdown(props) {
             <Position />
           </Icon>
           <span className="SearchAutocompleteDropdown_placeDescription">
-            Current Location
+            {currentLocationString}
           </span>
         </SelectionListItem>
       )}

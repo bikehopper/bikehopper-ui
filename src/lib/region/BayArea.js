@@ -1,10 +1,20 @@
 import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
 
-export const SUPPORTED_REGION_DISPLAY = (
-  <span>
-    the <strong>San Francisco Bay Area</strong>, California
-  </span>
-);
+export function SupportedRegionText(props) {
+  return (
+    <span>
+      <FormattedMessage
+        defaultMessage={
+          'We support the <strong>San Francisco Bay Area</strong>,' +
+          ' California.'
+        }
+        description="describes supported region for Bay Area instance of BikeHopper"
+        values={{ strong: (chunks) => <strong>{chunks}</strong> }}
+      />
+    </span>
+  );
+}
 
 export const DEFAULT_VIEWPORT_BOUNDS = [
   -122.597652, 37.330751, -121.669687, 37.858476,

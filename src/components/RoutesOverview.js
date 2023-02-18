@@ -1,8 +1,8 @@
 import * as React from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import classnames from 'classnames';
 import { TRANSIT_DATA_ACKNOWLEDGEMENT } from '../lib/region';
 import { formatInterval } from '../lib/time';
-import DepartArriveTime from './DepartArriveTime';
 import Icon from './Icon';
 import RouteLeg from './RouteLeg';
 import SelectionList from './SelectionList';
@@ -12,27 +12,23 @@ import { ReactComponent as NavArrowRight } from 'iconoir/icons/nav-arrow-right.s
 
 import './RoutesOverview.css';
 
-export default function RoutesOverview(props) {
-  const { routes, activeRoute, outOfAreaStart, outOfAreaEnd, onRouteClick } =
-    props;
-
-  let outOfArea = [
-    outOfAreaStart ? 'start point' : '',
-    outOfAreaEnd ? 'end point' : '',
-  ]
-    .filter((s) => s !== '')
-    .join(' and ');
+export default function RoutesOverview({
+  routes,
+  activeRoute,
+  outOfAreaStart,
+  outOfAreaEnd,
+  onRouteClick,
+}) {
+  const intl = useIntl();
 
   let containsTransitLeg = false;
 
+  const outOfAreaMsg = _outOfAreaMsg(intl, outOfAreaStart, outOfAreaEnd);
+
   return (
     <div className="RoutesOverview">
-      {outOfArea && (
-        <div className="RoutesOverview_outOfAreaWarning">
-          Transit options may be missing. Your {outOfArea} fall
-          {outOfAreaStart && outOfAreaEnd ? '' : 's'} outside the area where
-          BikeHopper has local transit data.
-        </div>
+      {outOfAreaMsg && (
+        <div className="RoutesOverview_outOfAreaWarning">{outOfAreaMsg}</div>
       )}
       <SelectionList className="RoutesOverview_list">
         {routes.map((route, index) => (
@@ -46,7 +42,7 @@ export default function RoutesOverview(props) {
           >
             <div className="RoutesOverview_row">
               <ul className="RoutesOverview_routeLegs">
-                {route.legs.filter(isSignificantLeg).map((leg, index) => (
+                {route.legs.filter(_isSignificantLeg).map((leg, index) => (
                   <React.Fragment key={route.nonce + ':' + index}>
                     {index > 0 && (
                       <li className="RoutesOverview_legSeparator">
@@ -84,11 +80,22 @@ export default function RoutesOverview(props) {
                 )}
               </p>
             </div>
-            <DepartArriveTime
-              className="RoutesOverview_departArriveTime"
-              depart={route.legs[0].departure_time}
-              arrive={route.legs[route.legs.length - 1].arrival_time}
-            />
+            <p className="RoutesOverview_departArriveTime">
+              <FormattedMessage
+                defaultMessage="{depart}–{arrive}"
+                description="compact departure and arrival time"
+                values={{
+                  depart: intl.formatTime(route.legs[0].departure_time, {
+                    hour: 'numeric',
+                    minute: 'numeric',
+                  }),
+                  arrive: intl.formatTime(
+                    route.legs[route.legs.length - 1].arrival_time,
+                    { hour: 'numeric', minute: 'numeric' },
+                  ),
+                }}
+              />
+            </p>
           </SelectionListItem>
         ))}
       </SelectionList>
@@ -107,12 +114,30 @@ export default function RoutesOverview(props) {
   );
 }
 
-function isSignificantLeg(leg) {
+function _isSignificantLeg(leg) {
   // For filtering out short, interpolated legs
   const THRESHOLD_IN_METERS = 120;
   return !(
     leg.type === 'bike2' &&
     leg.interpolated &&
     leg.distance < THRESHOLD_IN_METERS
+  );
+}
+
+function _outOfAreaMsg(intl, start, end) {
+  const which = start ? (end ? 'both' : 'start') : end ? 'end' : 'neither';
+  if (which === 'neither') return null;
+
+  return intl.formatMessage(
+    {
+      defaultMessage:
+        'Transit options may be missing. Your {which, select,' +
+        '  start {starting point falls}' +
+        '  end {destination falls}' +
+        '  other {starting point and destination fall}' +
+        '} outside the area where BikeHopper has local transit data.',
+      description: 'warning shown above routes',
+    },
+    { which },
   );
 }

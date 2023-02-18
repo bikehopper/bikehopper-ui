@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 // Hardcoded list of API domains for different environments.
 // TODO: Find a cleaner way to handle this, so people deploying their own
 // instances on their own domains don't have to edit the source.
@@ -84,11 +86,14 @@ export async function fetchRoute({
 function parse(route) {
   for (const path of route?.paths) {
     for (const leg of path?.legs) {
-      if (leg?.type !== 'pt') continue;
+      if (leg.type === 'pt' && leg.route_color)
+        leg.route_color = '#' + leg.route_color;
 
-      if (!leg?.route_color) continue;
+      if (leg.departure_time)
+        leg.departure_time = DateTime.fromISO(leg.departure_time).toJSDate();
 
-      leg.route_color = '#' + leg.route_color;
+      if (leg.arrival_time)
+        leg.arrival_time = DateTime.fromISO(leg.arrival_time).toJSDate();
     }
   }
 

@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@babel/core": "^7.16.0",
+    "@formatjs/intl-listformat": "^7.1.7",
     "@mapbox/geo-viewport": "^0.5.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@svgr/webpack": "^6",
@@ -83,8 +84,8 @@
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
-    "extract": "formatjs extract 'src/**/*.js' --format=scripts/formatjs-formatter.js --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
-    "compile": "formatjs compile --format=scripts/formatjs-formatter.js",
+    "extract": "formatjs extract 'src/**/*.js' --format=crowdin --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
+    "compile": "formatjs compile --format=crowdin",
     "prepare": "husky install"
   },
   "proxy": "https://api-staging.bikehopper.org",

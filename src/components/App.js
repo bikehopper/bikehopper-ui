@@ -57,7 +57,14 @@ function App(props) {
   );
 
   return (
-    <IntlProvider messages={props.messages} locale="en" defaultLocale="en">
+    <IntlProvider
+      messages={props.messages}
+      locale={props.locale}
+      defaultLocale="en"
+      onError={
+        process.env.NODE_ENV !== 'production' ? handleDebugIntlError : null
+      }
+    >
       <div className="App">
         <AlertBar />
         <MapPlusOverlay
@@ -68,6 +75,16 @@ function App(props) {
       </div>
     </IntlProvider>
   );
+}
+
+function handleDebugIntlError(err) {
+  // By default, react-intl spams the console with "Missing message" errors when you're
+  // developing. Suppress these.
+  if (err.code === 'MISSING_TRANSLATION') {
+    return;
+  }
+  // Print other errors.
+  console.error(err);
 }
 
 export default App;

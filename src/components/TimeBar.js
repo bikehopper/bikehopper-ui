@@ -1,5 +1,6 @@
 import Bowser from 'bowser';
 import * as React from 'react';
+import { useIntl } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './Icon';
 import Dropdown from 'react-dropdown';
@@ -43,6 +44,7 @@ export default function TimeBar(props) {
   }, [timeFromGlobalState, prevTimeFromGlobalState]);
 
   const dispatch = useDispatch();
+  const intl = useIntl();
 
   const lastDispatchedTimeValue = React.useRef(null);
 
@@ -73,9 +75,31 @@ export default function TimeBar(props) {
   };
 
   const options = [
-    { value: 'now', label: 'Now' },
-    { value: 'departAt', label: 'Depart at' },
-    { value: 'arriveBy', label: 'Arrive by' },
+    {
+      value: 'now',
+      label: intl.formatMessage({
+        defaultMessage: 'Now',
+        description: 'option in a dropdown list for departure time',
+      }),
+    },
+    {
+      value: 'departAt',
+      label: intl.formatMessage({
+        defaultMessage: 'Depart at',
+        description:
+          'option in a dropdown list for departure time.' +
+          ' There is another input next to it to select the time to depart at.',
+      }),
+    },
+    {
+      value: 'arriveBy',
+      label: intl.formatMessage({
+        defaultMessage: 'Arrive by',
+        description:
+          'option in a dropdown list for departure time.' +
+          ' There is another input next to it to select the time to arrive by.',
+      }),
+    },
   ];
 
   return (
@@ -94,7 +118,11 @@ export default function TimeBar(props) {
         value={options.find((o) => o.value === departureType)}
       />
       <input
-        label="select time"
+        label={intl.formatMessage({
+          defaultMessage: 'Select time',
+          description:
+            'label for dropdown with options "now", "depart at", "arrive by"',
+        })}
         disabled={!['departAt', 'arriveBy'].includes(departureType)}
         className="TimeBar_datetime"
         onChange={handleTimeChange}

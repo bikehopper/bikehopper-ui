@@ -561,6 +561,7 @@ const bikeColorStyle = [
   ],
 ];
 
+// TODO: localize the displayed highway/bike infra types
 function getLabelTextField() {
   const text = [
     'case',
