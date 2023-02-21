@@ -222,5 +222,49 @@
     "Y8DFEd": {
         "message": "bicicleta",
         "description": "Description of bike as a travel mode. Appears in a list of travel modes along with transit agency names, such as \"via bike, BART, AC Transit\" or just \"via bike\""
+    },
+    "y9hwj+": {
+        "message": "Tablero en {stop}",
+        "description": "instruction to board a transit vehicle at the named stop"
+    },
+    "xPFWok": {
+        "message": "Gira <dir>a la derecha completamente</dir></dir>{haveStreet, select, name { onto <name>{street}</name>} other {}}",
+        "description": "instruction"
+    },
+    "xOt2uH": {
+        "message": "norte",
+        "description": "cardinal direction, used in a sentence like \"Head north\""
+    },
+    "xCyANw": {
+        "message": "Eliminar",
+        "description": "button to remove something from a list"
+    },
+    "wOrcKy": {
+        "message": "Comenzar",
+        "description": "option in a dropdown list for departure time"
+    },
+    "wCDw8+": {
+        "message": "noreste",
+        "description": "cardinal direction, used in a sentence like \"Head northeast\""
+    },
+    "w77fDg": {
+        "message": "Punto de partida",
+        "description": "label for input box for starting point of directions"
+    },
+    "vcV91U": {
+        "message": "Teleférico",
+        "description": "labels a transit line as being operated by a cable tram/cable car. Appears next to the name or number of the line."
+    },
+    "vcNM7g": {
+        "message": "Introduce un destino",
+        "description": "input placeholder"
+    },
+    "zc1Bca": {
+        "message": "Este",
+        "description": "cardinal direction, used in a sentence like \"Head east\""
+    },
+    "zOmTEh": {
+        "message": "Descartar",
+        "description": "button to dismiss alert"
     }
 }
