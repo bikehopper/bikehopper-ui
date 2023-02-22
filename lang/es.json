@@ -228,7 +228,7 @@
         "description": "instruction to board a transit vehicle at the named stop"
     },
     "xPFWok": {
-        "message": "Gira <dir>a la derecha completamente</dir></dir>{haveStreet, select, name { onto <name>{street}</name>} other {}}",
+        "message": "Gira <dir>a la derecha completamente</dir></dir>{haveStreet, select, name { en <name>{street}</name>} other {}}",
         "description": "instruction"
     },
     "xOt2uH": {
@@ -240,7 +240,7 @@
         "description": "button to remove something from a list"
     },
     "wOrcKy": {
-        "message": "Comenzar",
+        "message": "Ahora",
         "description": "option in a dropdown list for departure time"
     },
     "wCDw8+": {
@@ -280,7 +280,47 @@
         "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a cable tram, cable car, aerial tram or suspended cable car."
     },
     "uciQLb": {
-        "message": "Gira <dir>ligeramente a la derecha</dir>{haveStreet, select, name { hacia <name>{street}</name>} other {}}}",
+        "message": "Gira <dir>ligeramente a la derecha</dir>{haveStreet, select, name { en <name>{street}</name>} other {}}",
+        "description": "instruction"
+    },
+    "4d3x5P": {
+        "message": "Viaje en el tren {name} ({agency})",
+        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a subway or metro train."
+    },
+    "+r7FqI": {
+        "message": "{numStops} {numStops, plural, one {parada} other {paradas}} antes",
+        "description": "the number of stops between two listed transit stops"
+    },
+    "2XfHiz": {
+        "message": "Viaje en el tren {name} ({agency})",
+        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by monorail."
+    },
+    "Cv5F7V": {
+        "message": "Haz un <dir>giro en U</dir>{haveStreet, select, name { en <name>{street}</name>} other {}}",
+        "description": "instruction"
+    },
+    "IwYCsk": {
+        "message": "En bici a {place}",
+        "description": "header for step by step bike directions"
+    },
+    "T6l6cE": {
+        "message": "Monorail",
+        "description": "labels a transit line as being operated by a tram, streetcar or light rail. Appears next to the name or number of the line."
+    },
+    "bryKM+": {
+        "message": "Ferri.",
+        "description": "labels a transit line as being operated by a ferry. Appears next to the name or number of the line."
+    },
+    "cyZrT2": {
+        "message": "{numStops} {numStops, plural, one {parada} other {paradas}}",
+        "description": "the number of stops for which you should stay on a transit vehicle"
+    },
+    "kj2kxt": {
+        "message": "Hacia {headsign}",
+        "description": "describes where a transit trip is headed. Often, the headsign is the name of the final stop. This appears in an itinerary, along with other details about the transit vehicle to board."
+    },
+    "get++U": {
+        "message": "En la rotonda, tome la salida {num}{haveStreet, select, name { onto <name>{street}</name>} other {}}",
         "description": "instruction"
     }
 }
