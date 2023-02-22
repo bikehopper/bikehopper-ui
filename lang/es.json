@@ -266,5 +266,21 @@
     "zOmTEh": {
         "message": "Descartar",
         "description": "button to dismiss alert"
+    },
+    "kK9a0r": {
+        "message": "Teleférico",
+        "description": "labels a transit line as being operated by an aerial tram or suspended cable car. Appears next to the name or number of the line."
+    },
+    "mrDIsv": {
+        "message": "Viaje en el ferri con {name} de la ({agency})",
+        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a ferry."
+    },
+    "solefl": {
+        "message": "Suba al teleférico de {name} y la ({agency})",
+        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a cable tram, cable car, aerial tram or suspended cable car."
+    },
+    "uciQLb": {
+        "message": "Gira <dir>ligeramente a la derecha</dir>{haveStreet, select, name { hacia <name>{street}</name>} other {}}}",
+        "description": "instruction"
     }
 }
