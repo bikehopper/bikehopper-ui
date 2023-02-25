@@ -8,7 +8,7 @@
         "description": "alt text for bicycle icon displayed in a summary of an itinerary"
     },
     "5eSv1b": {
-        "message": "Llegar a destinación",
+        "message": "Llegó al destino",
         "description": "header text at end of step by step travel instructions"
     },
     "8OXHea": {
@@ -196,7 +196,7 @@
         "description": "describes supported region for Bay Area instance of BikeHopper"
     },
     "0KhVZS": {
-        "message": "Regresar a las rutas",
+        "message": "Volver a las rutas",
         "description": "button to return from a detailed itinerary to routes overview"
     },
     "3uzNHk": {
@@ -204,7 +204,7 @@
         "description": "instruction to exit a transit vehicle at the named stop"
     },
     "4cy0Qt": {
-        "message": "Bus",
+        "message": "Autobús",
         "description": "labels a transit line as being operated by a bus. Appears next to the name or number of the bus line."
     },
     "Dslvy3": {
@@ -228,7 +228,7 @@
         "description": "instruction to board a transit vehicle at the named stop"
     },
     "xPFWok": {
-        "message": "Gira <dir>a la derecha completamente</dir></dir>{haveStreet, select, name { en <name>{street}</name>} other {}}",
+        "message": "Gira <dir>hacia la izquierda</dir>{haveStreet, select, name { hacia <name>{street}</name>} other {}}",
         "description": "instruction"
     },
     "xOt2uH": {
@@ -304,11 +304,11 @@
         "description": "header for step by step bike directions"
     },
     "T6l6cE": {
-        "message": "Monorail",
+        "message": "Monorraíl",
         "description": "labels a transit line as being operated by a tram, streetcar or light rail. Appears next to the name or number of the line."
     },
     "bryKM+": {
-        "message": "Ferri.",
+        "message": "Ferri",
         "description": "labels a transit line as being operated by a ferry. Appears next to the name or number of the line."
     },
     "cyZrT2": {
