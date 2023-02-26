@@ -16,7 +16,7 @@
         "description": "paragraph in welcome screen, with link to project source code"
     },
     "8jcDFc": {
-        "message": "{depart}-{arrive}",
+        "message": "{depart}–{arrive}",
         "description": "compact departure and arrival time"
     },
     "9dKjNm": {
