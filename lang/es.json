@@ -24,7 +24,7 @@
         "description": "compact version of a distance in feet"
     },
     "A7+u0L": {
-        "message": "Línea de tránsito",
+        "message": "Línea de transporte",
         "description": "label for transit line when the mode (bus, train, etc) is unknown. Appears next to the name or number of the line."
     },
     "ADeXBy": {
