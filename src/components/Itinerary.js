@@ -6,6 +6,7 @@ import Icon from './Icon';
 import ItineraryBikeLeg from './ItineraryBikeLeg';
 import ItineraryHeader from './ItineraryHeader';
 import ItineraryTransitLeg from './ItineraryTransitLeg';
+import ShareBar from './ShareBar';
 
 import { ReactComponent as NavLeftArrow } from 'iconoir/icons/nav-arrow-left.svg';
 import { ReactComponent as ArriveIcon } from 'iconoir/icons/triangle-flag.svg';
@@ -123,6 +124,7 @@ export default function Itinerary({
             />
           </h3>
         </div>
+        <ShareBar />
       </div>
       <div className="Itinerary_timeline">
         {renderedLegs}

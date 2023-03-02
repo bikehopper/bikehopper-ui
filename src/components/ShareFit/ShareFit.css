@@ -1,0 +1,39 @@
+.ShareFit_button {
+  background: none;
+  height: 48px;
+  display: block;
+  border: 0;
+  cursor: pointer;
+  color: #000000;
+}
+
+.ShareFit_popup {
+  border-color: #5aaa0a;
+  border-width: 0.25em;
+  background-color: #def0cc;
+  border-radius: 12px;
+  padding: 2em;
+}
+
+.ShareFit_popup a {
+  color: blue;
+  text-decoration: underline;
+}
+
+.ShareFit_popup_container {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.ShareFit_popup_container button {
+  color: #ffd18e;
+  background-color: #5aaa0a;
+  border: 1px solid;
+  font-size: 13px;
+  font-weight: bold;
+  height: 4em;
+  width: 100%;
+  border-radius: 0.75em;
+  cursor: pointer;
+}
