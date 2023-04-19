@@ -5,6 +5,7 @@ import ModeIcon from './ModeIcon';
 import TransitModes from '../lib/TransitModes';
 import Icon from './Icon';
 import { ReactComponent as Bicycle } from 'iconoir/icons/bicycle.svg';
+import { ReactComponent as WarningTriangle } from 'iconoir/icons/warning-triangle.svg';
 import { formatInterval } from '../lib/time';
 
 import './RouteLeg.css';
@@ -32,6 +33,18 @@ export default function RouteLeg(props) {
     const fgColor = getTextColor(bgColor).main;
     mode = (
       <div className="RouteLeg_transitMode">
+        {props.hasAlerts && (
+          <Icon
+            className="RouteLeg_alertIcon"
+            label={intl.formatMessage({
+              defaultMessage: 'Alert',
+              description:
+                'labels a transit trip as having a service alert apply to it.',
+            })}
+          >
+            <WarningTriangle />
+          </Icon>
+        )}
         <Icon
           className="RouteLeg_transitModeIcon"
           label={_getModeLabel(props.routeType, intl)}
