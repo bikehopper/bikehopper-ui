@@ -36,6 +36,7 @@ export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
       <ItineraryHeader
         icon={<ModeIcon mode={leg.route_type} />}
         iconColor={leg.route_color || DEFAULT_PT_COLOR}
+        alerts={leg.alerts}
       >
         <span>
           <ItineraryTransitLegHeaderMessage

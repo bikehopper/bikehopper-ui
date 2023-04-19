@@ -68,6 +68,7 @@ export default function RoutesOverview({
                           new Date(leg.arrival_time) -
                             new Date(leg.departure_time)
                         }
+                        hasAlerts={leg.alerts?.length > 0}
                       />
                     </li>
                   </React.Fragment>
