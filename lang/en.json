@@ -195,6 +195,10 @@
     "description": "cardinal direction, used in a sentence like \"Head northwest\"",
     "message": "northwest"
   },
+  "bEeEKy": {
+    "description": "labels a transit trip as having a service alert apply to it.",
+    "message": "Alert"
+  },
   "bryKM+": {
     "description": "labels a transit line as being operated by a ferry. Appears next to the name or number of the line.",
     "message": "Ferry"
