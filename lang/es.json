@@ -322,5 +322,9 @@
     "get++U": {
         "message": "En la rotonda, tome la salida {num}{haveStreet, select, name { onto <name>{street}</name>} other {}}",
         "description": "instruction"
+    },
+    "bEeEKy": {
+        "message": "Alerta",
+        "description": "labels a transit trip as having a service alert apply to it."
     }
 }
