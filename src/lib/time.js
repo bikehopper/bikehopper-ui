@@ -28,7 +28,6 @@ export function formatInterval(milliseconds) {
 // Long description of the interval between two JS Dates.
 // TODO: Reconcile this with the above somehow.
 export function formatDurationBetween(startTime, endTime, intl) {
-  console.log('formatting duration with locale', intl.locale);
   const duration = DateTime.fromJSDate(endTime)
     .setLocale(intl.locale)
     .diff(DateTime.fromJSDate(startTime), ['days', 'hours', 'minutes'])
@@ -38,6 +37,5 @@ export function formatDurationBetween(startTime, endTime, intl) {
   const ret = Duration.fromObject(duration).toHuman({
     maximumFractionDigits: 0,
   });
-  console.log('result:', ret);
   return ret;
 }
