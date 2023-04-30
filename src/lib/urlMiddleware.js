@@ -90,6 +90,10 @@ export default function routesUrlMiddleware(store) {
   };
 }
 
+// When running as an app, only restore paths on restart if they're
+// relatively recent.
+const _PWA_DONT_RESTORE_PATHS_AFTER = 1000 * 60 * 60;
+
 function _initializeFromUrl(store) {
   history = createBrowserHistory();
 
@@ -97,12 +101,20 @@ function _initializeFromUrl(store) {
 
   if (isPWA()) {
     let lastPathname;
+    let lastPathnameTime;
     try {
       lastPathname = localStorage.getItem('lastPathname');
+      lastPathnameTime = localStorage.getItem('lastPathnameTime');
     } catch (e) {}
 
-    if (lastPathname && lastPathname !== '/')
+    if (
+      lastPathname &&
+      lastPathname !== '/' &&
+      (!lastPathnameTime ||
+        Date.now() - lastPathnameTime < _PWA_DONT_RESTORE_PATHS_AFTER)
+    ) {
       pathnameToInitializeFrom = lastPathname;
+    }
 
     history.listen(_copyUrlToLocalStorage);
   }
@@ -168,5 +180,6 @@ function _coordsEqual(a, b) {
 function _copyUrlToLocalStorage({ action, location }) {
   try {
     localStorage.setItem('lastPathname', location.pathname);
+    localStorage.setItem('lastPathnameTime', Date.now());
   } catch (e) {}
 }
