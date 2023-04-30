@@ -131,7 +131,9 @@ export default function TimeBar(props) {
         type="datetime-local"
         name="datetime"
         id="datetime"
-        value={timeInputValue || ''}
+        value={
+          timeInputValue ? formatDateForDateTimeLocalInput(timeInputValue) : ''
+        }
       />
     </form>
   );
@@ -146,4 +148,24 @@ function doesBrowserFireDateTimeChangePrematurely(ua) {
     (ua.browser.name === 'Firefox' && ua.platform.type === 'desktop') ||
     (ua.browser.name === 'Chrome' && ua.platform.type === 'desktop')
   );
+}
+
+// Given a thing that can be fed into a JS Date constructor (most likely a
+// ms-since-epoch timestamp), returns a string in this format:
+//   2018-06-12T19:30
+// to plug into an <input type="datetime-local">
+function formatDateForDateTimeLocalInput(dateish) {
+  const date = new Date(dateish);
+
+  const year = date.getFullYear().toString();
+  let month = (date.getMonth() + 1).toString();
+  if (month < 10) month = '0' + month;
+  let day = date.getDate().toString();
+  if (day < 10) day = '0' + day;
+  let hour = date.getHours().toString();
+  if (hour < 10) hour = '0' + hour;
+  let min = date.getMinutes().toString();
+  if (min < 10) min = '0' + min;
+
+  return `${year}-${month}-${day}T${hour}:${min}`;
 }

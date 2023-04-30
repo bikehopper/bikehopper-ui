@@ -133,21 +133,7 @@ function _initializeFromUrl(store) {
     let initialTime = null;
 
     const possibleDatetime = Number(pathElements[5]);
-    if (!Number.isNaN(possibleDatetime)) {
-      const date = new Date(possibleDatetime);
-      // It needs to be a string in this format: 2018-06-12T19:30
-      // to plug into an <input type="datetime-local">
-      const year = date.getFullYear().toString();
-      let month = (date.getMonth() + 1).toString();
-      if (month < 10) month = '0' + month;
-      let day = date.getDate().toString();
-      if (day < 10) day = '0' + day;
-      let hour = date.getHours().toString();
-      if (hour < 10) hour = '0' + hour;
-      let min = date.getMinutes().toString();
-      if (min < 10) min = '0' + min;
-      initialTime = `${year}-${month}-${day}T${hour}:${min}`;
-    }
+    if (!Number.isNaN(possibleDatetime)) initialTime = possibleDatetime;
     if (startCoords && endCoords) {
       startCoords = startCoords.map(Number);
       endCoords = endCoords.map(Number);
