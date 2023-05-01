@@ -32,7 +32,7 @@ export default function SearchAutocompleteDropdown(props) {
       'to the current location of the user, as determined by GPS',
   });
 
-  const { startOrEnd, inputText, features, showCurrentLocationOption } =
+  const { startOrEnd, autocompletedText, features, showCurrentLocationOption } =
     useSelector((state) => {
       const startOrEnd = state.routeParams.editingLocation;
 
@@ -40,11 +40,11 @@ export default function SearchAutocompleteDropdown(props) {
       if (!startOrEnd) throw new Error('expected to be editing start or end');
 
       const inputText = state.routeParams[startOrEnd + 'InputText'];
+      let autocompletedText = inputText; // MAy get changed below
       let cache =
         inputText && state.geocoding.typeaheadCache['@' + inputText.trim()];
       let fallbackToGeocodedLocationSourceText = false;
       if (!cache || cache.status !== 'succeeded') {
-        let autocompletedText = inputText;
         // If the location we're editing has a geocoded location already selected, display the
         // other options from the input text that was used to pick that.
         const relevantLocation = state.routeParams[startOrEnd];
@@ -123,14 +123,16 @@ export default function SearchAutocompleteDropdown(props) {
 
       return {
         startOrEnd,
-        inputText,
+        autocompletedText,
         features: shownFeatures,
         showCurrentLocationOption,
       };
     }, shallowEqual);
 
   const handleClick = (index) => {
-    dispatch(selectGeocodedLocation(startOrEnd, features[index], inputText));
+    dispatch(
+      selectGeocodedLocation(startOrEnd, features[index], autocompletedText),
+    );
   };
 
   const handleRemoveClick = (index) => {
