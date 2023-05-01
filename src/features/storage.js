@@ -21,7 +21,7 @@ export function storageMiddleware(store) {
       try {
         localStorage.setItem('ru', json);
       } catch (e) {
-        if (process.env.NODE_ENV !== 'production' && !_warned) {
+        if (import.meta.env.DEV && !_warned) {
           console.warn("Can't save recently used:", e);
           _warned = true;
         }

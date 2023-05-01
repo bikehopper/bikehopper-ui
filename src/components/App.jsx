@@ -61,9 +61,7 @@ function App(props) {
       messages={props.messages}
       locale={props.locale}
       defaultLocale="en"
-      onError={
-        process.env.NODE_ENV !== 'production' ? handleDebugIntlError : null
-      }
+      onError={import.meta.env.DEV ? handleDebugIntlError : () => {}}
     >
       <div className="App">
         <AlertBar />
