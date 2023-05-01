@@ -12,7 +12,7 @@
         "description": "header text at end of step by step travel instructions"
     },
     "8OXHea": {
-        "message": "BikeHopper es <link>de código abierto</link> bajo la licencia GNU Affero General Public License.",
+        "message": "BikeHopper es <link>de código abierto</link> bajo la Licencia Pública General Affero de GNU.",
         "description": "paragraph in welcome screen, with link to project source code"
     },
     "8jcDFc": {
@@ -28,19 +28,19 @@
         "description": "label for transit line when the mode (bus, train, etc) is unknown. Appears next to the name or number of the line."
     },
     "ADeXBy": {
-        "message": "Continuar{haveStreet, select, name { en <name>{street}</name>} other {}}",
+        "message": "Continúe {haveStreet, select, name { en <name>{street}</name>} other {}}",
         "description": "instruction"
     },
     "AVwHUu": {
-        "message": "Tomar el tren {name} ({agency})",
+        "message": "Viaje en el tren {name} ({agency})",
         "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is an intercity or long-distance rail line."
     },
     "BGoNGI": {
-        "message": "vía {modes}",
+        "message": "a través de {modes}",
         "description": "Short summary of the modes used for a trip. Modes is a list which can include bike and/or  transit agency names such as BART and AC Transit."
     },
     "CJUzIw": {
-        "message": "Déjenos saber lo que opina reportando problemas, rutas que podrían ser mejoradas, y otra retroalimentación en <link>este formulario</link>.",
+        "message": "Háganos saber lo que piensa informándonos de errores, rutas que podrían mejorarse y otros comentarios en <link>este formulario</link>.",
         "description": "paragraph in welcome screen, with link to feedback form"
     },
     "DYUDwR": {
@@ -192,7 +192,7 @@
         "description": "instruction. direction is a cardinal direction like north"
     },
     "BAVfiY": {
-        "message": "Soportamos la <strong>zona de la Bahía de San Francisco</strong>, California.",
+        "message": "Damos soporte a la <strong>Zona de la Bahía de San Francisco</strong>, California.",
         "description": "describes supported region for Bay Area instance of BikeHopper"
     },
     "0KhVZS": {
@@ -216,7 +216,7 @@
         "description": "button to return to a previous screen"
     },
     "RRZB26": {
-        "message": "<strong>Bienvenid@ a BikeHopper!</strong> Esta es una app de navegación por bicicleta que te sugiere formas de combinar bicicletas y servicio de tránsito, expandiendo tus opciones para viajar sin coche.",
+        "message": "<strong>¡Bienvenido a BikeHopper!</strong> Se trata de una nueva aplicación para la navegación en bicicleta que sugiere formas de combinar la bicicleta y el transporte público, ampliando tus opciones para desplazarte sin coche.",
         "description": "paragraph in welcome screen"
     },
     "Y8DFEd": {
@@ -256,7 +256,7 @@
         "description": "labels a transit line as being operated by a cable tram/cable car. Appears next to the name or number of the line."
     },
     "vcNM7g": {
-        "message": "Introduce un destino",
+        "message": "Introduzca un destino",
         "description": "input placeholder"
     },
     "zc1Bca": {
