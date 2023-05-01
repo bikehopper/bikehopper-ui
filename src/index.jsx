@@ -13,15 +13,30 @@ import './index.css';
 async function loadMessages(locale) {
   if (listFormatShouldPolyfill(locale)) {
     await import('@formatjs/intl-listformat/polyfill-force');
-    await import(`@formatjs/intl-listformat/locale-data/${locale}`);
+    // hack: vite doesn't support this kind of dynamic import,
+    // so just import likely locales for now
+    if (locale.startsWith('en')) {
+      await import('@formatjs/intl-listformat/locale-data/en-CA');
+      await import('@formatjs/intl-listformat/locale-data/en-GB');
+      await import('@formatjs/intl-listformat/locale-data/en-IN');
+      await import('@formatjs/intl-listformat/locale-data/en');
+    } else if (locale.startsWith('es')) {
+      await import('@formatjs/intl-listformat/locale-data/es-US');
+      await import('@formatjs/intl-listformat/locale-data/es-MX');
+      await import('@formatjs/intl-listformat/locale-data/es-HN');
+      await import('@formatjs/intl-listformat/locale-data/es-GT');
+      await import('@formatjs/intl-listformat/locale-data/es-PH');
+      await import('@formatjs/intl-listformat/locale-data/es-CU');
+      await import('@formatjs/intl-listformat/locale-data/es');
+    }
   }
 
   if (/^es\b/.test(locale)) {
     // all variants of Spanish
-    return await import('../compiled-lang/es.json');
+    return (await import('../compiled-lang/es.json')).default;
   } else {
     // default to English
-    return await import('../compiled-lang/en.json');
+    return (await import('../compiled-lang/en.json')).default;
   }
 }
 

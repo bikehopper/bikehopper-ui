@@ -65,11 +65,8 @@ export async function fetchRoute({
     );
 
   let graphHopperPath = getApiPath() + '/v1/graphhopper';
-  if (
-    process.env.NODE_ENV !== 'production' &&
-    process.env.REACT_APP_USE_LOCAL_GRAPHHOPPER
-  )
-    graphHopperPath = process.env.REACT_APP_USE_LOCAL_GRAPHHOPPER;
+  if (import.meta.env.DEV && import.meta.env.VITE_USE_LOCAL_GRAPHHOPPER)
+    graphHopperPath = import.meta.env.VITE_USE_LOCAL_GRAPHHOPPER;
 
   const url = `${graphHopperPath}/route-pt?${params}`;
   const route = await fetch(url, {

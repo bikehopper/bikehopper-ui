@@ -1,3 +1,4 @@
+import maplibregl from 'maplibre-gl';
 import * as React from 'react';
 import { useCallback, useLayoutEffect } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
@@ -295,6 +296,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
   return (
     <div className="BikehopperMap" ref={resizeRef}>
       <MapGL
+        mapLib={maplibregl}
         initialViewState={viewStateOnFirstRender.current}
         ref={mapRef}
         style={{
@@ -305,7 +307,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
         }}
         onLoad={handleMapLoad}
         mapStyle="mapbox://styles/mapbox/streets-v11"
-        mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
+        mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
         interactiveLayerIds={[
           'inactiveLayer',
           'transitLayer',

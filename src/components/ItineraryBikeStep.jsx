@@ -303,7 +303,7 @@ export default function ItineraryBikeStep({
 
   if (fallbackToGraphHopperInstructionText) {
     msg = step.text;
-    if (process.env.NODE_ENV !== 'production' && !_warnedOfFallback) {
+    if (import.meta.env.DEV && !_warnedOfFallback) {
       console.error(
         `Falling back to GraphHopper instruction text. This will not be translated: ${step.text}`,
       );

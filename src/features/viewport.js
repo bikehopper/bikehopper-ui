@@ -9,19 +9,17 @@
 // In other words, just to make it super clear: the map itself never moves
 // around in (direct) response to the state in this reducer, only vice versa.
 
-import geoViewport from '@mapbox/geo-viewport';
+import * as geoViewport from '@placemarkio/geo-viewport';
 import { DEFAULT_VIEWPORT_BOUNDS } from '../lib/region';
 
 const MAPBOX_VT_SIZE = 512;
 
 function viewportForScreen(screenDims) {
-  const viewport = geoViewport.viewport(
-    DEFAULT_VIEWPORT_BOUNDS,
-    screenDims,
-    0,
-    14,
-    MAPBOX_VT_SIZE,
-  );
+  const viewport = geoViewport.viewport(DEFAULT_VIEWPORT_BOUNDS, screenDims, {
+    minzoom: 0,
+    maxzoom: 14,
+    tileSize: MAPBOX_VT_SIZE,
+  });
   return {
     latitude: viewport.center[1],
     longitude: viewport.center[0],

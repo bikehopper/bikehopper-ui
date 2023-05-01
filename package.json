@@ -5,7 +5,7 @@
   "dependencies": {
     "@babel/core": "^7.16.0",
     "@formatjs/intl-listformat": "^7.1.7",
-    "@mapbox/geo-viewport": "^0.5.0",
+    "@placemarkio/geo-viewport": "^1.0.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@svgr/webpack": "^6",
     "@testing-library/jest-dom": "^5.16.1",
@@ -47,6 +47,7 @@
     "immer": "^9.0.12",
     "lodash": "^4.17.21",
     "luxon": "^3.2.1",
+    "mapbox-gl": "npm:empty-npm-package@^1.0.0",
     "maplibre-gl": "^1.15.2",
     "mini-css-extract-plugin": "^2.4.5",
     "postcss": "^8.4.4",
@@ -81,21 +82,14 @@
     "workbox-webpack-plugin": "^6.4.1"
   },
   "scripts": {
-    "start": "node scripts/start.js",
-    "build": "node scripts/build.js",
-    "test": "node scripts/test.js",
-    "extract": "formatjs extract 'src/**/*.js' --format=crowdin --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
+    "start": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "extract": "formatjs extract 'src/**/*.{js,jsx}' --format=crowdin --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
     "compile": "formatjs compile --format=crowdin",
     "prepare": "husky install"
   },
   "proxy": "https://api-staging.bikehopper.org",
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest",
-      "prettier"
-    ]
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -166,9 +160,10 @@
   },
   "devDependencies": {
     "@formatjs/cli": "^5.1.12",
+    "@vitejs/plugin-basic-ssl": "^1.0.1",
+    "@vitejs/plugin-react": "^4.0.0",
     "babel-plugin-formatjs": "^10.3.35",
     "csv": "^6.2.5",
-    "eslint-config-prettier": "^8.3.0",
     "eslint-config-react-app": "^7.0.0",
     "eslint-plugin-formatjs": "^4.5.0",
     "husky": "^8.0.3",
@@ -177,7 +172,10 @@
     "jest-resolve": "^29.3.1",
     "jest-watch-typeahead": "^2.2.1",
     "lint-staged": "^13.1.0",
-    "prettier": "^2.5.1"
+    "prettier": "^2.5.1",
+    "vite": "^4.3.3",
+    "vite-plugin-eslint": "^1.8.1",
+    "vite-plugin-svgr": "^2.4.0"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
