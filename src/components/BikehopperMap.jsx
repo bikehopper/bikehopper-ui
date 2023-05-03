@@ -27,7 +27,6 @@ import {
   BOTTOM_DRAWER_MIN_HEIGHT,
 } from '../lib/layout';
 
-import 'maplibre-gl/dist/maplibre-gl.css';
 import './BikehopperMap.css';
 import { DEFAULT_BIKE_COLOR, DEFAULT_INACTIVE_COLOR } from '../lib/colors';
 
