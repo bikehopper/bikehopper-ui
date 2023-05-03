@@ -33,8 +33,8 @@ export default function ItineraryHeader({ alerts, children, icon, iconColor }) {
       {subheading && <p className="ItineraryHeader_subheading">{subheading}</p>}
       {alerts?.length > 0 && (
         <ul className="ItineraryHeader_alerts">
-          {alerts.map(([alertHeader, alertBody]) => (
-            <li className="ItineraryHeader_alert">
+          {alerts.map(([alertHeader, alertBody], idx) => (
+            <li className="ItineraryHeader_alert" key={idx}>
               <Icon
                 className="ItineraryHeader_alertIcon"
                 label={intl.formatMessage({
