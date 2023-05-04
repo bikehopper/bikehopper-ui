@@ -125,6 +125,7 @@
   },
   "devDependencies": {
     "@formatjs/cli": "^5.1.12",
+    "@tailwindcss/typography": "^0.5.9",
     "@vitejs/plugin-basic-ssl": "^1.0.1",
     "@vitejs/plugin-react": "^4.0.0",
     "autoprefixer": "^10.4.14",
