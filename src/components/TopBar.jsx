@@ -9,7 +9,7 @@ const BRAND_PART_2 = 'Hopper';
 
 export default function TopBar({ showSearchBar, initiallyFocusDestination }) {
   const logoAndInfoButton = (
-    <div className="TopBar_logoAndInfoButton">
+    <div className="flex items-center justify-between">
       <span className="TopBar_logo">
         <span className="TopBar_logoBike">{BRAND_PART_1}</span>
         <span className="TopBar_logoHopper">{BRAND_PART_2}</span>
@@ -19,7 +19,10 @@ export default function TopBar({ showSearchBar, initiallyFocusDestination }) {
   );
 
   return (
-    <div className="px-6 py-3 TopBar">
+    <div
+      className="px-6 py-3 bg-bikehoppergreen
+        flex flex-col pointer-events-auto items-stretch relative"
+    >
       {!showSearchBar && logoAndInfoButton}
       {showSearchBar && (
         <SearchBar initiallyFocusDestination={initiallyFocusDestination} />
