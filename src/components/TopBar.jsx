@@ -19,7 +19,7 @@ export default function TopBar({ showSearchBar, initiallyFocusDestination }) {
   );
 
   return (
-    <div className="TopBar">
+    <div className="px-6 py-3 TopBar">
       {!showSearchBar && logoAndInfoButton}
       {showSearchBar && (
         <SearchBar initiallyFocusDestination={initiallyFocusDestination} />
