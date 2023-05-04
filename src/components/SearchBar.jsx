@@ -189,15 +189,18 @@ export default function SearchBar(props) {
 
   return (
     <div className="SearchBar">
-      <button onClick={handleBackClick} className="SearchBar_backButton">
+      <button
+        onClick={handleBackClick}
+        className="text-bikehopperyellow h-12 w-12 -ml-3 text-center
+          flex items-center justify-center"
+      >
         <Icon
           label={intl.formatMessage({
             defaultMessage: 'Back',
             description: 'button to go back out of entering locations',
           })}
-          className="SearchBar_backIcon"
         >
-          <NavLeftArrow />
+          <NavLeftArrow className="stroke-[3px]" />
         </Icon>
       </button>
       <div className="SearchBar_inputs">
@@ -246,15 +249,18 @@ export default function SearchBar(props) {
         <span className="SearchBar_divider" />
         <TimeBar />
       </div>
-      <button onClick={handleSwapClick} className="SearchBar_swapButton">
+      <button
+        onClick={handleSwapClick}
+        className="text-bikehopperyellow h-12 w-12 -mr-3 mt-6
+          flex items-center justify-center"
+      >
         <Icon
           label={intl.formatMessage({
             defaultMessage: 'Swap',
             description: 'button to swap start and end point',
           })}
-          className="SearchBar_swapIcon"
         >
-          <SwapArrows />
+          <SwapArrows className="stroke-[2.5px]" />
         </Icon>
       </button>
     </div>

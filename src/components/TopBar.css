@@ -3,16 +3,3 @@
   font-weight: bold;
   text-shadow: 3px 3px 4px #056c22;
 }
-
-.TopBar_logoBike {
-  color: #fff;
-}
-
-.TopBar_logoHopper {
-  color: #ffd18e;
-}
-
-.TopBar_info {
-  top: 2px; /* damn I need to remove the default fr */
-  height: 27px;
-}

@@ -5,6 +5,7 @@ module.exports = {
     extend: {
       colors: {
         bikehoppergreen: '#5aaa0a',
+        bikehopperyellow: '#ffd18e',
       },
     },
   },

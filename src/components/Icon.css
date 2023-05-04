@@ -1,9 +1,3 @@
-.Icon {
-  line-height: 1;
-  position: relative;
-  top: 4px;
-}
-
 .Icon_flipHorizontally > svg {
   transform: scale(-1, 1);
 }
