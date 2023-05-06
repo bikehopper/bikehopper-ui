@@ -192,7 +192,8 @@ export default function SearchBar(props) {
       <button
         onClick={handleBackClick}
         className="text-bikehopperyellow h-12 w-12 -ml-3 text-center
-          flex items-center justify-center"
+          flex items-center justify-center
+          bg-transparent border-0"
       >
         <Icon
           label={intl.formatMessage({
@@ -252,7 +253,8 @@ export default function SearchBar(props) {
       <button
         onClick={handleSwapClick}
         className="text-bikehopperyellow h-12 w-12 -mr-3 mt-6
-          flex items-center justify-center"
+          flex items-center justify-center
+          bg-transparent border-0"
       >
         <Icon
           label={intl.formatMessage({
