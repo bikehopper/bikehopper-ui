@@ -21,6 +21,7 @@
 .AlertBar_icon {
   display: inline-block;
   flex-shrink: 0;
+  position: relative;
   top: 1px;
 }
 
@@ -36,6 +37,7 @@
 }
 
 .AlertBar_cancelIcon {
+  position: relative;
   top: 1px;
 }
 

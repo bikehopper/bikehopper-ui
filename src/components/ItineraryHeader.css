@@ -48,6 +48,8 @@
 
 .ItineraryHeader_alertIcon {
   margin-right: 4px;
+  position: relative;
+  top: 4px;
 }
 
 .ItineraryHeader_alertHeader {

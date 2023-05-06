@@ -26,3 +26,8 @@
 .RouteLeg_duration {
   font-size: 12px;
 }
+
+.RouteLeg_bikeIcon {
+  position: relative;
+  top: 4px;
+}
