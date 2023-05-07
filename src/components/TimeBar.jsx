@@ -1,16 +1,21 @@
 import Bowser from 'bowser';
+import { DateTime } from 'luxon';
 import * as React from 'react';
 import { useIntl } from 'react-intl';
+import * as Dialog from '@radix-ui/react-dialog';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './Icon';
 import Dropdown from 'react-dropdown';
 
-import usePrevious from '../hooks/usePrevious';
 import { initialTimeSet, departureTypeSelected } from '../features/routeParams';
 
 import { ReactComponent as ClockOutline } from 'iconoir/icons/clock.svg';
 import 'react-dropdown/style.css';
 import './TimeBar.css';
+
+// contract:
+// receive departureType and initialTime from routeParams store
+// modify by firing departureTypeSelected and initialTimeSet actions
 
 export default function TimeBar(props) {
   const { departureType, timeFromGlobalState } = useSelector(
@@ -25,54 +30,46 @@ export default function TimeBar(props) {
     },
     shallowEqual,
   );
-  const prevTimeFromGlobalState = usePrevious(timeFromGlobalState);
-
-  const [timeInputValue, setTimeInputValue] =
-    React.useState(timeFromGlobalState);
-
-  // When the time value from the global state changes, use it to override the local
-  // component state.
-  //
-  // Why this is needed: Some browsers fire change events while you are still typing the
-  // time: "9:00 AM" => "2:00 AM" => "2:10 AM" => "2:15AM" => "2:15PM".
-  // We want to avoid fetching routes four different times in this case -- don't update
-  // global state until done editing. Thus, there is a separate global state and local
-  // component state for the time input.
-  React.useEffect(() => {
-    if (timeFromGlobalState !== prevTimeFromGlobalState)
-      setTimeInputValue(timeFromGlobalState);
-  }, [timeFromGlobalState, prevTimeFromGlobalState]);
 
   const dispatch = useDispatch();
   const intl = useIntl();
 
-  const lastDispatchedTimeValue = React.useRef(null);
+  // From the time in global state, generate strings for the date & time <input>s
+  const datetime = DateTime.fromMillis(timeFromGlobalState || Date.now());
+  const timeForTimeInput = datetime.toFormat('HH:mm');
+  const dateForDateInput = datetime.toFormat('yyyy-MM-dd');
 
-  const handleUpdatedDateTimeValue = (value) => {
-    if (value === lastDispatchedTimeValue.current) return;
-    lastDispatchedTimeValue.current = value;
-    dispatch(initialTimeSet(value));
-  };
-
-  const handleTimeBlur = (event) => {
-    handleUpdatedDateTimeValue(timeInputValue);
-  };
-
-  const handleTimeKeyPress = (event) => {
-    if (event.key === 'Enter') handleUpdatedDateTimeValue(event.target.value);
-  };
-
-  const handleTimeChange = (event) => {
-    const valueToSet = event.target.value === '' ? null : event.target.value;
-    setTimeInputValue(valueToSet);
-    const ua = Bowser.parse(navigator.userAgent);
-    if (!doesBrowserFireDateTimeChangePrematurely(ua))
-      handleUpdatedDateTimeValue(valueToSet);
-  };
-
-  const handleSelect = (event) => {
-    dispatch(departureTypeSelected(event.value));
-  };
+  return (
+    <div className="TimeBar">
+      <span>{departureType + ' '}</span>
+      {departureType !== 'now' && (
+        <span>{dateForDateInput + ' ' + timeForTimeInput}</span>
+      )}
+      <Dialog.Root>
+        <Dialog.Trigger asChild>
+          <button>Change</button>
+        </Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 bg-slate-900/50 z-10" />
+          <Dialog.Content
+            aria-describedby={undefined}
+            className="fixed z-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+              w-[90vw] md:w-[95vw] max-w-md
+              bg-white p-6 rounded-md"
+          >
+            <Dialog.Title className="m-0">Change departure time</Dialog.Title>
+            <p>controls to come here</p>
+            <Dialog.Close asChild>
+              <button>Save changes</button>
+            </Dialog.Close>
+            <Dialog.Close asChild>
+              <button>Cancel</button>
+            </Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </div>
+  );
 
   const options = [
     {
@@ -101,71 +98,4 @@ export default function TimeBar(props) {
       }),
     },
   ];
-
-  return (
-    <form className="TimeBar">
-      <Icon className="TimeBar_clockIcon">
-        <ClockOutline />
-      </Icon>
-      <Dropdown
-        label="select departure type"
-        className="TimeBar_select"
-        options={options}
-        onChange={handleSelect}
-        arrowClassName="TimeBar_select_arrow"
-        controlClassName="TimeBar_select_control"
-        placeholderClassName="TimeBar_select_placeholder"
-        value={options.find((o) => o.value === departureType)}
-      />
-      <input
-        label={intl.formatMessage({
-          defaultMessage: 'Select time',
-          description:
-            'label for dropdown with options "now", "depart at", "arrive by"',
-        })}
-        disabled={!['departAt', 'arriveBy'].includes(departureType)}
-        className="TimeBar_datetime"
-        onChange={handleTimeChange}
-        onBlur={handleTimeBlur}
-        onKeyPress={handleTimeKeyPress}
-        type="datetime-local"
-        name="datetime"
-        id="datetime"
-        value={
-          timeInputValue ? formatDateForDateTimeLocalInput(timeInputValue) : ''
-        }
-      />
-    </form>
-  );
-}
-
-// On some platforms the datetime input's change event prematurely fires before
-// you are likely to be finished selecting a time, so we have to not commit the
-// update until blur.
-function doesBrowserFireDateTimeChangePrematurely(ua) {
-  return (
-    ua.os.name === 'iOS' || // All iOS browsers
-    (ua.browser.name === 'Firefox' && ua.platform.type === 'desktop') ||
-    (ua.browser.name === 'Chrome' && ua.platform.type === 'desktop')
-  );
-}
-
-// Given a thing that can be fed into a JS Date constructor (most likely a
-// ms-since-epoch timestamp), returns a string in this format:
-//   2018-06-12T19:30
-// to plug into an <input type="datetime-local">
-function formatDateForDateTimeLocalInput(dateish) {
-  const date = new Date(dateish);
-
-  const year = date.getFullYear().toString();
-  let month = (date.getMonth() + 1).toString();
-  if (month < 10) month = '0' + month;
-  let day = date.getDate().toString();
-  if (day < 10) day = '0' + day;
-  let hour = date.getHours().toString();
-  if (hour < 10) hour = '0' + hour;
-  let min = date.getMinutes().toString();
-  if (min < 10) min = '0' + min;
-
-  return `${year}-${month}-${day}T${hour}:${min}`;
 }
