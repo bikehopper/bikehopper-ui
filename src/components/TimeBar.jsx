@@ -4,7 +4,7 @@ import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Transition } from '@headlessui/react';
 import * as Dialog from '@radix-ui/react-dialog';
-import * as Select from '@radix-ui/react-select';
+import * as RadioGroup from '@radix-ui/react-radio-group';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './Icon';
 
@@ -65,6 +65,7 @@ export default function TimeBar(props) {
       );
     }
     setIsDialogOpen(false);
+    evt.preventDefault();
   };
 
   const handleDialogOpenChange = (isOpen) => {
@@ -120,75 +121,52 @@ export default function TimeBar(props) {
                   bg-white p-6 rounded-md"
               >
                 <Dialog.Title className="m-0">Change trip time</Dialog.Title>
-                <Select.Root
-                  value={pendingDepartureType}
-                  onValueChange={setPendingDepartureType}
-                >
-                  <Select.Trigger className="">
-                    <Select.Value />
-                    <Select.Icon>
-                      <Icon>
-                        <NavArrowDown width="20" height="20" />
-                      </Icon>
-                    </Select.Icon>
-                  </Select.Trigger>
-                  <Select.Portal>
-                    <Select.Content position="popper" className="z-30 bg-white">
-                      <Select.Viewport>
-                        <Select.Item value="now">
-                          <Select.ItemText>
-                            <FormattedMessage
-                              defaultMessage="Now"
-                              description="option in a dropdown list for departure time"
-                            />
-                          </Select.ItemText>
-                          <Select.ItemIndicator>
-                            <Icon>
-                              <CheckIcon width="20" height="20" />
-                            </Icon>
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                        <Select.Item value="departAt">
-                          <Select.ItemText>
-                            <FormattedMessage
-                              defaultMessage="Depart at"
-                              description={
-                                'option in a dropdown list for departure time.' +
-                                ' There is another input next to it to select' +
-                                ' the time to depart at.'
-                              }
-                            />
-                          </Select.ItemText>
-                          <Select.ItemIndicator>
-                            <Icon>
-                              <CheckIcon width="20" height="20" />
-                            </Icon>
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                        <Select.Item value="arriveBy">
-                          <Select.ItemText>
-                            <FormattedMessage
-                              defaultMessage="Arrive by"
-                              description={
-                                'option in a dropdown list for departure time.' +
-                                ' There is another input next to it to select' +
-                                ' the time to arrive by.'
-                              }
-                            />
-                          </Select.ItemText>
-                          <Select.ItemIndicator>
-                            <Icon>
-                              <CheckIcon width="20" height="20" />
-                            </Icon>
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                      </Select.Viewport>
-                    </Select.Content>
-                  </Select.Portal>
-                </Select.Root>
-                <button onClick={handleUpdateClick} className="">
-                  Update
-                </button>
+                <form>
+                  <RadioGroup.Root
+                    value={pendingDepartureType}
+                    onValueChange={setPendingDepartureType}
+                  >
+                    <TimeBarRadioGroupItem value="now" id="rgi_now">
+                      <FormattedMessage
+                        defaultMessage="Now"
+                        description="option in a dropdown list for departure time"
+                      />
+                    </TimeBarRadioGroupItem>
+                    <TimeBarRadioGroupItem value="departAt" id="rgi_departAt">
+                      <FormattedMessage
+                        defaultMessage="Depart at"
+                        description={
+                          'option in a dropdown list for departure time.' +
+                          ' There is another input next to it to select' +
+                          ' the time to depart at.'
+                        }
+                      />
+                    </TimeBarRadioGroupItem>
+                    {pendingDepartureType === 'departAt' && (
+                      <input type="datetime-local" />
+                    )}
+                    <TimeBarRadioGroupItem value="arriveBy" id="rgi_arriveBy">
+                      <FormattedMessage
+                        defaultMessage="Arrive by"
+                        description={
+                          'option in a dropdown list for departure time.' +
+                          ' There is another input next to it to select' +
+                          ' the time to arrive by.'
+                        }
+                      />
+                    </TimeBarRadioGroupItem>
+                    {pendingDepartureType === 'arriveBy' && (
+                      <input type="datetime-local" />
+                    )}
+                  </RadioGroup.Root>
+                  <button
+                    type="submit"
+                    onClick={handleUpdateClick}
+                    className=""
+                  >
+                    Update
+                  </button>
+                </form>
                 <Dialog.Close asChild>
                   <button className="absolute top-6 right-3 border-0 bg-transparent">
                     <Icon
@@ -207,6 +185,29 @@ export default function TimeBar(props) {
           </Transition>
         </Dialog.Portal>
       </Dialog.Root>
+    </div>
+  );
+}
+
+function TimeBarRadioGroupItem({ value, id, children }) {
+  return (
+    <div className="flex items-center leading-6">
+      <RadioGroup.Item
+        value={value}
+        id={id}
+        className="relative w-4 h-4 rounded-full
+          border-0 border border-gray-300 text-white
+          bg-gray-200
+          aria-checked:bg-blue-500
+          focus:outline-none focus:ring-0 focus:ring-offset-0
+          focus-visible:ring focus-visible:ring-blue-400
+          focus-visible:ring-opacity-75 focus-visible:ring-offset-2 mr-1"
+      >
+        <RadioGroup.Indicator className="absolute inset-0 flex items-center justify-center leading-0">
+          <div className="w-1.5 h-1.5 rounded-full bg-white" />
+        </RadioGroup.Indicator>
+      </RadioGroup.Item>
+      <label htmlFor={id}>{children}</label>
     </div>
   );
 }
