@@ -2,15 +2,15 @@ import Bowser from 'bowser';
 import { DateTime } from 'luxon';
 import * as React from 'react';
 import { useIntl } from 'react-intl';
+import { Transition } from '@headlessui/react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './Icon';
-import Dropdown from 'react-dropdown';
 
 import { initialTimeSet, departureTypeSelected } from '../features/routeParams';
 
+import { ReactComponent as CancelIcon } from 'iconoir/icons/cancel.svg';
 import { ReactComponent as ClockOutline } from 'iconoir/icons/clock.svg';
-import 'react-dropdown/style.css';
 import './TimeBar.css';
 
 // contract:
@@ -39,33 +39,76 @@ export default function TimeBar(props) {
   const timeForTimeInput = datetime.toFormat('HH:mm');
   const dateForDateInput = datetime.toFormat('yyyy-MM-dd');
 
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+
+  const handleUpdateClick = React.useCallback((evt) => {
+    console.log('update clicked');
+    setIsDialogOpen(false);
+  }, []);
+
   return (
     <div className="TimeBar">
       <span>{departureType + ' '}</span>
       {departureType !== 'now' && (
         <span>{dateForDateInput + ' ' + timeForTimeInput}</span>
       )}
-      <Dialog.Root>
+      <Dialog.Root open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <Dialog.Trigger asChild>
           <button>Change</button>
         </Dialog.Trigger>
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-slate-900/50 z-10" />
-          <Dialog.Content
-            aria-describedby={undefined}
-            className="fixed z-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-              w-[90vw] md:w-[95vw] max-w-md
-              bg-white p-6 rounded-md"
-          >
-            <Dialog.Title className="m-0">Change departure time</Dialog.Title>
-            <p>controls to come here</p>
-            <Dialog.Close asChild>
-              <button>Save changes</button>
-            </Dialog.Close>
-            <Dialog.Close asChild>
-              <button>Cancel</button>
-            </Dialog.Close>
-          </Dialog.Content>
+        <Dialog.Portal forceMount>
+          <Transition show={isDialogOpen}>
+            <Transition.Child
+              as={React.Fragment}
+              enter="transition-opacity ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="transition-opacity ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Dialog.Overlay
+                className="fixed inset-0 bg-slate-900/50 z-10 transition-colors"
+                forceMount
+              />
+            </Transition.Child>
+            <Transition.Child
+              as={React.Fragment}
+              enter="transition-opacity ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="transition-opacity ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Dialog.Content
+                forceMount
+                aria-describedby={undefined}
+                className="fixed z-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+                  w-[90vw] md:w-[95vw] max-w-md
+                  bg-white p-6 rounded-md"
+              >
+                <Dialog.Title className="m-0">Change trip time</Dialog.Title>
+                <p>controls to come here</p>
+                <button onClick={handleUpdateClick} className="">
+                  Update
+                </button>
+                <Dialog.Close asChild>
+                  <button className="absolute top-6 right-3 border-0 bg-transparent">
+                    <Icon
+                      label={intl.formatMessage({
+                        defaultMessage: 'Cancel',
+                        description:
+                          'button to cancel making changes in a dialog',
+                      })}
+                    >
+                      <CancelIcon width="20" height="20" />
+                    </Icon>
+                  </button>
+                </Dialog.Close>
+              </Dialog.Content>
+            </Transition.Child>
+          </Transition>
         </Dialog.Portal>
       </Dialog.Root>
     </div>
