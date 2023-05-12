@@ -18,6 +18,7 @@ export default function RouteLeg(props) {
   if (props.type === 'bike2') {
     mode = (
       <Icon
+        className="RouteLeg_bikeIcon"
         flipHorizontally={true}
         label={intl.formatMessage({
           defaultMessage: 'Bike',

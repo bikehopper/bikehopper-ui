@@ -15,8 +15,8 @@ export default function DirectionsNullState(props) {
   const strong = React.useCallback((jsx) => <strong>{jsx}</strong>, []);
 
   return (
-    <div className="DirectionsNullState">
-      <h2 className="DirectionsNullState_header">
+    <article className="prose prose-sm md:prose-base lg:prose-lg max-w-none m-6">
+      <h2>
         <FormattedMessage
           defaultMessage="Get directions"
           description="form header"
@@ -40,7 +40,7 @@ export default function DirectionsNullState(props) {
           onFocus={props.onInputFocus}
         />
       </span>
-      <p className="DirectionsNullState_para">
+      <p>
         <FormattedMessage
           defaultMessage={
             '<strong>Welcome to BikeHopper!</strong> This is a new bike navigation' +
@@ -51,14 +51,14 @@ export default function DirectionsNullState(props) {
           values={{ strong }}
         />
       </p>
-      <p className="DirectionsNullState_para">
+      <p>
         {SupportedRegionText && [<SupportedRegionText key="text" />, ' ']}
         <FormattedMessage
           defaultMessage="Get started by entering a destination above."
           description="text in welcome screen. appears below an input box for destination"
         />
       </p>
-      <p className="DirectionsNullState_para DirectionsNullState_wideScreenOnly">
+      <p className="hidden lg:block">
         <FormattedMessage
           defaultMessage={
             'In this early beta, BikeHopper is <strong>designed for phone screens</strong>,' +
@@ -68,7 +68,7 @@ export default function DirectionsNullState(props) {
           values={{ strong }}
         />
       </p>
-      <p className="DirectionsNullState_para">
+      <p>
         <FormattedMessage
           defaultMessage={
             'Let us know what you think by reporting bugs, routes that could be' +
@@ -88,7 +88,7 @@ export default function DirectionsNullState(props) {
           }}
         />
       </p>
-      <p className="DirectionsNullState_para">
+      <p>
         <FormattedMessage
           defaultMessage={
             'BikeHopper is <link>open source</link> under the' +
@@ -108,6 +108,6 @@ export default function DirectionsNullState(props) {
           }}
         />
       </p>
-    </div>
+    </article>
   );
 }

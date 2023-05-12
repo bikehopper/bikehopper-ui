@@ -51,5 +51,6 @@
 }
 
 .SelectionListItem_removeIcon {
+  position: relative;
   top: 2px;
 }
