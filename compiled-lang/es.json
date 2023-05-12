@@ -132,7 +132,7 @@
     },
     {
       "type": 0,
-      "value": " bajo la licencia GNU Affero General Public License."
+      "value": " bajo la Licencia Pública General Affero de GNU."
     }
   ],
   "8jcDFc": [
@@ -168,7 +168,7 @@
   "ADeXBy": [
     {
       "type": 0,
-      "value": "Continuar"
+      "value": "Continúe "
     },
     {
       "options": {
@@ -202,7 +202,7 @@
   "AVwHUu": [
     {
       "type": 0,
-      "value": "Tomar el tren "
+      "value": "Viaje en el tren "
     },
     {
       "type": 1,
@@ -224,13 +224,13 @@
   "BAVfiY": [
     {
       "type": 0,
-      "value": "Soportamos la "
+      "value": "Damos soporte a la "
     },
     {
       "children": [
         {
           "type": 0,
-          "value": "zona de la Bahía de San Francisco"
+          "value": "Zona de la Bahía de San Francisco"
         }
       ],
       "type": 8,
@@ -288,7 +288,7 @@
   "BGoNGI": [
     {
       "type": 0,
-      "value": "vía "
+      "value": "a través de "
     },
     {
       "type": 1,
@@ -298,7 +298,7 @@
   "CJUzIw": [
     {
       "type": 0,
-      "value": "Déjenos saber lo que opina reportando problemas, rutas que podrían ser mejoradas, y otra retroalimentación en "
+      "value": "Háganos saber lo que piensa informándonos de errores, rutas que podrían mejorarse y otros comentarios en "
     },
     {
       "children": [
@@ -676,7 +676,7 @@
       "children": [
         {
           "type": 0,
-          "value": "Bienvenid@ a BikeHopper!"
+          "value": "¡Bienvenido a BikeHopper!"
         }
       ],
       "type": 8,
@@ -684,7 +684,7 @@
     },
     {
       "type": 0,
-      "value": " Esta es una app de navegación por bicicleta que te sugiere formas de combinar bicicletas y servicio de tránsito, expandiendo tus opciones para viajar sin coche."
+      "value": " Se trata de una nueva aplicación para la navegación en bicicleta que sugiere formas de combinar la bicicleta y el transporte público, ampliando tus opciones para desplazarte sin coche."
     }
   ],
   "SFcnNL": [
@@ -1182,7 +1182,7 @@
   "vcNM7g": [
     {
       "type": 0,
-      "value": "Introduce un destino"
+      "value": "Introduzca un destino"
     }
   ],
   "vcV91U": [
