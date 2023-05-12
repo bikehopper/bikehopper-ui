@@ -20,6 +20,8 @@ BikeHopper uses:
 - [FormatJS](https://formatjs.io/) and [hosted
   Weblate](https://hosted.weblate.org/projects/bikehopper/bikehopper-ui/) for
   internationalization (WIP)
+- *For the Bay Area instance:* transit data from
+  [511.org](https://511.org/open-data/transit)
 
 BikeHopper is free software under the GNU Affero General Public
 License, which requires the source to be kept open. We discourage
