@@ -91,6 +91,13 @@ function parse(route) {
 
       if (leg.arrival_time)
         leg.arrival_time = DateTime.fromISO(leg.arrival_time).toJSDate();
+
+      // mark bike legs that have steps
+      if (leg.type === 'bike2') {
+        leg.has_steps = leg.details?.road_class?.some(
+          ([_start, _end, roadClass]) => roadClass === 'steps',
+        );
+      }
     }
   }
 

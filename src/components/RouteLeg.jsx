@@ -15,37 +15,42 @@ export default function RouteLeg(props) {
 
   let mode = '?';
 
+  const maybeAlertIcon = props.hasAlerts ? (
+    <Icon
+      className="RouteLeg_alertIcon"
+      label={intl.formatMessage({
+        defaultMessage: 'Alert',
+        description:
+          'labels a transit trip as having a service alert apply to it.',
+      })}
+    >
+      <WarningTriangle />
+    </Icon>
+  ) : null;
+
   if (props.type === 'bike2') {
     mode = (
-      <Icon
-        className="RouteLeg_bikeIcon"
-        flipHorizontally={true}
-        label={intl.formatMessage({
-          defaultMessage: 'Bike',
-          description:
-            'alt text for bicycle icon displayed in a summary of an itinerary',
-        })}
-      >
-        <Bicycle width="32" height="32" />
-      </Icon>
+      <div className="RouteLeg_mode">
+        {maybeAlertIcon}
+        <Icon
+          className="RouteLeg_bikeIcon"
+          flipHorizontally={true}
+          label={intl.formatMessage({
+            defaultMessage: 'Bike',
+            description:
+              'alt text for bicycle icon displayed in a summary of an itinerary',
+          })}
+        >
+          <Bicycle width="32" height="32" />
+        </Icon>
+      </div>
     );
   } else if (props.type === 'pt') {
     const bgColor = props.routeColor || DEFAULT_PT_COLOR;
     const fgColor = getTextColor(bgColor).main;
     mode = (
-      <div className="RouteLeg_transitMode">
-        {props.hasAlerts && (
-          <Icon
-            className="RouteLeg_alertIcon"
-            label={intl.formatMessage({
-              defaultMessage: 'Alert',
-              description:
-                'labels a transit trip as having a service alert apply to it.',
-            })}
-          >
-            <WarningTriangle />
-          </Icon>
-        )}
+      <div className="RouteLeg_mode">
+        {maybeAlertIcon}
         <Icon
           className="RouteLeg_transitModeIcon"
           label={_getModeLabel(props.routeType, intl)}

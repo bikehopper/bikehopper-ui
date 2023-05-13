@@ -33,14 +33,7 @@ export default function ItineraryHeader({ alerts, children, icon, iconColor }) {
       {subheading && <p className="ItineraryHeader_subheading">{subheading}</p>}
       {alerts?.length > 0 && (
         <ul className="ItineraryHeader_alerts">
-          {alerts.map((alert) => (
-            /* TODO: Select the alert translation based on locale, instead of always
-             * using the first one.
-             *
-             * Unfortunately, for the Bay Area, no agency seems to actually translate
-             * its alerts so it has no impact which is why I've (Scott, April 2023)
-             * de-prioritized doing this.
-             */
+          {alerts.map(([alertHeader, alertBody]) => (
             <li className="ItineraryHeader_alert">
               <Icon
                 className="ItineraryHeader_alertIcon"
@@ -52,12 +45,14 @@ export default function ItineraryHeader({ alerts, children, icon, iconColor }) {
               >
                 <WarningTriangle />
               </Icon>
-              <span className="ItineraryHeader_alertHeader">
-                {alert.header_text?.translation[0]?.text}
-              </span>
-              <span className="ItineraryHeader_alertBody">
-                {alert.description_text?.translation[0]?.text}
-              </span>
+              {alertHeader && (
+                <span className="ItineraryHeader_alertHeader">
+                  {alertHeader}
+                </span>
+              )}
+              {alertBody && (
+                <span className="ItineraryHeader_alertBody">{alertBody}</span>
+              )}
             </li>
           ))}
         </ul>
