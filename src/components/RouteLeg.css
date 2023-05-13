@@ -4,16 +4,20 @@
   align-items: center;
 }
 
-.RouteLeg_transitMode {
+.RouteLeg_mode {
   display: flex;
   flex-direction: row;
   align-items: center;
+  /* TODO: look for cleaner way to set height.
+   * This is to make the transit modes be as tall as the bike icon, which is otherwise
+   * taller (because the bike icon is displayed bigger), which messes up the alignment.
+   */
+  min-height: 36px;
 }
 
 .RouteLeg_transitModeIcon,
 .RouteLeg_alertIcon {
   margin-right: 4px;
-  top: 0 !important; /* FIXME: why does Icon have hardcoded top 4px again? */
 }
 
 .RouteLeg_transitModeName {
@@ -25,9 +29,7 @@
 
 .RouteLeg_duration {
   font-size: 12px;
-}
-
-.RouteLeg_bikeIcon {
-  position: relative;
-  top: 4px;
+  /* TODO: look for cleaner way to do this. See above comment about setting height.
+   * The big bike icon has empty space under it for some reason. */
+  margin-top: -3px;
 }

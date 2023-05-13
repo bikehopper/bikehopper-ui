@@ -203,6 +203,10 @@
     "description": "labels a transit line as being operated by a ferry. Appears next to the name or number of the line.",
     "message": "Ferry"
   },
+  "ccL55O": {
+    "description": "warning displayed in trip itinerary. Warns you that you may have to lift your bicycle up steps, such as an outdoor staircase, to complete the trip.",
+    "message": "This route may require carrying your bike up or down steps."
+  },
   "coeI+2": {
     "description": "label for dropdown with options \"now\", \"depart at\", \"arrive by\"",
     "message": "Select time"

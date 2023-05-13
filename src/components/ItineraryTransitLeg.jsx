@@ -31,12 +31,23 @@ export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
 
   const scrollToRef = useScrollToRef();
 
+  // TODO: Select the alert translation based on locale, instead of always
+  // using the first one.
+  //
+  // Unfortunately, for the Bay Area, no agency seems to actually translate
+  // its alerts so it has no impact which is why I've (Scott, April 2023)
+  // de-prioritized doing this.
+  const alertsForHeader = leg.alerts?.map((rawAlert) => [
+    rawAlert.header_text?.translation[0]?.text,
+    rawAlert.description_text?.translation[0]?.text,
+  ]);
+
   return (
     <div className="ItineraryTransitLeg" ref={scrollTo ? scrollToRef : null}>
       <ItineraryHeader
         icon={<ModeIcon mode={leg.route_type} />}
         iconColor={leg.route_color || DEFAULT_PT_COLOR}
-        alerts={leg.alerts}
+        alerts={alertsForHeader}
       >
         <span>
           <ItineraryTransitLegHeaderMessage

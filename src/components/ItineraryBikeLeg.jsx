@@ -41,9 +41,29 @@ export default function ItineraryBikeLeg({
   // Clear out icon's SVG width/height attributes so it can be scaled with CSS
   const bikeIcon = <BikeIcon width={null} height={null} />;
 
+  const alerts = leg.has_steps
+    ? [
+        [
+          '', // no header
+          intl.formatMessage({
+            defaultMessage:
+              'This route may require carrying your bike up or down steps.',
+            description:
+              'warning displayed in trip itinerary. ' +
+              'Warns you that you may have to lift your bicycle up steps, such as an ' +
+              'outdoor staircase, to complete the trip.',
+          }),
+        ],
+      ]
+    : [];
+
   return (
     <>
-      <ItineraryHeader icon={bikeIcon} iconColor={BIKEHOPPER_THEME_COLOR}>
+      <ItineraryHeader
+        icon={bikeIcon}
+        iconColor={BIKEHOPPER_THEME_COLOR}
+        alerts={alerts}
+      >
         <span>
           <FormattedMessage
             defaultMessage="Bike to {place}"
