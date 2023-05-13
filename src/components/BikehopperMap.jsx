@@ -1,6 +1,7 @@
 import maplibregl from 'maplibre-gl';
 import * as React from 'react';
 import { useCallback, useLayoutEffect } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import MapGL, {
   Layer,
@@ -9,6 +10,7 @@ import MapGL, {
   GeolocateControl,
   NavigationControl,
 } from 'react-map-gl';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import {
   routesToGeoJSON,
   EMPTY_GEOJSON,
@@ -18,7 +20,10 @@ import lngLatToCoords from '../lib/lngLatToCoords';
 import usePrevious from '../hooks/usePrevious';
 import { geolocated } from '../features/geolocation';
 import { mapLoaded } from '../features/misc';
-import { locationDragged } from '../features/routeParams';
+import {
+  locationDragged,
+  locationSelectedOnMap,
+} from '../features/routeParams';
 import { routeClicked } from '../features/routes';
 import { mapMoved } from '../features/viewport';
 import useResizeObserver from '../hooks/useResizeObserver';
@@ -29,6 +34,8 @@ import {
 
 import './BikehopperMap.css';
 import { DEFAULT_BIKE_COLOR, DEFAULT_INACTIVE_COLOR } from '../lib/colors';
+
+const _isTouch = 'ontouchstart' in window;
 
 const BikehopperMap = React.forwardRef((props, mapRef) => {
   const dispatch = useDispatch();
@@ -61,21 +68,93 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
   );
   const prevRouteStatus = usePrevious(routeStatus);
 
-  const handleRouteClick = (evt) => {
+  // If non-null, a [clientX, clientY, lng, lat] of where the context menu is open from.
+  const [contextMenuAt, setContextMenuAt] = React.useState(null);
+
+  // MapLibre doesn't natively support long press, so we use a timer to detect it.
+  const longPressTimerId = React.useRef(null);
+
+  const resetLongPressTimer = () => {
+    if (longPressTimerId.current) {
+      clearTimeout(longPressTimerId.current);
+      longPressTimerId.current = null;
+    }
+  };
+
+  const handleMapClick = (evt) => {
+    resetLongPressTimer();
     if (evt.features?.length) {
       dispatch(routeClicked(evt.features[0].properties.path_index, 'map'));
     }
   };
 
+  const handleMapRightClick = (evt) => {
+    resetLongPressTimer();
+    setContextMenuAt([
+      evt.originalEvent.clientX,
+      evt.originalEvent.clientY,
+      evt.lngLat.lng,
+      evt.lngLat.lat,
+    ]);
+  };
+
+  const handleMapLongPress = (clientX, clientY, lng, lat) => {
+    setContextMenuAt([clientX, clientY, lng, lat]);
+    resetLongPressTimer();
+  };
+
+  const handleTouchStart = (evt) => {
+    resetLongPressTimer();
+    if (evt.originalEvent.touches.length !== 1) return;
+    const { lng, lat } = evt.lngLat;
+    const { clientX, clientY } = evt.originalEvent.touches[0];
+    longPressTimerId.current = setTimeout(
+      () => handleMapLongPress(clientX, clientY, lng, lat),
+      500,
+    );
+  };
+
+  const handleContextMenuOpenChange = (isOpen) => {
+    resetLongPressTimer();
+    if (!isOpen) setContextMenuAt(null);
+  };
+
+  const handleMouseDown = (evt) => {
+    setContextMenuAt(null);
+  };
+
   const handleMoveEnd = (evt) => {
+    resetLongPressTimer();
+    setContextMenuAt(null);
     dispatch(mapMoved(evt.viewState));
   };
 
+  const handleMoveStart = (evt) => {
+    resetLongPressTimer();
+    setContextMenuAt(null);
+  };
+
+  const handleDirectionsFromClick = (evt) => {
+    if (contextMenuAt)
+      dispatch(
+        locationSelectedOnMap('start', [contextMenuAt[2], contextMenuAt[3]]),
+      );
+  };
+
+  const handleDirectionsToClick = (evt) => {
+    if (contextMenuAt)
+      dispatch(
+        locationSelectedOnMap('end', [contextMenuAt[2], contextMenuAt[3]]),
+      );
+  };
+
   const handleStartMarkerDrag = (evt) => {
+    resetLongPressTimer();
     dispatch(locationDragged('start', lngLatToCoords(evt.lngLat)));
   };
 
   const handleEndMarkerDrag = (evt) => {
+    resetLongPressTimer();
     dispatch(locationDragged('end', lngLatToCoords(evt.lngLat)));
   };
 
@@ -316,8 +395,15 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
           'transitLabelLayer',
           'bikeLabelLayer',
         ]}
-        onClick={handleRouteClick}
+        onMouseDown={handleMouseDown}
+        onClick={handleMapClick}
+        onContextMenu={handleMapRightClick}
         onMoveEnd={handleMoveEnd}
+        onMoveStart={_isTouch ? handleMoveStart : null}
+        onTouchStart={_isTouch ? handleTouchStart : null}
+        onTouchMove={_isTouch ? resetLongPressTimer : null}
+        onTouchEnd={_isTouch ? resetLongPressTimer : null}
+        onTouchCancel={_isTouch ? resetLongPressTimer : null}
       >
         <GeolocateControl
           trackUserLocation={true}
@@ -380,7 +466,78 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
             color="#ea526f"
           />
         )}
+        {contextMenuAt && (
+          <Marker
+            id="contextMenuMarker"
+            longitude={contextMenuAt[2]}
+            latitude={contextMenuAt[3]}
+            color={'#fcd34d' /* tailwind amber-300 */}
+            style={{ opacity: '70%' }}
+          />
+        )}
       </MapGL>
+      <DropdownMenu.Root
+        open={Boolean(contextMenuAt)}
+        onOpenChange={handleContextMenuOpenChange}
+      >
+        <DropdownMenu.Trigger asChild>
+          <div
+            className="pointer-events-none fixed"
+            style={
+              contextMenuAt && {
+                left: contextMenuAt[0],
+                top: contextMenuAt[1],
+              }
+            }
+          >
+            {/* not used, real trigger is the map itself */}
+          </div>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content
+            className="w-48 rounded-md px-1.5 py-1 mt-1 shadow-md md:w-56
+              bg-white dark:bg-gray-800 z-10
+              border-gray-300 dark:border-gray-600 border border-solid"
+          >
+            <DropdownMenu.Item
+              key="route-from"
+              className="flex select-none items-center rounded-md px-2 py-2
+                text-s outline-none
+                text-gray-400 focus:bg-gray-50 dark:text-gray-500 dark:focus:bg-gray-900"
+              onClick={handleDirectionsFromClick}
+            >
+              <span className="flex-grow text-gray-700 dark:text-gray-300">
+                <FormattedMessage
+                  defaultMessage="Directions from"
+                  description={
+                    'menu item. ' +
+                    'Appears in context menu under a location you have selected on the map. ' +
+                    'When clicked, computes directions from that location.'
+                  }
+                />
+              </span>
+            </DropdownMenu.Item>
+            <DropdownMenu.Item
+              key="route-to"
+              className="flex select-none items-center rounded-md px-2 py-2
+                text-s outline-none
+                text-gray-400 focus:bg-gray-50 dark:text-gray-500 dark:focus:bg-gray-900"
+              onClick={handleDirectionsToClick}
+            >
+              <span className="flex-grow text-gray-700 dark:text-gray-300">
+                <FormattedMessage
+                  defaultMessage="Directions to"
+                  description={
+                    'menu item. ' +
+                    'Appears in context menu under a location you have selected on the map. ' +
+                    'When clicked, computes directions to that location.'
+                  }
+                />
+              </span>
+            </DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
     </div>
   );
 });
