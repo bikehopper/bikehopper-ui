@@ -6,6 +6,7 @@
     "@babel/core": "^7.16.0",
     "@formatjs/intl-listformat": "^7.1.7",
     "@placemarkio/geo-viewport": "^1.0.0",
+    "@radix-ui/react-dropdown-menu": "^2.0.4",
     "@turf/bezier-spline": "^6.5.0",
     "@turf/boolean-point-in-polygon": "^6.5.0",
     "@turf/buffer": "^6.5.0",

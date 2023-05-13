@@ -277,7 +277,7 @@ function _getDisplayedText(intl, text, loc, isFocused) {
     case LocationSourceType.UrlWithString:
       // Initially set to address from geocoder/URL; may have been modified by user.
       return text;
-    case LocationSourceType.Marker:
+    case LocationSourceType.SelectedOnMap:
     case LocationSourceType.UrlWithoutString:
       if (text !== '') return text;
       return isFocused

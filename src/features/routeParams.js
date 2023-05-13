@@ -7,7 +7,7 @@ import { fetchRoute } from './routes';
 
 export const LocationSourceType = {
   Geocoded: 'geocoded',
-  Marker: 'marker_drag',
+  SelectedOnMap: 'selected_on_map', // marker drag or long-press/right-click
   UserGeolocation: 'user_geolocation',
   UrlWithString: 'url_with_string',
   UrlWithoutString: 'url_without_string',
@@ -52,10 +52,11 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
         draft.endInputText = state.startInputText;
       });
     case 'location_dragged':
+    case 'location_selected_on_map':
       return produce(state, (draft) => {
         draft[action.startOrEnd] = {
           point: turf.point(action.coords),
-          source: LocationSourceType.Marker,
+          source: LocationSourceType.SelectedOnMap,
         };
         draft[action.startOrEnd + 'InputText'] = '';
       });
@@ -318,6 +319,36 @@ export function locationDragged(startOrEnd, coords) {
   return async function locationDraggedThunk(dispatch, getState) {
     dispatch({
       type: 'location_dragged',
+      startOrEnd,
+      coords,
+    });
+
+    // If we have a location for the other point, fetch a route.
+    let { start, end, arriveBy, initialTime } = getState().routeParams;
+    if (startOrEnd === 'start' && end?.point?.geometry.coordinates) {
+      await fetchRoute(
+        coords,
+        end.point.geometry.coordinates,
+        arriveBy,
+        initialTime,
+      )(dispatch, getState);
+    } else if (startOrEnd === 'end' && start?.point?.geometry.coordinates) {
+      await fetchRoute(
+        start.point.geometry.coordinates,
+        coords,
+        arriveBy,
+        initialTime,
+      )(dispatch, getState);
+    }
+  };
+}
+
+// Location selected on map via context menu (long press or right-click).
+// Similar to a drag, except might be starting from no location selected.
+export function locationSelectedOnMap(startOrEnd, coords) {
+  return async function locationSelectedOnMapThunk(dispatch, getState) {
+    dispatch({
+      type: 'location_selected_on_map',
       startOrEnd,
       coords,
     });

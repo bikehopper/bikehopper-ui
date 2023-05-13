@@ -3,6 +3,10 @@
     "description": "the number of stops between two listed transit stops",
     "message": "{numStops} {numStops, plural, one {stop} other {stops}} before"
   },
+  "/AzFxf": {
+    "description": "menu item. Appears in context menu under a location you have selected on the map. When clicked, computes directions to that location.",
+    "message": "Directions to"
+  },
   "0KhVZS": {
     "description": "button to return from a detailed itinerary to routes overview",
     "message": "Back to routes"
@@ -30,6 +34,10 @@
   "5eSv1b": {
     "description": "header text at end of step by step travel instructions",
     "message": "Arrive at destination"
+  },
+  "6r9qOW": {
+    "description": "menu item. Appears in context menu under a location you have selected on the map. When clicked, computes directions from that location.",
+    "message": "Directions from"
   },
   "8OXHea": {
     "description": "paragraph in welcome screen, with link to project source code",
