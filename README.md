@@ -20,7 +20,7 @@ BikeHopper uses:
 - [FormatJS](https://formatjs.io/) and [hosted
   Weblate](https://hosted.weblate.org/projects/bikehopper/bikehopper-ui/) for
   internationalization (WIP)
-- *For the Bay Area instance:* transit data from
+- _For the Bay Area instance:_ transit data from
   [511.org](https://511.org/open-data/transit)
 
 BikeHopper is free software under the GNU Affero General Public
@@ -31,18 +31,20 @@ help you be the first region beyond the Bay Area to set one up.
 
 ## Getting Started With the BikeHopper UI
 
-This project was bootstrapped with [Create React
-App](https://github.com/facebook/create-react-app). You can find the original
-CRA [readme here](create-react-app-readme.md). To get started clone this repo,
+This project uses [Vite](https://vitejs.dev/) as its build system and
+for running a dev server. To get started clone this repo,
 copy the `.env.development.template` to `.env.development.local` and put in a
 Mapbox token you create (free plan is fine), run `npm install`, then run `npm start`.
 
 Requests to `localhost` are proxied to
-`https://api-staging.bikehopper.org`. This is configured by the "proxy"
-property in the package.json of this repo. Presently there is a thin client
-library at `src/lib/BikehopperClient.js`. More methods should be added as
-needed. This library calls the Bikehopper
+`https://api-staging.bikehopper.org`. This is configured by a "proxy"
+property within `vite.config.json`. Presently there is a thin client
+library at `src/lib/BikehopperClient.js`. More methods should be added
+as needed. This library calls the Bikehopper
 [backend](https://github.com/bikehopper/bikehopper-web-app).
+
+To expose your dev server to your local network (so you can access it
+from your phone), run `npx vite --host`.
 
 ## Configuring local GraphHopper
 

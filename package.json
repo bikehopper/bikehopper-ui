@@ -54,7 +54,6 @@
     "compile": "formatjs compile --format=crowdin",
     "prepare": "husky install"
   },
-  "proxy": "https://api-staging.bikehopper.org",
   "browserslist": {
     "production": [
       ">0.2%",
