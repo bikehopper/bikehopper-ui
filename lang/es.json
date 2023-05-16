@@ -326,5 +326,9 @@
     "bEeEKy": {
         "message": "Alerta",
         "description": "labels a transit trip as having a service alert apply to it."
+    },
+    "ccL55O": {
+        "message": "Esta ruta puede requerir subir o bajar escalones con la bicicleta.",
+        "description": "warning displayed in trip itinerary. Warns you that you may have to lift your bicycle up steps, such as an outdoor staircase, to complete the trip."
     }
 }
