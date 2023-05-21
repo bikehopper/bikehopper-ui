@@ -112,17 +112,13 @@ export default function TimeBar(props) {
         <Dialog.Trigger asChild>
           <button
             className="outline-none select-none cursor-pointer
-              text-[13px] rounded-md p-1.5 pl-[34px]
+              text-[13px] rounded-md p-1.5
               border-2 border-solid border-transparent
               focus:outline-none focus:ring-0 focus:ring-offset-0
               bg-[#def0cc] text-[inherit]
               hover:bg-[#d0e1c0]
-              focus-visible:border-bikehopperyellow focus-visible:bg-white
-              relative"
+              focus-visible:border-bikehopperyellow focus-visible:bg-white"
           >
-            <Icon className="absolute left-1 top-0.5">
-              <ClockOutline />
-            </Icon>
             {departureString}
           </button>
         </Dialog.Trigger>
