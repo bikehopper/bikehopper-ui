@@ -75,15 +75,56 @@ export default function TimeBar(props) {
     setIsDialogOpen(isOpen);
   };
 
+  const formattedInitialTime = datetime.toLocaleString(DateTime.DATETIME_MED);
+  let departureString;
+  if (globalDepartureType === 'now') {
+    departureString = intl.formatMessage({
+      defaultMessage: 'Leaving now',
+      description: 'description of departure time for a trip leaving now.',
+    });
+  } else if (globalDepartureType === 'departAt') {
+    departureString = intl.formatMessage(
+      {
+        defaultMessage: 'Departing {datetime}',
+        description:
+          'description of trip departing at the given date and time. ' +
+          'The datetime is localized but an example for an American English locale ' +
+          'would be "May 21, 2023, 2:30PM".',
+      },
+      { datetime: formattedInitialTime },
+    );
+  } else if (globalDepartureType === 'arriveBy') {
+    departureString = intl.formatMessage(
+      {
+        defaultMessage: 'Arriving {datetime}',
+        description:
+          'description of trip arriving by the given date and time. ' +
+          'The datetime is localized but an example for an American English locale ' +
+          'would be "May 21, 2023, 2:30PM".',
+      },
+      { datetime: formattedInitialTime },
+    );
+  }
+
   return (
     <div className="TimeBar">
-      <span>{globalDepartureType + ' '}</span>
-      {globalDepartureType !== 'now' && (
-        <span>{globalDate + ' ' + globalTime}</span>
-      )}
       <Dialog.Root open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
         <Dialog.Trigger asChild>
-          <button>Change</button>
+          <button
+            className="outline-none select-none cursor-pointer
+              text-[13px] rounded-md p-1.5 pl-[34px]
+              border-2 border-solid border-transparent
+              focus:outline-none focus:ring-0 focus:ring-offset-0
+              bg-[#def0cc] text-[inherit]
+              hover:bg-[#d0e1c0]
+              focus-visible:border-bikehopperyellow focus-visible:bg-white
+              relative"
+          >
+            <Icon className="absolute left-1 top-0.5">
+              <ClockOutline />
+            </Icon>
+            {departureString}
+          </button>
         </Dialog.Trigger>
         <Dialog.Portal forceMount>
           <Transition show={isDialogOpen}>
@@ -118,11 +159,23 @@ export default function TimeBar(props) {
                   bg-white dark:bg-gray-800 p-6 rounded-md
                   text-gray-800 dark:text-gray-300"
               >
-                <Dialog.Title className="m-0 mb-3 text-lg align-middle flex flex-row justify-start items-center">
+                <Dialog.Title
+                  className="m-0 mb-3 text-lg align-middle
+                    flex flex-row justify-start items-center select-none"
+                >
                   <Icon className="mr-2 block flex-column justify-center">
                     <ClockOutline width="24" height="24" className="block" />
                   </Icon>
-                  <span className="block">Trip time</span>
+                  <span className="block">
+                    <FormattedMessage
+                      defaultMessage="Trip time"
+                      description={
+                        'dialog header. In this dialog you can select whether ' +
+                        'to depart now, depart at a future time, or arrive by a ' +
+                        'future time.'
+                      }
+                    />
+                  </span>
                 </Dialog.Title>
                 <form>
                   <RadioGroup.Root
@@ -186,7 +239,10 @@ export default function TimeBar(props) {
                       hover:bg-blue-600 dark:hover:bg-blue-400
                       border border-solid border-gray-300 dark:border-gray-600"
                   >
-                    Update
+                    <FormattedMessage
+                      defaultMessage="Update"
+                      description="button. Saves changes made in a dialog box."
+                    />
                   </button>
                 </form>
                 <Dialog.Close asChild>
@@ -225,6 +281,7 @@ function TimeBarRadioGroupItem({ value, id, children }) {
           text-white dark:text-gray-400
           bg-gray-200 dark:bg-gray-700
           aria-checked:bg-blue-500
+          cursor-pointer
           focus:outline-none focus:ring-0 focus:ring-offset-0
           focus-visible:ring focus-visible:ring-blue-400
           focus-visible:ring-opacity-75 focus-visible:ring-offset-2 mr-1"
@@ -233,7 +290,10 @@ function TimeBarRadioGroupItem({ value, id, children }) {
           <div className="w-1.5 h-1.5 rounded-full bg-white" />
         </RadioGroup.Indicator>
       </RadioGroup.Item>
-      <label htmlFor={id} className="text-sm lg:text-base">
+      <label
+        htmlFor={id}
+        className="text-sm lg:text-base grow select-none cursor-pointer"
+      >
         {children}
       </label>
     </div>

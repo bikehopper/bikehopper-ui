@@ -51,6 +51,10 @@
     "description": "compact version of a distance in feet",
     "message": "{num}ft"
   },
+  "9yOLYg": {
+    "description": "description of trip departing at the given date and time. The datetime is localized but an example for an American English locale would be \"May 21, 2023, 2:30PM\".",
+    "message": "Departing {datetime}"
+  },
   "A7+u0L": {
     "description": "label for transit line when the mode (bus, train, etc) is unknown. Appears next to the name or number of the line.",
     "message": "Transit line"
@@ -62,6 +66,10 @@
   "AVwHUu": {
     "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is an intercity or long-distance rail line.",
     "message": "Ride the {name} train ({agency})"
+  },
+  "Ap/CxF": {
+    "description": "description of trip arriving by the given date and time. The datetime is localized but an example for an American English locale would be \"May 21, 2023, 2:30PM\".",
+    "message": "Arriving {datetime}"
   },
   "BAVfiY": {
     "description": "describes supported region for Bay Area instance of BikeHopper",
@@ -147,6 +155,10 @@
     "description": "button to swap start and end point",
     "message": "Swap"
   },
+  "KZ3B/t": {
+    "description": "button to cancel making changes in a dialog",
+    "message": "Cancel"
+  },
   "O53Ykk": {
     "description": "label for input box for the place you want directions to",
     "message": "Destination"
@@ -187,6 +199,10 @@
     "description": "form header",
     "message": "Get directions"
   },
+  "UsTGr8": {
+    "description": "button. Saves changes made in a dialog box.",
+    "message": "Update"
+  },
   "WtbUjz": {
     "description": "instruction",
     "message": "Turn <dir>sharp right</dir>{haveStreet, select, name { onto <name>{street}</name>} other {}}"
@@ -215,10 +231,6 @@
     "description": "warning displayed in trip itinerary. Warns you that you may have to lift your bicycle up steps, such as an outdoor staircase, to complete the trip.",
     "message": "This route may require carrying your bike up or down steps."
   },
-  "coeI+2": {
-    "description": "label for dropdown with options \"now\", \"depart at\", \"arrive by\"",
-    "message": "Select time"
-  },
   "cyZrT2": {
     "description": "the number of stops for which you should stay on a transit vehicle",
     "message": "{numStops} {numStops, plural, one {stop} other {stops}}"
@@ -230,6 +242,10 @@
   "f1xi7R": {
     "description": "labels a transit line as being operated by a train; specifically a subway or metro train but the label need not be that specific. Appears next to the name or number of the line.",
     "message": "Train"
+  },
+  "gFQEbp": {
+    "description": "dialog header. In this dialog you can select whether to depart now, depart at a future time, or arrive by a future time.",
+    "message": "Trip time"
   },
   "get++U": {
     "description": "instruction",
@@ -250,6 +266,10 @@
   "mDnFtf": {
     "description": "cardinal direction, used in a sentence like \"Head southeast\"",
     "message": "southeast"
+  },
+  "mG9do/": {
+    "description": "description of departure time for a trip leaving now.",
+    "message": "Leaving now"
   },
   "mrDIsv": {
     "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a ferry.",
