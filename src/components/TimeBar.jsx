@@ -1,4 +1,3 @@
-import Bowser from 'bowser';
 import { DateTime } from 'luxon';
 import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -11,9 +10,7 @@ import Icon from './Icon';
 import { initialTimeSet, departureTypeSelected } from '../features/routeParams';
 
 import { ReactComponent as CancelIcon } from 'iconoir/icons/cancel.svg';
-import { ReactComponent as CheckIcon } from 'iconoir/icons/check.svg';
 import { ReactComponent as ClockOutline } from 'iconoir/icons/clock.svg';
-import { ReactComponent as NavArrowDown } from 'iconoir/icons/nav-arrow-down.svg';
 import './TimeBar.css';
 
 // contract:
@@ -58,7 +55,7 @@ export default function TimeBar(props) {
       dispatch(
         initialTimeSet(
           DateTime.fromFormat(
-            globalDate + ' ' + globalTime,
+            pendingDate + ' ' + pendingTime,
             'yyyy-MM-dd HH:mm',
           ).toMillis(),
         ),
@@ -118,13 +115,20 @@ export default function TimeBar(props) {
                 aria-describedby={undefined}
                 className="fixed z-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
                   w-[90vw] md:w-[95vw] max-w-md
-                  bg-white p-6 rounded-md"
+                  bg-white dark:bg-gray-800 p-6 rounded-md
+                  text-gray-800 dark:text-gray-300"
               >
-                <Dialog.Title className="m-0">Change trip time</Dialog.Title>
+                <Dialog.Title className="m-0 mb-3 text-lg align-middle flex flex-row justify-start items-center">
+                  <Icon className="mr-2 block flex-column justify-center">
+                    <ClockOutline width="24" height="24" className="block" />
+                  </Icon>
+                  <span className="block">Trip time</span>
+                </Dialog.Title>
                 <form>
                   <RadioGroup.Root
                     value={pendingDepartureType}
                     onValueChange={setPendingDepartureType}
+                    className="my-3"
                   >
                     <TimeBarRadioGroupItem value="now" id="rgi_now">
                       <FormattedMessage
@@ -143,7 +147,12 @@ export default function TimeBar(props) {
                       />
                     </TimeBarRadioGroupItem>
                     {pendingDepartureType === 'departAt' && (
-                      <input type="datetime-local" />
+                      <TimeBarDateTimePicker
+                        date={pendingDate}
+                        time={pendingTime}
+                        onDateChange={setPendingDate}
+                        onTimeChange={setPendingTime}
+                      />
                     )}
                     <TimeBarRadioGroupItem value="arriveBy" id="rgi_arriveBy">
                       <FormattedMessage
@@ -156,19 +165,35 @@ export default function TimeBar(props) {
                       />
                     </TimeBarRadioGroupItem>
                     {pendingDepartureType === 'arriveBy' && (
-                      <input type="datetime-local" />
+                      <TimeBarDateTimePicker
+                        date={pendingDate}
+                        time={pendingTime}
+                        onDateChange={setPendingDate}
+                        onTimeChange={setPendingTime}
+                      />
                     )}
                   </RadioGroup.Root>
                   <button
                     type="submit"
                     onClick={handleUpdateClick}
-                    className=""
+                    className="outline-none select-none cursor-pointer
+                      text-base rounded-md py-1.5 px-3
+                      focus:outline-none focus:ring-0 focus:ring-offset-0
+                      focus-visible:ring
+                      focus-visible:ring-blue-400 dark:focus-visible:ring-blue-600
+                      focus-visible:ring-opacity-75 focus-visible:ring-offset-2
+                      bg-blue-500 text-white
+                      hover:bg-blue-600 dark:hover:bg-blue-400
+                      border border-solid border-gray-300 dark:border-gray-600"
                   >
                     Update
                   </button>
                 </form>
                 <Dialog.Close asChild>
-                  <button className="absolute top-6 right-3 border-0 bg-transparent">
+                  <button
+                    className="absolute top-6 right-3 border-0 bg-transparent
+                      cursor-pointer dark:text-gray-400"
+                  >
                     <Icon
                       label={intl.formatMessage({
                         defaultMessage: 'Cancel',
@@ -195,9 +220,10 @@ function TimeBarRadioGroupItem({ value, id, children }) {
       <RadioGroup.Item
         value={value}
         id={id}
-        className="relative w-4 h-4 rounded-full
-          border-0 border border-gray-300 text-white
-          bg-gray-200
+        className="relative w-4 h-4 rounded-full my-1.5
+          border border-solid border-gray-300 dark:border-gray-600
+          text-white dark:text-gray-400
+          bg-gray-200 dark:bg-gray-700
           aria-checked:bg-blue-500
           focus:outline-none focus:ring-0 focus:ring-offset-0
           focus-visible:ring focus-visible:ring-blue-400
@@ -207,7 +233,50 @@ function TimeBarRadioGroupItem({ value, id, children }) {
           <div className="w-1.5 h-1.5 rounded-full bg-white" />
         </RadioGroup.Indicator>
       </RadioGroup.Item>
-      <label htmlFor={id}>{children}</label>
+      <label htmlFor={id} className="text-sm lg:text-base">
+        {children}
+      </label>
     </div>
+  );
+}
+
+function TimeBarDateTimePicker({ date, time, onDateChange, onTimeChange }) {
+  const handleDateChange = React.useCallback(
+    (evt) => onDateChange(evt.target.value),
+    [onDateChange],
+  );
+  const handleTimeChange = React.useCallback(
+    (evt) => onTimeChange(evt.target.value),
+    [onTimeChange],
+  );
+  return (
+    <fieldset className="border-0 m-0 p-1.5 flex flex-wrap flex-row">
+      <input
+        className="mr-3 font-sans text-sm lg:text-base
+          text-gray-800 dark:text-gray-300
+          bg-white dark:bg-gray-800
+          border border-solid border-gray-300 dark:border-gray-600 rounded-md
+          outline-none focus:outline-none focus:ring-0 focus:ring-offset-0
+          focus-visible:ring focus-visible:ring-blue-400 dark:focus-visible:ring-blue-600
+          dark:focus-visible:ring-offset-gray-800
+          focus-visible:ring-opacity-75 focus-visible:ring-offset-2"
+        type="date"
+        value={date}
+        onChange={handleDateChange}
+      />
+      <input
+        className="font-sans text-sm lg:text-base
+          text-gray-800 dark:text-gray-300
+          bg-white dark:bg-gray-800
+          border border-solid border-gray-300 dark:border-gray-600 rounded-md
+          outline-none focus:outline-none focus:ring-0 focus:ring-offset-0
+          focus-visible:ring focus-visible:ring-blue-400 dark:focus-visible:ring-blue-600
+          dark:focus-visible:ring-offset-gray-800
+          focus-visible:ring-opacity-75 focus-visible:ring-offset-2"
+        type="time"
+        value={time}
+        onChange={handleTimeChange}
+      />
+    </fieldset>
   );
 }
