@@ -526,7 +526,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
             <DropdownMenu.Item
               key="route-from"
               className="flex select-none items-center rounded-md px-2 py-2
-                text-s outline-none
+                text-sm outline-none
                 text-gray-400 focus:bg-gray-50 dark:text-gray-500 dark:focus:bg-gray-900"
               onClick={handleDirectionsFromClick}
             >
@@ -544,7 +544,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
             <DropdownMenu.Item
               key="route-to"
               className="flex select-none items-center rounded-md px-2 py-2
-                text-s outline-none
+                text-sm outline-none
                 text-gray-400 focus:bg-gray-50 dark:text-gray-500 dark:focus:bg-gray-900"
               onClick={handleDirectionsToClick}
             >
