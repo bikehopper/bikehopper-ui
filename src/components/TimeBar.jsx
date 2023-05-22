@@ -7,7 +7,7 @@ import * as RadioGroup from '@radix-ui/react-radio-group';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './Icon';
 
-import { initialTimeSet, departureTypeSelected } from '../features/routeParams';
+import { departureChanged } from '../features/routeParams';
 
 import { ReactComponent as CancelIcon } from 'iconoir/icons/cancel.svg';
 import { ReactComponent as ClockOutline } from 'iconoir/icons/clock.svg';
@@ -15,7 +15,7 @@ import './TimeBar.css';
 
 // contract:
 // receive departureType and initialTime from routeParams store
-// modify by firing departureTypeSelected and initialTimeSet actions
+// modify by firing departureChanged actions
 
 export default function TimeBar(props) {
   const { globalDepartureType, globalInitialTime } = useSelector(
@@ -49,18 +49,18 @@ export default function TimeBar(props) {
   const [pendingTime, setPendingTime] = React.useState(globalTime);
 
   const handleUpdateClick = (evt) => {
-    if (pendingDepartureType !== globalDepartureType)
-      dispatch(departureTypeSelected(pendingDepartureType));
-    if (pendingDate !== globalDate || pendingTime !== globalTime) {
-      dispatch(
-        initialTimeSet(
-          DateTime.fromFormat(
-            pendingDate + ' ' + pendingTime,
-            'yyyy-MM-dd HH:mm',
-          ).toMillis(),
-        ),
-      );
-    }
+    // Since this is an explicit "Update" click, always dispatch the action, even if
+    // the pending state is the same as the global state. The user might want to refetch
+    // routes, which could be different from the cached routes if "Now" is selected.
+    dispatch(
+      departureChanged(
+        pendingDepartureType,
+        DateTime.fromFormat(
+          pendingDate + ' ' + pendingTime,
+          'yyyy-MM-dd HH:mm',
+        ).toMillis(),
+      ),
+    );
     setIsDialogOpen(false);
     evt.preventDefault();
   };
