@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import MoonLoader from 'react-spinners/MoonLoader';
 import useResizeObserver from '../hooks/useResizeObserver';
 import { BOTTOM_DRAWER_DEFAULT_SCROLL } from '../lib/layout';
+import { isTouchMoveSignificant } from '../lib/touch';
 import BikehopperMap from './BikehopperMap';
 import * as VisualViewportTracker from '../lib/VisualViewportTracker';
 
@@ -147,10 +148,16 @@ function MapPlusOverlay(props) {
       // "clicks," not raw touch events, to do things.
       // TODO: We might want to delay to make sure it's not a double-tap-to-zoom?
 
-      const dx = mapTouchState.lastClientX - mapTouchState.startClientX;
-      const dy = mapTouchState.lastClientY - mapTouchState.startClientY;
-      const distanceMoved = Math.sqrt(dx * dx + dy * dy);
-      if (distanceMoved > 7) return; // more of a drag than a click
+      if (
+        isTouchMoveSignificant(
+          mapTouchState.startClientX,
+          mapTouchState.startClientY,
+          mapTouchState.lastClientX,
+          mapTouchState.lastClientY,
+        )
+      ) {
+        return; // more of a drag than a click
+      }
 
       const syntheticEvent = new MouseEvent('click', {
         bubbles: true, // might click on a <span> inside of a <button>, etc

@@ -17,6 +17,7 @@ import {
   BIKEABLE_HIGHWAYS,
 } from '../lib/geometry';
 import lngLatToCoords from '../lib/lngLatToCoords';
+import { isTouchMoveSignificant } from '../lib/touch';
 import usePrevious from '../hooks/usePrevious';
 import { geolocated } from '../features/geolocation';
 import { mapLoaded } from '../features/misc';
@@ -71,13 +72,14 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
   // If non-null, a [clientX, clientY, lng, lat] of where the context menu is open from.
   const [contextMenuAt, setContextMenuAt] = React.useState(null);
 
-  // MapLibre doesn't natively support long press, so we use a timer to detect it.
-  const longPressTimerId = React.useRef(null);
+  // MapLibre doesn't natively support long press, so we use a timer to detect it,
+  // along with the clientX and clientY of the initial touch.
+  const longPressTimerIdAndPos = React.useRef(null);
 
   const resetLongPressTimer = () => {
-    if (longPressTimerId.current) {
-      clearTimeout(longPressTimerId.current);
-      longPressTimerId.current = null;
+    if (longPressTimerIdAndPos.current) {
+      clearTimeout(longPressTimerIdAndPos.current.timer);
+      longPressTimerIdAndPos.current = null;
     }
   };
 
@@ -108,10 +110,30 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
     if (evt.originalEvent.touches.length !== 1) return;
     const { lng, lat } = evt.lngLat;
     const { clientX, clientY } = evt.originalEvent.touches[0];
-    longPressTimerId.current = setTimeout(
-      () => handleMapLongPress(clientX, clientY, lng, lat),
-      500,
-    );
+    longPressTimerIdAndPos.current = {
+      timer: setTimeout(
+        () => handleMapLongPress(clientX, clientY, lng, lat),
+        500,
+      ),
+      clientX,
+      clientY,
+    };
+  };
+
+  const handleTouchMove = (evt) => {
+    if (!longPressTimerIdAndPos.current) return;
+
+    // Reset long-press timer if finger moved more than a little.
+    if (
+      isTouchMoveSignificant(
+        longPressTimerIdAndPos.clientX,
+        longPressTimerIdAndPos.clientY,
+        evt.originalEvent.touches[0].clientX,
+        evt.originalEvent.touches[0].clientY,
+      )
+    ) {
+      resetLongPressTimer();
+    }
   };
 
   const handleContextMenuOpenChange = (isOpen) => {
@@ -401,7 +423,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
         onMoveEnd={handleMoveEnd}
         onMoveStart={_isTouch ? handleMoveStart : null}
         onTouchStart={_isTouch ? handleTouchStart : null}
-        onTouchMove={_isTouch ? resetLongPressTimer : null}
+        onTouchMove={_isTouch ? handleTouchMove : null}
         onTouchEnd={_isTouch ? resetLongPressTimer : null}
         onTouchCancel={_isTouch ? resetLongPressTimer : null}
       >
@@ -452,6 +474,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
             longitude={startCoords[0]}
             latitude={startCoords[1]}
             draggable={true}
+            onDragStart={_isTouch ? resetLongPressTimer : null}
             onDragEnd={handleStartMarkerDrag}
             color="#2fa7cc"
           />
@@ -462,6 +485,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
             longitude={endCoords[0]}
             latitude={endCoords[1]}
             draggable={true}
+            onDragStart={_isTouch ? resetLongPressTimer : null}
             onDragEnd={handleEndMarkerDrag}
             color="#ea526f"
           />
