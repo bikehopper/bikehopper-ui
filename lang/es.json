@@ -330,5 +330,13 @@
     "ccL55O": {
         "message": "Esta ruta puede requerir subir o bajar escalones con la bicicleta.",
         "description": "warning displayed in trip itinerary. Warns you that you may have to lift your bicycle up steps, such as an outdoor staircase, to complete the trip."
+    },
+    "/AzFxf": {
+        "message": "Cómo llegar a",
+        "description": "menu item. Appears in context menu under a location you have selected on the map. When clicked, computes directions to that location."
+    },
+    "6r9qOW": {
+        "message": "Cómo llegar desde",
+        "description": "menu item. Appears in context menu under a location you have selected on the map. When clicked, computes directions from that location."
     }
 }
