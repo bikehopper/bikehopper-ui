@@ -34,9 +34,8 @@ export default function TimeBar(props) {
   const intl = useIntl();
 
   // From the time in global state, generate strings for the date & time <input>s
-  const datetime = DateTime.fromMillis(globalInitialTime || Date.now());
-  const globalTime = datetime.toFormat('HH:mm');
-  const globalDate = datetime.toFormat('yyyy-MM-dd');
+  const globalDateTime = DateTime.fromMillis(globalInitialTime || Date.now());
+  const [globalDate, globalTime] = formatForDateAndTimeInputs(globalDateTime);
 
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
 
@@ -54,10 +53,7 @@ export default function TimeBar(props) {
     dispatch(
       departureChanged(
         pendingDepartureType,
-        DateTime.fromFormat(
-          pendingDate + ' ' + pendingTime,
-          'yyyy-MM-dd HH:mm',
-        ).toMillis(),
+        parseDateAndTimeInputStrings(pendingDate, pendingTime).toMillis(),
       ),
     );
     setIsDialogOpen(false);
@@ -74,7 +70,9 @@ export default function TimeBar(props) {
     setIsDialogOpen(isOpen);
   };
 
-  const formattedInitialTime = datetime.toLocaleString(DateTime.DATETIME_MED);
+  const formattedInitialTime = globalDateTime.toLocaleString(
+    DateTime.DATETIME_MED,
+  );
   let departureString;
   if (globalDepartureType === 'now') {
     departureString = intl.formatMessage({
@@ -334,4 +332,13 @@ function TimeBarDateTimePicker({ date, time, onDateChange, onTimeChange }) {
       />
     </fieldset>
   );
+}
+
+// Helper functions for converting between Luxon DateTime instances and the
+// string formats used for HTML input type=date and =time.
+function formatForDateAndTimeInputs(dt) {
+  return [dt.toFormat('yyyy-MM-dd'), dt.toFormat('HH:mm')];
+}
+function parseDateAndTimeInputStrings(dateString, timeString) {
+  return DateTime.fromFormat(dateString + ' ' + timeString, 'yyyy-MM-dd HH:mm');
 }
