@@ -1,171 +1,344 @@
-import Bowser from 'bowser';
+import { DateTime } from 'luxon';
 import * as React from 'react';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { Transition } from '@headlessui/react';
+import * as Dialog from '@radix-ui/react-dialog';
+import * as RadioGroup from '@radix-ui/react-radio-group';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './Icon';
-import Dropdown from 'react-dropdown';
 
-import usePrevious from '../hooks/usePrevious';
-import { initialTimeSet, departureTypeSelected } from '../features/routeParams';
+import { departureChanged } from '../features/routeParams';
 
+import { ReactComponent as CancelIcon } from 'iconoir/icons/cancel.svg';
 import { ReactComponent as ClockOutline } from 'iconoir/icons/clock.svg';
-import 'react-dropdown/style.css';
-import './TimeBar.css';
+
+// contract:
+// receive departureType and initialTime from routeParams store
+// modify by firing departureChanged actions
 
 export default function TimeBar(props) {
-  const { departureType, timeFromGlobalState } = useSelector(
+  const { globalDepartureType, globalInitialTime } = useSelector(
     ({ routeParams }) => {
       let departureType = 'departAt';
       if (routeParams.arriveBy) departureType = 'arriveBy';
       else if (routeParams.initialTime == null) departureType = 'now';
       return {
-        departureType,
-        timeFromGlobalState: routeParams.initialTime,
+        globalDepartureType: departureType,
+        globalInitialTime: routeParams.initialTime,
       };
     },
     shallowEqual,
   );
-  const prevTimeFromGlobalState = usePrevious(timeFromGlobalState);
-
-  const [timeInputValue, setTimeInputValue] =
-    React.useState(timeFromGlobalState);
-
-  // When the time value from the global state changes, use it to override the local
-  // component state.
-  //
-  // Why this is needed: Some browsers fire change events while you are still typing the
-  // time: "9:00 AM" => "2:00 AM" => "2:10 AM" => "2:15AM" => "2:15PM".
-  // We want to avoid fetching routes four different times in this case -- don't update
-  // global state until done editing. Thus, there is a separate global state and local
-  // component state for the time input.
-  React.useEffect(() => {
-    if (timeFromGlobalState !== prevTimeFromGlobalState)
-      setTimeInputValue(timeFromGlobalState);
-  }, [timeFromGlobalState, prevTimeFromGlobalState]);
 
   const dispatch = useDispatch();
   const intl = useIntl();
 
-  const lastDispatchedTimeValue = React.useRef(null);
+  // From the time in global state, generate strings for the date & time <input>s
+  const globalDateTime = DateTime.fromMillis(globalInitialTime || Date.now());
+  const [globalDate, globalTime] = formatForDateAndTimeInputs(globalDateTime);
 
-  const handleUpdatedDateTimeValue = (value) => {
-    if (value === lastDispatchedTimeValue.current) return;
-    lastDispatchedTimeValue.current = value;
-    dispatch(initialTimeSet(value));
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+
+  // Local state for the departure type, date and time, as it is being actively edited
+  // in the dialog, and has not yet been committed to global state.
+  const [pendingDepartureType, setPendingDepartureType] =
+    React.useState(globalDepartureType);
+  const [pendingDate, setPendingDate] = React.useState(globalDate);
+  const [pendingTime, setPendingTime] = React.useState(globalTime);
+
+  const handleUpdateClick = (evt) => {
+    // Since this is an explicit "Update" click, always dispatch the action, even if
+    // the pending state is the same as the global state. The user might want to refetch
+    // routes, which could be different from the cached routes if "Now" is selected.
+    dispatch(
+      departureChanged(
+        pendingDepartureType,
+        parseDateAndTimeInputStrings(pendingDate, pendingTime).toMillis(),
+      ),
+    );
+    setIsDialogOpen(false);
+    evt.preventDefault();
   };
 
-  const handleTimeBlur = (event) => {
-    handleUpdatedDateTimeValue(timeInputValue);
+  const handleDialogOpenChange = (isOpen) => {
+    if (isOpen) {
+      // Initialize the local (pending) state to match the global state.
+      setPendingDepartureType(globalDepartureType);
+      setPendingDate(globalDate);
+      setPendingTime(globalTime);
+    }
+    setIsDialogOpen(isOpen);
   };
 
-  const handleTimeKeyPress = (event) => {
-    if (event.key === 'Enter') handleUpdatedDateTimeValue(event.target.value);
-  };
-
-  const handleTimeChange = (event) => {
-    const valueToSet = event.target.value === '' ? null : event.target.value;
-    setTimeInputValue(valueToSet);
-    const ua = Bowser.parse(navigator.userAgent);
-    if (!doesBrowserFireDateTimeChangePrematurely(ua))
-      handleUpdatedDateTimeValue(valueToSet);
-  };
-
-  const handleSelect = (event) => {
-    dispatch(departureTypeSelected(event.value));
-  };
-
-  const options = [
-    {
-      value: 'now',
-      label: intl.formatMessage({
-        defaultMessage: 'Now',
-        description: 'option in a dropdown list for departure time',
-      }),
-    },
-    {
-      value: 'departAt',
-      label: intl.formatMessage({
-        defaultMessage: 'Depart at',
+  const formattedInitialTime = globalDateTime.toLocaleString(
+    DateTime.DATETIME_MED,
+  );
+  let departureString;
+  if (globalDepartureType === 'now') {
+    departureString = intl.formatMessage({
+      defaultMessage: 'Leaving now',
+      description: 'description of departure time for a trip leaving now.',
+    });
+  } else if (globalDepartureType === 'departAt') {
+    departureString = intl.formatMessage(
+      {
+        defaultMessage: 'Departing {datetime}',
         description:
-          'option in a dropdown list for departure time.' +
-          ' There is another input next to it to select the time to depart at.',
-      }),
-    },
-    {
-      value: 'arriveBy',
-      label: intl.formatMessage({
-        defaultMessage: 'Arrive by',
+          'description of trip departing at the given date and time. ' +
+          'The datetime is localized but an example for an American English locale ' +
+          'would be "May 21, 2023, 2:30PM".',
+      },
+      { datetime: formattedInitialTime },
+    );
+  } else if (globalDepartureType === 'arriveBy') {
+    departureString = intl.formatMessage(
+      {
+        defaultMessage: 'Arriving {datetime}',
         description:
-          'option in a dropdown list for departure time.' +
-          ' There is another input next to it to select the time to arrive by.',
-      }),
-    },
-  ];
+          'description of trip arriving by the given date and time. ' +
+          'The datetime is localized but an example for an American English locale ' +
+          'would be "May 21, 2023, 2:30PM".',
+      },
+      { datetime: formattedInitialTime },
+    );
+  }
 
   return (
-    <form className="TimeBar">
-      <Icon className="TimeBar_clockIcon">
-        <ClockOutline />
-      </Icon>
-      <Dropdown
-        label="select departure type"
-        className="TimeBar_select"
-        options={options}
-        onChange={handleSelect}
-        arrowClassName="TimeBar_select_arrow"
-        controlClassName="TimeBar_select_control"
-        placeholderClassName="TimeBar_select_placeholder"
-        value={options.find((o) => o.value === departureType)}
+    <div className="TimeBar">
+      <Dialog.Root open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
+        <Dialog.Trigger asChild>
+          <button
+            className="outline-none select-none cursor-pointer
+              text-[13px] rounded-md p-1.5
+              border-2 border-solid border-transparent
+              focus:outline-none focus:ring-0 focus:ring-offset-0
+              bg-[#def0cc] text-[inherit]
+              hover:bg-[#d0e1c0]
+              focus-visible:border-bikehopperyellow focus-visible:bg-white"
+          >
+            {departureString}
+          </button>
+        </Dialog.Trigger>
+        <Dialog.Portal forceMount>
+          <Transition show={isDialogOpen}>
+            <Transition.Child
+              as={React.Fragment}
+              enter="transition-opacity ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="transition-opacity ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Dialog.Overlay
+                className="fixed inset-0 bg-slate-900/50 z-10 transition-colors"
+                forceMount
+              />
+            </Transition.Child>
+            <Transition.Child
+              as={React.Fragment}
+              enter="transition-opacity ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="transition-opacity ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Dialog.Content
+                forceMount
+                aria-describedby={undefined}
+                className="fixed z-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+                  w-[90vw] md:w-[95vw] max-w-md
+                  bg-white dark:bg-gray-800 p-6 rounded-md
+                  text-gray-800 dark:text-gray-300"
+              >
+                <Dialog.Title
+                  className="m-0 mb-3 text-lg align-middle
+                    flex flex-row justify-start items-center select-none"
+                >
+                  <Icon className="mr-2 block flex-column justify-center">
+                    <ClockOutline width="24" height="24" className="block" />
+                  </Icon>
+                  <span className="block">
+                    <FormattedMessage
+                      defaultMessage="Trip time"
+                      description={
+                        'dialog header. In this dialog you can select whether ' +
+                        'to depart now, depart at a future time, or arrive by a ' +
+                        'future time.'
+                      }
+                    />
+                  </span>
+                </Dialog.Title>
+                <form>
+                  <RadioGroup.Root
+                    value={pendingDepartureType}
+                    onValueChange={setPendingDepartureType}
+                    className="my-3"
+                  >
+                    <TimeBarRadioGroupItem value="now" id="rgi_now">
+                      <FormattedMessage
+                        defaultMessage="Now"
+                        description="option in a dropdown list for departure time"
+                      />
+                    </TimeBarRadioGroupItem>
+                    <TimeBarRadioGroupItem value="departAt" id="rgi_departAt">
+                      <FormattedMessage
+                        defaultMessage="Depart at"
+                        description={
+                          'option in a dropdown list for departure time.' +
+                          ' There is another input next to it to select' +
+                          ' the time to depart at.'
+                        }
+                      />
+                    </TimeBarRadioGroupItem>
+                    {pendingDepartureType === 'departAt' && (
+                      <TimeBarDateTimePicker
+                        date={pendingDate}
+                        time={pendingTime}
+                        onDateChange={setPendingDate}
+                        onTimeChange={setPendingTime}
+                      />
+                    )}
+                    <TimeBarRadioGroupItem value="arriveBy" id="rgi_arriveBy">
+                      <FormattedMessage
+                        defaultMessage="Arrive by"
+                        description={
+                          'option in a dropdown list for departure time.' +
+                          ' There is another input next to it to select' +
+                          ' the time to arrive by.'
+                        }
+                      />
+                    </TimeBarRadioGroupItem>
+                    {pendingDepartureType === 'arriveBy' && (
+                      <TimeBarDateTimePicker
+                        date={pendingDate}
+                        time={pendingTime}
+                        onDateChange={setPendingDate}
+                        onTimeChange={setPendingTime}
+                      />
+                    )}
+                  </RadioGroup.Root>
+                  <button
+                    type="submit"
+                    onClick={handleUpdateClick}
+                    className="outline-none select-none cursor-pointer
+                      text-base rounded-md py-1.5 px-3
+                      focus:outline-none focus:ring-0 focus:ring-offset-0
+                      focus-visible:ring
+                      focus-visible:ring-blue-400 dark:focus-visible:ring-blue-600
+                      focus-visible:ring-opacity-75 focus-visible:ring-offset-2
+                      bg-blue-500 text-white
+                      hover:bg-blue-600 dark:hover:bg-blue-400
+                      border border-solid border-gray-300 dark:border-gray-600"
+                  >
+                    <FormattedMessage
+                      defaultMessage="Update"
+                      description="button. Saves changes made in a dialog box."
+                    />
+                  </button>
+                </form>
+                <Dialog.Close asChild>
+                  <button
+                    className="absolute top-6 right-3 border-0 bg-transparent
+                      cursor-pointer dark:text-gray-400"
+                  >
+                    <Icon
+                      label={intl.formatMessage({
+                        defaultMessage: 'Cancel',
+                        description:
+                          'button to cancel making changes in a dialog',
+                      })}
+                    >
+                      <CancelIcon width="20" height="20" />
+                    </Icon>
+                  </button>
+                </Dialog.Close>
+              </Dialog.Content>
+            </Transition.Child>
+          </Transition>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </div>
+  );
+}
+
+function TimeBarRadioGroupItem({ value, id, children }) {
+  return (
+    <div className="flex items-center leading-6">
+      <RadioGroup.Item
+        value={value}
+        id={id}
+        className="relative w-4 h-4 rounded-full my-1.5
+          border border-solid border-gray-300 dark:border-gray-600
+          text-white dark:text-gray-400
+          bg-gray-200 dark:bg-gray-700
+          aria-checked:bg-blue-500
+          cursor-pointer
+          focus:outline-none focus:ring-0 focus:ring-offset-0
+          focus-visible:ring focus-visible:ring-blue-400
+          focus-visible:ring-opacity-75 focus-visible:ring-offset-2 mr-1"
+      >
+        <RadioGroup.Indicator className="absolute inset-0 flex items-center justify-center leading-0">
+          <div className="w-1.5 h-1.5 rounded-full bg-white" />
+        </RadioGroup.Indicator>
+      </RadioGroup.Item>
+      <label
+        htmlFor={id}
+        className="text-sm lg:text-base grow select-none cursor-pointer"
+      >
+        {children}
+      </label>
+    </div>
+  );
+}
+
+function TimeBarDateTimePicker({ date, time, onDateChange, onTimeChange }) {
+  const handleDateChange = React.useCallback(
+    (evt) => onDateChange(evt.target.value),
+    [onDateChange],
+  );
+  const handleTimeChange = React.useCallback(
+    (evt) => onTimeChange(evt.target.value),
+    [onTimeChange],
+  );
+  return (
+    <fieldset className="border-0 m-0 p-1.5 flex flex-wrap flex-row">
+      <input
+        className="mr-3 font-sans text-sm lg:text-base
+          text-gray-800 dark:text-gray-300
+          bg-white dark:bg-gray-800
+          border border-solid border-gray-300 dark:border-gray-600 rounded-md
+          outline-none focus:outline-none focus:ring-0 focus:ring-offset-0
+          focus-visible:ring focus-visible:ring-blue-400 dark:focus-visible:ring-blue-600
+          dark:focus-visible:ring-offset-gray-800
+          focus-visible:ring-opacity-75 focus-visible:ring-offset-2"
+        type="date"
+        value={date}
+        onChange={handleDateChange}
       />
       <input
-        label={intl.formatMessage({
-          defaultMessage: 'Select time',
-          description:
-            'label for dropdown with options "now", "depart at", "arrive by"',
-        })}
-        disabled={!['departAt', 'arriveBy'].includes(departureType)}
-        className="TimeBar_datetime"
+        className="font-sans text-sm lg:text-base
+          text-gray-800 dark:text-gray-300
+          bg-white dark:bg-gray-800
+          border border-solid border-gray-300 dark:border-gray-600 rounded-md
+          outline-none focus:outline-none focus:ring-0 focus:ring-offset-0
+          focus-visible:ring focus-visible:ring-blue-400 dark:focus-visible:ring-blue-600
+          dark:focus-visible:ring-offset-gray-800
+          focus-visible:ring-opacity-75 focus-visible:ring-offset-2"
+        type="time"
+        value={time}
         onChange={handleTimeChange}
-        onBlur={handleTimeBlur}
-        onKeyPress={handleTimeKeyPress}
-        type="datetime-local"
-        name="datetime"
-        id="datetime"
-        value={
-          timeInputValue ? formatDateForDateTimeLocalInput(timeInputValue) : ''
-        }
       />
-    </form>
+    </fieldset>
   );
 }
 
-// On some platforms the datetime input's change event prematurely fires before
-// you are likely to be finished selecting a time, so we have to not commit the
-// update until blur.
-function doesBrowserFireDateTimeChangePrematurely(ua) {
-  return (
-    ua.os.name === 'iOS' || // All iOS browsers
-    (ua.browser.name === 'Firefox' && ua.platform.type === 'desktop') ||
-    (ua.browser.name === 'Chrome' && ua.platform.type === 'desktop')
-  );
+// Helper functions for converting between Luxon DateTime instances and the
+// string formats used for HTML input type=date and =time.
+function formatForDateAndTimeInputs(dt) {
+  return [dt.toFormat('yyyy-MM-dd'), dt.toFormat('HH:mm')];
 }
-
-// Given a thing that can be fed into a JS Date constructor (most likely a
-// ms-since-epoch timestamp), returns a string in this format:
-//   2018-06-12T19:30
-// to plug into an <input type="datetime-local">
-function formatDateForDateTimeLocalInput(dateish) {
-  const date = new Date(dateish);
-
-  const year = date.getFullYear().toString();
-  let month = (date.getMonth() + 1).toString();
-  if (month < 10) month = '0' + month;
-  let day = date.getDate().toString();
-  if (day < 10) day = '0' + day;
-  let hour = date.getHours().toString();
-  if (hour < 10) hour = '0' + hour;
-  let min = date.getMinutes().toString();
-  if (min < 10) min = '0' + min;
-
-  return `${year}-${month}-${day}T${hour}:${min}`;
+function parseDateAndTimeInputStrings(dateString, timeString) {
+  return DateTime.fromFormat(dateString + ' ' + timeString, 'yyyy-MM-dd HH:mm');
 }

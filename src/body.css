@@ -27,3 +27,9 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+/* dark mode fix for checkboxes, radio buttons */
+.dark [type='checkbox']:checked,
+.dark [type='radio']:checked {
+  background-color: currentColor;
+}

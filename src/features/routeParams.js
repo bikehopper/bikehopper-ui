@@ -164,36 +164,12 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
         draft.arriveBy = false;
         draft.initialTime = null;
       });
-    case 'initial_time_set':
+    case 'departure_changed':
       return produce(state, (draft) => {
-        draft.initialTime = action.initialTime;
-        if (action.initialTime == null) draft.arriveBy = false;
-      });
-    case 'departure_type_selected':
-      return produce(state, (draft) => {
-        draft.arriveBy = action.departureType === 'arriveBy';
-        if (action.departureType === 'now') {
-          draft.initialTime = null;
-        } else if (action.departureType === 'departAt') {
-          // Default the departure time to something reasonable
-          if (
-            draft.initialTime == null ||
-            draft.initialTime < action.defaultDepartureTime
-          ) {
-            draft.initialTime = action.defaultDepartureTime;
-          }
-        } else if (action.departureType === 'arriveBy') {
-          // Default the arrival time to something reasonable
-          // (2 hours past current time)
-          const reasonableArrivalTime =
-            action.defaultDepartureTime + 120 * 60 * 1000;
-          if (
-            draft.initialTime == null ||
-            draft.initialTime < reasonableArrivalTime
-          ) {
-            draft.initialTime = reasonableArrivalTime;
-          }
-        }
+        draft.arriveBy =
+          action.departureType === 'arriveBy' && action.initialTime != null;
+        draft.initialTime =
+          action.departureType === 'now' ? null : action.initialTime;
       });
     default:
       return state;
@@ -475,28 +451,14 @@ export function swapLocations() {
   };
 }
 
-export function initialTimeSet(initialTime) {
-  return async function initialTimeSetThunk(dispatch, getState) {
+// departureType: 'now', 'departAt', 'arriveBy'
+// initialTime: if not 'now', the time to depart at or arrive by, millis since epoch
+export function departureChanged(departureType, initialTime) {
+  return async function departureChangedThunk(dispatch, getState) {
     dispatch({
-      type: 'initial_time_set',
+      type: 'departure_changed',
       initialTime,
-    });
-
-    // If we have a location, fetch a route.
-    dispatch(locationsSubmitted());
-  };
-}
-
-export function departureTypeSelected(departureType) {
-  // departureType should be 'departAt', 'arriveBy', or 'now'
-  return async function departureTypeSelectedThunk(dispatch, getState) {
-    dispatch({
-      type: 'departure_type_selected',
       departureType,
-      // This default departure time is used if you switch from 'Now' to
-      // 'Depart At' or 'Arrive By'. Why fetch the current datetime here in the
-      // action creator? So the reducer can stay purely functional.
-      defaultDepartureTime: Date.now(),
     });
 
     // If we have a location, fetch a route.
