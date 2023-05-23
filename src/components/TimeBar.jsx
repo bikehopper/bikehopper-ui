@@ -11,7 +11,6 @@ import { departureChanged } from '../features/routeParams';
 
 import { ReactComponent as CancelIcon } from 'iconoir/icons/cancel.svg';
 import { ReactComponent as ClockOutline } from 'iconoir/icons/clock.svg';
-import './TimeBar.css';
 
 // contract:
 // receive departureType and initialTime from routeParams store
