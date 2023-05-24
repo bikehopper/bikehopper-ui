@@ -188,7 +188,7 @@
         "description": "option in a dropdown list for departure time. There is another input next to it to select the time to arrive by."
     },
     "BGcgDw": {
-        "message": "Diríjase a <dir>{direction}</dir>{haveStreet, select, name { on <name>{street}</name>} other {}}",
+        "message": "Diríjase a <dir>{direction}</dir>{haveStreet, select, name { en <name>{street}</name>} other {}}",
         "description": "instruction. direction is a cardinal direction like north"
     },
     "BAVfiY": {
@@ -320,7 +320,7 @@
         "description": "describes where a transit trip is headed. Often, the headsign is the name of the final stop. This appears in an itinerary, along with other details about the transit vehicle to board."
     },
     "get++U": {
-        "message": "En la rotonda, tome la salida {num}{haveStreet, select, name { onto <name>{street}</name>} other {}}",
+        "message": "En la rotonda, tome la salida {num}{haveStreet, select, name { en <name>{street}</name>} other {}}",
         "description": "instruction"
     },
     "bEeEKy": {
