@@ -208,7 +208,7 @@
         "description": "labels a transit line as being operated by a bus. Appears next to the name or number of the bus line."
     },
     "Dslvy3": {
-        "message": "Algunas opciones de tránsito podrían faltar. Tu {which, select, start {starting point falls} end {destination falls} other {starting point and destination fall}} fuera del area donde BikeHopper tiene datos de tránsito local.",
+        "message": "Las opciones del tráfico pueden faltar. Tu {en la que, select, start {starting point falls} end {destination falls} other {starting point and destination fall}} fuera del área donde BikeHopper tiene datos del tráfico local.",
         "description": "warning shown above routes"
     },
     "HV9VrT": {
@@ -338,5 +338,29 @@
     "6r9qOW": {
         "message": "Cómo llegar desde",
         "description": "menu item. Appears in context menu under a location you have selected on the map. When clicked, computes directions from that location."
+    },
+    "Ap/CxF": {
+        "message": "Llegando el {datetime}",
+        "description": "description of trip arriving by the given date and time. The datetime is localized but an example for an American English locale would be \"May 21, 2023, 2:30PM\"."
+    },
+    "9yOLYg": {
+        "message": "Saliendo el {datetime}",
+        "description": "description of trip departing at the given date and time. The datetime is localized but an example for an American English locale would be \"May 21, 2023, 2:30PM\"."
+    },
+    "KZ3B/t": {
+        "message": "Cancelar",
+        "description": "button to cancel making changes in a dialog"
+    },
+    "UsTGr8": {
+        "message": "Actualizar",
+        "description": "button. Saves changes made in a dialog box."
+    },
+    "gFQEbp": {
+        "message": "Duración del viaje",
+        "description": "dialog header. In this dialog you can select whether to depart now, depart at a future time, or arrive by a future time."
+    },
+    "mG9do/": {
+        "message": "Saliendo ahora",
+        "description": "description of departure time for a trip leaving now."
     }
 }
