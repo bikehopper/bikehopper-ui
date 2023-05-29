@@ -208,7 +208,7 @@
         "description": "labels a transit line as being operated by a bus. Appears next to the name or number of the bus line."
     },
     "Dslvy3": {
-        "message": "Las opciones del tráfico pueden faltar. Tu {en la que, select, start {starting point falls} end {destination falls} other {starting point and destination fall}} fuera del área donde BikeHopper tiene datos del tráfico local.",
+        "message": "Las opciones del tránsito pueden faltar. Tu {which, select, start {punto de partida se encuentra} end {destino se encuentra} other {punto de partida y destino se encuentran}} fuera del área donde BikeHopper tiene los datos del tránsito local.",
         "description": "warning shown above routes"
     },
     "HV9VrT": {
