@@ -171,6 +171,16 @@
       "value": "pies"
     }
   ],
+  "9yOLYg": [
+    {
+      "type": 0,
+      "value": "Saliendo el "
+    },
+    {
+      "type": 1,
+      "value": "datetime"
+    }
+  ],
   "A7+u0L": [
     {
       "type": 0,
@@ -233,6 +243,16 @@
       "value": ")"
     }
   ],
+  "Ap/CxF": [
+    {
+      "type": 0,
+      "value": "Llegando el "
+    },
+    {
+      "type": 1,
+      "value": "datetime"
+    }
+  ],
   "BAVfiY": [
     {
       "type": 0,
@@ -274,7 +294,7 @@
           "value": [
             {
               "type": 0,
-              "value": " on "
+              "value": " en "
             },
             {
               "children": [
@@ -380,7 +400,7 @@
   "Dslvy3": [
     {
       "type": 0,
-      "value": "Algunas opciones de tránsito podrían faltar. Tu "
+      "value": "Las opciones del tránsito pueden faltar. Tu "
     },
     {
       "options": {
@@ -388,7 +408,7 @@
           "value": [
             {
               "type": 0,
-              "value": "destination falls"
+              "value": "destino se encuentra"
             }
           ]
         },
@@ -396,7 +416,7 @@
           "value": [
             {
               "type": 0,
-              "value": "starting point and destination fall"
+              "value": "punto de partida y destino se encuentran"
             }
           ]
         },
@@ -404,7 +424,7 @@
           "value": [
             {
               "type": 0,
-              "value": "starting point falls"
+              "value": "punto de partida se encuentra"
             }
           ]
         }
@@ -414,7 +434,7 @@
     },
     {
       "type": 0,
-      "value": " fuera del area donde BikeHopper tiene datos de tránsito local."
+      "value": " fuera del área donde BikeHopper tiene los datos del tránsito local."
     }
   ],
   "EK5lQc": [
@@ -607,6 +627,12 @@
       "value": "Intercambiar"
     }
   ],
+  "KZ3B/t": [
+    {
+      "type": 0,
+      "value": "Cancelar"
+    }
+  ],
   "O53Ykk": [
     {
       "type": 0,
@@ -775,6 +801,12 @@
     {
       "type": 0,
       "value": "Consiga indicaciones"
+    }
+  ],
+  "UsTGr8": [
+    {
+      "type": 0,
+      "value": "Actualizar"
     }
   ],
   "WtbUjz": [
@@ -947,6 +979,12 @@
       "value": "Tren"
     }
   ],
+  "gFQEbp": [
+    {
+      "type": 0,
+      "value": "Duración del viaje"
+    }
+  ],
   "get++U": [
     {
       "type": 0,
@@ -962,7 +1000,7 @@
           "value": [
             {
               "type": 0,
-              "value": " onto "
+              "value": " en "
             },
             {
               "children": [
@@ -1011,6 +1049,12 @@
     {
       "type": 0,
       "value": "Sureste"
+    }
+  ],
+  "mG9do/": [
+    {
+      "type": 0,
+      "value": "Saliendo ahora"
     }
   ],
   "mrDIsv": [

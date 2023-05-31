@@ -171,6 +171,16 @@
       "value": "ft"
     }
   ],
+  "9yOLYg": [
+    {
+      "type": 0,
+      "value": "Departing "
+    },
+    {
+      "type": 1,
+      "value": "datetime"
+    }
+  ],
   "A7+u0L": [
     {
       "type": 0,
@@ -231,6 +241,16 @@
     {
       "type": 0,
       "value": ")"
+    }
+  ],
+  "Ap/CxF": [
+    {
+      "type": 0,
+      "value": "Arriving "
+    },
+    {
+      "type": 1,
+      "value": "datetime"
     }
   ],
   "BAVfiY": [
@@ -607,6 +627,12 @@
       "value": "Swap"
     }
   ],
+  "KZ3B/t": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
   "O53Ykk": [
     {
       "type": 0,
@@ -777,6 +803,12 @@
       "value": "Get directions"
     }
   ],
+  "UsTGr8": [
+    {
+      "type": 0,
+      "value": "Update"
+    }
+  ],
   "WtbUjz": [
     {
       "type": 0,
@@ -895,12 +927,6 @@
       "value": "This route may require carrying your bike up or down steps."
     }
   ],
-  "coeI+2": [
-    {
-      "type": 0,
-      "value": "Select time"
-    }
-  ],
   "cyZrT2": [
     {
       "type": 1,
@@ -945,6 +971,12 @@
     {
       "type": 0,
       "value": "Train"
+    }
+  ],
+  "gFQEbp": [
+    {
+      "type": 0,
+      "value": "Trip time"
     }
   ],
   "get++U": [
@@ -1011,6 +1043,12 @@
     {
       "type": 0,
       "value": "southeast"
+    }
+  ],
+  "mG9do/": [
+    {
+      "type": 0,
+      "value": "Leaving now"
     }
   ],
   "mrDIsv": [
