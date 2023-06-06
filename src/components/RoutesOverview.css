@@ -60,6 +60,10 @@
   font-size: 14px;
 }
 
+.RoutesOverview_ascendDescend:before {
+  content: ' \00B7\00A0';
+}
+
 .RoutesOverview_acknowledgement {
   font-size: 14px;
   margin: 24px;

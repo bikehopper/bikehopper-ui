@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import classnames from 'classnames';
+import formatDistance from '../lib/formatDistance';
 import { TRANSIT_DATA_ACKNOWLEDGEMENT } from '../lib/region';
 import { formatInterval } from '../lib/time';
 import Icon from './Icon';
@@ -99,6 +100,14 @@ export default function RoutesOverview({
                   ),
                 }}
               />
+              {route.ascend != null &&
+                route.descend != null &&
+                Math.min(route.ascend, route.descend) > 10 && (
+                  <span className="RoutesOverview_ascendDescend">
+                    Up {formatDistance(route.ascend, intl)}, Down{' '}
+                    {formatDistance(route.descend, intl)}
+                  </span>
+                )}
             </p>
           </SelectionListItem>
         ))}
