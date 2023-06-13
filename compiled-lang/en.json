@@ -665,6 +665,12 @@
       "value": "stop"
     }
   ],
+  "QiY1oM": [
+    {
+      "type": 0,
+      "value": "Elevation loss"
+    }
+  ],
   "QziTff": [
     {
       "type": 0,
@@ -1319,6 +1325,12 @@
       },
       "type": 5,
       "value": "haveStreet"
+    }
+  ],
+  "y7pFDT": [
+    {
+      "type": 0,
+      "value": "Elevation gain"
     }
   ],
   "y9hwj+": [

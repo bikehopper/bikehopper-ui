@@ -175,6 +175,10 @@
     "description": "instruction to exit (a public transit vehicle) at the named stop",
     "message": "Get off at {stop}"
   },
+  "QiY1oM": {
+    "description": "Accessible alt text for a down-arrow icon that appears next to a measurement of the elevation loss on a route, such as (in English) 200 ft or 50 m.",
+    "message": "Elevation loss"
+  },
   "QziTff": {
     "description": "instruction",
     "message": "Keep <dir>right</dir>{haveStreet, select, name { on <name>{street}</name>} other {}}"
@@ -346,6 +350,10 @@
   "xPFWok": {
     "description": "instruction",
     "message": "Turn <dir>sharp left</dir>{haveStreet, select, name { onto <name>{street}</name>} other {}}"
+  },
+  "y7pFDT": {
+    "description": "Accessible alt text for an up-arrow icon that appears next to a measurement of the elevation gain on a route, such as (in English) 200 ft or 50 m.",
+    "message": "Elevation gain"
   },
   "y9hwj+": {
     "description": "instruction to board a transit vehicle at the named stop",
