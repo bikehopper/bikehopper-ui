@@ -362,5 +362,13 @@
     "mG9do/": {
         "message": "Saliendo ahora",
         "description": "description of departure time for a trip leaving now."
+    },
+    "QiY1oM": {
+        "message": "Pérdida de elevación",
+        "description": "Accessible alt text for a down-arrow icon that appears next to a measurement of the elevation loss on a route, such as (in English) 200 ft or 50 m."
+    },
+    "y7pFDT": {
+        "message": "Ganancia de elevación",
+        "description": "Accessible alt text for an up-arrow icon that appears next to a measurement of the elevation gain on a route, such as (in English) 200 ft or 50 m."
     }
 }
