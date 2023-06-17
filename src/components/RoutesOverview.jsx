@@ -23,6 +23,7 @@ export default function RoutesOverview({
   onRouteClick,
 }) {
   const intl = useIntl();
+  const SPACE = ' ';
 
   let containsTransitLeg = false;
 
@@ -107,14 +108,14 @@ export default function RoutesOverview({
                 Math.min(route.ascend, route.descend) > 10 && (
                   <span className="ml-3">
                     <Icon
-                      alt={
+                      label={
                         intl.formatMessage({
                           defaultMessage: 'Elevation gain',
                           description:
                             'Accessible alt text for an up-arrow icon that ' +
                             'appears next to a measurement of the elevation gain on a ' +
                             'route, such as (in English) 200 ft or 50 m.',
-                        }) + ' '
+                        }) + SPACE
                       }
                       className="relative top-0.5"
                     >
@@ -126,14 +127,14 @@ export default function RoutesOverview({
                     </Icon>
                     {formatDistance(route.ascend, intl)}
                     <Icon
-                      alt={
+                      label={
                         intl.formatMessage({
                           defaultMessage: 'Elevation loss',
                           description:
                             'Accessible alt text for a down-arrow icon that ' +
                             'appears next to a measurement of the elevation loss on a ' +
                             'route, such as (in English) 200 ft or 50 m.',
-                        }) + ' '
+                        }) + SPACE
                       }
                       className="relative top-0.5 ml-1"
                     >
