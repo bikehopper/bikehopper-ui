@@ -665,6 +665,12 @@
       "value": "stop"
     }
   ],
+  "QiY1oM": [
+    {
+      "type": 0,
+      "value": "Pérdida de elevación"
+    }
+  ],
   "QziTff": [
     {
       "type": 0,
@@ -1325,6 +1331,12 @@
       },
       "type": 5,
       "value": "haveStreet"
+    }
+  ],
+  "y7pFDT": [
+    {
+      "type": 0,
+      "value": "Ganancia de elevación"
     }
   ],
   "y9hwj+": [
