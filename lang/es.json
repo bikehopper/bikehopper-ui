@@ -48,7 +48,7 @@
         "description": "cardinal direction, used in a sentence like \"Head south\""
     },
     "EK5lQc": {
-        "message": "Regresar",
+        "message": "Atrás",
         "description": "button to go back out of entering locations"
     },
     "Ec4ONr": {
@@ -80,7 +80,7 @@
         "description": "label for input box for ending point of directions"
     },
     "IZFcvM": {
-        "message": "Bus",
+        "message": "Autobús",
         "description": "labels a transit line as being operated by a bus. Specifically a trolleybus but the label need not be that specific. Appears next to the name or number of the bus line."
     },
     "Iblo/i": {
@@ -212,7 +212,7 @@
         "description": "warning shown above routes"
     },
     "HV9VrT": {
-        "message": "Regresar",
+        "message": "Volver atrás",
         "description": "button to return to a previous screen"
     },
     "RRZB26": {
