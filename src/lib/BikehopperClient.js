@@ -125,7 +125,7 @@ export async function geocode(
   },
 ) {
   let url;
-  if (process.env.REACT_APP_USE_PUBLIC_NOMINATIM) {
+  if (import.meta.env.VITE_USE_PUBLIC_NOMINATIM) {
     // Note: This flag is for demo/dev purposes only and will not produce as high quality
     // results as the default of hitting (our own instance of) Photon.
     const dontHitBefore = _lastNominatimReqTime + NOMINATIM_RATE_LIMIT;

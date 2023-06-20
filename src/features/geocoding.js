@@ -120,7 +120,7 @@ export function geocodeTypedLocation(text, key, { fromTextAutocomplete } = {}) {
     _LOCATION_TYPED_ACTION_LAST_TEXT_FOR_KEY[key] = text;
 
     if (fromTextAutocomplete) {
-      if (process.env.REACT_APP_USE_PUBLIC_NOMINATIM) {
+      if (import.meta.env.VITE_USE_PUBLIC_NOMINATIM) {
         // Public Nominatim is for development / demo only, and to comply with
         // the API guidelines, we must limit requests to 1/sec and not use it
         // for an autocomplete.
