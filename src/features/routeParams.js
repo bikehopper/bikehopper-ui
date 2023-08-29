@@ -274,6 +274,19 @@ export function locationsSubmitted() {
       promiseResult.status === 'fulfilled' ? promiseResult.value : null,
     );
 
+    // If locations have since been changed, do nothing.
+    // (This can happen if a geocode/geolocate took a long time and in the
+    // meantime the user changed the location to a different one.)
+    const routeParamsAfterHydration = getState().routeParams;
+    if (
+      routeParamsAfterHydration.start !== start ||
+      routeParamsAfterHydration.startInputText !== startInputText ||
+      routeParamsAfterHydration.end !== end ||
+      routeParamsAfterHydration.endInputText !== endInputText
+    ) {
+      return;
+    }
+
     dispatch({
       type: 'locations_set',
       start: resultingStartLocation,
