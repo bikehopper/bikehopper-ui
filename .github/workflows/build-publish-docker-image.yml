@@ -46,13 +46,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Install node and build react app
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-      - run: npm install
-      - run: npm run build
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
