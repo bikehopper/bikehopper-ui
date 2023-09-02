@@ -1,4 +1,5 @@
 FROM node:16 as build
+ARG VITE_MAPBOX_TOKEN
 COPY . .
 RUN npm install && \
     npm run build
