@@ -9,11 +9,12 @@ const API_DOMAINS = {
 };
 
 function getApiPath() {
+  const apiDomain = import.meta.env.VITE_API_DOMAIN;
   const loc = document.location;
   const protoAndHost = `${loc.protocol}//${loc.host}`;
   // If not running on one of the above domains, default to making API requests
   // to same domain, which is what we generally want for development.
-  return API_DOMAINS[protoAndHost] || '';
+  return apiDomain || API_DOMAINS[protoAndHost] || '';
 }
 
 const POINT_PRECISION = 5;
