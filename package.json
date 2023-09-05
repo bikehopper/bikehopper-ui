@@ -56,7 +56,8 @@
     "serve": "vite preview",
     "extract": "formatjs extract 'src/**/*.{js,jsx}' --format=crowdin --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
     "compile": "formatjs compile --format=crowdin",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test": "vitest"
   },
   "browserslist": {
     "production": [
@@ -148,7 +149,8 @@
     "tailwindcss": "^3.3.2",
     "vite": "^4.3.9",
     "vite-plugin-eslint": "^1.8.1",
-    "vite-plugin-svgr": "^2.4.0"
+    "vite-plugin-svgr": "^2.4.0",
+    "vitest": "^0.34.3"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"

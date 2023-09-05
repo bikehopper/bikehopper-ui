@@ -1,7 +1,8 @@
-const { readFileSync, writeFileSync } = require('fs');
+const { readFileSync } = require('fs');
 const { parse } = require('csv/sync');
 const turfConvex = require('@turf/convex').default;
 const turfBuffer = require('@turf/buffer');
+const { filteredAgencyIds, manuallyFilteredRouteIds } = require('./configs.json');
 
 // computes a polygon to define the "transit service area"
 
@@ -14,12 +15,12 @@ const turfBuffer = require('@turf/buffer');
 // Bay Area: we want to filter out stops only served by ACE and Capitol
 // Corridor JPA since they go far outside the area we have local transit for
 // (e.g. Sacramento, Stockton)
-const FILTERED_AGENCY_IDS = new Set(['CE', 'AM']);
+const FILTERED_AGENCY_IDS = new Set(filteredAgencyIds);
 
 // also let's manually filter the SolTrans B, which stops in Davis and Sacramento
-const MANUALLY_FILTERED_ROUTE_IDS = new Set(['ST:B']);
+const MANUALLY_FILTERED_ROUTE_IDS = new Set(manuallyFilteredRouteIds);
 
-const [routesKey, ...routes] = parse(readFileSync('routes.txt', 'utf8'));
+const [routesKey, ...routes] = parse(readFileSync('/Users/andy/Desktop/sf-gtfs/routes.txt', 'utf8'));
 const filteredRouteIds = new Set(routes.filter(
   route => FILTERED_AGENCY_IDS.has(route[routesKey.indexOf('agency_id')])
 ).map(
@@ -28,7 +29,7 @@ const filteredRouteIds = new Set(routes.filter(
 for (const manualFilteredId of MANUALLY_FILTERED_ROUTE_IDS)
   filteredRouteIds.add(manualFilteredId);
 
-const [tripsKey, ...trips] = parse(readFileSync('trips.txt', 'utf8'));
+const [tripsKey, ...trips] = parse(readFileSync('/Users/andy/Desktop/sf-gtfs/trips.txt', 'utf8'));
 const filteredTripIds = new Set(trips.filter(
   trip => filteredRouteIds.has(trip[tripsKey.indexOf('route_id')])
 ).map(
@@ -39,8 +40,8 @@ const filteredTripIds = new Set(trips.filter(
 // stops, we build a set of all interesting stops. that is because if a stop
 // is served both by a filtered agency AND a local transit agency, then we
 // want to include it.
+const [stopTimesKey, ...stopTimes] = parse(readFileSync('/Users/andy/Desktop/sf-gtfs/stop_times.txt', 'utf8'));
 const interestingStopIds = new Set([]);
-const [stopTimesKey, ...stopTimes] = parse(readFileSync('stop_times.txt', 'utf8'));
 const stopTimesTripIdIndex = stopTimesKey.indexOf('trip_id');
 const stopTimesStopIdIndex = stopTimesKey.indexOf('stop_id');
 for (let stopTime of stopTimes) {
@@ -53,7 +54,7 @@ for (let stopTime of stopTimes) {
 
 // and now just aggregate all the interesting stop IDs as GeoJSON
 
-const [stopsKey, ...stops] = parse(readFileSync('stops.txt', 'utf8'));
+const [stopsKey, ...stops] = parse(readFileSync('/Users/andy/Desktop/sf-gtfs/stops.txt', 'utf8'));
 
 const lngIndex = stopsKey.indexOf('stop_lon');
 const latIndex = stopsKey.indexOf('stop_lat');
