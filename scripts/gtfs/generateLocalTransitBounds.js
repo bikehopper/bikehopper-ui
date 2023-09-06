@@ -1,7 +1,6 @@
-const { readFileSync } = require('fs');
-const { parse } = require('csv/sync');
 const turfConvex = require('@turf/convex').default;
 const turfBuffer = require('@turf/buffer');
+const turfCenterOfMass = require('@turf/center-of-mass').default;
 const { filteredAgencyIds, manuallyFilteredRouteIds, gtfsPath } = require('./configs.json');
 const { filterRouteIds, filterTripIds, getInterestingStopIds, getInterestingStopsAsGeoJsonPoints } = require('./gtfs-helpers');
 
@@ -41,6 +40,8 @@ const { filterRouteIds, filterTripIds, getInterestingStopIds, getInterestingStop
 
   const convexHull = turfConvex(interestingStopsCollection);
   const bufferedHull = turfBuffer(convexHull, 5, {units: 'miles'});
+  const centerOfBufferedHull = turfCenterOfMass(bufferedHull);
 
+  console.log(JSON.stringify(centerOfBufferedHull));
   console.log(JSON.stringify(bufferedHull));
 })();
