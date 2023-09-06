@@ -1,56 +1,109 @@
-function filterRouteIds(filteredAgencyIds, manuallyFilteredRouteIds, routesKey, routes) {
-  const filteredRouteIds = new Set(routes.filter(
-    route => filteredAgencyIds.has(route[routesKey.indexOf('agency_id')])
-  ).map(
-    route => route[routesKey.indexOf('route_id')]
-  ));
-  for (const manualFilteredId of manuallyFilteredRouteIds) {
-    filteredRouteIds.add(manualFilteredId);
+const { createReadStream } = require('node:fs');
+const { parse } = require('csv-parse');
+
+async function filterRouteIds(filteredAgencyIds, manuallyFilteredRouteIds, gtfsPath) {
+  const filteredRouteIds = new Set(manuallyFilteredRouteIds);
+  let routesKey = null;
+  let first = true;
+  const parser = createReadStream(`${gtfsPath}/routes.txt`, {encoding: 'utf8'}).pipe(parse());
+
+  for await (const route of parser) {
+    if (first) {
+      routesKey = route;
+      first = false;
+      continue;
+    }
+    if (filteredAgencyIds.has(route[routesKey.indexOf('agency_id')])) {
+      filteredRouteIds.add(route[routesKey.indexOf('route_id')])
+    }
+  }
+  return filteredRouteIds;
+}
+
+async function filterTripIds(filteredRouteIds, gtfsPath) {
+  const filterTripIds = new Set();
+  let tripsKey = null;
+  let first = true;
+  const parser = createReadStream(`${gtfsPath}/trips.txt`, {encoding: 'utf8'}).pipe(parse());
+
+  for await (const trip of parser) {
+    if (first) {
+      tripsKey = trip;
+      first = false;
+      continue;
+    }
+    if (filteredRouteIds.has(trip[tripsKey.indexOf('route_id')])) {
+      filterTripIds.add(trip[tripsKey.indexOf('trip_id')]);
+    }
   }
 
-  return filteredRouteIds
+  return filterTripIds;
 }
 
-function filterTripIds(filteredRouteIds, tripsKey, trips) {
-  return new Set(trips.filter(
-    trip => filteredRouteIds.has(trip[tripsKey.indexOf('route_id')])
-  ).map(
-    trip => trip[tripsKey.indexOf('trip_id')]
-  ));
-}
-
-function getInterestingStopIds(stopTimesKey, filteredTripIds, stopTimes) {
+async function getInterestingStopIds(filteredTripIds, gtfsPath) {
   const interestingStopIds = new Set([]);
-  const stopTimesTripIdIndex = stopTimesKey.indexOf('trip_id');
-  const stopTimesStopIdIndex = stopTimesKey.indexOf('stop_id');
-  for (let stopTime of stopTimes) {
+  let stopTimesKey = null;
+  let first = true;
+  const parser = createReadStream(`${gtfsPath}/stop_times.txt`, {encoding: 'utf8'}).pipe(parse());
+
+  for await (const stopTime of parser) {
+    if (first) {
+      stopTimesKey = stopTime;
+      first = false;
+      continue;
+    }
+    const stopTimesTripIdIndex = stopTimesKey.indexOf('trip_id');
+    const stopTimesStopIdIndex = stopTimesKey.indexOf('stop_id');
+
     const stopId = stopTime[stopTimesStopIdIndex];
     const tripId = stopTime[stopTimesTripIdIndex];
     if (!filteredTripIds.has(tripId)) {
       interestingStopIds.add(stopId);
     }
   }
+
   return interestingStopIds;
+  // const interestingStopIds = new Set([]);
+  // const stopTimesTripIdIndex = stopTimesKey.indexOf('trip_id');
+  // const stopTimesStopIdIndex = stopTimesKey.indexOf('stop_id');
+  // for (let stopTime of stopTimes) {
+  //   const stopId = stopTime[stopTimesStopIdIndex];
+  //   const tripId = stopTime[stopTimesTripIdIndex];
+  //   if (!filteredTripIds.has(tripId)) {
+  //     interestingStopIds.add(stopId);
+  //   }
+  // }
+  // return interestingStopIds;
 }
 
-function getInterestingStopsAsGeoJsonPoints(stopsKey, interestingStopIds, stops) {
-  const lngIndex = stopsKey.indexOf('stop_lon');
-  const latIndex = stopsKey.indexOf('stop_lat');
-  const stopIdIndex = stopsKey.indexOf('stop_id');
-  const stopNameIndex = stopsKey.indexOf('stop_name');
+async function getInterestingStopsAsGeoJsonPoints(interestingStopIds, gtfsPath) {
+  const stops = [];
+  let stopsKey, lngIndex, latIndex, stopIdIndex, stopNameIndex;
+  let first = true;
+  const parser = createReadStream(`${gtfsPath}/stops.txt`, {encoding: 'utf8'}).pipe(parse());
 
-  return stops.map(stopCsv => {
+  for await (const stopCsv of parser) {
+    if (first) {
+      stopsKey = stopCsv;
+      lngIndex = stopsKey.indexOf('stop_lon');
+      latIndex = stopsKey.indexOf('stop_lat');
+      stopIdIndex = stopsKey.indexOf('stop_id');
+      stopNameIndex = stopsKey.indexOf('stop_name');
+      first = false;
+      continue;
+    }
+
     const lng = Number(stopCsv[lngIndex]), lat = Number(stopCsv[latIndex]);
     const stopName = stopCsv[stopNameIndex];
     const stopId = stopCsv[stopIdIndex];
 
-    if (!interestingStopIds.has(stopId)) return null;
+    if (!interestingStopIds.has(stopId)) continue;
 
     if (Number.isNaN(lng) || Number.isNaN(lat)) {
       console.error(`invalid lng, lat for stop ID ${stopId}`);
       process.exit(1);
     }
-    return {
+    stops.push({
       "type": "Feature",
       "geometry": {
         "type": "Point",
@@ -59,8 +112,9 @@ function getInterestingStopsAsGeoJsonPoints(stopsKey, interestingStopIds, stops)
       "properties": {
         "name": `${stopName} (${stopId})`,
       },
-    };
-  }).filter(pt => pt != null);
+    });
+  }
+  return stops;
 }
 
 module.exports = {

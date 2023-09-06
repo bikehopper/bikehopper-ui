@@ -1,4 +1,5 @@
 {
   "filteredAgencyIds": ["CE", "AM"],
-  "manuallyFilteredRouteIds": ["ST:B"]
+  "manuallyFilteredRouteIds": ["ST:B"],
+  "gtfsPath": "/Users/andy/Desktop/sf-gtfs"
 }
