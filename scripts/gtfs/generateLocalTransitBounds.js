@@ -1,3 +1,4 @@
+const { createReadStream } = require('node:fs');
 const turfConvex = require('@turf/convex').default;
 const turfBuffer = require('@turf/buffer');
 const turfCenterOfMass = require('@turf/center-of-mass').default;
@@ -21,18 +22,23 @@ const { filterRouteIds, filterTripIds, getInterestingStopIds, getInterestingStop
   // also let's manually filter the SolTrans B, which stops in Davis and Sacramento
   const MANUALLY_FILTERED_ROUTE_IDS = new Set(manuallyFilteredRouteIds);
 
-  const filteredRouteIds = await filterRouteIds(FILTERED_AGENCY_IDS, MANUALLY_FILTERED_ROUTE_IDS, gtfsPath);
+  const routesReadableStream = createReadStream(`${gtfsPath}/routes.txt`, {encoding: 'utf8'});
+  const filteredRouteIds = await filterRouteIds(FILTERED_AGENCY_IDS, MANUALLY_FILTERED_ROUTE_IDS, routesReadableStream);
 
-  const filteredTripIds = await filterTripIds(filteredRouteIds, gtfsPath);
+  const tripsReadableStream = createReadStream(`${gtfsPath}/trips.txt`, {encoding: 'utf8'})
+  const filteredTripIds = await filterTripIds(filteredRouteIds, tripsReadableStream);
 
   // now we do things a little backwards... instead of the set of all filtered
   // stops, we build a set of all interesting stops. that is because if a stop
   // is served both by a filtered agency AND a local transit agency, then we
   // want to include it.
-  const interestingStopIds = await getInterestingStopIds(filteredTripIds, gtfsPath);
+  const stopTimesReadableStream = createReadStream(`${gtfsPath}/stop_times.txt`, {encoding: 'utf8'})
+  const interestingStopIds = await getInterestingStopIds(filteredTripIds, stopTimesReadableStream);
 
   // and now just aggregate all the interesting stop IDs as GeoJSON
-  const interestingStopsAsGeoJsonPoints = await getInterestingStopsAsGeoJsonPoints(interestingStopIds, gtfsPath);
+  const stopsReadableStream = createReadStream(`${gtfsPath}/stops.txt`, {encoding: 'utf8'});
+  const interestingStopsAsGeoJsonPoints = await getInterestingStopsAsGeoJsonPoints(interestingStopIds, stopsReadableStream);
+
   const interestingStopsCollection = {
     type: 'FeatureCollection',
     features: interestingStopsAsGeoJsonPoints,
@@ -42,6 +48,6 @@ const { filterRouteIds, filterTripIds, getInterestingStopIds, getInterestingStop
   const bufferedHull = turfBuffer(convexHull, 5, {units: 'miles'});
   const centerOfBufferedHull = turfCenterOfMass(bufferedHull);
 
-  console.log(JSON.stringify(centerOfBufferedHull));
-  console.log(JSON.stringify(bufferedHull));
+  console.log('Center of Area:', JSON.stringify(centerOfBufferedHull));
+  console.log('bufferedHull:', JSON.stringify(bufferedHull));
 })();

@@ -1,12 +1,10 @@
-const { createReadStream } = require('node:fs');
 const { parse } = require('csv-parse');
 
-async function filterRouteIds(filteredAgencyIds, manuallyFilteredRouteIds, gtfsPath) {
+async function filterRouteIds(filteredAgencyIds, manuallyFilteredRouteIds, gtfsReadableStream) {
   const filteredRouteIds = new Set(manuallyFilteredRouteIds);
   let routesKey = null;
   let first = true;
-  const parser = createReadStream(`${gtfsPath}/routes.txt`, {encoding: 'utf8'}).pipe(parse());
-
+  const parser = gtfsReadableStream.pipe(parse());
   for await (const route of parser) {
     if (first) {
       routesKey = route;
@@ -20,11 +18,11 @@ async function filterRouteIds(filteredAgencyIds, manuallyFilteredRouteIds, gtfsP
   return filteredRouteIds;
 }
 
-async function filterTripIds(filteredRouteIds, gtfsPath) {
+async function filterTripIds(filteredRouteIds, gtfsReadableStream) {
   const filterTripIds = new Set();
   let tripsKey = null;
   let first = true;
-  const parser = createReadStream(`${gtfsPath}/trips.txt`, {encoding: 'utf8'}).pipe(parse());
+  const parser = gtfsReadableStream.pipe(parse());
 
   for await (const trip of parser) {
     if (first) {
@@ -40,11 +38,11 @@ async function filterTripIds(filteredRouteIds, gtfsPath) {
   return filterTripIds;
 }
 
-async function getInterestingStopIds(filteredTripIds, gtfsPath) {
+async function getInterestingStopIds(filteredTripIds, gtfsReadableStream) {
   const interestingStopIds = new Set([]);
   let stopTimesKey = null;
   let first = true;
-  const parser = createReadStream(`${gtfsPath}/stop_times.txt`, {encoding: 'utf8'}).pipe(parse());
+  const parser = gtfsReadableStream.pipe(parse());
 
   for await (const stopTime of parser) {
     if (first) {
@@ -63,24 +61,13 @@ async function getInterestingStopIds(filteredTripIds, gtfsPath) {
   }
 
   return interestingStopIds;
-  // const interestingStopIds = new Set([]);
-  // const stopTimesTripIdIndex = stopTimesKey.indexOf('trip_id');
-  // const stopTimesStopIdIndex = stopTimesKey.indexOf('stop_id');
-  // for (let stopTime of stopTimes) {
-  //   const stopId = stopTime[stopTimesStopIdIndex];
-  //   const tripId = stopTime[stopTimesTripIdIndex];
-  //   if (!filteredTripIds.has(tripId)) {
-  //     interestingStopIds.add(stopId);
-  //   }
-  // }
-  // return interestingStopIds;
 }
 
-async function getInterestingStopsAsGeoJsonPoints(interestingStopIds, gtfsPath) {
+async function getInterestingStopsAsGeoJsonPoints(interestingStopIds, gtfsReadableStream) {
   const stops = [];
   let stopsKey, lngIndex, latIndex, stopIdIndex, stopNameIndex;
   let first = true;
-  const parser = createReadStream(`${gtfsPath}/stops.txt`, {encoding: 'utf8'}).pipe(parse());
+  const parser = gtfsReadableStream.pipe(parse());
 
   for await (const stopCsv of parser) {
     if (first) {

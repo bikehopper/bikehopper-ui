@@ -1,34 +1,73 @@
-import { expect, test } from 'vitest';
+import { expect, test, describe, vi } from 'vitest';
 const { filterRouteIds, filterTripIds, getInterestingStopIds, getInterestingStopsAsGeoJsonPoints } = require('./gtfs-helpers');
 const configs = require('./configs.json');
+const { PassThrough } = require('stream');
 
-const { createHash } = require('crypto');
+vi.mock('node:fs/promises');
 
-test('#filterRouteIds', async () => {
-  expect(await filterRouteIds(new Set(configs.filteredAgencyIds), new Set(configs.manuallyFilteredRouteIds), configs.gtfsPath)).toStrictEqual(new Set(['CE:ACE', 'AM:SF', 'AM:Shuttle', 'AM:CC', 'ST:B']));
+describe('#filterRouteIds', async () => {
+  test('should select all the IDs that have a matching prefix', async () => {
+    const mockReadable = new PassThrough();
+    const actualPromise = filterRouteIds(new Set(configs.filteredAgencyIds), new Set(configs.manuallyFilteredRouteIds), mockReadable);
+
+    setTimeout(() => {
+      mockReadable.emit('data', 'route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color,route_sort_order,continuous_pickup,continuous_drop_off,network_id,as_route\n');
+      mockReadable.emit('data', 'UC:1,UC,1,Delores,"Union Landing, Four Corners, Dyer & Union City Blvd, and Union City BART",3,,3ab859,ffffff,0,,,UC,\n');
+      mockReadable.emit('data', 'CE:ACE,CE,ACE,Altamont Corridor Express,,2,https://acerail.com/schedules/,bd10e0,FFFFFF,0,,,CE,\n');
+      mockReadable.emit('data', 'AM:CC,AM,CC,Capitol Corridor,"Daily train service between Auburn, Sacramento, Oakland and San Jose",2,http://capitolcorridor.org/route_and_schedules,,,0,,,AM,1\n');
+      mockReadable.emit('end');
+    }, 1);
+
+    await expect(actualPromise).resolves.toStrictEqual(new Set(['CE:ACE', 'AM:CC', 'ST:B']));
+  });
 });
 
 test('#filterTripIds', async () => {
-  const expectedIds = new Set(['CE:ACE 01','CE:ACE 01.1','CE:ACE 03','CE:ACE_300','CE:ACE 03.1','CE:ACE 05','CE:ACE_500','CE:ACE 07','CE:ACE 04','CE:ACE 401','CE:ACE 06','CE:ACE 601','CE:ACE 6.0','CE:ACE 08','CE:ACE 08.0','CE:ACE 10','AM:521W','AM:523W','AM:723W','AM:525W','AM:527W','AM:727W','AM:529W','AM:531W','AM:729W','AM:733W','AM:737W','AM:541W','AM:741W','AM:543W','AM:743W','AM:545W','AM:745W','AM:547W','AM:549W','AM:747W','AM:551W','AM:749W','AM:751W','AM:720E','AM:524E','AM:724E','AM:528E','AM:728E','AM:532E','AM:534E','AM:732E','AM:536E','AM:734E','AM:538E','AM:736E','AM:540E','AM:542E','AM:738E','AM:742E','AM:544E','AM:546E','AM:744E','AM:548E','AM:746E','AM:748E','AM:737S','AM:541S','AM:532S','AM:732S','AM:524S','AM:720S','AM:536S','AM:542S','AM:546S','AM:523S','AM:525S','AM:549S','AM:551S','AM:747S','AM:529','AM:729','AM:538','AM:736','AM:524','AM:724','AM:528','AM:728','AM:532','AM:732','AM:542','AM:742','AM:546','AM:744','AM:748','AM:750','AM:550','AM:521','AM:523','AM:723','AM:527','AM:727','AM:737','AM:541','AM:741','AM:743','AM:547','AM:747','AM:522','AM:720','AM:534','AM:536','AM:734','AM:540','AM:738','AM:544','AM:548','AM:746','AM:733','AM:525','AM:531','AM:543','AM:545','AM:745','AM:549','AM:551','AM:749','AM:751','ST:694','ST:285','ST:695','ST:286','ST:287','ST:288','ST:696','ST:289','ST:697','ST:290','ST:698','ST:710','ST:291','ST:292','ST:293','ST:294','ST:711','ST:295','ST:686','ST:687','ST:688','ST:689','ST:699','ST:700','ST:701','ST:702','ST:703','ST:704','ST:705','ST:707','ST:708','ST:709','ST:692','ST:693','ST:706','ST:690','ST:691']);
-  const filteredRouteIds = await filterRouteIds(new Set(configs.filteredAgencyIds), new Set(configs.manuallyFilteredRouteIds), configs.gtfsPath);
+  const mockReadable = new PassThrough();
+  const filteredRouteIds = new Set(['CE:ACE', 'AM:CC', 'AM:SF', 'ST:B']);
+  const actualPromise = filterTripIds(filteredRouteIds, mockReadable);
+  const expectedIds = new Set(["AM:545W", "CE:ACE 01", "CE:ACE 01.1"]);
 
-  expect(await filterTripIds(filteredRouteIds, configs.gtfsPath)).toStrictEqual(expectedIds);
+  setTimeout(() => {
+    mockReadable.emit('data', 'route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,block_id,shape_id,wheelchair_accessible,bikes_allowed\n');
+    mockReadable.emit('data', 'UC:1,UC:76872,UC:5554536,Dyer & UC Blvd,,0,UC:20001,UC:p_1274523,0,0\n');
+    mockReadable.emit('data', 'CE:ACE,CE:78418,CE:ACE 01,San Jose,ACE 1,0,CE:100,CE:r9ei,1,0\n');
+    mockReadable.emit('data', 'CE:ACE,CE:77596,CE:ACE 01.1,San Jose,ACE 1,0,CE:101,CE:r9ei,0,0\n');
+    mockReadable.emit('data', 'AM:SF,AM:72761,AM:545W,San Francisco - Transbay Terminal,,1,,AM:77ej,1,0\n');
+    mockReadable.emit('end');
+  }, 1);
+
+  await expect(actualPromise).resolves.toStrictEqual(expectedIds);
 });
 
 test('#getInterestingStopIds', async () => {
-  const filteredRouteIds = await filterRouteIds(new Set(configs.filteredAgencyIds), new Set(configs.manuallyFilteredRouteIds), configs.gtfsPath);
-  const filteredTripIds = await filterTripIds(filteredRouteIds, configs.gtfsPath);
-  const result = await getInterestingStopIds(filteredTripIds, configs.gtfsPath);
+  const mockReadable = new PassThrough();
+  const filteredTripIds = new Set(["AM:545W", "CE:ACE 01", "CE:ACE 01.1"]);
+  const result = getInterestingStopIds(filteredTripIds, mockReadable);
+
+  setTimeout(() => {
+    mockReadable.emit('data', 'trip_id,stop_id,stop_sequence,stop_headsign,arrival_time,departure_time,pickup_type,drop_off_type,continuous_pickup,continuous_drop_off,shape_dist_traveled,timepoint\n');
+    mockReadable.emit('data', 'UC:5554536,79221,0,,04:30:00,04:30:00,0,0,,,0.00000,1\n');
+    mockReadable.emit('data', 'UC:5554536,79216,1,,04:30:52,04:30:52,0,0,,,338.55816,0\n');
+    mockReadable.emit('end');
+  }, 1);
 
   // using the hash because the data set is too big
-  expect(createHash('md5').update(Buffer.from(Array.from(result))).digest('hex')).toStrictEqual('a52ca8bf82fef746036744d630110a4b');
-}, 20000);
+  await expect(result).resolves.toStrictEqual(new Set(["79221","79216"]));
+});
 
 test('#getInterestingStopsAsGeoJsonPoints', async () => {
-  const filteredRouteIds = await filterRouteIds(new Set(configs.filteredAgencyIds), new Set(configs.manuallyFilteredRouteIds), configs.gtfsPath);
-  const filteredTripIds = await filterTripIds(filteredRouteIds, configs.gtfsPath);
-  const interestingStopIds = await getInterestingStopIds(filteredTripIds, configs.gtfsPath);
-  const result = await getInterestingStopsAsGeoJsonPoints(interestingStopIds, configs.gtfsPath);
+  const mockReadable = new PassThrough();
+  const interestingStopIds = new Set(["866010","MB:2452892"]);
+  const result = getInterestingStopsAsGeoJsonPoints(interestingStopIds, mockReadable);
 
-  expect(createHash('md5').update(Buffer.from(result)).digest('hex')).toStrictEqual('3973efb8526877518e4a7578d6adfe0a');
-}, 20000);
+  setTimeout(() => {
+    mockReadable.emit('data', 'stop_id,stop_name,stop_code,stop_desc,stop_lat,stop_lon,zone_id,stop_url,tts_stop_name,platform_code,location_type,parent_station,stop_timezone,wheelchair_boarding,level_id\n');
+    mockReadable.emit('data', 'mtc:powell,Powell,,,37.7845934063206,-122.407373344056,,,,,1,,America/Los_Angeles,0,\n');
+    mockReadable.emit('data', 'MB:2452892,Owens Street and Gene Friend Way,2452892,,37.768331186,-122.3948415497,,,,,0,,America/Los_Angeles,0,\n');
+    mockReadable.emit('data', '866010,Shoreline @ Terra Bella,866010,,37.4082669632,-122.0779402542,,,,,0,,America/Los_Angeles,1,');
+    mockReadable.emit('end')
+  }, 1);
+
+  await expect(result).resolves.toStrictEqual([{"geometry": {"coordinates": [-122.3948415497,37.768331186],"type": "Point"},"properties": {"name": "Owens Street and Gene Friend Way (MB:2452892)"},"type": "Feature"},{"geometry": {"coordinates": [-122.0779402542,37.4082669632],"type": "Point"},"properties": {"name": "Shoreline @ Terra Bella (866010)"},"type": "Feature"}]);
+});

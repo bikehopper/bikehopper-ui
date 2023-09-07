@@ -59,7 +59,8 @@
     "extract": "formatjs extract 'src/**/*.{js,jsx}' --format=crowdin --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
     "compile": "formatjs compile --format=crowdin",
     "prepare": "husky install",
-    "test": "vitest"
+    "test": "vitest",
+    "test:debug": "vitest --inspect-brk --single-thread"
   },
   "browserslist": {
     "production": [
