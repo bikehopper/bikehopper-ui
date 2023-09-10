@@ -42,3 +42,8 @@
     display: none;
   }
 }
+
+.DirectionsNullState_alertIcon {
+  position: relative;
+  top: 6px;
+}
