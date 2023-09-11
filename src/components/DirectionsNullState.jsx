@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ReactComponent as MagnifyingGlass } from 'iconoir/icons/search.svg';
-import { ReactComponent as WarningTriangle } from 'iconoir/icons/warning-triangle.svg';
 import Icon from './Icon';
 import { SupportedRegionText } from '../lib/region';
 
@@ -15,19 +14,9 @@ export default function DirectionsNullState(props) {
 
   const strong = React.useCallback((jsx) => <strong>{jsx}</strong>, []);
 
-  const BART_ALERT_TEXT =
-    'We are investigating an issue ' +
-    'that prevents BikeHopper from using BART for itineraries.';
-
   return (
     <article className="prose prose-sm md:prose-base lg:prose-lg max-w-none m-6">
-      <p>
-        <Icon className="DirectionsNullState_alertIcon" label="Alert: ">
-          <WarningTriangle />
-        </Icon>
-        {BART_ALERT_TEXT}
-      </p>
-      <h2 style={{ marginTop: 0 }}>
+      <h2>
         <FormattedMessage
           defaultMessage="Get directions"
           description="form header"
