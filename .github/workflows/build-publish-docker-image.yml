@@ -18,7 +18,7 @@ env:
 
 jobs:
   build-and-push-image:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.platform == 'linux/arm64' && 'arm64' || 'ubuntu-latest' }}
     strategy:
       matrix:
         platform: ['linux/amd64', 'linux/arm64']
@@ -48,19 +48,6 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      - name: Get npm cache directory
-        id: npm-cache-dir
-        shell: bash
-        run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
-
-      - uses: actions/cache@v3
-        id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
-        with:
-          path: ${{ steps.npm-cache-dir.outputs.dir }}
-          key: ${{matrix.platform}}-${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{matrix.platform}}-${{ runner.os }}-node-
 
       - name: Build and push Docker image
         id: build
