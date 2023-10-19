@@ -113,13 +113,6 @@ export default function ItineraryElevationProfile(props) {
     }
   }
 
-  const margin = {
-    top: 50,
-    bottom: 50,
-    left: 50,
-    right: 50,
-  };
-
   const yScale = {
     type: 'linear',
     min: minHeight - 5,
@@ -142,27 +135,33 @@ export default function ItineraryElevationProfile(props) {
     tickPadding: 4,
   };
 
+  const margin = {
+    top: 50,
+    bottom: 50,
+  };
+
   return (
     <div style={{ display: 'flex' }}>
       {legs.map((leg, i) => {
+        const xScale = {
+          type: 'linear',
+          min: leg.data[0].x,
+          max: leg.data[leg.data.length - 1].x,
+        };
         if (leg.id.startsWith('bike')) {
           return (
             <LineCanvas
               data={[leg]}
               width={300}
               height={400}
-              xScale={{
-                type: 'linear',
-                min: leg.data[0].x,
-                max: leg.data[leg.data.length - 1].x,
-              }}
+              xScale={xScale}
               yScale={yScale}
               colors={(d) => d.color}
               pointSize={0}
               enableArea={true}
               axisLeft={i === 0 ? axisLeft : null}
               axisBottom={axisBottom}
-              margin={margin}
+              margin={i === 0 ? { left: 50, ...margin } : margin}
               isInteractive={false}
             />
           );
@@ -170,16 +169,15 @@ export default function ItineraryElevationProfile(props) {
           return (
             <LineCanvas
               data={[leg]}
-              width={300}
+              width={100}
               height={400}
-              xScale={{
-                type: 'linear',
-                min: leg.data[0].x,
-                max: leg.data[leg.data.length - 1].x,
-              }}
+              xScale={xScale}
               yScale={yScale}
+              enableGridX={false}
               colors={(d) => d.color}
               pointSize={0}
+              axisLeft={null}
+              axisBottom={null}
               enableArea={true}
               isInteractive={false}
               margin={margin}
