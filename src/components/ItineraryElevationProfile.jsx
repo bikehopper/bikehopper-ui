@@ -2,40 +2,39 @@ import * as React from 'react';
 
 import './ItineraryElevationProfile.css';
 
-import {
-  Chart as ChartJS,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Filler,
-} from 'chart.js';
-import AnnotationPlugin from 'chartjs-plugin-annotation';
-import { Scatter } from 'react-chartjs-2';
+import { BIKEHOPPER_THEME_COLOR, DEFAULT_PT_COLOR } from '../lib/colors';
 
 import distance from '@turf/distance';
 import * as turf from '@turf/helpers';
+import { LineCanvas } from '@nivo/line';
 
-ChartJS.register(
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Filler,
-  AnnotationPlugin,
-);
+function formatBikeLeg(bikeLeg, i) {
+  return {
+    id: `bike${i}`,
+    color: BIKEHOPPER_THEME_COLOR,
+    ...bikeLeg,
+  };
+}
+
+function formatPTLeg(ptLeg, i) {
+  return {
+    id: `pt${i}`,
+    ...ptLeg,
+  };
+}
 
 export default function ItineraryElevationProfile(props) {
   const { route } = props;
 
-  const points = [];
+  const legs = [];
   const ptLegs = [];
   let ptLegWithoutHeight = [];
   let currentDist = 0;
   let currentPoint = route.legs[0].geometry.coordinates[0];
   let maxHeight = 0;
+  let minHeight = 0;
   let currPTLeg = { data: [] };
-  console.log(route);
+  let currBikeLeg = { data: [] };
   for (let i = 0; i < route.legs.length; i++) {
     const leg = route.legs[i];
     for (let j = 0; j < leg.geometry.coordinates.length; j++) {
@@ -47,9 +46,12 @@ export default function ItineraryElevationProfile(props) {
       currentPoint = point;
       if (point.length === 3) {
         const pointHeight = currentPoint[2] / 0.3048;
-        points.push({ x: currentDist, y: pointHeight });
+        currBikeLeg.data.push({ x: currentDist, y: pointHeight });
         if (pointHeight > maxHeight) {
           maxHeight = pointHeight;
+        }
+        if (pointHeight < minHeight) {
+          minHeight = pointHeight;
         }
         if (
           j === leg.geometry.coordinates.length - 1 &&
@@ -65,6 +67,7 @@ export default function ItineraryElevationProfile(props) {
         if (j === 0 && i > 0 && route.legs[i - 1].type === 'pt') {
           currPTLeg.data.push({ x: currentDist, y: pointHeight, type: 'end' });
           ptLegs.push(currPTLeg);
+          legs.push(formatPTLeg(currPTLeg));
           currPTLeg = { data: [] };
           // Check if we have any transit legs without a start/end height
           if (ptLegWithoutHeight.length) {
@@ -89,86 +92,101 @@ export default function ItineraryElevationProfile(props) {
         ) {
           currPTLeg.data.push({ x: currentDist, y: null, type: 'end' });
           ptLegs.push(currPTLeg);
+          legs.push(formatPTLeg(currPTLeg));
           currPTLeg = { data: [] };
           ptLegWithoutHeight.push(ptLegs.length - 1);
         }
         if (j === 0 && i > 0 && route.legs[i - 1].type === 'pt') {
           currPTLeg.data.push({ x: currentDist, y: null, type: 'start' });
         }
-        points.push({ x: currentDist, y: null });
       }
       if (j === 0 && leg.type === 'pt') {
-        currPTLeg['backgroundColor'] = leg.route_color;
+        const color = leg.route_color ?? DEFAULT_PT_COLOR;
+        currPTLeg['color'] = color;
         currPTLeg['label'] = leg.route_name;
         currPTLeg['name'] = leg.trip_id;
-        currPTLeg['showLine'] = true;
-        currPTLeg['fill'] = true;
       }
+    }
+    if (leg.type === 'bike2') {
+      legs.push(formatBikeLeg(currBikeLeg, i));
+      currBikeLeg = { data: [] };
     }
   }
 
-  const annotations = {};
-  const datasets = [
-    {
-      fill: true,
-      label: 'Elevation',
-      data: points,
-      borderColor: 'rgb(53, 162, 235)',
-      backgroundColor: 'rgba(53, 162, 235, 0.5)',
-      showLine: true,
-    },
-  ];
-  for (const ptLeg of ptLegs) {
-    annotations[ptLeg.name] = {
-      type: 'label',
-      content: ptLeg.label,
-      xValue: (ptLeg.data[0].x + ptLeg.data[1].x) / 2,
-      yValue: (ptLeg.data[0].y + ptLeg.data[1].y) / 2,
-      backgroundColor: 'rgba(245,245,245)',
-    };
-    datasets.push(ptLeg);
-  }
-
-  const options = {
-    elements: {
-      point: {
-        radius: 0,
-      },
-    },
-    scales: {
-      x: {
-        min: 0,
-        max: points[points.length - 1].x,
-        ticks: {
-          stepSize: 1,
-        },
-      },
-      y: {
-        min: 0,
-        max: maxHeight + 5,
-        ticks: {
-          stepSize: 10,
-        },
-      },
-    },
-    plugins: {
-      tooltip: {
-        enabled: false,
-      },
-      legend: {
-        display: false,
-      },
-      title: {
-        display: true,
-        text: 'Elevation',
-      },
-      annotation: { annotations },
-    },
+  const margin = {
+    top: 50,
+    bottom: 50,
+    left: 50,
+    right: 50,
   };
 
-  const data = {
-    datasets,
+  const yScale = {
+    type: 'linear',
+    min: minHeight - 5,
+    max: maxHeight + 5,
   };
 
-  return <Scatter options={options} data={data} />;
+  const axisLeft = {
+    legend: 'Feet',
+    legendPosition: 'middle',
+    legendOffset: -40,
+    tickSize: 0,
+    tickPadding: 4,
+  };
+
+  const axisBottom = {
+    legend: 'Miles',
+    legendPosition: 'middle',
+    legendOffset: 20,
+    tickSize: 0,
+    tickPadding: 4,
+  };
+
+  return (
+    <div style={{ display: 'flex' }}>
+      {legs.map((leg, i) => {
+        if (leg.id.startsWith('bike')) {
+          return (
+            <LineCanvas
+              data={[leg]}
+              width={300}
+              height={400}
+              xScale={{
+                type: 'linear',
+                min: leg.data[0].x,
+                max: leg.data[leg.data.length - 1].x,
+              }}
+              yScale={yScale}
+              colors={(d) => d.color}
+              pointSize={0}
+              enableArea={true}
+              axisLeft={i === 0 ? axisLeft : null}
+              axisBottom={axisBottom}
+              margin={margin}
+              isInteractive={false}
+            />
+          );
+        } else {
+          return (
+            <LineCanvas
+              data={[leg]}
+              width={300}
+              height={400}
+              xScale={{
+                type: 'linear',
+                min: leg.data[0].x,
+                max: leg.data[leg.data.length - 1].x,
+              }}
+              yScale={yScale}
+              colors={(d) => d.color}
+              pointSize={0}
+              enableArea={true}
+              isInteractive={false}
+              margin={margin}
+            />
+          );
+        }
+      })}
+    </div>
+  );
 }
