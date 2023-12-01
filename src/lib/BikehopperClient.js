@@ -1,20 +1,12 @@
 import { DateTime } from 'luxon';
 
-// Hardcoded list of API domains for different environments.
-// TODO: Find a cleaner way to handle this, so people deploying their own
-// instances on their own domains don't have to edit the source.
-const API_DOMAINS = {
-  'https://staging.bikehopper.org': 'https://api-staging.bikehopper.org',
-  'https://bikehopper.org': 'https://api.bikehopper.org',
-};
-
 function getApiPath() {
   const apiDomain = import.meta.env.VITE_API_DOMAIN;
   const loc = document.location;
-  const protoAndHost = `${loc.protocol}//${loc.host}`;
+  const protoAndHost = `${loc.protocol}//${loc.host}/api`;
   // If not running on one of the above domains, default to making API requests
   // to same domain, which is what we generally want for development.
-  return apiDomain || API_DOMAINS[protoAndHost] || '';
+  return apiDomain || protoAndHost || '';
 }
 
 const POINT_PRECISION = 5;
@@ -65,7 +57,7 @@ export async function fetchRoute({
       pt.map((coord) => coord.toFixed(POINT_PRECISION)),
     );
 
-  let graphHopperPath = getApiPath() + '/v1/graphhopper';
+  let graphHopperPath = getApiPath() + '/v1/route';
   if (import.meta.env.DEV && import.meta.env.VITE_USE_LOCAL_GRAPHHOPPER)
     graphHopperPath = import.meta.env.VITE_USE_LOCAL_GRAPHHOPPER;
 
@@ -117,7 +109,7 @@ export async function geocode(
     signal,
   },
 ) {
-  let url = `${getApiPath()}/v1/photon/geocode?q=${encodeURIComponent(
+  let url = `${getApiPath()}/v1/geocode/geocode?q=${encodeURIComponent(
     placeString,
   )}&lang=${lang}&limit=${limit}`;
 
