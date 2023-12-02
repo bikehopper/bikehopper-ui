@@ -3,10 +3,9 @@ import { DateTime } from 'luxon';
 function getApiPath() {
   const apiDomain = import.meta.env.VITE_API_DOMAIN;
   const loc = document.location;
-  const protoAndHost = `${loc.protocol}//${loc.host}/api`;
   // If not running on one of the above domains, default to making API requests
   // to same domain, which is what we generally want for development.
-  return apiDomain || protoAndHost || '';
+  return apiDomain || '';
 }
 
 const POINT_PRECISION = 5;
@@ -57,7 +56,7 @@ export async function fetchRoute({
       pt.map((coord) => coord.toFixed(POINT_PRECISION)),
     );
 
-  let graphHopperPath = getApiPath() + '/v1/route';
+  let graphHopperPath = getApiPath() + '/api/v1/route';
   if (import.meta.env.DEV && import.meta.env.VITE_USE_LOCAL_GRAPHHOPPER)
     graphHopperPath = import.meta.env.VITE_USE_LOCAL_GRAPHHOPPER;
 
@@ -109,7 +108,7 @@ export async function geocode(
     signal,
   },
 ) {
-  let url = `${getApiPath()}/v1/geocode/geocode?q=${encodeURIComponent(
+  let url = `${getApiPath()}/api/v1/geocode/geocode?q=${encodeURIComponent(
     placeString,
   )}&lang=${lang}&limit=${limit}`;
 
