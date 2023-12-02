@@ -2,7 +2,6 @@ import { DateTime } from 'luxon';
 
 function getApiPath() {
   const apiDomain = import.meta.env.VITE_API_DOMAIN;
-  const loc = document.location;
   // If not running on one of the above domains, default to making API requests
   // to same domain, which is what we generally want for development.
   return apiDomain || '';
