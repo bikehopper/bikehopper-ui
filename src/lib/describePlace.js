@@ -1,5 +1,7 @@
 // Describe a place from its Photon GeoJSON result hash.
 // (If we were to switch back to Nominatim, parts of this would change)
+// TODO: Replace the default "fallback" with null, fix anything that breaks,
+// localize call sites relying on "Point" (or specifying an unlocalized fallback)
 export default function describePlace(
   feature,
   { short = false, fallback = 'Point' } = {},
@@ -17,7 +19,7 @@ export default function describePlace(
 
   const descriptionElements = [
     name,
-    housenumber != null ? housenumber + ' ' + street : street,
+    housenumber != null && street ? housenumber + ' ' + street : street,
     city,
     postcode,
   ];

@@ -1,0 +1,1364 @@
+{
+  "+r7FqI": [
+    {
+      "type": 1,
+      "value": "numStops"
+    },
+    {
+      "type": 0,
+      "value": " "
+    },
+    {
+      "offset": 0,
+      "options": {
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "parada"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "paradas"
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "numStops"
+    },
+    {
+      "type": 0,
+      "value": " antes"
+    }
+  ],
+  "/AzFxf": [
+    {
+      "type": 0,
+      "value": "Cómo llegar a"
+    }
+  ],
+  "0KhVZS": [
+    {
+      "type": 0,
+      "value": "Volver a las rutas"
+    }
+  ],
+  "2XfHiz": [
+    {
+      "type": 0,
+      "value": "Viaje en el tren "
+    },
+    {
+      "type": 1,
+      "value": "name"
+    },
+    {
+      "type": 0,
+      "value": " ("
+    },
+    {
+      "type": 1,
+      "value": "agency"
+    },
+    {
+      "type": 0,
+      "value": ")"
+    }
+  ],
+  "3uzNHk": [
+    {
+      "type": 0,
+      "value": "Bajar en la parada "
+    },
+    {
+      "type": 1,
+      "value": "stop"
+    }
+  ],
+  "4cy0Qt": [
+    {
+      "type": 0,
+      "value": "Autobús"
+    }
+  ],
+  "4d3x5P": [
+    {
+      "type": 0,
+      "value": "Viaje en el tren "
+    },
+    {
+      "type": 1,
+      "value": "name"
+    },
+    {
+      "type": 0,
+      "value": " ("
+    },
+    {
+      "type": 1,
+      "value": "agency"
+    },
+    {
+      "type": 0,
+      "value": ")"
+    }
+  ],
+  "4o9TQr": [
+    {
+      "type": 0,
+      "value": "Bicicleta"
+    }
+  ],
+  "5eSv1b": [
+    {
+      "type": 0,
+      "value": "Llegó al destino"
+    }
+  ],
+  "6r9qOW": [
+    {
+      "type": 0,
+      "value": "Cómo llegar desde"
+    }
+  ],
+  "8OXHea": [
+    {
+      "type": 0,
+      "value": "BikeHopper es "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "de código abierto"
+        }
+      ],
+      "type": 8,
+      "value": "link"
+    },
+    {
+      "type": 0,
+      "value": " bajo la Licencia Pública General Affero de GNU."
+    }
+  ],
+  "8jcDFc": [
+    {
+      "type": 1,
+      "value": "depart"
+    },
+    {
+      "type": 0,
+      "value": "–"
+    },
+    {
+      "type": 1,
+      "value": "arrive"
+    }
+  ],
+  "9dKjNm": [
+    {
+      "type": 1,
+      "value": "num"
+    },
+    {
+      "type": 0,
+      "value": "pies"
+    }
+  ],
+  "9yOLYg": [
+    {
+      "type": 0,
+      "value": "Saliendo el "
+    },
+    {
+      "type": 1,
+      "value": "datetime"
+    }
+  ],
+  "A7+u0L": [
+    {
+      "type": 0,
+      "value": "Línea de transporte"
+    }
+  ],
+  "ADeXBy": [
+    {
+      "type": 0,
+      "value": "Continúe "
+    },
+    {
+      "options": {
+        "name": {
+          "value": [
+            {
+              "type": 0,
+              "value": " en "
+            },
+            {
+              "children": [
+                {
+                  "type": 1,
+                  "value": "street"
+                }
+              ],
+              "type": 8,
+              "value": "name"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "haveStreet"
+    }
+  ],
+  "AVwHUu": [
+    {
+      "type": 0,
+      "value": "Viaje en el tren "
+    },
+    {
+      "type": 1,
+      "value": "name"
+    },
+    {
+      "type": 0,
+      "value": " ("
+    },
+    {
+      "type": 1,
+      "value": "agency"
+    },
+    {
+      "type": 0,
+      "value": ")"
+    }
+  ],
+  "Ap/CxF": [
+    {
+      "type": 0,
+      "value": "Llegando el "
+    },
+    {
+      "type": 1,
+      "value": "datetime"
+    }
+  ],
+  "BAVfiY": [
+    {
+      "type": 0,
+      "value": "Damos soporte a la "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "Zona de la Bahía de San Francisco"
+        }
+      ],
+      "type": 8,
+      "value": "strong"
+    },
+    {
+      "type": 0,
+      "value": ", California."
+    }
+  ],
+  "BGcgDw": [
+    {
+      "type": 0,
+      "value": "Diríjase a "
+    },
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "direction"
+        }
+      ],
+      "type": 8,
+      "value": "dir"
+    },
+    {
+      "options": {
+        "name": {
+          "value": [
+            {
+              "type": 0,
+              "value": " en "
+            },
+            {
+              "children": [
+                {
+                  "type": 1,
+                  "value": "street"
+                }
+              ],
+              "type": 8,
+              "value": "name"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "haveStreet"
+    }
+  ],
+  "BGoNGI": [
+    {
+      "type": 0,
+      "value": "a través de "
+    },
+    {
+      "type": 1,
+      "value": "modes"
+    }
+  ],
+  "CJUzIw": [
+    {
+      "type": 0,
+      "value": "Háganos saber lo que piensa informándonos de errores, rutas que podrían mejorarse y otros comentarios en "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "este formulario"
+        }
+      ],
+      "type": 8,
+      "value": "link"
+    },
+    {
+      "type": 0,
+      "value": "."
+    }
+  ],
+  "Cv5F7V": [
+    {
+      "type": 0,
+      "value": "Haz un "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "giro en U"
+        }
+      ],
+      "type": 8,
+      "value": "dir"
+    },
+    {
+      "options": {
+        "name": {
+          "value": [
+            {
+              "type": 0,
+              "value": " en "
+            },
+            {
+              "children": [
+                {
+                  "type": 1,
+                  "value": "street"
+                }
+              ],
+              "type": 8,
+              "value": "name"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "haveStreet"
+    }
+  ],
+  "DYUDwR": [
+    {
+      "type": 0,
+      "value": "Sur"
+    }
+  ],
+  "Dslvy3": [
+    {
+      "type": 0,
+      "value": "Las opciones del tránsito pueden faltar. Tu "
+    },
+    {
+      "options": {
+        "end": {
+          "value": [
+            {
+              "type": 0,
+              "value": "destino se encuentra"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "punto de partida y destino se encuentran"
+            }
+          ]
+        },
+        "start": {
+          "value": [
+            {
+              "type": 0,
+              "value": "punto de partida se encuentra"
+            }
+          ]
+        }
+      },
+      "type": 5,
+      "value": "which"
+    },
+    {
+      "type": 0,
+      "value": " fuera del área donde BikeHopper tiene los datos del tránsito local."
+    }
+  ],
+  "EK5lQc": [
+    {
+      "type": 0,
+      "value": "Atrás"
+    }
+  ],
+  "Ec4ONr": [
+    {
+      "type": 0,
+      "value": "Tren"
+    }
+  ],
+  "Ew3thc": [
+    {
+      "type": 0,
+      "value": "Embarcar en "
+    },
+    {
+      "type": 1,
+      "value": "stop"
+    }
+  ],
+  "FlS1Kt": [
+    {
+      "type": 0,
+      "value": "Ubicación actual"
+    }
+  ],
+  "Gm6D00": [
+    {
+      "type": 0,
+      "value": "Gira "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "a la derecha"
+        }
+      ],
+      "type": 8,
+      "value": "dir"
+    },
+    {
+      "options": {
+        "name": {
+          "value": [
+            {
+              "type": 0,
+              "value": " en "
+            },
+            {
+              "children": [
+                {
+                  "type": 1,
+                  "value": "street"
+                }
+              ],
+              "type": 8,
+              "value": "name"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "haveStreet"
+    }
+  ],
+  "GvWCFj": [
+    {
+      "type": 0,
+      "value": "Funicular"
+    }
+  ],
+  "HQjcNO": [
+    {
+      "type": 0,
+      "value": "En esta beta temprana, BikeHopper está "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "diseñado para pantallas de celulares"
+        }
+      ],
+      "type": 8,
+      "value": "strong"
+    },
+    {
+      "type": 0,
+      "value": ", así que podría verse algo extraño en tu computadora."
+    }
+  ],
+  "HV9VrT": [
+    {
+      "type": 0,
+      "value": "Volver atrás"
+    }
+  ],
+  "HhhdHQ": [
+    {
+      "type": 0,
+      "value": "Destino"
+    }
+  ],
+  "IZFcvM": [
+    {
+      "type": 0,
+      "value": "Autobús"
+    }
+  ],
+  "Iblo/i": [
+    {
+      "type": 0,
+      "value": "Manten la "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "izquierda"
+        }
+      ],
+      "type": 8,
+      "value": "dir"
+    },
+    {
+      "options": {
+        "name": {
+          "value": [
+            {
+              "type": 0,
+              "value": " en "
+            },
+            {
+              "children": [
+                {
+                  "type": 1,
+                  "value": "street"
+                }
+              ],
+              "type": 8,
+              "value": "name"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "haveStreet"
+    }
+  ],
+  "IwYCsk": [
+    {
+      "type": 0,
+      "value": "En bici a "
+    },
+    {
+      "type": 1,
+      "value": "place"
+    }
+  ],
+  "JPe1q0": [
+    {
+      "type": 1,
+      "value": "startTime"
+    },
+    {
+      "type": 0,
+      "value": " a "
+    },
+    {
+      "type": 1,
+      "value": "endTime"
+    }
+  ],
+  "K72bcr": [
+    {
+      "type": 0,
+      "value": "Intercambiar"
+    }
+  ],
+  "KZ3B/t": [
+    {
+      "type": 0,
+      "value": "Cancelar"
+    }
+  ],
+  "O53Ykk": [
+    {
+      "type": 0,
+      "value": "Destino"
+    }
+  ],
+  "OFIR0U": [
+    {
+      "type": 1,
+      "value": "num"
+    },
+    {
+      "type": 0,
+      "value": "millas"
+    }
+  ],
+  "OSSFYR": [
+    {
+      "type": 0,
+      "value": "Suroeste"
+    }
+  ],
+  "P2HscU": [
+    {
+      "type": 0,
+      "value": "Baja en "
+    },
+    {
+      "type": 1,
+      "value": "stop"
+    }
+  ],
+  "QiY1oM": [
+    {
+      "type": 0,
+      "value": "Pérdida de elevación"
+    }
+  ],
+  "QziTff": [
+    {
+      "type": 0,
+      "value": "Manten la "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "derecha"
+        }
+      ],
+      "type": 8,
+      "value": "dir"
+    },
+    {
+      "options": {
+        "name": {
+          "value": [
+            {
+              "type": 0,
+              "value": " en "
+            },
+            {
+              "children": [
+                {
+                  "type": 1,
+                  "value": "street"
+                }
+              ],
+              "type": 8,
+              "value": "name"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "haveStreet"
+    }
+  ],
+  "RRZB26": [
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "¡Bienvenido a BikeHopper!"
+        }
+      ],
+      "type": 8,
+      "value": "strong"
+    },
+    {
+      "type": 0,
+      "value": " Se trata de una nueva aplicación para la navegación en bicicleta que sugiere formas de combinar la bicicleta y el transporte público, ampliando tus opciones para desplazarte sin coche."
+    }
+  ],
+  "SFcnNL": [
+    {
+      "type": 0,
+      "value": "Toma el tren "
+    },
+    {
+      "type": 1,
+      "value": "name"
+    },
+    {
+      "type": 0,
+      "value": " ("
+    },
+    {
+      "type": 1,
+      "value": "agency"
+    },
+    {
+      "type": 0,
+      "value": ")"
+    }
+  ],
+  "SyUGCG": [
+    {
+      "type": 0,
+      "value": "Gira a la "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "izquierda"
+        }
+      ],
+      "type": 8,
+      "value": "dir"
+    },
+    {
+      "options": {
+        "name": {
+          "value": [
+            {
+              "type": 0,
+              "value": " en "
+            },
+            {
+              "children": [
+                {
+                  "type": 1,
+                  "value": "street"
+                }
+              ],
+              "type": 8,
+              "value": "name"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "haveStreet"
+    }
+  ],
+  "T6l6cE": [
+    {
+      "type": 0,
+      "value": "Monorraíl"
+    }
+  ],
+  "Tqzrb2": [
+    {
+      "type": 0,
+      "value": "Consiga indicaciones"
+    }
+  ],
+  "UsTGr8": [
+    {
+      "type": 0,
+      "value": "Actualizar"
+    }
+  ],
+  "WtbUjz": [
+    {
+      "type": 0,
+      "value": "Gira "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "fuerte a la derecha"
+        }
+      ],
+      "type": 8,
+      "value": "dir"
+    },
+    {
+      "options": {
+        "name": {
+          "value": [
+            {
+              "type": 0,
+              "value": " en "
+            },
+            {
+              "children": [
+                {
+                  "type": 1,
+                  "value": "street"
+                }
+              ],
+              "type": 8,
+              "value": "name"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "haveStreet"
+    }
+  ],
+  "X1E2Zq": [
+    {
+      "type": 0,
+      "value": "Gira "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "ligeramente a la izquierda"
+        }
+      ],
+      "type": 8,
+      "value": "dir"
+    },
+    {
+      "options": {
+        "name": {
+          "value": [
+            {
+              "type": 0,
+              "value": " en "
+            },
+            {
+              "children": [
+                {
+                  "type": 1,
+                  "value": "street"
+                }
+              ],
+              "type": 8,
+              "value": "name"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "haveStreet"
+    }
+  ],
+  "Y8DFEd": [
+    {
+      "type": 0,
+      "value": "bicicleta"
+    }
+  ],
+  "b+OvtM": [
+    {
+      "type": 0,
+      "value": "Noroeste"
+    }
+  ],
+  "bEeEKy": [
+    {
+      "type": 0,
+      "value": "Alerta"
+    }
+  ],
+  "bryKM+": [
+    {
+      "type": 0,
+      "value": "Ferri"
+    }
+  ],
+  "ccL55O": [
+    {
+      "type": 0,
+      "value": "Esta ruta puede requerir subir o bajar escalones con la bicicleta."
+    }
+  ],
+  "coeI+2": [
+    {
+      "type": 0,
+      "value": "Elije tiempo"
+    }
+  ],
+  "cyZrT2": [
+    {
+      "type": 1,
+      "value": "numStops"
+    },
+    {
+      "type": 0,
+      "value": " "
+    },
+    {
+      "offset": 0,
+      "options": {
+        "one": {
+          "value": [
+            {
+              "type": 0,
+              "value": "parada"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+            {
+              "type": 0,
+              "value": "paradas"
+            }
+          ]
+        }
+      },
+      "pluralType": "cardinal",
+      "type": 6,
+      "value": "numStops"
+    }
+  ],
+  "dkJRew": [
+    {
+      "type": 0,
+      "value": "Inicia ingresando un destino arriba."
+    }
+  ],
+  "f1xi7R": [
+    {
+      "type": 0,
+      "value": "Tren"
+    }
+  ],
+  "gFQEbp": [
+    {
+      "type": 0,
+      "value": "Duración del viaje"
+    }
+  ],
+  "get++U": [
+    {
+      "type": 0,
+      "value": "En la rotonda, tome la salida "
+    },
+    {
+      "type": 1,
+      "value": "num"
+    },
+    {
+      "options": {
+        "name": {
+          "value": [
+            {
+              "type": 0,
+              "value": " en "
+            },
+            {
+              "children": [
+                {
+                  "type": 1,
+                  "value": "street"
+                }
+              ],
+              "type": 8,
+              "value": "name"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "haveStreet"
+    }
+  ],
+  "kK9a0r": [
+    {
+      "type": 0,
+      "value": "Teleférico"
+    }
+  ],
+  "kj2kxt": [
+    {
+      "type": 0,
+      "value": "Hacia "
+    },
+    {
+      "type": 1,
+      "value": "headsign"
+    }
+  ],
+  "li7J3S": [
+    {
+      "type": 0,
+      "value": "Salir a"
+    }
+  ],
+  "mDnFtf": [
+    {
+      "type": 0,
+      "value": "Sureste"
+    }
+  ],
+  "mG9do/": [
+    {
+      "type": 0,
+      "value": "Saliendo ahora"
+    }
+  ],
+  "mrDIsv": [
+    {
+      "type": 0,
+      "value": "Viaje en el ferri con "
+    },
+    {
+      "type": 1,
+      "value": "name"
+    },
+    {
+      "type": 0,
+      "value": " de la ("
+    },
+    {
+      "type": 1,
+      "value": "agency"
+    },
+    {
+      "type": 0,
+      "value": ")"
+    }
+  ],
+  "nXDFzI": [
+    {
+      "type": 0,
+      "value": "Sube en la línea "
+    },
+    {
+      "type": 1,
+      "value": "name"
+    },
+    {
+      "type": 0,
+      "value": " ("
+    },
+    {
+      "type": 1,
+      "value": "agency"
+    },
+    {
+      "type": 0,
+      "value": ")"
+    }
+  ],
+  "oLvgp2": [
+    {
+      "type": 0,
+      "value": "Punto"
+    }
+  ],
+  "p04B0A": [
+    {
+      "type": 0,
+      "value": "Oeste"
+    }
+  ],
+  "pFBkix": [
+    {
+      "type": 0,
+      "value": "Personalizado"
+    }
+  ],
+  "pVxO+H": [
+    {
+      "type": 0,
+      "value": "Sube al but "
+    },
+    {
+      "type": 1,
+      "value": "name"
+    },
+    {
+      "type": 0,
+      "value": " ("
+    },
+    {
+      "type": 1,
+      "value": "agency"
+    },
+    {
+      "type": 0,
+      "value": ")"
+    }
+  ],
+  "pkeVF/": [
+    {
+      "type": 0,
+      "value": "Sube al funicular "
+    },
+    {
+      "type": 1,
+      "value": "name"
+    },
+    {
+      "type": 0,
+      "value": " ("
+    },
+    {
+      "type": 1,
+      "value": "agency"
+    },
+    {
+      "type": 0,
+      "value": ")"
+    }
+  ],
+  "solefl": [
+    {
+      "type": 0,
+      "value": "Suba al teleférico de "
+    },
+    {
+      "type": 1,
+      "value": "name"
+    },
+    {
+      "type": 0,
+      "value": " y la ("
+    },
+    {
+      "type": 1,
+      "value": "agency"
+    },
+    {
+      "type": 0,
+      "value": ")"
+    }
+  ],
+  "t2BmWO": [
+    {
+      "type": 0,
+      "value": "Tren"
+    }
+  ],
+  "uCLsXP": [
+    {
+      "type": 0,
+      "value": "Llegar a las"
+    }
+  ],
+  "uciQLb": [
+    {
+      "type": 0,
+      "value": "Gira "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "ligeramente a la derecha"
+        }
+      ],
+      "type": 8,
+      "value": "dir"
+    },
+    {
+      "options": {
+        "name": {
+          "value": [
+            {
+              "type": 0,
+              "value": " en "
+            },
+            {
+              "children": [
+                {
+                  "type": 1,
+                  "value": "street"
+                }
+              ],
+              "type": 8,
+              "value": "name"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "haveStreet"
+    }
+  ],
+  "vcNM7g": [
+    {
+      "type": 0,
+      "value": "Introduzca un destino"
+    }
+  ],
+  "vcV91U": [
+    {
+      "type": 0,
+      "value": "Teleférico"
+    }
+  ],
+  "w77fDg": [
+    {
+      "type": 0,
+      "value": "Punto de partida"
+    }
+  ],
+  "wCDw8+": [
+    {
+      "type": 0,
+      "value": "noreste"
+    }
+  ],
+  "wOrcKy": [
+    {
+      "type": 0,
+      "value": "Ahora"
+    }
+  ],
+  "xCyANw": [
+    {
+      "type": 0,
+      "value": "Eliminar"
+    }
+  ],
+  "xOt2uH": [
+    {
+      "type": 0,
+      "value": "norte"
+    }
+  ],
+  "xPFWok": [
+    {
+      "type": 0,
+      "value": "Gira "
+    },
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "hacia la izquierda"
+        }
+      ],
+      "type": 8,
+      "value": "dir"
+    },
+    {
+      "options": {
+        "name": {
+          "value": [
+            {
+              "type": 0,
+              "value": " hacia "
+            },
+            {
+              "children": [
+                {
+                  "type": 1,
+                  "value": "street"
+                }
+              ],
+              "type": 8,
+              "value": "name"
+            }
+          ]
+        },
+        "other": {
+          "value": [
+          ]
+        }
+      },
+      "type": 5,
+      "value": "haveStreet"
+    }
+  ],
+  "y7pFDT": [
+    {
+      "type": 0,
+      "value": "Ganancia de elevación"
+    }
+  ],
+  "y9hwj+": [
+    {
+      "type": 0,
+      "value": "Tablero en "
+    },
+    {
+      "type": 1,
+      "value": "stop"
+    }
+  ],
+  "zOmTEh": [
+    {
+      "type": 0,
+      "value": "Descartar"
+    }
+  ],
+  "zc1Bca": [
+    {
+      "type": 0,
+      "value": "Este"
+    }
+  ]
+}

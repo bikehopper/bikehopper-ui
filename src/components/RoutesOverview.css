@@ -1,3 +1,22 @@
+.RoutesOverview {
+  display: flex;
+  flex-direction: column;
+}
+
+.RoutesOverview_list {
+  border-radius: 9px 9px 0 0;
+}
+
+.RoutesOverview_firstItem {
+  border-radius: 9px 9px 0 0;
+}
+
+.RoutesOverview_outOfAreaWarning {
+  /* padding and bottom border to match SelectionListItem */
+  padding: 8px 24px;
+  border-bottom: 1px solid #c4c4c4;
+}
+
 .RoutesOverview_row {
   display: flex;
   flex-direction: row;
@@ -39,4 +58,18 @@
 .RoutesOverview_departArriveTime {
   margin: 8px 0 0;
   font-size: 14px;
+}
+
+.RoutesOverview_acknowledgement {
+  font-size: 14px;
+  margin: 24px;
+}
+
+.RoutesOverview_acknowledgementLink {
+  color: #0a72aa;
+  text-decoration: underline;
+}
+
+.RoutesOverview_acknowledgementLink:active {
+  color: #0c85c7;
 }

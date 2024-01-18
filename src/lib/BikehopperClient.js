@@ -1,17 +1,10 @@
-// Hardcoded list of API domains for different environments.
-// TODO: Find a cleaner way to handle this, so people deploying their own
-// instances on their own domains don't have to edit the source.
-const API_DOMAINS = {
-  'https://staging.bikehopper.org': 'https://api-staging.bikehopper.org',
-  'https://bikehopper.org': 'https://api.bikehopper.org',
-};
+import { DateTime } from 'luxon';
 
 function getApiPath() {
-  const loc = document.location;
-  const protoAndHost = `${loc.protocol}//${loc.host}`;
+  const apiDomain = import.meta.env.VITE_API_DOMAIN;
   // If not running on one of the above domains, default to making API requests
   // to same domain, which is what we generally want for development.
-  return API_DOMAINS[protoAndHost] || '';
+  return apiDomain || '';
 }
 
 const POINT_PRECISION = 5;
@@ -62,12 +55,9 @@ export async function fetchRoute({
       pt.map((coord) => coord.toFixed(POINT_PRECISION)),
     );
 
-  let graphHopperPath = getApiPath() + '/v1/graphhopper';
-  if (
-    process.env.NODE_ENV !== 'production' &&
-    process.env.REACT_APP_USE_LOCAL_GRAPHHOPPER
-  )
-    graphHopperPath = process.env.REACT_APP_USE_LOCAL_GRAPHHOPPER;
+  let graphHopperPath = getApiPath() + '/api/v1/route';
+  if (import.meta.env.DEV && import.meta.env.VITE_USE_LOCAL_GRAPHHOPPER)
+    graphHopperPath = import.meta.env.VITE_USE_LOCAL_GRAPHHOPPER;
 
   const url = `${graphHopperPath}/route-pt?${params}`;
   const route = await fetch(url, {
@@ -84,11 +74,21 @@ export async function fetchRoute({
 function parse(route) {
   for (const path of route?.paths) {
     for (const leg of path?.legs) {
-      if (leg?.type !== 'pt') continue;
+      if (leg.type === 'pt' && leg.route_color)
+        leg.route_color = '#' + leg.route_color;
 
-      if (!leg?.route_color) continue;
+      if (leg.departure_time)
+        leg.departure_time = DateTime.fromISO(leg.departure_time).toJSDate();
 
-      leg.route_color = '#' + leg.route_color;
+      if (leg.arrival_time)
+        leg.arrival_time = DateTime.fromISO(leg.arrival_time).toJSDate();
+
+      // mark bike legs that have steps
+      if (leg.type === 'bike2') {
+        leg.has_steps = leg.details?.road_class?.some(
+          ([_start, _end, roadClass]) => roadClass === 'steps',
+        );
+      }
     }
   }
 
@@ -107,7 +107,7 @@ export async function geocode(
     signal,
   },
 ) {
-  let url = `${getApiPath()}/v1/photon/geocode?q=${encodeURIComponent(
+  let url = `${getApiPath()}/api/v1/geocode/geocode?q=${encodeURIComponent(
     placeString,
   )}&lang=${lang}&limit=${limit}`;
 

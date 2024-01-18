@@ -1,29 +1,14 @@
-body {
-  margin: 0;
-  display: flex;
-  flex-flow: column nowrap;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  height: 100vh;
-  overflow: hidden;
-}
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
 
-html {
-  overflow: hidden;
-}
+/* MapLibre CSS has to be loaded here
+ * so it takes precedence over Tailwind's base reset CSS.
+ */
+@import 'maplibre-gl/dist/maplibre-gl.css';
 
-* {
-  box-sizing: border-box;
-}
+/* Import statements have to be at the top of the CSS file above all other
+ * statements, so app-wide styles are now in the following file instead of here.
+ */
+@import './body.css';
 
-#root {
-  height: 100%;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
+@import 'tailwindcss/utilities';

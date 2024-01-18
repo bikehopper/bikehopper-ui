@@ -59,11 +59,13 @@ export function geolocate() {
     } catch (e) {
       const errorCode =
         e instanceof window.GeolocationPositionError ? e.code : null;
-      let errorMsg = "Can't geolocate";
+      let errorMsg = "Can't find your current location";
       if (errorCode && 'GeolocationPositionError' in window) {
         switch (errorCode) {
           case window.GeolocationPositionError.PERMISSION_DENIED:
-            errorMsg += ': permission denied';
+            errorMsg =
+              "Your browser isn't letting BikeHopper detect your current location." +
+              ' Check your browser settings for this website.';
             break;
           case window.GeolocationPositionError.POSITION_UNAVAILABLE:
             errorMsg += ': position unavailable';

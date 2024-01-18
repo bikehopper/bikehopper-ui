@@ -7,7 +7,7 @@ import { fetchRoute } from './routes';
 
 export const LocationSourceType = {
   Geocoded: 'geocoded',
-  Marker: 'marker_drag',
+  SelectedOnMap: 'selected_on_map', // marker drag or long-press/right-click
   UserGeolocation: 'user_geolocation',
   UrlWithString: 'url_with_string',
   UrlWithoutString: 'url_without_string',
@@ -52,10 +52,11 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
         draft.endInputText = state.startInputText;
       });
     case 'location_dragged':
+    case 'location_selected_on_map':
       return produce(state, (draft) => {
         draft[action.startOrEnd] = {
           point: turf.point(action.coords),
-          source: LocationSourceType.Marker,
+          source: LocationSourceType.SelectedOnMap,
         };
         draft[action.startOrEnd + 'InputText'] = '';
       });
@@ -163,36 +164,12 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
         draft.arriveBy = false;
         draft.initialTime = null;
       });
-    case 'initial_time_set':
+    case 'departure_changed':
       return produce(state, (draft) => {
-        draft.initialTime = action.initialTime;
-        if (action.initialTime == null) draft.arriveBy = false;
-      });
-    case 'departure_type_selected':
-      return produce(state, (draft) => {
-        draft.arriveBy = action.departureType === 'arriveBy';
-        if (action.departureType === 'now') {
-          draft.initialTime = null;
-        } else if (action.departureType === 'departAt') {
-          // Default the departure time to something reasonable
-          if (
-            draft.initialTime == null ||
-            draft.initialTime < action.defaultDepartureTime
-          ) {
-            draft.initialTime = action.defaultDepartureTime;
-          }
-        } else if (action.departureType === 'arriveBy') {
-          // Default the arrival time to something reasonable
-          // (2 hours past current time)
-          const reasonableArrivalTime =
-            action.defaultDepartureTime + 120 * 60 * 1000;
-          if (
-            draft.initialTime == null ||
-            draft.initialTime < reasonableArrivalTime
-          ) {
-            draft.initialTime = reasonableArrivalTime;
-          }
-        }
+        draft.arriveBy =
+          action.departureType === 'arriveBy' && action.initialTime != null;
+        draft.initialTime =
+          action.departureType === 'now' ? null : action.initialTime;
       });
     default:
       return state;
@@ -217,8 +194,9 @@ export function locationsSubmitted() {
       // Decide whether to use the text or location:
       let useLocation = false;
 
-      // If text WAS an address string from the geocoder, and the user explicitly blanked it
-      // out, let them blank it out. But otherwise, empty text means fall back to location.
+      // If text WAS an address string from the geocoder (or hydrated from URL), and the
+      // user explicitly blanked it out, let them blank it out. But otherwise, empty text
+      // means fall back to location.
       if (
         text === '' &&
         location &&
@@ -232,15 +210,22 @@ export function locationsSubmitted() {
       ) {
         // Stick with geocoded location if the text is its exact description
         useLocation = true;
+      } else if (
+        location &&
+        location.source === LocationSourceType.UrlWithString &&
+        text === location.fromInputText
+      ) {
+        useLocation = true;
       }
 
       if (!useLocation) {
         text = text.trim();
 
-        let cacheEntry = getState().geocoding.cache['@' + text];
+        let geocodingState = getState().geocoding;
+        let cacheEntry = geocodingState.typeaheadCache['@' + text];
         if (cacheEntry && cacheEntry.status === 'succeeded') {
           return {
-            point: cacheEntry.features[0],
+            point: geocodingState.osmCache[cacheEntry.osmIds[0]],
             source: LocationSourceType.Geocoded,
           };
         }
@@ -250,19 +235,19 @@ export function locationsSubmitted() {
         })(dispatch, getState);
 
         // check again if geocoding succeeded (there's no direct return value)
-        cacheEntry = getState().geocoding.cache['@' + text];
+        geocodingState = getState().geocoding;
+        cacheEntry = geocodingState.typeaheadCache['@' + text];
         if (cacheEntry && cacheEntry.status === 'succeeded') {
           return {
-            point: cacheEntry.features[0],
+            point: geocodingState.osmCache[cacheEntry.osmIds[0]],
             source: LocationSourceType.Geocoded,
           };
         }
 
         return null;
-      } else if (location.point) {
-        // If we already have a point, pass through
-        return location;
       } else if (location.source === LocationSourceType.UserGeolocation) {
+        // Always geolocate anew; never use the stored point. Geolocation does its own
+        // short-term caching.
         await dispatch(geolocate());
 
         const { lng, lat } = getState().geolocation;
@@ -271,6 +256,9 @@ export function locationsSubmitted() {
           point: turf.point([lng, lat]),
           source: LocationSourceType.UserGeolocation,
         };
+      } else if (location.point) {
+        // If we already have a point, not from geolocation, pass through
+        return location;
       } else {
         console.error('expected location.point');
         return null;
@@ -285,6 +273,19 @@ export function locationsSubmitted() {
     ).map((promiseResult) =>
       promiseResult.status === 'fulfilled' ? promiseResult.value : null,
     );
+
+    // If locations have since been changed, do nothing.
+    // (This can happen if a geocode/geolocate took a long time and in the
+    // meantime the user changed the location to a different one.)
+    const routeParamsAfterHydration = getState().routeParams;
+    if (
+      routeParamsAfterHydration.start !== start ||
+      routeParamsAfterHydration.startInputText !== startInputText ||
+      routeParamsAfterHydration.end !== end ||
+      routeParamsAfterHydration.endInputText !== endInputText
+    ) {
+      return;
+    }
 
     dispatch({
       type: 'locations_set',
@@ -307,6 +308,36 @@ export function locationDragged(startOrEnd, coords) {
   return async function locationDraggedThunk(dispatch, getState) {
     dispatch({
       type: 'location_dragged',
+      startOrEnd,
+      coords,
+    });
+
+    // If we have a location for the other point, fetch a route.
+    let { start, end, arriveBy, initialTime } = getState().routeParams;
+    if (startOrEnd === 'start' && end?.point?.geometry.coordinates) {
+      await fetchRoute(
+        coords,
+        end.point.geometry.coordinates,
+        arriveBy,
+        initialTime,
+      )(dispatch, getState);
+    } else if (startOrEnd === 'end' && start?.point?.geometry.coordinates) {
+      await fetchRoute(
+        start.point.geometry.coordinates,
+        coords,
+        arriveBy,
+        initialTime,
+      )(dispatch, getState);
+    }
+  };
+}
+
+// Location selected on map via context menu (long press or right-click).
+// Similar to a drag, except might be starting from no location selected.
+export function locationSelectedOnMap(startOrEnd, coords) {
+  return async function locationSelectedOnMapThunk(dispatch, getState) {
+    dispatch({
+      type: 'location_selected_on_map',
       startOrEnd,
       coords,
     });
@@ -433,28 +464,14 @@ export function swapLocations() {
   };
 }
 
-export function initialTimeSet(initialTime) {
-  return async function initialTimeSetThunk(dispatch, getState) {
+// departureType: 'now', 'departAt', 'arriveBy'
+// initialTime: if not 'now', the time to depart at or arrive by, millis since epoch
+export function departureChanged(departureType, initialTime) {
+  return async function departureChangedThunk(dispatch, getState) {
     dispatch({
-      type: 'initial_time_set',
+      type: 'departure_changed',
       initialTime,
-    });
-
-    // If we have a location, fetch a route.
-    dispatch(locationsSubmitted());
-  };
-}
-
-export function departureTypeSelected(departureType) {
-  // departureType should be 'departAt', 'arriveBy', or 'now'
-  return async function departureTypeSelectedThunk(dispatch, getState) {
-    dispatch({
-      type: 'departure_type_selected',
       departureType,
-      // This default departure time is used if you switch from 'Now' to
-      // 'Depart At' or 'Arrive By'. Why fetch the current datetime here in the
-      // action creator? So the reducer can stay purely functional.
-      defaultDepartureTime: Date.now(),
     });
 
     // If we have a location, fetch a route.

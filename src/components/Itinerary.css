@@ -48,6 +48,8 @@
 
 .Itinerary_backIcon {
   vertical-align: middle;
+  position: relative;
+  top: 4px;
 }
 
 .Itinerary_backIcon path {

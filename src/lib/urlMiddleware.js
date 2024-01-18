@@ -1,5 +1,6 @@
 import { createBrowserHistory } from 'history';
 import describePlace from '../lib/describePlace';
+import { isPWA } from '../lib/pwa';
 import {
   LocationSourceType,
   hydrateParamsFromUrl,
@@ -22,7 +23,8 @@ export default function routesUrlMiddleware(store) {
     const routeStateAfter = stateAfter.routes;
 
     if (!history) {
-      _initializeFromUrl(store);
+      // wait until map is loaded before initializing
+      if (action.type === 'map_loaded') _initializeFromUrl(store);
       return;
     }
 
@@ -36,6 +38,7 @@ export default function routesUrlMiddleware(store) {
       return;
     } else if (routeStateAfter.routes) {
       const params = stateAfter.routeParams;
+      const queryString = history.location.search; // preserve any query params
 
       let from = routeStateAfter.routeStartCoords.join(',');
       let to = routeStateAfter.routeEndCoords.join(',');
@@ -80,17 +83,43 @@ export default function routesUrlMiddleware(store) {
           '/' +
           new Date(params.initialTime).getTime();
       }
-      history.replace(generatedPath);
+      history.replace(generatedPath + queryString);
     } else {
-      history.replace('/');
+      history.replace('/' + history.location.search);
     }
   };
 }
 
+// When running as an app, only restore paths on restart if they're
+// relatively recent.
+const _PWA_DONT_RESTORE_PATHS_AFTER = 1000 * 60 * 60;
+
 function _initializeFromUrl(store) {
   history = createBrowserHistory();
 
-  const pathElements = history.location.pathname.split('/').slice(1);
+  let pathnameToInitializeFrom = history.location.pathname;
+
+  if (isPWA()) {
+    let lastPathname;
+    let lastPathnameTime;
+    try {
+      lastPathname = localStorage.getItem('lastPathname');
+      lastPathnameTime = localStorage.getItem('lastPathnameTime');
+    } catch (e) {}
+
+    if (
+      lastPathname &&
+      lastPathname !== '/' &&
+      (!lastPathnameTime ||
+        Date.now() - lastPathnameTime < _PWA_DONT_RESTORE_PATHS_AFTER)
+    ) {
+      pathnameToInitializeFrom = lastPathname;
+    }
+
+    history.listen(_copyUrlToLocalStorage);
+  }
+
+  const pathElements = pathnameToInitializeFrom.split('/').slice(1);
   const POINT_RE = /^(?:([^@]+)@+)?(-?\d+\.\d*),(-?\d+\.\d*)$/;
 
   // See if path can be parsed as a route, such as
@@ -104,21 +133,7 @@ function _initializeFromUrl(store) {
     let initialTime = null;
 
     const possibleDatetime = Number(pathElements[5]);
-    if (!Number.isNaN(possibleDatetime)) {
-      const date = new Date(possibleDatetime);
-      // It needs to be a string in this format: 2018-06-12T19:30
-      // to plug into an <input type="datetime-local">
-      const year = date.getFullYear().toString();
-      let month = (date.getMonth() + 1).toString();
-      if (month < 10) month = '0' + month;
-      let day = date.getDate().toString();
-      if (day < 10) day = '0' + day;
-      let hour = date.getHours().toString();
-      if (hour < 10) hour = '0' + hour;
-      let min = date.getMinutes().toString();
-      if (min < 10) min = '0' + min;
-      initialTime = `${year}-${month}-${day}T${hour}:${min}`;
-    }
+    if (!Number.isNaN(possibleDatetime)) initialTime = possibleDatetime;
     if (startCoords && endCoords) {
       startCoords = startCoords.map(Number);
       endCoords = endCoords.map(Number);
@@ -144,4 +159,13 @@ function _initializeFromUrl(store) {
 function _coordsEqual(a, b) {
   if (!a || !b) return a === b; // handle null input
   return a[0] === b[0] && a[1] === b[1];
+}
+
+// When running as a progressive web app, copy the location to localStorage
+// so we can restore it if the app pages out of memory.
+function _copyUrlToLocalStorage({ action, location }) {
+  try {
+    localStorage.setItem('lastPathname', location.pathname);
+    localStorage.setItem('lastPathnameTime', Date.now());
+  } catch (e) {}
 }

@@ -5,6 +5,7 @@
 .DirectionsNullState_header {
   font-size: 20px;
   margin: 0 0 20px 0;
+  font-weight: bold;
 }
 
 .DirectionsNullState_input {

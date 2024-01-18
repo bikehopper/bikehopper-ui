@@ -1,7 +1,9 @@
 import { DateTime, Duration } from 'luxon';
 
-export function formatTime(isoTimeString) {
-  return DateTime.fromISO(isoTimeString).toLocaleString(DateTime.TIME_SIMPLE);
+// TODO localize all of these
+
+export function formatTime(jsDate) {
+  return DateTime.fromJSDate(jsDate).toLocaleString(DateTime.TIME_SIMPLE);
 }
 
 export function formatInterval(milliseconds) {
@@ -23,13 +25,17 @@ export function formatInterval(milliseconds) {
   return hours === 0 ? `${days}d` : `${days}d ${hours}h`;
 }
 
-// Long description of the interval between two ISO time strings.
+// Long description of the interval between two JS Dates.
 // TODO: Reconcile this with the above somehow.
-export function formatDurationBetween(startTime, endTime) {
-  const duration = DateTime.fromISO(endTime)
-    .diff(DateTime.fromISO(startTime), ['days', 'hours', 'minutes'])
+export function formatDurationBetween(startTime, endTime, intl) {
+  const duration = DateTime.fromJSDate(endTime)
+    .setLocale(intl.locale)
+    .diff(DateTime.fromJSDate(startTime), ['days', 'hours', 'minutes'])
     .toObject();
   if (duration.days === 0) delete duration.days;
   if (duration.hours === 0) delete duration.hours;
-  return Duration.fromObject(duration).toHuman({ maximumFractionDigits: 0 });
+  const ret = Duration.fromObject(duration).toHuman({
+    maximumFractionDigits: 0,
+  });
+  return ret;
 }

@@ -4,4 +4,11 @@ Arindam Bose
 Chris Arvin
 Gloria Liu
 Hazel Court
+Nellie Nelson
 Scott Feeney
+
+Translations by:
+(names beginning with @ are GitHub usernames)
+@gallegonovato
+@JnBenites
+@ywarnier

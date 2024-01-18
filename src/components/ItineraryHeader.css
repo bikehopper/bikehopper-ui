@@ -12,6 +12,7 @@
   text-align: center;
   flex-direction: column;
   justify-content: space-around;
+  align-items: center;
 }
 
 .ItineraryHeader_iconContainer__isWhite {
@@ -20,6 +21,8 @@
 
 .ItineraryHeader_icon {
   top: 0;
+  width: 32px;
+  height: 32px;
 }
 
 .ItineraryHeader_header {
@@ -32,4 +35,31 @@
   font-weight: normal;
   font-size: 16px;
   margin: 8px 0;
+}
+
+.ItineraryHeader_alerts {
+  background-color: #fffbca;
+  padding: 8px;
+  margin: 0;
+  list-style-type: none;
+  border: 1px solid rgb(187, 187, 187);
+  border-radius: 4px;
+}
+
+.ItineraryHeader_alertIcon {
+  margin-right: 4px;
+  position: relative;
+  top: 4px;
+}
+
+.ItineraryHeader_alertHeader {
+  font-weight: bold;
+}
+
+.ItineraryHeader_alertHeader::after {
+  content: ': ';
+}
+
+.ItineraryHeader_alert:not(:last-child) {
+  margin-bottom: 12px;
 }
