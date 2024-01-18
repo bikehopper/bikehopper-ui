@@ -624,7 +624,7 @@ function getStandardBikeStyle(activePath) {
       ['==', ['get', 'type'], 'bike2'],
       [
         'any',
-        ['!', propIs('cycleway', 'shared lane')],
+        ['!', propIs('cycleway', 'shared_lane')],
         propIs('road_class', ...BIKEABLE_HIGHWAYS),
       ],
     ],
@@ -647,7 +647,7 @@ function getSharedLaneStyle(activePath) {
       pathIndexIs(activePath),
       [
         'all',
-        propIs('cycleway', 'shared lane'),
+        propIs('cycleway', 'shared_lane'),
         ['!', propIs('road_class', ...BIKEABLE_HIGHWAYS)],
       ],
     ],
@@ -737,7 +737,7 @@ const bikeColorStyle = [
       propIs('road_class', ...BIKEABLE_HIGHWAYS),
     ],
     '#006600',
-    propIs('cycleway', 'lane', 'shared lane'),
+    propIs('cycleway', 'lane', 'shared_lane'),
     '#33cc33',
     DEFAULT_BIKE_COLOR,
   ],
