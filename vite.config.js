@@ -33,7 +33,7 @@ export default defineConfig(() => {
       open: true,
       port: 3000,
       proxy: {
-        '/v1': 'https://api-staging.bikehopper.org',
+        '/api/v1': 'https://api-staging.bikehopper.org',
       },
     },
   };
