@@ -159,6 +159,8 @@ export function curveBetween(start, end, options, angle = 30) {
   );
 }
 
+// TODO: i18n by instead returning constants which are converted into
+// user-visible strings within a react component
 function _describeBikeInfraFromCyclewayAndRoadClass(cycleway, roadClass) {
   if (roadClass === 'path') return 'path';
   if (roadClass === 'cycleway') return 'bike path';
