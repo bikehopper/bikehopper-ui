@@ -9,7 +9,7 @@ import {
   AGENCY_COMMON_NAMES,
   TRANSIT_SERVICE_AREA,
   TRANSIT_DATA_ACKNOWLEDGEMENT,
-} from './LosAngeles';
+} from './BayArea';
 
 export {
   SupportedRegionText,
