@@ -107,18 +107,22 @@ function detailsToLines(details, coordinates, type, pathIdx) {
     const currentEnd = Math.min(...Object.values(ends));
 
     let lineDetails = {};
-    for (const k of keys)
-      lineDetails[k] = details[k][indexes[k]][2].replace('_', ' ');
+    for (const k of keys) lineDetails[k] = details[k][indexes[k]][2];
 
     const line = coordinates?.slice(currentStart, currentEnd + 1);
-    if (line.length > 1)
+    if (line.length > 1) {
       lines.push(
         turf.lineString(line, {
           path_index: pathIdx,
           type,
           ...lineDetails,
+          bike_infra: _describeBikeInfraFromCyclewayAndRoadClass(
+            lineDetails['cycleway'],
+            lineDetails['road_class'],
+          ),
         }),
       );
+    }
 
     currentStart = currentEnd;
     for (const k of keys) {
@@ -155,6 +159,8 @@ export function curveBetween(start, end, options, angle = 30) {
   );
 }
 
+// TODO: i18n by instead returning constants which are converted into
+// user-visible strings within a react component
 function _describeBikeInfraFromCyclewayAndRoadClass(cycleway, roadClass) {
   if (roadClass === 'path') return 'path';
   if (roadClass === 'cycleway') return 'bike path';

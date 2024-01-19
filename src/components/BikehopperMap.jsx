@@ -624,7 +624,7 @@ function getStandardBikeStyle(activePath) {
       ['==', ['get', 'type'], 'bike2'],
       [
         'any',
-        ['!', propIs('cycleway', 'shared lane')],
+        ['!', propIs('cycleway', 'shared_lane')],
         propIs('road_class', ...BIKEABLE_HIGHWAYS),
       ],
     ],
@@ -647,7 +647,7 @@ function getSharedLaneStyle(activePath) {
       pathIndexIs(activePath),
       [
         'all',
-        propIs('cycleway', 'shared lane'),
+        propIs('cycleway', 'shared_lane'),
         ['!', propIs('road_class', ...BIKEABLE_HIGHWAYS)],
       ],
     ],
@@ -737,23 +737,19 @@ const bikeColorStyle = [
       propIs('road_class', ...BIKEABLE_HIGHWAYS),
     ],
     '#006600',
-    propIs('cycleway', 'lane', 'shared lane'),
+    propIs('cycleway', 'lane', 'shared_lane'),
     '#33cc33',
     DEFAULT_BIKE_COLOR,
   ],
 ];
 
-// TODO: localize the displayed highway/bike infra types
 function getLabelTextField() {
   const text = [
     'case',
-    // Bikeable highways display the type with optional street name
-    propIs('road_class', ...BIKEABLE_HIGHWAYS),
-    ['get', 'road_class'],
-    // Cycleways display the type with optional street name
-    hasProp('cycleway', 'missing', 'no'),
-    ['get', 'cycleway'],
-    // Default to public transit route or street name
+    // If bike infra info, display it!
+    hasProp('bike_infra', ''),
+    ['get', 'bike_infra'],
+    // Default to public transit route name if present
     ['coalesce', ['get', 'route_name'], ''],
   ];
   return ['format', text];
