@@ -1,4 +1,5 @@
 Aditya Bhumbla
+Amy Loftus
 Andy McCoy
 Arindam Bose
 Chris Arvin
@@ -6,6 +7,7 @@ Gloria Liu
 Hazel Court
 Nellie Nelson
 Scott Feeney
+Shabnam Shomail
 
 Translations by:
 (names beginning with @ are GitHub usernames)
