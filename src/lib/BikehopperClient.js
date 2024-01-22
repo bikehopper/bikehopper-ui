@@ -32,6 +32,7 @@ export async function fetchRoute({
   details,
   points,
   signal,
+  blockRouteTypes,
 }) {
   const params = new URLSearchParams({
     locale: 'en-US',
@@ -49,6 +50,8 @@ export async function fetchRoute({
     'pt.arrive_by': arriveBy,
   });
   for (const detail of details || []) params.append('details', detail);
+  for (const routeType of blockRouteTypes || [])
+    params.append('pt.block_route_types', routeType);
   for (const pt of points)
     params.append(
       'point',
