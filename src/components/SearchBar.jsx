@@ -21,8 +21,6 @@ import usePrevious from '../hooks/usePrevious';
 import { ReactComponent as NavLeftArrow } from 'iconoir/icons/nav-arrow-left.svg';
 import { ReactComponent as SwapArrows } from 'iconoir/icons/data-transfer-both.svg';
 
-import './SearchBar.css';
-
 const CURRENT_LOCATION_STRING = 'Current Location';
 
 export default function SearchBar(props) {
@@ -188,7 +186,7 @@ export default function SearchBar(props) {
   });
 
   return (
-    <div className="SearchBar">
+    <div className="p-0 flex flex-row items-stretch relative">
       <button
         onClick={handleBackClick}
         className="text-bikehopperyellow h-12 w-12 -ml-3 text-center
@@ -204,18 +202,20 @@ export default function SearchBar(props) {
           <NavLeftArrow className="stroke-[3px]" />
         </Icon>
       </button>
-      <div className="SearchBar_inputs">
+      <div className="grow">
         <form onSubmit={handleSubmit}>
-          <span className="SearchBar_inputContainer">
+          <span className="relative">
             <PlaceIcon
-              className="SearchBar_icon"
+              className="absolute left-2 top-[-1px]"
               place={
                 startLocation && !startTextModified ? startLocation.point : null
               }
             />
             <input
               aria-label={startPointMsg}
-              className="SearchBar_input"
+              className="w-full py-2.5 pr-2.5 pl-8 rounded-xl text-[13px]
+                bg-bikehoppergreenlight border-2 border-solid border-transparent
+                focus:outline-none focus:bg-white focus:border-bikehopperyellow"
               type="text"
               placeholder={startPointMsg}
               value={displayedStart}
@@ -226,15 +226,20 @@ export default function SearchBar(props) {
               ref={startRef}
             />
           </span>
-          <span className="SearchBar_divider_dotted" />
-          <span className="SearchBar_inputContainer">
+          <span
+            className="block h-4
+            border-0 border-l-[3px] border-dotted border-white ml-[19px]"
+          />
+          <span className="relative">
             <PlaceIcon
-              className="SearchBar_icon"
+              className="absolute left-2 top-[-1px]"
               place={endLocation && !endTextModified ? endLocation.point : null}
             />
             <input
               aria-label={endPointMsg}
-              className="SearchBar_input"
+              className="w-full py-2.5 pr-2.5 pl-8 rounded-xl text-[13px]
+                bg-bikehoppergreenlight border-2 border-solid border-transparent
+                focus:outline-none focus:bg-white focus:border-bikehopperyellow"
               type="text"
               placeholder={endPointMsg}
               value={displayedEnd}
@@ -247,7 +252,7 @@ export default function SearchBar(props) {
             />
           </span>
         </form>
-        <span className="SearchBar_divider" />
+        <span className="block h-4" />
         <TimeBar />
       </div>
       <button

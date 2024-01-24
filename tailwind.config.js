@@ -8,6 +8,7 @@ module.exports = {
     extend: {
       colors: {
         bikehoppergreen: '#5aaa0a',
+        bikehoppergreenlight: '#def0cc',
         bikehopperyellow: '#ffd18e',
       },
     },

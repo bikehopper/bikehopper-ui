@@ -112,7 +112,7 @@ export default function TimeBar(props) {
               text-[13px] rounded-md p-1.5
               border-2 border-solid border-transparent
               focus:outline-none focus:ring-0 focus:ring-offset-0
-              bg-[#def0cc] text-[inherit]
+              bg-bikehoppergreenlight text-[inherit]
               hover:bg-[#d0e1c0]
               focus-visible:border-bikehopperyellow focus-visible:bg-white"
           >
