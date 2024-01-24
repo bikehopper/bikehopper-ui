@@ -20,6 +20,7 @@ import {
 import usePrevious from '../hooks/usePrevious';
 import { ReactComponent as NavLeftArrow } from 'iconoir/icons/nav-arrow-left.svg';
 import { ReactComponent as SwapArrows } from 'iconoir/icons/data-transfer-both.svg';
+import { ReactComponent as SettingsIcon } from 'iconoir/icons/settings.svg';
 
 const CURRENT_LOCATION_STRING = 'Current Location';
 
@@ -176,6 +177,11 @@ export default function SearchBar(props) {
     if (evt.key === 'Enter') handleSubmit(evt);
   };
 
+  const [isOptionsDialogOpen, setIsOptionsDialogOpen] = React.useState(false);
+  const handleOptionsDialogOpenChange = (evt) => {
+    // todo
+  };
+
   const startPointMsg = intl.formatMessage({
     defaultMessage: 'Starting point',
     description: 'label for input box for starting point of directions',
@@ -255,21 +261,39 @@ export default function SearchBar(props) {
         <span className="block h-4" />
         <TimeBar />
       </div>
-      <button
-        onClick={handleSwapClick}
-        className="text-bikehopperyellow h-12 w-12 -mr-3 mt-6
-          flex items-center justify-center
-          bg-transparent border-0"
-      >
-        <Icon
-          label={intl.formatMessage({
-            defaultMessage: 'Swap',
-            description: 'button to swap start and end point',
-          })}
+      <div className="flex flex-col">
+        <button
+          onClick={undefined /*todo*/}
+          className="text-bikehopperyellow h-10 w-12 -mr-3
+            flex items-center justify-center
+            bg-transparent border-0"
         >
-          <SwapArrows className="stroke-[2.5px]" />
-        </Icon>
-      </button>
+          <Icon
+            label={intl.formatMessage({
+              defaultMessage: 'Options',
+              description: 'button to change options related to route query',
+            })}
+          >
+            <SettingsIcon className="stroke-2" />
+          </Icon>
+        </button>
+        <span className="block h-4" />
+        <button
+          onClick={handleSwapClick}
+          className="text-bikehopperyellow h-10 w-12 -mr-3
+            flex items-center justify-center
+            bg-transparent border-0"
+        >
+          <Icon
+            label={intl.formatMessage({
+              defaultMessage: 'Swap',
+              description: 'button to swap start and end point',
+            })}
+          >
+            <SwapArrows className="stroke-2" />
+          </Icon>
+        </button>
+      </div>
     </div>
   );
 }
