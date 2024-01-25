@@ -159,6 +159,10 @@
     "description": "button to cancel making changes in a dialog",
     "message": "Cancel"
   },
+  "LIuTaV": {
+    "description": "button to change options related to route query",
+    "message": "Options"
+  },
   "O53Ykk": {
     "description": "label for input box for the place you want directions to",
     "message": "Destination"
@@ -206,6 +210,10 @@
   "UsTGr8": {
     "description": "button. Saves changes made in a dialog box.",
     "message": "Update"
+  },
+  "V5A9AA": {
+    "description": "toggle for whether to use ferries in directions.",
+    "message": "Ferries"
   },
   "WtbUjz": {
     "description": "instruction",
@@ -255,6 +263,10 @@
     "description": "instruction",
     "message": "At roundabout, take exit {num}{haveStreet, select, name { onto <name>{street}</name>} other {}}"
   },
+  "hmv35M": {
+    "description": "toggle for whether to use trains (including trams, subway trains, commuter trains, etc) in directions.",
+    "message": "Trains"
+  },
   "kK9a0r": {
     "description": "labels a transit line as being operated by an aerial tram or suspended cable car. Appears next to the name or number of the line.",
     "message": "Cable car"
@@ -302,6 +314,10 @@
   "pkeVF/": {
     "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a funicular.",
     "message": "Ride the {name} funicular ({agency})"
+  },
+  "qyWb6X": {
+    "description": "dialog header. In this dialog you can toggle which modes of transit, such as bus, train, or ferry, can be used in giving directions.",
+    "message": "Connecting modes"
   },
   "solefl": {
     "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a cable tram, cable car, aerial tram or suspended cable car.",
@@ -362,6 +378,10 @@
   "zOmTEh": {
     "description": "button to dismiss alert",
     "message": "Dismiss"
+  },
+  "zWq75T": {
+    "description": "toggle for whether to use buses in directions.",
+    "message": "Buses"
   },
   "zc1Bca": {
     "description": "cardinal direction, used in a sentence like \"Head east\"",

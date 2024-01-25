@@ -633,6 +633,12 @@
       "value": "Cancel"
     }
   ],
+  "LIuTaV": [
+    {
+      "type": 0,
+      "value": "Options"
+    }
+  ],
   "O53Ykk": [
     {
       "type": 0,
@@ -813,6 +819,12 @@
     {
       "type": 0,
       "value": "Update"
+    }
+  ],
+  "V5A9AA": [
+    {
+      "type": 0,
+      "value": "Ferries"
     }
   ],
   "WtbUjz": [
@@ -1023,6 +1035,12 @@
       "value": "haveStreet"
     }
   ],
+  "hmv35M": [
+    {
+      "type": 0,
+      "value": "Trains"
+    }
+  ],
   "kK9a0r": [
     {
       "type": 0,
@@ -1161,6 +1179,12 @@
     {
       "type": 0,
       "value": ")"
+    }
+  ],
+  "qyWb6X": [
+    {
+      "type": 0,
+      "value": "Connecting modes"
     }
   ],
   "solefl": [
@@ -1347,6 +1371,12 @@
     {
       "type": 0,
       "value": "Dismiss"
+    }
+  ],
+  "zWq75T": [
+    {
+      "type": 0,
+      "value": "Buses"
     }
   ],
   "zc1Bca": [
