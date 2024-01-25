@@ -5,7 +5,7 @@ export default function formatDistance(meters, intl, options) {
   const feet = meters / 0.3048;
   const miles = feet / 5280;
 
-  if (miles >= 0.1 && !options.forceFeet) {
+  if (miles >= 0.1 && !options?.forceFeet) {
     // Desired precision is
     //   0.1, 0.2, ... 0.9 miles
     //   1, 1.1, 1.2, ... 9.9 miles
