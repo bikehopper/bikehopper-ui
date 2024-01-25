@@ -9,7 +9,7 @@ import MapGL, {
   Source,
   GeolocateControl,
   NavigationControl,
-} from 'react-map-gl';
+} from 'react-map-gl/maplibre';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import {
   routesToGeoJSON,
