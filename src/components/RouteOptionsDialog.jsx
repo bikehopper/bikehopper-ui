@@ -104,13 +104,14 @@ function ModeToggleGroupItem({ value, label, icon }) {
     <ToggleGroup.Item
       key={`group-item-${label}`}
       value={value}
-      className="bg-white dark:bg-gray-800
-        text-gray-950 dark:text-gray-50
-        aria-pressed:bg-gray-200 dark:aria-pressed:bg-gray-600
+      className="bg-gray-200 dark:bg-gray-800
+        text-gray-400 dark:text-gray-500
+        aria-pressed:bg-white dark:aria-pressed:bg-gray-700
+        aria-pressed:text-slate-950 dark:aria-pressed:text-slate-50
         border-y border-solid px-2.5 py-2 border-x-0
         first:rounded-l-md first:border-x last:rounded-r-md last:border-x
-        border-gray-300 aria-pressed:border-transparent
-        dark:border-gray-500 dark:aria-pressed:border-transparent
+        border-gray-300
+        dark:border-gray-500
         focus:relative focus:outline-none focus-visible:z-20 focus-visible:ring
         focus-visible:ring-blue-500 focus-visible:ring-opacity-75"
     >
