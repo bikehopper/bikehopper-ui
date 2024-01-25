@@ -125,7 +125,7 @@ export default function RoutesOverview({
                         className="stroke-2 text-gray-600"
                       />
                     </Icon>
-                    {formatDistance(route.ascend, intl, true)}
+                    {formatDistance(route.ascend, intl, { forceFeet: true })}
                     <Icon
                       label={
                         intl.formatMessage({
@@ -144,7 +144,7 @@ export default function RoutesOverview({
                         className="stroke-2 text-gray-600"
                       />
                     </Icon>
-                    {formatDistance(route.descend, intl, true)}
+                    {formatDistance(route.descend, intl, { forceFeet: true })}
                   </span>
                 )}
             </p>
