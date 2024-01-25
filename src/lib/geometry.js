@@ -202,14 +202,6 @@ export function describeBikeInfra(
 
   const stepTotalDistance = turfLength(stepLineString);
 
-  // Don't describe steps less than 150 feet long.
-  const MIN_DISTANCE_TO_DESCRIBE = turf.convertLength(
-    150,
-    'feet',
-    'kilometers',
-  );
-  if (stepTotalDistance < MIN_DISTANCE_TO_DESCRIBE) return '';
-
   const MIN_STEEP_HILL_LENGTH = turf.convertLength(500, 'feet', 'kilometers');
 
   let cyclewayIndex = 0,
@@ -260,6 +252,18 @@ export function describeBikeInfra(
     const windowedAverageGrade = Math.abs(summedGrades / MIN_STEEP_HILL_LENGTH);
     maxGrade = Math.max(maxGrade, windowedAverageGrade);
   });
+
+  // Don't describe steps less than 150 feet long...
+  // ...unless they contain literal steps.
+  const MIN_DISTANCE_TO_DESCRIBE = turf.convertLength(
+    150,
+    'feet',
+    'kilometers',
+  );
+  if (stepTotalDistance < MIN_DISTANCE_TO_DESCRIBE) {
+    if (distanceByInfraType.steps) return 'steps';
+    return '';
+  }
 
   let infraTypes = Object.entries(distanceByInfraType);
   // Sort the infra types by most common first
