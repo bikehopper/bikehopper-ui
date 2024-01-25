@@ -370,5 +370,25 @@
     "y7pFDT": {
         "message": "Ganancia de elevación",
         "description": "Accessible alt text for an up-arrow icon that appears next to a measurement of the elevation gain on a route, such as (in English) 200 ft or 50 m."
+    },
+    "V5A9AA": {
+        "message": "Ferris",
+        "description": "toggle for whether to use ferries in directions."
+    },
+    "LIuTaV": {
+        "message": "Opciones",
+        "description": "button to change options related to route query"
+    },
+    "hmv35M": {
+        "message": "Trenes",
+        "description": "toggle for whether to use trains (including trams, subway trains, commuter trains, etc) in directions."
+    },
+    "qyWb6X": {
+        "message": "Modos de conexión",
+        "description": "dialog header. In this dialog you can toggle which modes of transit, such as bus, train, or ferry, can be used in giving directions."
+    },
+    "zWq75T": {
+        "message": "Autobuses",
+        "description": "toggle for whether to use buses in directions."
     }
 }
