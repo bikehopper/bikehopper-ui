@@ -1,6 +1,7 @@
 import produce from 'immer';
 import * as turf from '@turf/helpers';
 import describePlace from '../lib/describePlace';
+import * as TransitModes from '../lib/TransitModes';
 import { geocodeTypedLocation } from './geocoding';
 import { geolocate } from './geolocation';
 import { fetchRoute } from './routes';
@@ -34,6 +35,13 @@ const DEFAULT_STATE = {
   // If initialTime == null, this means depart now (should be used with
   // arriveBy === false)
   initialTime: null,
+
+  // Transit modes that can be used
+  connectingModes: [
+    TransitModes.CATEGORIES.BUSES,
+    TransitModes.CATEGORIES.TRAINS,
+    TransitModes.CATEGORIES.FERRIES,
+  ],
 };
 
 export function routeParamsReducer(state = DEFAULT_STATE, action) {
@@ -171,6 +179,10 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
         draft.initialTime =
           action.departureType === 'now' ? null : action.initialTime;
       });
+    case 'connecting_modes_changed':
+      return produce(state, (draft) => {
+        draft.connectingModes = [...action.connectingModes];
+      });
     default:
       return state;
   }
@@ -187,8 +199,26 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
 // the current geolocation if a location has source type UserGeolocation.
 export function locationsSubmitted() {
   return async function locationsSubmittedThunk(dispatch, getState) {
-    const { start, startInputText, end, endInputText, initialTime, arriveBy } =
-      getState().routeParams;
+    const {
+      start,
+      startInputText,
+      end,
+      endInputText,
+      initialTime,
+      arriveBy,
+      connectingModes,
+    } = getState().routeParams;
+
+    const blockRouteTypes = [];
+    for (const modeCategory of Object.values(TransitModes.CATEGORIES)) {
+      if (!connectingModes.includes(modeCategory)) {
+        for (const modeInCategory of TransitModes.CATEGORY_TO_MODES[
+          modeCategory
+        ]) {
+          blockRouteTypes.push(modeInCategory);
+        }
+      }
+    }
 
     const hydrate = async function hydrate(text, location, startOrEnd) {
       // Decide whether to use the text or location:
@@ -299,6 +329,7 @@ export function locationsSubmitted() {
         resultingEndLocation.point.geometry.coordinates,
         arriveBy,
         initialTime,
+        blockRouteTypes,
       )(dispatch, getState);
     }
   };
@@ -472,6 +503,18 @@ export function departureChanged(departureType, initialTime) {
       type: 'departure_changed',
       initialTime,
       departureType,
+    });
+
+    // If we have a location, fetch a route.
+    dispatch(locationsSubmitted());
+  };
+}
+
+export function changeConnectingModes(newConnectingModes) {
+  return async function changeConnectingModesThunk(dispatch, getState) {
+    dispatch({
+      type: 'connecting_modes_changed',
+      connectingModes: newConnectingModes,
     });
 
     // If we have a location, fetch a route.

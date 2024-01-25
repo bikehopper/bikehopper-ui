@@ -10,6 +10,7 @@ import {
 } from './SearchAutocompleteDropdown';
 import {
   blurSearchWithUnchangedLocations,
+  changeConnectingModes,
   changeLocationTextInput,
   clearRouteParams,
   locationInputFocused,
@@ -17,11 +18,11 @@ import {
   LocationSourceType,
   swapLocations,
 } from '../features/routeParams';
+import RouteOptionsDialog from './RouteOptionsDialog';
 import usePrevious from '../hooks/usePrevious';
 import { ReactComponent as NavLeftArrow } from 'iconoir/icons/nav-arrow-left.svg';
 import { ReactComponent as SwapArrows } from 'iconoir/icons/data-transfer-both.svg';
-
-import './SearchBar.css';
+import { ReactComponent as SettingsIcon } from 'iconoir/icons/settings.svg';
 
 const CURRENT_LOCATION_STRING = 'Current Location';
 
@@ -29,17 +30,24 @@ export default function SearchBar(props) {
   const dispatch = useDispatch();
   const intl = useIntl();
 
-  const { startLocation, startText, endLocation, endText, editingLocation } =
-    useSelector(
-      (state) => ({
-        startLocation: state.routeParams.start,
-        endLocation: state.routeParams.end,
-        startText: state.routeParams.startInputText,
-        endText: state.routeParams.endInputText,
-        editingLocation: state.routeParams.editingLocation,
-      }),
-      shallowEqual,
-    );
+  const {
+    startLocation,
+    startText,
+    endLocation,
+    endText,
+    editingLocation,
+    connectingModes,
+  } = useSelector(
+    (state) => ({
+      startLocation: state.routeParams.start,
+      endLocation: state.routeParams.end,
+      startText: state.routeParams.startInputText,
+      endText: state.routeParams.endInputText,
+      editingLocation: state.routeParams.editingLocation,
+      connectingModes: state.routeParams.connectingModes,
+    }),
+    shallowEqual,
+  );
 
   const startRef = React.useRef();
   const endRef = React.useRef();
@@ -178,6 +186,16 @@ export default function SearchBar(props) {
     if (evt.key === 'Enter') handleSubmit(evt);
   };
 
+  const [isOptionsDialogOpen, setIsOptionsDialogOpen] = React.useState(false);
+  const handleOptionsDialogTrigger = () => setIsOptionsDialogOpen(true);
+  const handleOptionsDialogCancel = () => setIsOptionsDialogOpen(false);
+  const handleOptionsDialogApply = (values) => {
+    if (!shallowEqual(connectingModes, values.connectingModes)) {
+      dispatch(changeConnectingModes(values.connectingModes));
+    }
+    setIsOptionsDialogOpen(false);
+  };
+
   const startPointMsg = intl.formatMessage({
     defaultMessage: 'Starting point',
     description: 'label for input box for starting point of directions',
@@ -188,7 +206,7 @@ export default function SearchBar(props) {
   });
 
   return (
-    <div className="SearchBar">
+    <div className="p-0 flex flex-row items-stretch relative">
       <button
         onClick={handleBackClick}
         className="text-bikehopperyellow h-12 w-12 -ml-3 text-center
@@ -204,18 +222,20 @@ export default function SearchBar(props) {
           <NavLeftArrow className="stroke-[3px]" />
         </Icon>
       </button>
-      <div className="SearchBar_inputs">
+      <div className="grow">
         <form onSubmit={handleSubmit}>
-          <span className="SearchBar_inputContainer">
+          <span className="relative">
             <PlaceIcon
-              className="SearchBar_icon"
+              className="absolute left-2 top-[-1px]"
               place={
                 startLocation && !startTextModified ? startLocation.point : null
               }
             />
             <input
               aria-label={startPointMsg}
-              className="SearchBar_input"
+              className="w-full py-2.5 pr-2.5 pl-8 rounded-xl text-[13px]
+                bg-bikehoppergreenlight border-2 border-solid border-transparent
+                focus:outline-none focus:bg-white focus:border-bikehopperyellow"
               type="text"
               placeholder={startPointMsg}
               value={displayedStart}
@@ -226,15 +246,20 @@ export default function SearchBar(props) {
               ref={startRef}
             />
           </span>
-          <span className="SearchBar_divider_dotted" />
-          <span className="SearchBar_inputContainer">
+          <span
+            className="block h-4
+            border-0 border-l-[3px] border-dotted border-white ml-[19px]"
+          />
+          <span className="relative">
             <PlaceIcon
-              className="SearchBar_icon"
+              className="absolute left-2 top-[-1px]"
               place={endLocation && !endTextModified ? endLocation.point : null}
             />
             <input
               aria-label={endPointMsg}
-              className="SearchBar_input"
+              className="w-full py-2.5 pr-2.5 pl-8 rounded-xl text-[13px]
+                bg-bikehoppergreenlight border-2 border-solid border-transparent
+                focus:outline-none focus:bg-white focus:border-bikehopperyellow"
               type="text"
               placeholder={endPointMsg}
               value={displayedEnd}
@@ -247,24 +272,48 @@ export default function SearchBar(props) {
             />
           </span>
         </form>
-        <span className="SearchBar_divider" />
+        <span className="block h-4" />
         <TimeBar />
       </div>
-      <button
-        onClick={handleSwapClick}
-        className="text-bikehopperyellow h-12 w-12 -mr-3 mt-6
-          flex items-center justify-center
-          bg-transparent border-0"
-      >
-        <Icon
-          label={intl.formatMessage({
-            defaultMessage: 'Swap',
-            description: 'button to swap start and end point',
-          })}
+      <div className="flex flex-col">
+        <RouteOptionsDialog
+          isOpen={isOptionsDialogOpen}
+          onCancel={handleOptionsDialogCancel}
+          onApply={handleOptionsDialogApply}
+          globalConnectingModes={connectingModes}
+        />
+        <button
+          onClick={handleOptionsDialogTrigger}
+          className="text-bikehopperyellow h-10 w-12 -mr-3
+            flex items-center justify-center
+            bg-transparent border-0"
         >
-          <SwapArrows className="stroke-[2.5px]" />
-        </Icon>
-      </button>
+          <Icon
+            label={intl.formatMessage({
+              defaultMessage: 'Options',
+              description: 'button to change options related to route query',
+            })}
+          >
+            <SettingsIcon className="stroke-2" />
+          </Icon>
+        </button>
+        <span className="block h-4" />
+        <button
+          onClick={handleSwapClick}
+          className="text-bikehopperyellow h-10 w-12 -mr-3
+            flex items-center justify-center
+            bg-transparent border-0"
+        >
+          <Icon
+            label={intl.formatMessage({
+              defaultMessage: 'Swap',
+              description: 'button to swap start and end point',
+            })}
+          >
+            <SwapArrows className="stroke-2" />
+          </Icon>
+        </button>
+      </div>
     </div>
   );
 }
