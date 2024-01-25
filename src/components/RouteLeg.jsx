@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useIntl } from 'react-intl';
 import { DEFAULT_PT_COLOR, getTextColor } from '../lib/colors';
 import ModeIcon from './ModeIcon';
-import TransitModes from '../lib/TransitModes';
+import { MODES } from '../lib/TransitModes';
 import Icon from './Icon';
 import { ReactComponent as Bicycle } from 'iconoir/icons/bicycle.svg';
 import { ReactComponent as WarningTriangle } from 'iconoir/icons/warning-triangle.svg';
@@ -89,7 +89,7 @@ export default function RouteLeg(props) {
 
 function _getModeLabel(mode, intl) {
   switch (mode) {
-    case TransitModes.TRAM_STREETCAR_LIGHT_RAIL:
+    case MODES.TRAM_STREETCAR_LIGHT_RAIL:
       return intl.formatMessage({
         defaultMessage: 'Train',
         description:
@@ -98,14 +98,14 @@ function _getModeLabel(mode, intl) {
           ' For American English, we match common usage by saying "train",' +
           ' but "tram" might be appropriate for other dialects of English.',
       });
-    case TransitModes.MONORAIL:
+    case MODES.MONORAIL:
       return intl.formatMessage({
         defaultMessage: 'Monorail',
         description:
           'labels a transit line as being operated by a tram, streetcar or light rail.' +
           ' Appears next to the name or number of the line.',
       });
-    case TransitModes.SUBWAY_METRO:
+    case MODES.SUBWAY_METRO:
       return intl.formatMessage({
         defaultMessage: 'Train',
         description:
@@ -113,7 +113,7 @@ function _getModeLabel(mode, intl) {
           ' specifically a subway or metro train but the label need not be that specific.' +
           ' Appears next to the name or number of the line.',
       });
-    case TransitModes.RAIL_INTERCITY_LONG_DISTANCE:
+    case MODES.RAIL_INTERCITY_LONG_DISTANCE:
       return intl.formatMessage({
         defaultMessage: 'Train',
         description:
@@ -122,14 +122,14 @@ function _getModeLabel(mode, intl) {
           ' but the label need not be that specific.' +
           ' Appears next to the name or number of the line.',
       });
-    case TransitModes.BUS:
+    case MODES.BUS:
       return intl.formatMessage({
         defaultMessage: 'Bus',
         description:
           'labels a transit line as being operated by a bus.' +
           ' Appears next to the name or number of the bus line.',
       });
-    case TransitModes.TROLLEYBUS:
+    case MODES.TROLLEYBUS:
       return intl.formatMessage({
         defaultMessage: 'Bus',
         description:
@@ -137,21 +137,21 @@ function _getModeLabel(mode, intl) {
           ' Specifically a trolleybus but the label need not be that specific.' +
           ' Appears next to the name or number of the bus line.',
       });
-    case TransitModes.FERRY:
+    case MODES.FERRY:
       return intl.formatMessage({
         defaultMessage: 'Ferry',
         description:
           'labels a transit line as being operated by a ferry.' +
           ' Appears next to the name or number of the line.',
       });
-    case TransitModes.CABLE_TRAM:
+    case MODES.CABLE_TRAM:
       return intl.formatMessage({
         defaultMessage: 'Cable car',
         description:
           'labels a transit line as being operated by a cable tram/cable car.' +
           ' Appears next to the name or number of the line.',
       });
-    case TransitModes.AERIAL_TRAM_SUSPENDED_CABLE_CAR:
+    case MODES.AERIAL_TRAM_SUSPENDED_CABLE_CAR:
       return intl.formatMessage({
         defaultMessage: 'Cable car',
         description:
@@ -159,7 +159,7 @@ function _getModeLabel(mode, intl) {
           ' suspended cable car.' +
           ' Appears next to the name or number of the line.',
       });
-    case TransitModes.FUNICULAR:
+    case MODES.FUNICULAR:
       return intl.formatMessage({
         defaultMessage: 'Funicular',
         description:

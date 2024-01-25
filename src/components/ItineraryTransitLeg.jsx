@@ -2,7 +2,7 @@ import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { DEFAULT_PT_COLOR } from '../lib/colors';
 import { formatTime, formatDurationBetween } from '../lib/time';
-import TransitModes from '../lib/TransitModes';
+import { MODES } from '../lib/TransitModes';
 import { getAgencyDisplayName } from '../lib/region';
 import useScrollToRef from '../hooks/useScrollToRef';
 import BorderlessButton from './BorderlessButton';
@@ -134,7 +134,7 @@ export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
 // transit modes.
 function ItineraryTransitLegHeaderMessage({ name, mode, agency }) {
   switch (mode) {
-    case TransitModes.TRAM_STREETCAR_LIGHT_RAIL:
+    case MODES.TRAM_STREETCAR_LIGHT_RAIL:
       return (
         <FormattedMessage
           defaultMessage="Ride the {name} train ({agency})"
@@ -146,7 +146,7 @@ function ItineraryTransitLegHeaderMessage({ name, mode, agency }) {
           values={{ name, agency }}
         />
       );
-    case TransitModes.MONORAIL:
+    case MODES.MONORAIL:
       return (
         <FormattedMessage
           defaultMessage="Ride the {name} train ({agency})"
@@ -158,7 +158,7 @@ function ItineraryTransitLegHeaderMessage({ name, mode, agency }) {
           values={{ name, agency }}
         />
       );
-    case TransitModes.SUBWAY_METRO:
+    case MODES.SUBWAY_METRO:
       return (
         <FormattedMessage
           defaultMessage="Ride the {name} train ({agency})"
@@ -170,7 +170,7 @@ function ItineraryTransitLegHeaderMessage({ name, mode, agency }) {
           values={{ name, agency }}
         />
       );
-    case TransitModes.RAIL_INTERCITY_LONG_DISTANCE:
+    case MODES.RAIL_INTERCITY_LONG_DISTANCE:
       return (
         <FormattedMessage
           defaultMessage="Ride the {name} train ({agency})"
@@ -182,8 +182,8 @@ function ItineraryTransitLegHeaderMessage({ name, mode, agency }) {
           values={{ name, agency }}
         />
       );
-    case TransitModes.BUS:
-    case TransitModes.TROLLEYBUS:
+    case MODES.BUS:
+    case MODES.TROLLEYBUS:
       return (
         <FormattedMessage
           defaultMessage="Ride the {name} bus ({agency})"
@@ -195,7 +195,7 @@ function ItineraryTransitLegHeaderMessage({ name, mode, agency }) {
           values={{ name, agency }}
         />
       );
-    case TransitModes.FERRY:
+    case MODES.FERRY:
       return (
         <FormattedMessage
           defaultMessage="Ride the {name} ferry ({agency})"
@@ -207,8 +207,8 @@ function ItineraryTransitLegHeaderMessage({ name, mode, agency }) {
           values={{ name, agency }}
         />
       );
-    case TransitModes.CABLE_TRAM:
-    case TransitModes.AERIAL_TRAM_SUSPENDED_CABLE_CAR:
+    case MODES.CABLE_TRAM:
+    case MODES.AERIAL_TRAM_SUSPENDED_CABLE_CAR:
       return (
         <FormattedMessage
           defaultMessage="Ride the {name} cable car ({agency})"
@@ -221,7 +221,7 @@ function ItineraryTransitLegHeaderMessage({ name, mode, agency }) {
           values={{ name, agency }}
         />
       );
-    case TransitModes.FUNICULAR:
+    case MODES.FUNICULAR:
       return (
         <FormattedMessage
           defaultMessage="Ride the {name} funicular ({agency})"

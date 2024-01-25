@@ -1,7 +1,7 @@
 // The meaning of the route "route_type" enum in GTFS.
 // See: https://gtfs.org/schedule/reference/#routestxt
 
-const TransitModes = {
+export const MODES = {
   TRAM_STREETCAR_LIGHT_RAIL: 0,
   SUBWAY_METRO: 1,
   RAIL_INTERCITY_LONG_DISTANCE: 2,
@@ -17,4 +17,22 @@ const TransitModes = {
   FUNICULAR: 7,
 };
 
-export default TransitModes;
+export const CATEGORIES = {
+  TRAINS: 'trains',
+  BUSES: 'buses',
+  FERRIES: 'ferries',
+};
+
+export const CATEGORY_TO_MODES = {
+  [CATEGORIES.TRAINS]: [
+    MODES.TRAM_STREETCAR_LIGHT_RAIL,
+    MODES.SUBWAY_METRO,
+    MODES.RAIL_INTERCITY_LONG_DISTANCE,
+    MODES.MONORAIL,
+    MODES.CABLE_TRAM,
+    MODES.AERIAL_TRAM_SUSPENDED_CABLE_CAR,
+    MODES.FUNICULAR,
+  ],
+  [CATEGORIES.BUSES]: [MODES.BUS, MODES.TROLLEYBUS],
+  [CATEGORIES.FERRIES]: [MODES.FERRY],
+};
