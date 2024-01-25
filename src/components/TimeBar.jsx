@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import ModalDialog from './primitives/ModalDialog';
+import DialogSubmitButton from './primitives/DialogSubmitButton';
 import * as RadioGroup from '@radix-ui/react-radio-group';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './Icon';
@@ -188,24 +189,12 @@ export default function TimeBar(props) {
               />
             )}
           </RadioGroup.Root>
-          <button
-            type="submit"
-            onClick={handleUpdateClick}
-            className="outline-none select-none cursor-pointer
-              text-base rounded-md py-1.5 px-3
-              focus:outline-none focus:ring-0 focus:ring-offset-0
-              focus-visible:ring
-              focus-visible:ring-blue-400 dark:focus-visible:ring-blue-600
-              focus-visible:ring-opacity-75 focus-visible:ring-offset-2
-              bg-blue-500 text-white
-              hover:bg-blue-600 dark:hover:bg-blue-400
-              border border-solid border-gray-300 dark:border-gray-600"
-          >
+          <DialogSubmitButton onClick={handleUpdateClick}>
             <FormattedMessage
               defaultMessage="Update"
               description="button. Saves changes made in a dialog box."
             />
-          </button>
+          </DialogSubmitButton>
         </form>
       </ModalDialog>
     </div>
