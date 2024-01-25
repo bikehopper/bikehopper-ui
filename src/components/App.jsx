@@ -53,15 +53,22 @@ function App(props) {
     );
   }
 
+  const shouldDisplayTopBar = !viewingDetails;
+  const [haveTopBarIncludingFade, setHaveTopBarIncludingFade] = React.useState(
+    !shouldDisplayTopBar,
+  );
+
   const topBar = (
     <Transition
-      show={!viewingDetails}
+      show={shouldDisplayTopBar}
       enter="transition-opacity ease-out duration-300"
       enterFrom="opacity-0"
       enterTo="opacity-100"
       leave="transition-opacity ease-in duration-200"
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
+      beforeEnter={() => setHaveTopBarIncludingFade(true)}
+      afterLeave={() => setHaveTopBarIncludingFade(false)}
     >
       <TopBar
         showSearchBar={isEditingLocations || hasLocations || hasRoutes}
@@ -81,6 +88,10 @@ function App(props) {
         <AlertBar />
         <MapPlusOverlay
           topContent={topBar}
+          topBarEmpty={
+            /* prop change forces controls to move */
+            !haveTopBarIncludingFade
+          }
           hideMap={isEditingLocations}
           bottomContent={bottomContent}
         />
