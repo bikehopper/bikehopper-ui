@@ -209,17 +209,6 @@ export function locationsSubmitted() {
       connectingModes,
     } = getState().routeParams;
 
-    const blockRouteTypes = [];
-    for (const modeCategory of Object.values(TransitModes.CATEGORIES)) {
-      if (!connectingModes.includes(modeCategory)) {
-        for (const modeInCategory of TransitModes.CATEGORY_TO_MODES[
-          modeCategory
-        ]) {
-          blockRouteTypes.push(modeInCategory);
-        }
-      }
-    }
-
     const hydrate = async function hydrate(text, location, startOrEnd) {
       // Decide whether to use the text or location:
       let useLocation = false;
@@ -329,7 +318,7 @@ export function locationsSubmitted() {
         resultingEndLocation.point.geometry.coordinates,
         arriveBy,
         initialTime,
-        blockRouteTypes,
+        _computeBlockRouteTypes(connectingModes),
       )(dispatch, getState);
     }
   };
@@ -344,13 +333,15 @@ export function locationDragged(startOrEnd, coords) {
     });
 
     // If we have a location for the other point, fetch a route.
-    let { start, end, arriveBy, initialTime } = getState().routeParams;
+    let { start, end, arriveBy, initialTime, connectingModes } =
+      getState().routeParams;
     if (startOrEnd === 'start' && end?.point?.geometry.coordinates) {
       await fetchRoute(
         coords,
         end.point.geometry.coordinates,
         arriveBy,
         initialTime,
+        _computeBlockRouteTypes(connectingModes),
       )(dispatch, getState);
     } else if (startOrEnd === 'end' && start?.point?.geometry.coordinates) {
       await fetchRoute(
@@ -358,6 +349,7 @@ export function locationDragged(startOrEnd, coords) {
         coords,
         arriveBy,
         initialTime,
+        _computeBlockRouteTypes(connectingModes),
       )(dispatch, getState);
     }
   };
@@ -374,13 +366,15 @@ export function locationSelectedOnMap(startOrEnd, coords) {
     });
 
     // If we have a location for the other point, fetch a route.
-    let { start, end, arriveBy, initialTime } = getState().routeParams;
+    let { start, end, arriveBy, initialTime, connectingModes } =
+      getState().routeParams;
     if (startOrEnd === 'start' && end?.point?.geometry.coordinates) {
       await fetchRoute(
         coords,
         end.point.geometry.coordinates,
         arriveBy,
         initialTime,
+        _computeBlockRouteTypes(connectingModes),
       )(dispatch, getState);
     } else if (startOrEnd === 'end' && start?.point?.geometry.coordinates) {
       await fetchRoute(
@@ -388,6 +382,7 @@ export function locationSelectedOnMap(startOrEnd, coords) {
         coords,
         arriveBy,
         initialTime,
+        _computeBlockRouteTypes(connectingModes),
       )(dispatch, getState);
     }
   };
@@ -520,4 +515,18 @@ export function changeConnectingModes(newConnectingModes) {
     // If we have a location, fetch a route.
     dispatch(locationsSubmitted());
   };
+}
+
+function _computeBlockRouteTypes(connectingModes) {
+  const blockRouteTypes = [];
+  for (const modeCategory of Object.values(TransitModes.CATEGORIES)) {
+    if (!connectingModes.includes(modeCategory)) {
+      for (const modeInCategory of TransitModes.CATEGORY_TO_MODES[
+        modeCategory
+      ]) {
+        blockRouteTypes.push(modeInCategory);
+      }
+    }
+  }
+  return blockRouteTypes;
 }
