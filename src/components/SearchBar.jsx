@@ -17,6 +17,7 @@ import {
   LocationSourceType,
   swapLocations,
 } from '../features/routeParams';
+import RouteOptionsDialog from './RouteOptionsDialog';
 import usePrevious from '../hooks/usePrevious';
 import { ReactComponent as NavLeftArrow } from 'iconoir/icons/nav-arrow-left.svg';
 import { ReactComponent as SwapArrows } from 'iconoir/icons/data-transfer-both.svg';
@@ -178,8 +179,11 @@ export default function SearchBar(props) {
   };
 
   const [isOptionsDialogOpen, setIsOptionsDialogOpen] = React.useState(false);
-  const handleOptionsDialogOpenChange = (evt) => {
-    // todo
+  const handleOptionsDialogTrigger = () => setIsOptionsDialogOpen(true);
+  const handleOptionsDialogCancel = () => setIsOptionsDialogOpen(false);
+  const handleOptionsDialogApply = () => {
+    // todo: actually apply the choice
+    setIsOptionsDialogOpen(false);
   };
 
   const startPointMsg = intl.formatMessage({
@@ -262,8 +266,14 @@ export default function SearchBar(props) {
         <TimeBar />
       </div>
       <div className="flex flex-col">
+        <RouteOptionsDialog
+          isOpen={isOptionsDialogOpen}
+          onCancel={handleOptionsDialogCancel}
+          onApply={handleOptionsDialogApply}
+          globalConnectingModes={['train', 'bus', 'ferry'] /* todo */}
+        />
         <button
-          onClick={undefined /*todo*/}
+          onClick={handleOptionsDialogTrigger}
           className="text-bikehopperyellow h-10 w-12 -mr-3
             flex items-center justify-center
             bg-transparent border-0"
