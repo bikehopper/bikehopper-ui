@@ -126,7 +126,7 @@ export default function Itinerary({
         </div>
       </div>
       <div className="Itinerary_elevation">
-        <ItineraryElevationProfile route={route}></ItineraryElevationProfile>
+        <ItineraryElevationProfile route={route} />
       </div>
       <div className="Itinerary_timeline">
         {renderedLegs}

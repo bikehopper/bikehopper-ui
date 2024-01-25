@@ -1,13 +1,15 @@
 import * as React from 'react';
+import { useIntl } from 'react-intl';
 
 import './ItineraryElevationProfile.css';
 
 import { BIKEHOPPER_THEME_COLOR, DEFAULT_PT_COLOR } from '../lib/colors';
-import { getAgencyDisplayName } from '../lib/region';
 
 import distance from '@turf/distance';
 import * as turf from '@turf/helpers';
 import { LineCanvas } from '@nivo/line';
+
+const METERS_PER_FOOT = 0.3048;
 
 function formatBikeLeg(bikeLeg, i) {
   return {
@@ -47,45 +49,71 @@ function range(start, stop, step) {
   return result;
 }
 
-export default function ItineraryElevationProfile(props) {
-  const { route } = props;
+function calcluateXTicks(startX, endX, bikePixelsPerDist) {
+  let tickValues = [];
+  const step = bikePixelsPerDist < 7 ? 5 : bikePixelsPerDist < 15 ? 2 : 1;
+  tickValues = range(Math.ceil(startX), Math.ceil(endX), step);
+  let firstTick = Math.ceil(startX * 10) / 10;
+  let increment = 1;
+  while ((firstTick - startX) * bikePixelsPerDist <= 9) {
+    firstTick = Math.ceil(startX * 10 + increment) / 10;
+    increment++;
+  }
+  if (!tickValues.length) {
+    tickValues = [firstTick];
+  }
+  if ((tickValues[0] - firstTick) * bikePixelsPerDist > 17) {
+    tickValues.unshift(firstTick);
+  }
+  let lastTick = Math.floor(endX * 10) / 10;
+  let decrement = 1;
+  while ((endX - lastTick) * bikePixelsPerDist <= 9) {
+    lastTick = Math.floor(endX * 10 - decrement) / 10;
+    decrement++;
+  }
+  if ((lastTick - tickValues[tickValues.length - 1]) * bikePixelsPerDist > 17) {
+    tickValues.push(lastTick);
+  }
+  return tickValues;
+}
+
+export default function ItineraryElevationProfile({ route }) {
+  const intl = useIntl();
 
   const legs = [];
   const ptLegs = [];
-  let ptLegWithoutHeight = [];
+  let ptLegIdxsWithoutHeight = [];
   let currentDist = 0;
   let currentPoint = route.legs[0].geometry.coordinates[0];
-  let maxHeight = 0;
-  let minHeight = 0;
-  let minHeightChanged = false;
+  let maxHeight = -Infinity;
+  let minHeight = Infinity;
   let bikeDist = 0;
   let longestBikeDist = 0;
   let longestBikeIdx = -1;
   let currPTLeg = { data: [] };
   let currBikeLeg = { data: [] };
-  for (let i = 0; i < route.legs.length; i++) {
-    const leg = route.legs[i];
-    for (let j = 0; j < leg.geometry.coordinates.length; j++) {
-      const point = leg.geometry.coordinates[j];
+  for (const [legIdx, leg] of route.legs.entries()) {
+    for (const [pointIdx, point] of leg.geometry.coordinates.entries()) {
       const dist = distance(turf.point(currentPoint), turf.point(point), {
         units: 'miles',
       });
       currentDist += dist;
       currentPoint = point;
+
+      // Handle point with elevation data (all bike legs)
       if (point.length === 3) {
-        const pointHeight = currentPoint[2] / 0.3048;
+        const pointHeight = currentPoint[2] / METERS_PER_FOOT;
         currBikeLeg.data.push({ x: currentDist, y: pointHeight });
-        if (pointHeight > maxHeight) {
-          maxHeight = pointHeight;
-        }
-        if (pointHeight < minHeight) {
-          minHeight = pointHeight;
-          minHeightChanged = true;
-        }
+        maxHeight = Math.max(pointHeight, maxHeight);
+        minHeight = Math.min(pointHeight, minHeight);
+
+        // Calculate start/end heights for public transit legs
+
+        // Get start height for next PT leg
         if (
-          j === leg.geometry.coordinates.length - 1 &&
-          i < route.legs.length - 1 &&
-          route.legs[i + 1].type === 'pt'
+          pointIdx === leg.geometry.coordinates.length - 1 &&
+          legIdx < route.legs.length - 1 &&
+          route.legs[legIdx + 1].type === 'pt'
         ) {
           currPTLeg.data.push({
             x: currentDist,
@@ -93,49 +121,63 @@ export default function ItineraryElevationProfile(props) {
             type: 'start',
           });
         }
-        if (j === 0 && i > 0 && route.legs[i - 1].type === 'pt') {
+
+        // Get end height for previous PT leg
+        if (
+          pointIdx === 0 &&
+          legIdx > 0 &&
+          route.legs[legIdx - 1].type === 'pt'
+        ) {
           currPTLeg.data.push({ x: currentDist, y: pointHeight, type: 'end' });
           ptLegs.push(currPTLeg);
-          legs.push(formatPTLeg(currPTLeg, i));
+          legs.push(formatPTLeg(currPTLeg, legIdx - 1));
           currPTLeg = { data: [] };
           // Check if we have any transit legs without a start/end height
-          if (ptLegWithoutHeight.length) {
-            const startHeight = ptLegs[ptLegWithoutHeight[0]].data[0].y;
+          if (ptLegIdxsWithoutHeight.length) {
+            const startHeight = ptLegs[ptLegIdxsWithoutHeight[0]].data[0].y;
             const heightDiff = pointHeight - startHeight;
-            for (let k = 0; k < ptLegWithoutHeight.length; k++) {
-              const frac = (k + 1) / (ptLegWithoutHeight.length + 1);
-              ptLegs[ptLegWithoutHeight[k]].data[1].y =
+            for (let k = 0; k < ptLegIdxsWithoutHeight.length; k++) {
+              // Cacluate share of hieght difference that should be assigned to this leg
+              const frac = (k + 1) / (ptLegIdxsWithoutHeight.length + 1);
+              ptLegs[ptLegIdxsWithoutHeight[k]].data[1].y =
                 startHeight + frac * heightDiff;
-              ptLegs[ptLegWithoutHeight[k] + 1].data[0].y =
+              ptLegs[ptLegIdxsWithoutHeight[k] + 1].data[0].y =
                 startHeight + frac * heightDiff;
             }
-            ptLegWithoutHeight = [];
+            ptLegIdxsWithoutHeight = [];
           }
         }
       } else {
         // Sometimes two transit legs are next to each other without a bike leg in between
         if (
-          j === leg.geometry.coordinates.length - 1 &&
-          i < route.legs.length - 1 &&
-          route.legs[i + 1].type === 'pt'
+          pointIdx === leg.geometry.coordinates.length - 1 &&
+          legIdx < route.legs.length - 1 &&
+          route.legs[legIdx + 1].type === 'pt'
         ) {
           currPTLeg.data.push({ x: currentDist, y: null, type: 'end' });
           ptLegs.push(currPTLeg);
-          legs.push(formatPTLeg(currPTLeg, i));
+          legs.push(formatPTLeg(currPTLeg, legIdx));
           currPTLeg = { data: [] };
-          ptLegWithoutHeight.push(ptLegs.length - 1);
+          ptLegIdxsWithoutHeight.push(ptLegs.length - 1);
         }
-        if (j === 0 && i > 0 && route.legs[i - 1].type === 'pt') {
+        if (
+          pointIdx === 0 &&
+          legIdx > 0 &&
+          route.legs[legIdx - 1].type === 'pt'
+        ) {
           currPTLeg.data.push({ x: currentDist, y: null, type: 'start' });
         }
       }
-      if (j === 0 && leg.type === 'pt') {
+
+      // Set params for the PT leg
+      if (pointIdx === 0 && leg.type === 'pt') {
         const color = leg.route_color ?? DEFAULT_PT_COLOR;
         currPTLeg['color'] = color;
         currPTLeg['label'] = leg.route_name;
         currPTLeg['name'] = leg.trip_id;
       }
     }
+    // Once we're done iterating through the points, push the bike leg to the list
     if (leg.type === 'bike2') {
       const endX = currBikeLeg.data[currBikeLeg.data.length - 1].x;
       const startX = currBikeLeg.data[0].x;
@@ -143,43 +185,62 @@ export default function ItineraryElevationProfile(props) {
       bikeDist += bikeLegDist;
       currBikeLeg['dist'] = bikeLegDist;
       if (bikeLegDist > longestBikeDist) {
-        longestBikeIdx = i;
+        longestBikeIdx = legIdx;
         longestBikeDist = bikeLegDist;
       }
-      legs.push(formatBikeLeg(currBikeLeg, i));
+      legs.push(formatBikeLeg(currBikeLeg, legIdx));
       currBikeLeg = { data: [] };
     }
   }
 
+  function round5(x) {
+    return Math.ceil(x / 5) * 5;
+  }
+
+  const minYElev = round5(minHeight - 5);
+  const maxYElev = round5(maxHeight + 5);
+  const medYElev = round5((minYElev + maxYElev) / 2);
+
+  // Chart params
   const yScale = {
     type: 'linear',
-    min: minHeightChanged ? minHeight - 5 : 0,
-    max: maxHeight + 5,
+    min: minYElev,
+    max: maxYElev,
   };
 
+  const yTicks = [minYElev, medYElev, maxYElev];
+
   const axisLeft = {
-    legend: 'Feet',
+    legend: intl.formatMessage({
+      defaultMessage: 'Feet',
+      description: 'legend at the left (y-axis) of elevation graph',
+    }),
     legendPosition: 'middle',
     legendOffset: -40,
+    tickValues: yTicks,
   };
 
   const defaultMargin = {
-    top: 50,
+    top: 30,
     bottom: 50,
   };
 
-  const chartHeight = 400;
-  const totalWidth = 800;
-  const ptWidthFrac = 0.1;
-  const endMargin = 50;
+  const chartHeight = 150;
+  const ptWidthFrac = 0.15;
+  const leftMargin = 50;
+  const rightMargin = 30;
+  const itineraryPadding = 32;
+  const totalWidth = window.innerWidth - itineraryPadding * 2;
 
   const bikeWidth =
-    (totalWidth - 2 * endMargin) * (1 - ptLegs.length * ptWidthFrac);
+    (totalWidth - leftMargin - rightMargin) * (1 - ptLegs.length * ptWidthFrac);
+
+  // Calculate how many pixels per mile (in this case) for bike legs
   const bikePixelsPerDist = bikeWidth / bikeDist;
 
   return (
     <div style={{ display: 'flex' }}>
-      {legs.map((leg, i) => {
+      {legs.map((leg, legIdx) => {
         const startX = leg.data[0].x;
         const endX = leg.data[leg.data.length - 1].x;
         const xScale = {
@@ -188,64 +249,42 @@ export default function ItineraryElevationProfile(props) {
           max: endX,
         };
         if (leg.id.startsWith('bike')) {
-          let tickValues = [];
-          if (leg.dist * bikePixelsPerDist > 25) {
-            const step =
-              bikePixelsPerDist < 7 ? 5 : bikePixelsPerDist < 15 ? 2 : 1;
-            tickValues = range(Math.ceil(startX), Math.ceil(endX), step);
-            let firstTick = Math.ceil(startX * 10) / 10;
-            let increment = 1;
-            while ((firstTick - startX) * bikePixelsPerDist <= 9) {
-              firstTick = Math.ceil(startX * 10 + increment) / 10;
-              increment++;
-            }
-            if (!tickValues.length) {
-              tickValues = [firstTick];
-            }
-            if ((tickValues[0] - firstTick) * bikePixelsPerDist > 17) {
-              tickValues.unshift(firstTick);
-            }
-            let lastTick = Math.floor(endX * 10) / 10;
-            let decrement = 1;
-            while ((endX - lastTick) * bikePixelsPerDist <= 9) {
-              lastTick = Math.floor(endX * 10 - decrement) / 10;
-              decrement++;
-            }
-            if (
-              (lastTick - tickValues[tickValues.length - 1]) *
-                bikePixelsPerDist >
-              17
-            ) {
-              tickValues.push(lastTick);
-            }
-          }
           const legWidth = leg.dist * bikePixelsPerDist;
+          const xTicks =
+            legWidth < 25
+              ? []
+              : calcluateXTicks(startX, endX, bikePixelsPerDist);
           const axisBottom =
-            i === longestBikeIdx
+            legIdx === longestBikeIdx
               ? {
-                  tickValues,
-                  legend: 'Miles',
+                  tickValues: xTicks,
+                  legend: intl.formatMessage({
+                    defaultMessage: 'Miles',
+                    description:
+                      'legend at the bottom (x-axis) of elevation graph',
+                  }),
                   legendPosition: 'middle',
                   legendOffset: 30,
                 }
-              : { tickValues };
+              : { tickValues: xTicks };
           let margin = defaultMargin;
           let width = legWidth;
-          if (i === 0) {
+          if (legIdx === 0) {
             margin = {
-              left: endMargin,
+              left: leftMargin,
               ...defaultMargin,
             };
-            width += endMargin;
-          } else if (i === legs.length - 1) {
+            width += leftMargin;
+          } else if (legIdx === legs.length - 1) {
             margin = {
-              right: endMargin,
+              right: rightMargin,
               ...defaultMargin,
             };
-            width += endMargin;
+            width += rightMargin;
           }
           return (
             <LineCanvas
+              key={leg.id}
               data={[leg]}
               width={width}
               height={chartHeight}
@@ -254,9 +293,11 @@ export default function ItineraryElevationProfile(props) {
               colors={(d) => d.color}
               pointSize={0}
               enableArea={true}
-              axisLeft={i === 0 ? axisLeft : null}
+              areaBaselineValue={minYElev}
+              axisLeft={legIdx === 0 ? axisLeft : null}
               axisBottom={axisBottom}
-              gridXValues={tickValues}
+              gridXValues={xTicks}
+              gridYValues={yTicks}
               margin={margin}
               isInteractive={false}
             />
@@ -265,29 +306,34 @@ export default function ItineraryElevationProfile(props) {
           const axisTop = {
             legend: leg.label,
             legendPosition: 'middle',
+            legendOffset: 5,
             tickValues: [],
           };
           const roundedDist = Math.ceil((endX - startX) * 10) / 10;
           const axisBottom = {
-            legend: `${roundedDist} mile${roundedDist === 1 ? '' : 's'}`,
+            legend: `${roundedDist}mi`,
             legendPosition: 'middle',
             legendOffset: 10,
             tickValues: [],
           };
           return (
             <LineCanvas
+              key={leg.id}
               data={[leg]}
               width={totalWidth * ptWidthFrac}
               height={chartHeight}
               xScale={xScale}
               yScale={yScale}
-              enableGridX={false}
+              enableGridX={true}
+              gridXValues={[startX + 0.01, endX - 0.01]}
+              gridYValues={yTicks}
               colors={(d) => d.color}
               pointSize={0}
               axisLeft={null}
               axisTop={axisTop}
               axisBottom={axisBottom}
               enableArea={true}
+              areaBaselineValue={minYElev}
               isInteractive={false}
               margin={defaultMargin}
             />
