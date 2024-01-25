@@ -10,6 +10,7 @@ import {
 } from './SearchAutocompleteDropdown';
 import {
   blurSearchWithUnchangedLocations,
+  changeConnectingModes,
   changeLocationTextInput,
   clearRouteParams,
   locationInputFocused,
@@ -29,17 +30,24 @@ export default function SearchBar(props) {
   const dispatch = useDispatch();
   const intl = useIntl();
 
-  const { startLocation, startText, endLocation, endText, editingLocation } =
-    useSelector(
-      (state) => ({
-        startLocation: state.routeParams.start,
-        endLocation: state.routeParams.end,
-        startText: state.routeParams.startInputText,
-        endText: state.routeParams.endInputText,
-        editingLocation: state.routeParams.editingLocation,
-      }),
-      shallowEqual,
-    );
+  const {
+    startLocation,
+    startText,
+    endLocation,
+    endText,
+    editingLocation,
+    connectingModes,
+  } = useSelector(
+    (state) => ({
+      startLocation: state.routeParams.start,
+      endLocation: state.routeParams.end,
+      startText: state.routeParams.startInputText,
+      endText: state.routeParams.endInputText,
+      editingLocation: state.routeParams.editingLocation,
+      connectingModes: state.routeParams.connectingModes,
+    }),
+    shallowEqual,
+  );
 
   const startRef = React.useRef();
   const endRef = React.useRef();
@@ -181,8 +189,10 @@ export default function SearchBar(props) {
   const [isOptionsDialogOpen, setIsOptionsDialogOpen] = React.useState(false);
   const handleOptionsDialogTrigger = () => setIsOptionsDialogOpen(true);
   const handleOptionsDialogCancel = () => setIsOptionsDialogOpen(false);
-  const handleOptionsDialogApply = () => {
-    // todo: actually apply the choice
+  const handleOptionsDialogApply = (values) => {
+    if (!shallowEqual(connectingModes, values.connectingModes)) {
+      dispatch(changeConnectingModes(values.connectingModes));
+    }
     setIsOptionsDialogOpen(false);
   };
 
@@ -270,7 +280,7 @@ export default function SearchBar(props) {
           isOpen={isOptionsDialogOpen}
           onCancel={handleOptionsDialogCancel}
           onApply={handleOptionsDialogApply}
-          globalConnectingModes={['train', 'bus', 'ferry'] /* todo */}
+          globalConnectingModes={connectingModes}
         />
         <button
           onClick={handleOptionsDialogTrigger}
