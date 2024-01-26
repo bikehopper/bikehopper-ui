@@ -110,7 +110,10 @@ export default function SearchAutocompleteDropdown(props) {
 
       // Limit result size, don't show the location already selected as start
       // point as a candidate for end point (or vice versa), and hydrate.
-      const otherId = state.routeParams[other]?.point?.properties?.osm_id;
+      const otherId =
+        state.routeParams[other]?.point?.properties?.osm_id &&
+        state.routeParams[other].point.properties.osm_type +
+          state.routeParams[other].point.properties.osm_id;
       const shownFeatures = [
         ...autocompleteFeatureIds.map((id) => state.geocoding.osmCache[id]),
         ...recentlyUsedFeatureIds.map((id) => ({
@@ -118,7 +121,11 @@ export default function SearchAutocompleteDropdown(props) {
           fromRecentlyUsed: true,
         })),
       ]
-        .filter((feat) => feat.properties.osm_id !== otherId)
+        .filter(
+          (feat) =>
+            feat?.properties?.osm_type &&
+            feat.properties.osm_type + feat.properties.osm_id !== otherId,
+        )
         .slice(0, 8);
 
       return {
