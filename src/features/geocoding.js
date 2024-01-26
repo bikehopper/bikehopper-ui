@@ -9,21 +9,25 @@ const RECENTLY_USED_LIMIT = 8;
 // expire after just over a week, so if you travel somewhere weekly, you'll retain it
 const RECENTLY_USED_MAX_AGE_MS = (7 * 24 + 6) * 60 * 60 * 1000;
 
+// note: all uses of OSM IDs as keys should be prefixed with one character
+// representing the type N for node, R for relation, W for way.
+// for example osm_id 100 and osm_type N => "N100"
+
 const DEFAULT_STATE = {
   // maps location strings to {
   //    status: 'fetching' | 'failed' | 'succeeded',
   //    time: /* time as returned from Date.now() */,
-  //    osmIds: OSM ID strings,
+  //    osmIds: OSM type + ID strings,
   // }
   // all location strings are prefixed with '@' to avoid collisions w built-in attributes.
   typeaheadCache: {},
 
-  // maps OSM IDs (stringified) to Photon GeoJSON hashes
+  // maps OSM types + IDs (stringified) to Photon GeoJSON hashes
   osmCache: {},
 
   // recently used locations
   // each record contains {
-  //    id: /* OSM ID, should be in osmCache */,
+  //    id: /* OSM type + ID, should be in osmCache */,
   //    lastUsed: /* time of last use as returned from Date.now() */
   // }
   recentlyUsed: [],
@@ -63,10 +67,10 @@ export function geocodingReducer(state = DEFAULT_STATE, action) {
         const dedupedFeatures = uniqBy(action.features, 'properties.osm_id');
 
         for (const feat of dedupedFeatures) {
-          const id = feat.properties.osm_id;
-          if (id !== osmIds[osmIds.length - 1]) {
-            osmIds.push(id);
-            draft.osmCache[id] = feat;
+          const idWithType = feat.properties.osm_type + feat.properties.osm_id;
+          if (idWithType !== osmIds[osmIds.length - 1]) {
+            osmIds.push(idWithType);
+            draft.osmCache[idWithType] = feat;
           }
         }
         draft.typeaheadCache['@' + action.text] = {
@@ -78,7 +82,7 @@ export function geocodingReducer(state = DEFAULT_STATE, action) {
     case 'geocoded_location_selected':
       return produce(state, (draft) => {
         draft.recentlyUsed = _updateRecentlyUsed(state.recentlyUsed, [
-          action.point.properties.osm_id,
+          action.point.properties.osm_type + action.point.properties.osm_id,
         ]);
       });
     case 'locations_set':
@@ -88,8 +92,11 @@ export function geocodingReducer(state = DEFAULT_STATE, action) {
         draft.recentlyUsed = _updateRecentlyUsed(
           state.recentlyUsed,
           [action.start, action.end]
-            .map((loc) => loc?.point?.properties?.osm_id)
-            .filter((r) => r != null),
+            .filter((loc) => loc?.point?.properties?.osm_id != null)
+            .map(
+              (loc) =>
+                loc.point.properties.osm_type + loc.point.properties.osm_id,
+            ),
         );
       });
     case 'recently_used_location_removed':

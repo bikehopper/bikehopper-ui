@@ -51,12 +51,15 @@ export function initFromStorage() {
       typeof entry.ts === 'number' &&
       typeof entry.obj === 'object' &&
       typeof entry.obj.properties === 'object' &&
-      typeof entry.obj.properties.osm_id === 'number'
+      typeof entry.obj.properties.osm_id === 'number' &&
+      ['N', 'R', 'W'].includes(entry.obj.properties.osm_type)
     ) {
-      osmCache[entry.obj.properties.osm_id] = entry.obj;
+      const idWithType =
+        entry.obj.properties.osm_type + entry.obj.properties.osm_id;
+      osmCache[idWithType] = entry.obj;
       recentlyUsedCooked.push({
         lastUsed: entry.ts,
-        id: entry.obj.properties.osm_id,
+        id: idWithType,
       });
     } else if (process.env.NODE_ENV !== 'production') {
       console.warn('Ignoring invalid recently used entry:', entry);
