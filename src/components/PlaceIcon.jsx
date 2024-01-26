@@ -63,7 +63,8 @@ function _getSvgComponentForFeature(feature) {
     Klass = Summit;
   } else if (
     (key === 'natural' && (value === 'rock' || value === 'saddle')) ||
-    (key === 'highway' && value === 'footway' && type === 'street')
+    (key === 'highway' && value === 'footway' && type === 'street') ||
+    (key === 'highway' && value === 'path')
   ) {
     // mountain, trail
     Klass = Trekking;
