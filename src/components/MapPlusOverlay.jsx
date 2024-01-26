@@ -28,7 +28,9 @@ const _isTouch = 'ontouchstart' in window;
 function MapPlusOverlay(props) {
   const { bottomContent, topContent, hideMap } = props;
   const loading = useSelector(
-    (state) => state.routes.routeStatus === 'fetching',
+    (state) =>
+      state.routes.routeStatus === 'fetching' ||
+      state.geolocation.geolocationInProgress,
   );
 
   const mapRef = React.useRef();
