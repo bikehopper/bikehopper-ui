@@ -67,6 +67,14 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
           source: LocationSourceType.SelectedOnMap,
         };
         draft[action.startOrEnd + 'InputText'] = '';
+        if (state.start == null) {
+          // if no start point, and "directions to" was selected,
+          // route from current location.
+          draft.start = {
+            point: null,
+            source: LocationSourceType.UserGeolocation,
+          };
+        }
       });
     case 'params_hydrated_from_url':
       return produce(state, (draft) => {
@@ -376,14 +384,34 @@ export function locationSelectedOnMap(startOrEnd, coords) {
         initialTime,
         _computeBlockRouteTypes(connectingModes),
       )(dispatch, getState);
-    } else if (startOrEnd === 'end' && start?.point?.geometry.coordinates) {
-      await fetchRoute(
-        start.point.geometry.coordinates,
-        coords,
-        arriveBy,
-        initialTime,
-        _computeBlockRouteTypes(connectingModes),
-      )(dispatch, getState);
+    } else if (startOrEnd === 'end' && start != null) {
+      // Potentially geolocate user for start point
+      if (start?.source === LocationSourceType.UserGeolocation) {
+        await dispatch(geolocate());
+        const { lng, lat } = getState().geolocation;
+        if (lng == null || lat == null) return;
+
+        start = {
+          point: turf.point([lng, lat]),
+          source: LocationSourceType.UserGeolocation,
+        };
+
+        await dispatch({
+          type: 'locations_set',
+          start,
+          end,
+        });
+      }
+
+      if (start?.point?.geometry.coordinates) {
+        await fetchRoute(
+          start.point.geometry.coordinates,
+          coords,
+          arriveBy,
+          initialTime,
+          _computeBlockRouteTypes(connectingModes),
+        )(dispatch, getState);
+      }
     }
   };
 }
