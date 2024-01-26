@@ -7,16 +7,28 @@ const DEFAULT_STATE = {
   lng: null,
   accuracy: null,
   timestamp: null,
+
+  // are we actively attempting to geolocate?
+  geolocationInProgress: false,
 };
 
 export function geolocationReducer(state = DEFAULT_STATE, action) {
   switch (action.type) {
+    case 'geolocate_attempted':
+      return produce(state, (draft) => {
+        draft.geolocationInProgress = true;
+      });
     case 'geolocated':
       return produce(state, (draft) => {
+        draft.geolocationInProgress = false;
         draft.lat = action.coords.latitude;
         draft.lng = action.coords.longitude;
         draft.accuracy = action.coords.accuracy;
         draft.timestamp = action.timestamp;
+      });
+    case 'geolocate_failed':
+      return produce(state, (draft) => {
+        draft.geolocationInProgress = false;
       });
     default:
       return state;
