@@ -633,6 +633,12 @@
       "value": "Cancelar"
     }
   ],
+  "LIuTaV": [
+    {
+      "type": 0,
+      "value": "Opciones"
+    }
+  ],
   "O53Ykk": [
     {
       "type": 0,
@@ -813,6 +819,12 @@
     {
       "type": 0,
       "value": "Actualizar"
+    }
+  ],
+  "V5A9AA": [
+    {
+      "type": 0,
+      "value": "Ferris"
     }
   ],
   "WtbUjz": [
@@ -1029,6 +1041,12 @@
       "value": "haveStreet"
     }
   ],
+  "hmv35M": [
+    {
+      "type": 0,
+      "value": "Trenes"
+    }
+  ],
   "kK9a0r": [
     {
       "type": 0,
@@ -1167,6 +1185,12 @@
     {
       "type": 0,
       "value": ")"
+    }
+  ],
+  "qyWb6X": [
+    {
+      "type": 0,
+      "value": "Modos de conexión"
     }
   ],
   "solefl": [
@@ -1353,6 +1377,12 @@
     {
       "type": 0,
       "value": "Descartar"
+    }
+  ],
+  "zWq75T": [
+    {
+      "type": 0,
+      "value": "Autobuses"
     }
   ],
   "zc1Bca": [
