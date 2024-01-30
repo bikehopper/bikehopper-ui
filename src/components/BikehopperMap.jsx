@@ -34,7 +34,12 @@ import {
 } from '../lib/layout';
 
 import './BikehopperMap.css';
-import { DEFAULT_BIKE_COLOR, DEFAULT_INACTIVE_COLOR } from '../lib/colors';
+import {
+  BIKE_LANE_COLOR,
+  CYCLE_TRACK_COLOR,
+  DEFAULT_BIKE_COLOR,
+  DEFAULT_INACTIVE_COLOR,
+} from '../lib/colors';
 
 const _isTouch = 'ontouchstart' in window;
 
@@ -736,9 +741,9 @@ const bikeColorStyle = [
       propIs('cycleway', 'track'),
       propIs('road_class', ...BIKEABLE_HIGHWAYS),
     ],
-    '#006600',
-    propIs('cycleway', 'lane', 'shared_lane'),
-    '#33cc33',
+    CYCLE_TRACK_COLOR,
+    propIs('cycleway', 'lane', 'shared lane'),
+    BIKE_LANE_COLOR,
     DEFAULT_BIKE_COLOR,
   ],
 ];

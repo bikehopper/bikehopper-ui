@@ -1,11 +1,11 @@
 // TODO: option to use km, and maybe default to that based on locale?
 // note: FormatJS doesn't have anything built in for distance, unlike time.
 
-export default function formatDistance(meters, intl) {
+export default function formatDistance(meters, intl, options) {
   const feet = meters / 0.3048;
   const miles = feet / 5280;
 
-  if (miles >= 0.1) {
+  if (miles >= 0.1 && !options?.forceFeet) {
     // Desired precision is
     //   0.1, 0.2, ... 0.9 miles
     //   1, 1.1, 1.2, ... 9.9 miles

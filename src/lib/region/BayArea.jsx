@@ -24,6 +24,7 @@ export const AGENCY_COMMON_NAMES = {
   'AC TRANSIT': 'AC Transit',
   'Bay Area Rapid Transit': 'BART',
   'San Francisco Municipal Transportation Agency': 'Muni',
+  'Capitol Corridor Joint Powers Authority': 'Capitol Corridor',
 };
 
 // Generated; see scripts/gtfs/
