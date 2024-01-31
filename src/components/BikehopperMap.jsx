@@ -742,7 +742,7 @@ const bikeColorStyle = [
       propIs('road_class', ...BIKEABLE_HIGHWAYS),
     ],
     CYCLE_TRACK_COLOR,
-    propIs('cycleway', 'lane', 'shared lane'),
+    propIs('cycleway', 'lane', 'shared_lane'),
     BIKE_LANE_COLOR,
     DEFAULT_BIKE_COLOR,
   ],
