@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import classnames from 'classnames';
 import { removeRecentlyUsedLocation } from '../features/geocoding';
 import {
   LocationSourceType,
@@ -14,8 +15,6 @@ import SelectionList from './SelectionList';
 import SelectionListItem from './SelectionListItem';
 
 import { ReactComponent as Position } from 'iconoir/icons/position.svg';
-
-import './SearchAutocompleteDropdown.css';
 
 const LIST_ITEM_CLASSNAME = 'SearchAutocompleteDropdown_place';
 
@@ -159,43 +158,36 @@ export default function SearchAutocompleteDropdown(props) {
   };
 
   return (
-    <SelectionList className="SearchAutocompleteDropdown">
-      {showCurrentLocationOption && (
-        <SelectionListItem
-          buttonClassName={LIST_ITEM_CLASSNAME}
-          onClick={handleCurrentLocationClick}
-          onMouseDown={handleResultMousedown}
-        >
-          <Icon className="SearchAutocompleteDropdown_icon">
-            <Position />
-          </Icon>
-          <span className="SearchAutocompleteDropdown_placeDescription">
-            {currentLocationString}
-          </span>
-        </SelectionListItem>
-      )}
-      {features.map((feature, index) => (
-        <SelectionListItem
-          buttonClassName={LIST_ITEM_CLASSNAME}
-          key={feature.properties.osm_id + ':' + feature.properties.type}
-          onClick={handleClick.bind(null, index)}
-          onMouseDown={handleResultMousedown}
-          onRemoveClick={
-            feature.fromRecentlyUsed
-              ? handleRemoveClick.bind(null, index)
-              : null
-          }
-        >
-          <PlaceIcon
-            className="SearchAutocompleteDropdown_icon"
-            place={feature}
+    <div className="flex flex-col m-0">
+      <SelectionList className="flex-grow pointer-events-auto">
+        {showCurrentLocationOption && (
+          <AutocompleteItem
+            onClick={handleCurrentLocationClick}
+            onMouseDown={handleResultMousedown}
+            icon={
+              <Icon>
+                <Position />
+              </Icon>
+            }
+            text={currentLocationString}
           />
-          <span className="SearchAutocompleteDropdown_placeDescription">
-            {describePlace(feature)}
-          </span>
-        </SelectionListItem>
-      ))}
-    </SelectionList>
+        )}
+        {features.map((feature, index) => (
+          <AutocompleteItem
+            key={feature.properties.osm_id + ':' + feature.properties.type}
+            onClick={handleClick.bind(null, index)}
+            onMouseDown={handleResultMousedown}
+            onRemoveClick={
+              feature.fromRecentlyUsed
+                ? handleRemoveClick.bind(null, index)
+                : null
+            }
+            icon={<PlaceIcon place={feature} />}
+            text={describePlace(feature)}
+          />
+        ))}
+      </SelectionList>
+    </div>
   );
 }
 
@@ -209,4 +201,23 @@ export function isAutocompleteResultElement(domElement) {
 // but the browser in question does not focus it
 export function getLastAutocompleteResultMousedownTime() {
   return _resultMousedownTime;
+}
+
+function AutocompleteItem({ onClick, onMouseDown, onRemoveClick, icon, text }) {
+  return (
+    <SelectionListItem
+      buttonClassName={classnames(
+        LIST_ITEM_CLASSNAME,
+        'flex flex-row items-center text-[13px]',
+      )}
+      onClick={onClick}
+      onMouseDown={onMouseDown}
+      onRemoveClick={onRemoveClick}
+    >
+      {React.cloneElement(icon, {
+        className: 'relative top-0.5 my-0 -ml-2 md:ml-6 mr-2',
+      })}
+      <span className="align-middle">{text}</span>
+    </SelectionListItem>
+  );
 }
