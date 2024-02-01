@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import classnames from 'classnames';
 import { removeRecentlyUsedLocation } from '../features/geocoding';
 import {
   LocationSourceType,
@@ -14,8 +15,6 @@ import SelectionList from './SelectionList';
 import SelectionListItem from './SelectionListItem';
 
 import { ReactComponent as Position } from 'iconoir/icons/position.svg';
-
-import './SearchAutocompleteDropdown.css';
 
 const LIST_ITEM_CLASSNAME = 'SearchAutocompleteDropdown_place';
 
@@ -155,43 +154,44 @@ export default function SearchAutocompleteDropdown(props) {
   };
 
   return (
-    <SelectionList className="SearchAutocompleteDropdown">
-      {showCurrentLocationOption && (
-        <SelectionListItem
-          buttonClassName={LIST_ITEM_CLASSNAME}
-          onClick={handleCurrentLocationClick}
-          onMouseDown={handleResultMousedown}
-        >
-          <Icon className="SearchAutocompleteDropdown_icon">
-            <Position />
-          </Icon>
-          <span className="SearchAutocompleteDropdown_placeDescription">
-            {currentLocationString}
-          </span>
-        </SelectionListItem>
-      )}
-      {features.map((feature, index) => (
-        <SelectionListItem
-          buttonClassName={LIST_ITEM_CLASSNAME}
-          key={feature.properties.osm_id + ':' + feature.properties.type}
-          onClick={handleClick.bind(null, index)}
-          onMouseDown={handleResultMousedown}
-          onRemoveClick={
-            feature.fromRecentlyUsed
-              ? handleRemoveClick.bind(null, index)
-              : null
-          }
-        >
-          <PlaceIcon
-            className="SearchAutocompleteDropdown_icon"
-            place={feature}
-          />
-          <span className="SearchAutocompleteDropdown_placeDescription">
-            {describePlace(feature)}
-          </span>
-        </SelectionListItem>
-      ))}
-    </SelectionList>
+    <div className="flex flex-col m-0">
+      <SelectionList className="flex-grow pointer-events-auto">
+        {showCurrentLocationOption && (
+          <SelectionListItem
+            buttonClassName={classnames(
+              LIST_ITEM_CLASSNAME,
+              'flex flex-row items-center text-[13px]',
+            )}
+            onClick={handleCurrentLocationClick}
+            onMouseDown={handleResultMousedown}
+          >
+            <Icon className="relative top-0.5 my-0 mx-2">
+              <Position />
+            </Icon>
+            <span className="align-middle">{currentLocationString}</span>
+          </SelectionListItem>
+        )}
+        {features.map((feature, index) => (
+          <SelectionListItem
+            buttonClassName={classnames(
+              LIST_ITEM_CLASSNAME,
+              'flex flex-row items-center text-[13px]',
+            )}
+            key={feature.properties.osm_id + ':' + feature.properties.type}
+            onClick={handleClick.bind(null, index)}
+            onMouseDown={handleResultMousedown}
+            onRemoveClick={
+              feature.fromRecentlyUsed
+                ? handleRemoveClick.bind(null, index)
+                : null
+            }
+          >
+            <PlaceIcon className="relative top-0.5 my-0 mx-2" place={feature} />
+            <span className="align-middle">{describePlace(feature)}</span>
+          </SelectionListItem>
+        ))}
+      </SelectionList>
+    </div>
   );
 }
 
