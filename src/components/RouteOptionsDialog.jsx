@@ -9,7 +9,8 @@ import { CATEGORIES } from '../lib/TransitModes';
 
 import { ReactComponent as BusIcon } from 'iconoir/icons/bus.svg';
 import { ReactComponent as TrainIcon } from 'iconoir/icons/train.svg';
-import { ReactComponent as FerryIcon } from 'iconoir/icons/sea-waves.svg';
+//import { ReactComponent as FerryIcon } from 'iconoir/icons/sea-waves.svg';
+import { ReactComponent as FerryIcon } from '../../icons/ferry.svg';
 
 export default function RouteOptionsDialog({
   isOpen,
@@ -69,7 +70,7 @@ export default function RouteOptionsDialog({
                 '(including trams, subway trains, commuter trains, etc) ' +
                 'in directions.',
             })}
-            icon={<TrainIcon />}
+            icon={<TrainIcon className="w-6 h-6" />}
           />
           <ModeToggleGroupItem
             value={CATEGORIES.BUSES}
@@ -77,7 +78,7 @@ export default function RouteOptionsDialog({
               defaultMessage: 'Buses',
               description: 'toggle for whether to use buses in directions.',
             })}
-            icon={<BusIcon />}
+            icon={<BusIcon className="w-6 h-6" />}
           />
           <ModeToggleGroupItem
             value={CATEGORIES.FERRIES}
@@ -85,7 +86,7 @@ export default function RouteOptionsDialog({
               defaultMessage: 'Ferries',
               description: 'toggle for whether to use ferries in directions.',
             })}
-            icon={<FerryIcon />}
+            icon={<FerryIcon className="w-6 h-6" />}
           />
         </ToggleGroup.Root>
         <DialogSubmitButton onClick={handleApply}>
@@ -115,7 +116,7 @@ function ModeToggleGroupItem({ value, label, icon }) {
         focus:relative focus:outline-none focus-visible:z-20 focus-visible:ring
         focus-visible:ring-blue-500 focus-visible:ring-opacity-75"
     >
-      <div className="flex flex-col">
+      <div className="flex flex-col items-center">
         <Icon>{icon}</Icon>
         <span>{label}</span>
       </div>

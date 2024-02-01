@@ -5,8 +5,7 @@ import { ReactComponent as BusIcon } from 'iconoir/icons/bus.svg';
 import { ReactComponent as TrainIcon } from 'iconoir/icons/train.svg';
 import { ReactComponent as TramIcon } from 'iconoir/icons/tram.svg';
 import { ReactComponent as MetroIcon } from 'iconoir/icons/metro.svg';
-// There's no ferry icon in iconoir! Sea waves is the best I can do.
-import { ReactComponent as FerryIcon } from 'iconoir/icons/sea-waves.svg';
+import { ReactComponent as FerryIcon } from '../../icons/ferry.svg';
 
 /*
  * An icon to represent a transit mode, such as bus, ferry, or streetcar.
