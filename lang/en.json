@@ -63,6 +63,10 @@
     "description": "instruction",
     "message": "Continue{haveStreet, select, name { on <name>{street}</name>} other {}}"
   },
+  "AIRyuD": {
+    "description": "legend at the bottom (x-axis) of elevation graph",
+    "message": "Miles"
+  },
   "AVwHUu": {
     "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is an intercity or long-distance rail line.",
     "message": "Ride the {name} train ({agency})"
@@ -214,6 +218,10 @@
   "V5A9AA": {
     "description": "toggle for whether to use ferries in directions.",
     "message": "Ferries"
+  },
+  "WJwBci": {
+    "description": "legend at the left (y-axis) of elevation graph",
+    "message": "Feet"
   },
   "WtbUjz": {
     "description": "instruction",
