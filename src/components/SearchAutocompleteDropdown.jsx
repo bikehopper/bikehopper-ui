@@ -157,26 +157,19 @@ export default function SearchAutocompleteDropdown(props) {
     <div className="flex flex-col m-0">
       <SelectionList className="flex-grow pointer-events-auto">
         {showCurrentLocationOption && (
-          <SelectionListItem
-            buttonClassName={classnames(
-              LIST_ITEM_CLASSNAME,
-              'flex flex-row items-center text-[13px]',
-            )}
+          <AutocompleteItem
             onClick={handleCurrentLocationClick}
             onMouseDown={handleResultMousedown}
-          >
-            <Icon className="relative top-0.5 my-0 mx-2">
-              <Position />
-            </Icon>
-            <span className="align-middle">{currentLocationString}</span>
-          </SelectionListItem>
+            icon={
+              <Icon>
+                <Position />
+              </Icon>
+            }
+            text={currentLocationString}
+          />
         )}
         {features.map((feature, index) => (
-          <SelectionListItem
-            buttonClassName={classnames(
-              LIST_ITEM_CLASSNAME,
-              'flex flex-row items-center text-[13px]',
-            )}
+          <AutocompleteItem
             key={feature.properties.osm_id + ':' + feature.properties.type}
             onClick={handleClick.bind(null, index)}
             onMouseDown={handleResultMousedown}
@@ -185,10 +178,9 @@ export default function SearchAutocompleteDropdown(props) {
                 ? handleRemoveClick.bind(null, index)
                 : null
             }
-          >
-            <PlaceIcon className="relative top-0.5 my-0 mx-2" place={feature} />
-            <span className="align-middle">{describePlace(feature)}</span>
-          </SelectionListItem>
+            icon={<PlaceIcon place={feature} />}
+            text={describePlace(feature)}
+          />
         ))}
       </SelectionList>
     </div>
@@ -205,4 +197,21 @@ export function isAutocompleteResultElement(domElement) {
 // but the browser in question does not focus it
 export function getLastAutocompleteResultMousedownTime() {
   return _resultMousedownTime;
+}
+
+function AutocompleteItem({ onClick, onMouseDown, onRemoveClick, icon, text }) {
+  return (
+    <SelectionListItem
+      buttonClassName={classnames(
+        LIST_ITEM_CLASSNAME,
+        'flex flex-row items-center text-[13px]',
+      )}
+      onClick={onClick}
+      onMouseDown={onMouseDown}
+      onRemoveClick={onRemoveClick}
+    >
+      {React.cloneElement(icon, { className: 'relative top-0.5 my-0 mx-2' })}
+      <span className="align-middle">{text}</span>
+    </SelectionListItem>
+  );
 }
