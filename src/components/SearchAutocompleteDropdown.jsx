@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import classnames from 'classnames';
+import MoonLoader from 'react-spinners/MoonLoader';
 import { removeRecentlyUsedLocation } from '../features/geocoding';
 import {
   LocationSourceType,
@@ -195,10 +196,12 @@ export default function SearchAutocompleteDropdown(props) {
           />
         ))}
       </SelectionList>
-      <div className="px-8 py-4">
-        {loading && <span>loading...</span>}
-        {noResults && <span>nothing found</span>}
-      </div>
+      {(loading || noResults) && (
+        <div className="absolute inset-x-0 pt-4 pl-12 pointer-events-none">
+          <MoonLoader size={30} loading={loading} />
+          {noResults && <span>nothing found</span>}
+        </div>
+      )}
     </div>
   );
 }
