@@ -20,6 +20,7 @@ const DEFAULT_STATE = {
   //    osmIds: OSM type + ID strings,
   // }
   // all location strings are prefixed with '@' to avoid collisions w built-in attributes.
+  // if status is 'fetching', osmIds may still be present but stale, from an older fetch.
   typeaheadCache: {},
 
   // maps OSM types + IDs (stringified) to Photon GeoJSON hashes
@@ -48,10 +49,15 @@ export function geocodingReducer(state = DEFAULT_STATE, action) {
       });
     case 'geocode_attempted':
       return produce(state, (draft) => {
-        draft.typeaheadCache['@' + action.text] = {
+        const key = '@' + action.text;
+        draft.typeaheadCache[key] = {
           status: 'fetching',
           time: action.time,
         };
+        if (state.typeaheadCache[key]?.status === 'succeeded') {
+          // keep stale results available while the re-fetch is in progress
+          draft.typeaheadCache[key].osmIds = state.typeaheadCache[key].osmIds;
+        }
       });
     case 'geocode_failed':
       return produce(state, (draft) => {

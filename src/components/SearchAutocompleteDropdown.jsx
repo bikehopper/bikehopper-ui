@@ -41,15 +41,16 @@ export default function SearchAutocompleteDropdown(props) {
     noResults, // we explicitly searched and found no results
   } = useSelector((state) => {
     const startOrEnd = state.routeParams.editingLocation;
-    const inputText = state.routeParams[startOrEnd + 'InputText'];
+    const inputText = state.routeParams[startOrEnd + 'InputText'].trim();
     let autocompletedText = inputText; // May get changed below
-    let cache =
-      inputText && state.geocoding.typeaheadCache['@' + inputText.trim()];
+    let cache = inputText && state.geocoding.typeaheadCache['@' + inputText];
     let fallbackToGeocodedLocationSourceText = false;
     let loading = false;
     let noResults = false;
     if (!cache || cache.status !== 'succeeded') {
-      if (cache?.status === 'fetching') loading = true;
+      if (inputText !== '' && (!cache || cache?.status === 'fetching')) {
+        loading = true;
+      }
       // TODO: should we distinguish b/t server error & no match?
       if (cache?.status === 'failed') noResults = true;
 
@@ -66,7 +67,7 @@ export default function SearchAutocompleteDropdown(props) {
         autocompletedText = relevantLocation.fromInputText;
         cache = state.geocoding.typeaheadCache['@' + autocompletedText.trim()];
         fallbackToGeocodedLocationSourceText = true;
-      } else if (loading) {
+      } else if (loading && !cache?.osmIds) {
         // Still nothing? Try prefixes of the input text. Example: current input text is
         // "123 Main St" which hasn't been looked up yet but we have results for "123 Mai",
         // which came back while you were typing.
@@ -110,7 +111,7 @@ export default function SearchAutocompleteDropdown(props) {
       // could switch to always showing recently used locations that match
       // the text typed, alongside Photon results.
       recentlyUsedFeatureIds = state.geocoding.recentlyUsed.map((r) => r.id);
-    } else if (cache && cache.status === 'succeeded') {
+    } else if (cache?.osmIds?.length > 0) {
       autocompleteFeatureIds = cache.osmIds;
     }
 
@@ -197,7 +198,7 @@ export default function SearchAutocompleteDropdown(props) {
         ))}
       </SelectionList>
       {(loading || noResults) && (
-        <div className="absolute inset-x-0 pt-4 pl-12 pointer-events-none">
+        <div className="relative inset-x-0 pt-4 pl-12 pointer-events-none">
           <MoonLoader size={30} loading={loading} />
           {noResults && <span>nothing found</span>}
         </div>
