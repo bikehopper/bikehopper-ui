@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import classnames from 'classnames';
 import MoonLoader from 'react-spinners/MoonLoader';
@@ -31,9 +31,11 @@ export default function SearchAutocompleteDropdown(props) {
       'option that can be selected (or typed in) to get directions from or ' +
       'to the current location of the user, as determined by GPS',
   });
+  const strong = React.useCallback((txt) => <strong>{txt}</strong>, []);
 
   const {
     startOrEnd,
+    inputText,
     autocompletedText,
     features,
     showCurrentLocationOption,
@@ -137,6 +139,7 @@ export default function SearchAutocompleteDropdown(props) {
 
     return {
       startOrEnd,
+      inputText,
       autocompletedText,
       features: shownFeatures,
       showCurrentLocationOption,
@@ -200,7 +203,15 @@ export default function SearchAutocompleteDropdown(props) {
       {(loading || noResults) && (
         <div className="relative inset-x-0 pt-4 pl-12 pointer-events-none">
           <MoonLoader size={30} loading={loading} />
-          {noResults && <span>nothing found</span>}
+          {noResults && (
+            <span className="text-sm">
+              <FormattedMessage
+                defaultMessage="Nothing found for ''{inputText}''"
+                description="Message when no search results are found"
+                values={{ inputText, strong }}
+              />
+            </span>
+          )}
         </div>
       )}
     </div>
