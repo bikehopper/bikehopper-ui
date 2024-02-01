@@ -210,7 +210,9 @@ function AutocompleteItem({ onClick, onMouseDown, onRemoveClick, icon, text }) {
       onMouseDown={onMouseDown}
       onRemoveClick={onRemoveClick}
     >
-      {React.cloneElement(icon, { className: 'relative top-0.5 my-0 mx-2' })}
+      {React.cloneElement(icon, {
+        className: 'relative top-0.5 my-0 -ml-2 md:ml-6 mr-2',
+      })}
       <span className="align-middle">{text}</span>
     </SelectionListItem>
   );
