@@ -143,7 +143,11 @@ export default function SearchAutocompleteDropdown(props) {
   };
 
   const handleRemoveClick = (index) => {
-    dispatch(removeRecentlyUsedLocation(features[index].properties.osm_id));
+    dispatch(
+      removeRecentlyUsedLocation(
+        features[index].properties.osm_type + features[index].properties.osm_id,
+      ),
+    );
   };
 
   const handleCurrentLocationClick = () => {
