@@ -1,394 +1,394 @@
 {
     "Tqzrb2": {
-        "message": "Consiga indicaciones",
-        "description": "form header"
+        "description": "form header",
+        "defaultMessage": "Consiga indicaciones"
     },
     "4o9TQr": {
-        "message": "Bicicleta",
-        "description": "alt text for bicycle icon displayed in a summary of an itinerary"
+        "description": "alt text for bicycle icon displayed in a summary of an itinerary",
+        "defaultMessage": "Bicicleta"
     },
     "5eSv1b": {
-        "message": "Llegó al destino",
-        "description": "header text at end of step by step travel instructions"
+        "description": "header text at end of step by step travel instructions",
+        "defaultMessage": "Llegó al destino"
     },
     "8OXHea": {
-        "message": "BikeHopper es <link>de código abierto</link> bajo la Licencia Pública General Affero de GNU.",
-        "description": "paragraph in welcome screen, with link to project source code"
+        "description": "paragraph in welcome screen, with link to project source code",
+        "defaultMessage": "BikeHopper es <link>de código abierto</link> bajo la Licencia Pública General Affero de GNU."
     },
     "8jcDFc": {
-        "message": "{depart}–{arrive}",
-        "description": "compact departure and arrival time"
+        "description": "compact departure and arrival time",
+        "defaultMessage": "{depart}–{arrive}"
     },
     "9dKjNm": {
-        "message": "{num}pies",
-        "description": "compact version of a distance in feet"
+        "description": "compact version of a distance in feet",
+        "defaultMessage": "{num}pies"
     },
     "A7+u0L": {
-        "message": "Línea de transporte",
-        "description": "label for transit line when the mode (bus, train, etc) is unknown. Appears next to the name or number of the line."
+        "description": "label for transit line when the mode (bus, train, etc) is unknown. Appears next to the name or number of the line.",
+        "defaultMessage": "Línea de transporte"
     },
     "ADeXBy": {
-        "message": "Continúe {haveStreet, select, name { en <name>{street}</name>} other {}}",
-        "description": "instruction"
+        "description": "instruction",
+        "defaultMessage": "Continúe {haveStreet, select, name { en <name>{street}</name>} other {}}"
     },
     "AVwHUu": {
-        "message": "Viaje en el tren {name} ({agency})",
-        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is an intercity or long-distance rail line."
+        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is an intercity or long-distance rail line.",
+        "defaultMessage": "Viaje en el tren {name} ({agency})"
     },
     "BGoNGI": {
-        "message": "a través de {modes}",
-        "description": "Short summary of the modes used for a trip. Modes is a list which can include bike and/or  transit agency names such as BART and AC Transit."
+        "description": "Short summary of the modes used for a trip. Modes is a list which can include bike and/or  transit agency names such as BART and AC Transit.",
+        "defaultMessage": "a través de {modes}"
     },
     "CJUzIw": {
-        "message": "Háganos saber lo que piensa informándonos de errores, rutas que podrían mejorarse y otros comentarios en <link>este formulario</link>.",
-        "description": "paragraph in welcome screen, with link to feedback form"
+        "description": "paragraph in welcome screen, with link to feedback form",
+        "defaultMessage": "Háganos saber lo que piensa informándonos de errores, rutas que podrían mejorarse y otros comentarios en <link>este formulario</link>."
     },
     "DYUDwR": {
-        "message": "Sur",
-        "description": "cardinal direction, used in a sentence like \"Head south\""
+        "description": "cardinal direction, used in a sentence like \"Head south\"",
+        "defaultMessage": "Sur"
     },
     "EK5lQc": {
-        "message": "Atrás",
-        "description": "button to go back out of entering locations"
+        "description": "button to go back out of entering locations",
+        "defaultMessage": "Atrás"
     },
     "Ec4ONr": {
-        "message": "Tren",
-        "description": "labels a transit line as being operated by a train; specifically intercity or long-distance rail, but the label need not be that specific. Appears next to the name or number of the line."
+        "description": "labels a transit line as being operated by a train; specifically intercity or long-distance rail, but the label need not be that specific. Appears next to the name or number of the line.",
+        "defaultMessage": "Tren"
     },
     "Ew3thc": {
-        "message": "Embarcar en {stop}",
-        "description": "instruction to board (a public transit vehicle) at the named stop"
+        "description": "instruction to board (a public transit vehicle) at the named stop",
+        "defaultMessage": "Embarcar en {stop}"
     },
     "FlS1Kt": {
-        "message": "Ubicación actual",
-        "description": "option that can be selected (or typed in) to get directions from or to the current location of the user, as determined by GPS"
+        "description": "option that can be selected (or typed in) to get directions from or to the current location of the user, as determined by GPS",
+        "defaultMessage": "Ubicación actual"
     },
     "Gm6D00": {
-        "message": "Gira <dir>a la derecha</dir>{haveStreet, select, name { en <name>{street}</name>} other {}}",
-        "description": "instruction"
+        "description": "instruction",
+        "defaultMessage": "Gira <dir>a la derecha</dir>{haveStreet, select, name { en <name>{street}</name>} other {}}"
     },
     "GvWCFj": {
-        "message": "Funicular",
-        "description": "labels a transit line as being operated by a funicular. Appears next to the name or number of the bus line."
+        "description": "labels a transit line as being operated by a funicular. Appears next to the name or number of the bus line.",
+        "defaultMessage": "Funicular"
     },
     "HQjcNO": {
-        "message": "En esta beta temprana, BikeHopper está <strong>diseñado para pantallas de celulares</strong>, así que podría verse algo extraño en tu computadora.",
-        "description": "paragraph in welcome screen"
+        "description": "paragraph in welcome screen",
+        "defaultMessage": "En esta beta temprana, BikeHopper está <strong>diseñado para pantallas de celulares</strong>, así que podría verse algo extraño en tu computadora."
     },
     "HhhdHQ": {
-        "message": "Destino",
-        "description": "label for input box for ending point of directions"
+        "description": "label for input box for ending point of directions",
+        "defaultMessage": "Destino"
     },
     "IZFcvM": {
-        "message": "Autobús",
-        "description": "labels a transit line as being operated by a bus. Specifically a trolleybus but the label need not be that specific. Appears next to the name or number of the bus line."
+        "description": "labels a transit line as being operated by a bus. Specifically a trolleybus but the label need not be that specific. Appears next to the name or number of the bus line.",
+        "defaultMessage": "Autobús"
     },
     "Iblo/i": {
-        "message": "Manten la <dir>izquierda</dir>{haveStreet, select, name { en <name>{street}</name>} other {}}",
-        "description": "instruction"
+        "description": "instruction",
+        "defaultMessage": "Manten la <dir>izquierda</dir>{haveStreet, select, name { en <name>{street}</name>} other {}}"
     },
     "JPe1q0": {
-        "message": "{startTime} a {endTime}",
-        "description": "start and end time for a trip"
+        "description": "start and end time for a trip",
+        "defaultMessage": "{startTime} a {endTime}"
     },
     "K72bcr": {
-        "message": "Intercambiar",
-        "description": "button to swap start and end point"
+        "description": "button to swap start and end point",
+        "defaultMessage": "Intercambiar"
     },
     "O53Ykk": {
-        "message": "Destino",
-        "description": "label for input box for the place you want directions to"
+        "description": "label for input box for the place you want directions to",
+        "defaultMessage": "Destino"
     },
     "OFIR0U": {
-        "message": "{num}millas",
-        "description": "compact version of a distance in miles"
+        "description": "compact version of a distance in miles",
+        "defaultMessage": "{num}millas"
     },
     "OSSFYR": {
-        "message": "Suroeste",
-        "description": "cardinal direction, used in a sentence like \"Head southwest\""
+        "description": "cardinal direction, used in a sentence like \"Head southwest\"",
+        "defaultMessage": "Suroeste"
     },
     "P2HscU": {
-        "message": "Baja en {stop}",
-        "description": "instruction to exit (a public transit vehicle) at the named stop"
+        "description": "instruction to exit (a public transit vehicle) at the named stop",
+        "defaultMessage": "Baja en {stop}"
     },
     "QziTff": {
-        "message": "Manten la <dir>derecha</dir>{haveStreet, select, name { en <name>{street}</name>} other {}}",
-        "description": "instruction"
+        "description": "instruction",
+        "defaultMessage": "Manten la <dir>derecha</dir>{haveStreet, select, name { en <name>{street}</name>} other {}}"
     },
     "SFcnNL": {
-        "message": "Toma el tren {name} ({agency})",
-        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by tram, streetcar or light rail."
+        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by tram, streetcar or light rail.",
+        "defaultMessage": "Toma el tren {name} ({agency})"
     },
     "SyUGCG": {
-        "message": "Gira a la <dir>izquierda</dir>{haveStreet, select, name { en <name>{street}</name>} other {}}",
-        "description": "instruction"
+        "description": "instruction",
+        "defaultMessage": "Gira a la <dir>izquierda</dir>{haveStreet, select, name { en <name>{street}</name>} other {}}"
     },
     "WtbUjz": {
-        "message": "Gira <dir>fuerte a la derecha</dir>{haveStreet, select, name { en <name>{street}</name>} other {}}",
-        "description": "instruction"
+        "description": "instruction",
+        "defaultMessage": "Gira <dir>fuerte a la derecha</dir>{haveStreet, select, name { en <name>{street}</name>} other {}}"
     },
     "X1E2Zq": {
-        "message": "Gira <dir>ligeramente a la izquierda</dir>{haveStreet, select, name { en <name>{street}</name>} other {}}",
-        "description": "instruction"
+        "description": "instruction",
+        "defaultMessage": "Gira <dir>ligeramente a la izquierda</dir>{haveStreet, select, name { en <name>{street}</name>} other {}}"
     },
     "b+OvtM": {
-        "message": "Noroeste",
-        "description": "cardinal direction, used in a sentence like \"Head northwest\""
+        "description": "cardinal direction, used in a sentence like \"Head northwest\"",
+        "defaultMessage": "Noroeste"
     },
     "coeI+2": {
-        "message": "Elije tiempo",
-        "description": "label for dropdown with options \"now\", \"depart at\", \"arrive by\""
+        "description": "label for dropdown with options \"now\", \"depart at\", \"arrive by\"",
+        "defaultMessage": "Elije tiempo"
     },
     "dkJRew": {
-        "message": "Inicia ingresando un destino arriba.",
-        "description": "text in welcome screen. appears below an input box for destination"
+        "description": "text in welcome screen. appears below an input box for destination",
+        "defaultMessage": "Inicia ingresando un destino arriba."
     },
     "f1xi7R": {
-        "message": "Tren",
-        "description": "labels a transit line as being operated by a train; specifically a subway or metro train but the label need not be that specific. Appears next to the name or number of the line."
+        "description": "labels a transit line as being operated by a train; specifically a subway or metro train but the label need not be that specific. Appears next to the name or number of the line.",
+        "defaultMessage": "Tren"
     },
     "li7J3S": {
-        "message": "Salir a",
-        "description": "option in a dropdown list for departure time. There is another input next to it to select the time to depart at."
+        "description": "option in a dropdown list for departure time. There is another input next to it to select the time to depart at.",
+        "defaultMessage": "Salir a"
     },
     "mDnFtf": {
-        "message": "Sureste",
-        "description": "cardinal direction, used in a sentence like \"Head southeast\""
+        "description": "cardinal direction, used in a sentence like \"Head southeast\"",
+        "defaultMessage": "Sureste"
     },
     "oLvgp2": {
-        "message": "Punto",
-        "description": "generic description of a location we don’t have more info about"
+        "description": "generic description of a location we don’t have more info about",
+        "defaultMessage": "Punto"
     },
     "nXDFzI": {
-        "message": "Sube en la línea {name} ({agency})",
-        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. This message is used when we don’t have specific information about what kind of line (bus, train, etc) it is."
+        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. This message is used when we don’t have specific information about what kind of line (bus, train, etc) it is.",
+        "defaultMessage": "Sube en la línea {name} ({agency})"
     },
     "p04B0A": {
-        "message": "Oeste",
-        "description": "cardinal direction, used in a sentence like \"Head west\""
+        "description": "cardinal direction, used in a sentence like \"Head west\"",
+        "defaultMessage": "Oeste"
     },
     "pFBkix": {
-        "message": "Personalizado",
-        "description": "description of a route start/end point that was selected on the map"
+        "description": "description of a route start/end point that was selected on the map",
+        "defaultMessage": "Personalizado"
     },
     "pVxO+H": {
-        "message": "Sube al but {name} ({agency})",
-        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a bus."
+        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a bus.",
+        "defaultMessage": "Sube al but {name} ({agency})"
     },
     "pkeVF/": {
-        "message": "Sube al funicular {name} ({agency})",
-        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a funicular."
+        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a funicular.",
+        "defaultMessage": "Sube al funicular {name} ({agency})"
     },
     "t2BmWO": {
-        "message": "Tren",
-        "description": "labels a transit line as being operated by a tram, streetcar or light rail. Appears next to the name or number of the line. For American English, we match common usage by saying \"train\", but \"tram\" might be appropriate for other dialects of English."
+        "description": "labels a transit line as being operated by a tram, streetcar or light rail. Appears next to the name or number of the line. For American English, we match common usage by saying \"train\", but \"tram\" might be appropriate for other dialects of English.",
+        "defaultMessage": "Tren"
     },
     "uCLsXP": {
-        "message": "Llegar a las",
-        "description": "option in a dropdown list for departure time. There is another input next to it to select the time to arrive by."
+        "description": "option in a dropdown list for departure time. There is another input next to it to select the time to arrive by.",
+        "defaultMessage": "Llegar a las"
     },
     "BGcgDw": {
-        "message": "Diríjase a <dir>{direction}</dir>{haveStreet, select, name { en <name>{street}</name>} other {}}",
-        "description": "instruction. direction is a cardinal direction like north"
+        "description": "instruction. direction is a cardinal direction like north",
+        "defaultMessage": "Diríjase a <dir>{direction}</dir>{haveStreet, select, name { en <name>{street}</name>} other {}}"
     },
     "BAVfiY": {
-        "message": "Damos soporte a la <strong>Zona de la Bahía de San Francisco</strong>, California.",
-        "description": "describes supported region for Bay Area instance of BikeHopper"
+        "description": "describes supported region for Bay Area instance of BikeHopper",
+        "defaultMessage": "Damos soporte a la <strong>Zona de la Bahía de San Francisco</strong>, California."
     },
     "0KhVZS": {
-        "message": "Volver a las rutas",
-        "description": "button to return from a detailed itinerary to routes overview"
+        "description": "button to return from a detailed itinerary to routes overview",
+        "defaultMessage": "Volver a las rutas"
     },
     "3uzNHk": {
-        "message": "Bajar en la parada {stop}",
-        "description": "instruction to exit a transit vehicle at the named stop"
+        "description": "instruction to exit a transit vehicle at the named stop",
+        "defaultMessage": "Bajar en la parada {stop}"
     },
     "4cy0Qt": {
-        "message": "Autobús",
-        "description": "labels a transit line as being operated by a bus. Appears next to the name or number of the bus line."
+        "description": "labels a transit line as being operated by a bus. Appears next to the name or number of the bus line.",
+        "defaultMessage": "Autobús"
     },
     "Dslvy3": {
-        "message": "Las opciones del tránsito pueden faltar. Tu {which, select, start {punto de partida se encuentra} end {destino se encuentra} other {punto de partida y destino se encuentran}} fuera del área donde BikeHopper tiene los datos del tránsito local.",
-        "description": "warning shown above routes"
+        "description": "warning shown above routes",
+        "defaultMessage": "Las opciones del tránsito pueden faltar. Tu {which, select, start {punto de partida se encuentra} end {destino se encuentra} other {punto de partida y destino se encuentran}} fuera del área donde BikeHopper tiene los datos del tránsito local."
     },
     "HV9VrT": {
-        "message": "Volver atrás",
-        "description": "button to return to a previous screen"
+        "description": "button to return to a previous screen",
+        "defaultMessage": "Volver atrás"
     },
     "RRZB26": {
-        "message": "<strong>¡Bienvenido a BikeHopper!</strong> Se trata de una nueva aplicación para la navegación en bicicleta que sugiere formas de combinar la bicicleta y el transporte público, ampliando tus opciones para desplazarte sin coche.",
-        "description": "paragraph in welcome screen"
+        "description": "paragraph in welcome screen",
+        "defaultMessage": "<strong>¡Bienvenido a BikeHopper!</strong> Se trata de una nueva aplicación para la navegación en bicicleta que sugiere formas de combinar la bicicleta y el transporte público, ampliando tus opciones para desplazarte sin coche."
     },
     "Y8DFEd": {
-        "message": "bicicleta",
-        "description": "Description of bike as a travel mode. Appears in a list of travel modes along with transit agency names, such as \"via bike, BART, AC Transit\" or just \"via bike\""
+        "description": "Description of bike as a travel mode. Appears in a list of travel modes along with transit agency names, such as \"via bike, BART, AC Transit\" or just \"via bike\"",
+        "defaultMessage": "bicicleta"
     },
     "y9hwj+": {
-        "message": "Tablero en {stop}",
-        "description": "instruction to board a transit vehicle at the named stop"
+        "description": "instruction to board a transit vehicle at the named stop",
+        "defaultMessage": "Tablero en {stop}"
     },
     "xPFWok": {
-        "message": "Gira <dir>hacia la izquierda</dir>{haveStreet, select, name { hacia <name>{street}</name>} other {}}",
-        "description": "instruction"
+        "description": "instruction",
+        "defaultMessage": "Gira <dir>hacia la izquierda</dir>{haveStreet, select, name { hacia <name>{street}</name>} other {}}"
     },
     "xOt2uH": {
-        "message": "norte",
-        "description": "cardinal direction, used in a sentence like \"Head north\""
+        "description": "cardinal direction, used in a sentence like \"Head north\"",
+        "defaultMessage": "norte"
     },
     "xCyANw": {
-        "message": "Eliminar",
-        "description": "button to remove something from a list"
+        "description": "button to remove something from a list",
+        "defaultMessage": "Eliminar"
     },
     "wOrcKy": {
-        "message": "Ahora",
-        "description": "option in a dropdown list for departure time"
+        "description": "option in a dropdown list for departure time",
+        "defaultMessage": "Ahora"
     },
     "wCDw8+": {
-        "message": "noreste",
-        "description": "cardinal direction, used in a sentence like \"Head northeast\""
+        "description": "cardinal direction, used in a sentence like \"Head northeast\"",
+        "defaultMessage": "noreste"
     },
     "w77fDg": {
-        "message": "Punto de partida",
-        "description": "label for input box for starting point of directions"
+        "description": "label for input box for starting point of directions",
+        "defaultMessage": "Punto de partida"
     },
     "vcV91U": {
-        "message": "Teleférico",
-        "description": "labels a transit line as being operated by a cable tram/cable car. Appears next to the name or number of the line."
+        "description": "labels a transit line as being operated by a cable tram/cable car. Appears next to the name or number of the line.",
+        "defaultMessage": "Teleférico"
     },
     "vcNM7g": {
-        "message": "Introduzca un destino",
-        "description": "input placeholder"
+        "description": "input placeholder",
+        "defaultMessage": "Introduzca un destino"
     },
     "zc1Bca": {
-        "message": "Este",
-        "description": "cardinal direction, used in a sentence like \"Head east\""
+        "description": "cardinal direction, used in a sentence like \"Head east\"",
+        "defaultMessage": "Este"
     },
     "zOmTEh": {
-        "message": "Descartar",
-        "description": "button to dismiss alert"
+        "description": "button to dismiss alert",
+        "defaultMessage": "Descartar"
     },
     "kK9a0r": {
-        "message": "Teleférico",
-        "description": "labels a transit line as being operated by an aerial tram or suspended cable car. Appears next to the name or number of the line."
+        "description": "labels a transit line as being operated by an aerial tram or suspended cable car. Appears next to the name or number of the line.",
+        "defaultMessage": "Teleférico"
     },
     "mrDIsv": {
-        "message": "Viaje en el ferri con {name} de la ({agency})",
-        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a ferry."
+        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a ferry.",
+        "defaultMessage": "Viaje en el ferri con {name} de la ({agency})"
     },
     "solefl": {
-        "message": "Suba al teleférico de {name} y la ({agency})",
-        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a cable tram, cable car, aerial tram or suspended cable car."
+        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a cable tram, cable car, aerial tram or suspended cable car.",
+        "defaultMessage": "Suba al teleférico de {name} y la ({agency})"
     },
     "uciQLb": {
-        "message": "Gira <dir>ligeramente a la derecha</dir>{haveStreet, select, name { en <name>{street}</name>} other {}}",
-        "description": "instruction"
+        "description": "instruction",
+        "defaultMessage": "Gira <dir>ligeramente a la derecha</dir>{haveStreet, select, name { en <name>{street}</name>} other {}}"
     },
     "4d3x5P": {
-        "message": "Viaje en el tren {name} ({agency})",
-        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a subway or metro train."
+        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a subway or metro train.",
+        "defaultMessage": "Viaje en el tren {name} ({agency})"
     },
     "+r7FqI": {
-        "message": "{numStops} {numStops, plural, one {parada} other {paradas}} antes",
-        "description": "the number of stops between two listed transit stops"
+        "description": "the number of stops between two listed transit stops",
+        "defaultMessage": "{numStops} {numStops, plural, one {parada} other {paradas}} antes"
     },
     "2XfHiz": {
-        "message": "Viaje en el tren {name} ({agency})",
-        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by monorail."
+        "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by monorail.",
+        "defaultMessage": "Viaje en el tren {name} ({agency})"
     },
     "Cv5F7V": {
-        "message": "Haz un <dir>giro en U</dir>{haveStreet, select, name { en <name>{street}</name>} other {}}",
-        "description": "instruction"
+        "description": "instruction",
+        "defaultMessage": "Haz un <dir>giro en U</dir>{haveStreet, select, name { en <name>{street}</name>} other {}}"
     },
     "IwYCsk": {
-        "message": "En bici a {place}",
-        "description": "header for step by step bike directions"
+        "description": "header for step by step bike directions",
+        "defaultMessage": "En bici a {place}"
     },
     "T6l6cE": {
-        "message": "Monorraíl",
-        "description": "labels a transit line as being operated by a tram, streetcar or light rail. Appears next to the name or number of the line."
+        "description": "labels a transit line as being operated by a tram, streetcar or light rail. Appears next to the name or number of the line.",
+        "defaultMessage": "Monorraíl"
     },
     "bryKM+": {
-        "message": "Ferri",
-        "description": "labels a transit line as being operated by a ferry. Appears next to the name or number of the line."
+        "description": "labels a transit line as being operated by a ferry. Appears next to the name or number of the line.",
+        "defaultMessage": "Ferri"
     },
     "cyZrT2": {
-        "message": "{numStops} {numStops, plural, one {parada} other {paradas}}",
-        "description": "the number of stops for which you should stay on a transit vehicle"
+        "description": "the number of stops for which you should stay on a transit vehicle",
+        "defaultMessage": "{numStops} {numStops, plural, one {parada} other {paradas}}"
     },
     "kj2kxt": {
-        "message": "Hacia {headsign}",
-        "description": "describes where a transit trip is headed. Often, the headsign is the name of the final stop. This appears in an itinerary, along with other details about the transit vehicle to board."
+        "description": "describes where a transit trip is headed. Often, the headsign is the name of the final stop. This appears in an itinerary, along with other details about the transit vehicle to board.",
+        "defaultMessage": "Hacia {headsign}"
     },
     "get++U": {
-        "message": "En la rotonda, tome la salida {num}{haveStreet, select, name { en <name>{street}</name>} other {}}",
-        "description": "instruction"
+        "description": "instruction",
+        "defaultMessage": "En la rotonda, tome la salida {num}{haveStreet, select, name { en <name>{street}</name>} other {}}"
     },
     "bEeEKy": {
-        "message": "Alerta",
-        "description": "labels a transit trip as having a service alert apply to it."
+        "description": "labels a transit trip as having a service alert apply to it.",
+        "defaultMessage": "Alerta"
     },
     "ccL55O": {
-        "message": "Esta ruta puede requerir subir o bajar escalones con la bicicleta.",
-        "description": "warning displayed in trip itinerary. Warns you that you may have to lift your bicycle up steps, such as an outdoor staircase, to complete the trip."
+        "description": "warning displayed in trip itinerary. Warns you that you may have to lift your bicycle up steps, such as an outdoor staircase, to complete the trip.",
+        "defaultMessage": "Esta ruta puede requerir subir o bajar escalones con la bicicleta."
     },
     "/AzFxf": {
-        "message": "Cómo llegar a",
-        "description": "menu item. Appears in context menu under a location you have selected on the map. When clicked, computes directions to that location."
+        "description": "menu item. Appears in context menu under a location you have selected on the map. When clicked, computes directions to that location.",
+        "defaultMessage": "Cómo llegar a"
     },
     "6r9qOW": {
-        "message": "Cómo llegar desde",
-        "description": "menu item. Appears in context menu under a location you have selected on the map. When clicked, computes directions from that location."
+        "description": "menu item. Appears in context menu under a location you have selected on the map. When clicked, computes directions from that location.",
+        "defaultMessage": "Cómo llegar desde"
     },
     "Ap/CxF": {
-        "message": "Llegando el {datetime}",
-        "description": "description of trip arriving by the given date and time. The datetime is localized but an example for an American English locale would be \"May 21, 2023, 2:30PM\"."
+        "description": "description of trip arriving by the given date and time. The datetime is localized but an example for an American English locale would be \"May 21, 2023, 2:30PM\".",
+        "defaultMessage": "Llegando el {datetime}"
     },
     "9yOLYg": {
-        "message": "Saliendo el {datetime}",
-        "description": "description of trip departing at the given date and time. The datetime is localized but an example for an American English locale would be \"May 21, 2023, 2:30PM\"."
+        "description": "description of trip departing at the given date and time. The datetime is localized but an example for an American English locale would be \"May 21, 2023, 2:30PM\".",
+        "defaultMessage": "Saliendo el {datetime}"
     },
     "KZ3B/t": {
-        "message": "Cancelar",
-        "description": "button to cancel making changes in a dialog"
+        "description": "button to cancel making changes in a dialog",
+        "defaultMessage": "Cancelar"
     },
     "UsTGr8": {
-        "message": "Actualizar",
-        "description": "button. Saves changes made in a dialog box."
+        "description": "button. Saves changes made in a dialog box.",
+        "defaultMessage": "Actualizar"
     },
     "gFQEbp": {
-        "message": "Duración del viaje",
-        "description": "dialog header. In this dialog you can select whether to depart now, depart at a future time, or arrive by a future time."
+        "description": "dialog header. In this dialog you can select whether to depart now, depart at a future time, or arrive by a future time.",
+        "defaultMessage": "Duración del viaje"
     },
     "mG9do/": {
-        "message": "Saliendo ahora",
-        "description": "description of departure time for a trip leaving now."
+        "description": "description of departure time for a trip leaving now.",
+        "defaultMessage": "Saliendo ahora"
     },
     "QiY1oM": {
-        "message": "Pérdida de elevación",
-        "description": "Accessible alt text for a down-arrow icon that appears next to a measurement of the elevation loss on a route, such as (in English) 200 ft or 50 m."
+        "description": "Accessible alt text for a down-arrow icon that appears next to a measurement of the elevation loss on a route, such as (in English) 200 ft or 50 m.",
+        "defaultMessage": "Pérdida de elevación"
     },
     "y7pFDT": {
-        "message": "Ganancia de elevación",
-        "description": "Accessible alt text for an up-arrow icon that appears next to a measurement of the elevation gain on a route, such as (in English) 200 ft or 50 m."
+        "description": "Accessible alt text for an up-arrow icon that appears next to a measurement of the elevation gain on a route, such as (in English) 200 ft or 50 m.",
+        "defaultMessage": "Ganancia de elevación"
     },
     "V5A9AA": {
-        "message": "Ferris",
-        "description": "toggle for whether to use ferries in directions."
+        "description": "toggle for whether to use ferries in directions.",
+        "defaultMessage": "Ferris"
     },
     "LIuTaV": {
-        "message": "Opciones",
-        "description": "button to change options related to route query"
+        "description": "button to change options related to route query",
+        "defaultMessage": "Opciones"
     },
     "hmv35M": {
-        "message": "Trenes",
-        "description": "toggle for whether to use trains (including trams, subway trains, commuter trains, etc) in directions."
+        "description": "toggle for whether to use trains (including trams, subway trains, commuter trains, etc) in directions.",
+        "defaultMessage": "Trenes"
     },
     "qyWb6X": {
-        "message": "Modos de conexión",
-        "description": "dialog header. In this dialog you can toggle which modes of transit, such as bus, train, or ferry, can be used in giving directions."
+        "description": "dialog header. In this dialog you can toggle which modes of transit, such as bus, train, or ferry, can be used in giving directions.",
+        "defaultMessage": "Modos de conexión"
     },
     "zWq75T": {
-        "message": "Autobuses",
-        "description": "toggle for whether to use buses in directions."
+        "description": "toggle for whether to use buses in directions.",
+        "defaultMessage": "Autobuses"
     }
 }

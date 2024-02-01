@@ -56,8 +56,8 @@
     "start": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "extract": "formatjs extract 'src/**/*.{js,jsx}' --format=crowdin --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
-    "compile": "formatjs compile --format=crowdin",
+    "extract": "formatjs extract 'src/**/*.{js,jsx}' --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
+    "compile": "formatjs compile",
     "prepare": "husky install"
   },
   "browserslist": {
