@@ -167,6 +167,10 @@
     "defaultMessage": "Options",
     "description": "button to change options related to route query"
   },
+  "NhcP3d": {
+    "defaultMessage": "Nothing found for ''{inputText}''",
+    "description": "Message when no search results are found"
+  },
   "O53Ykk": {
     "defaultMessage": "Destination",
     "description": "label for input box for the place you want directions to"
