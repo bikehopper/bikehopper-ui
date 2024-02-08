@@ -5,7 +5,7 @@ import ModalDialog from './primitives/ModalDialog';
 import DialogSubmitButton from './primitives/DialogSubmitButton';
 import * as RadioGroup from '@radix-ui/react-radio-group';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import Icon from './Icon';
+import Icon from './primitives/Icon';
 
 import { departureChanged } from '../features/routeParams';
 

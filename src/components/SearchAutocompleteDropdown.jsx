@@ -10,7 +10,7 @@ import {
   selectGeocodedLocation,
 } from '../features/routeParams';
 import describePlace from '../lib/describePlace';
-import Icon from './Icon';
+import Icon from './primitives/Icon';
 import PlaceIcon from './PlaceIcon';
 import SelectionList from './SelectionList';
 import SelectionListItem from './SelectionListItem';

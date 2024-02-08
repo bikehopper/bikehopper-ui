@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ReactComponent as MagnifyingGlass } from 'iconoir/icons/search.svg';
-import Icon from './Icon';
+import Icon from './primitives/Icon';
 import { SupportedRegionText } from '../lib/region';
 
 import './DirectionsNullState.css';

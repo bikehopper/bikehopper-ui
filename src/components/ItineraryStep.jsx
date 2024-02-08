@@ -1,6 +1,6 @@
 import * as React from 'react';
 import classnames from 'classnames';
-import Icon from './Icon';
+import Icon from './primitives/Icon';
 import ItineraryRow from './ItineraryRow';
 
 import './ItineraryStep.css';

@@ -1,8 +1,6 @@
 import * as React from 'react';
 import classnames from 'classnames';
 
-import './Icon.css';
-
 // Usage:
 // import {ReactComponent as Blah} from 'iconoir/icons/blah.svg';
 // <Icon><Blah /></Icon>
@@ -22,8 +20,7 @@ export default function Icon(props) {
       aria-hidden={!props.label}
       aria-label={props.label}
       className={classnames({
-        Icon: true,
-        Icon_flipHorizontally: props.flipHorizontally,
+        '-scale-x-100': props.flipHorizontally,
         [props.className]: !!props.className,
       })}
     >
