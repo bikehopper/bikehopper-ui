@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import classnames from 'classnames';
+import MoonLoader from 'react-spinners/MoonLoader';
 import { removeRecentlyUsedLocation } from '../features/geocoding';
 import {
   LocationSourceType,
@@ -30,110 +31,122 @@ export default function SearchAutocompleteDropdown(props) {
       'option that can be selected (or typed in) to get directions from or ' +
       'to the current location of the user, as determined by GPS',
   });
+  const strong = React.useCallback((txt) => <strong>{txt}</strong>, []);
 
-  const { startOrEnd, autocompletedText, features, showCurrentLocationOption } =
-    useSelector((state) => {
-      const startOrEnd = state.routeParams.editingLocation;
+  const {
+    startOrEnd,
+    inputText,
+    autocompletedText,
+    features,
+    showCurrentLocationOption,
+    loading,
+    noResults, // we explicitly searched and found no results
+  } = useSelector((state) => {
+    const startOrEnd = state.routeParams.editingLocation;
+    const inputText = state.routeParams[startOrEnd + 'InputText'].trim();
+    let autocompletedText = inputText; // May get changed below
+    let cache = inputText && state.geocoding.typeaheadCache['@' + inputText];
+    let fallbackToGeocodedLocationSourceText = false;
+    let loading = false;
+    let noResults = false;
+    if (!cache || cache.status !== 'succeeded') {
+      if (inputText !== '' && (!cache || cache?.status === 'fetching')) {
+        loading = true;
+      }
+      // TODO: should we distinguish b/t server error & no match?
+      if (cache?.status === 'failed') noResults = true;
 
-      // TODO: Remove this after verifying it doesn't happen
-      if (!startOrEnd) throw new Error('expected to be editing start or end');
-
-      const inputText = state.routeParams[startOrEnd + 'InputText'];
-      let autocompletedText = inputText; // MAy get changed below
-      let cache =
-        inputText && state.geocoding.typeaheadCache['@' + inputText.trim()];
-      let fallbackToGeocodedLocationSourceText = false;
-      if (!cache || cache.status !== 'succeeded') {
-        // If the location we're editing has a geocoded location already selected, display the
-        // other options from the input text that was used to pick that.
-        const relevantLocation = state.routeParams[startOrEnd];
-        if (
-          relevantLocation &&
-          relevantLocation.source === LocationSourceType.Geocoded &&
-          relevantLocation.fromInputText &&
-          (inputText === '' ||
-            inputText === describePlace(relevantLocation.point))
+      // If the location we're editing has a geocoded location already selected, display the
+      // other options from the input text that was used to pick that.
+      const relevantLocation = state.routeParams[startOrEnd];
+      if (
+        relevantLocation &&
+        relevantLocation.source === LocationSourceType.Geocoded &&
+        relevantLocation.fromInputText &&
+        (inputText === '' ||
+          inputText === describePlace(relevantLocation.point))
+      ) {
+        autocompletedText = relevantLocation.fromInputText;
+        cache = state.geocoding.typeaheadCache['@' + autocompletedText.trim()];
+        fallbackToGeocodedLocationSourceText = true;
+      } else if (loading && !cache?.osmIds) {
+        // Still nothing? Try prefixes of the input text. Example: current input text is
+        // "123 Main St" which hasn't been looked up yet but we have results for "123 Mai",
+        // which came back while you were typing.
+        let strippedChars = 0;
+        while (
+          autocompletedText &&
+          (!cache || cache.status !== 'succeeded') &&
+          strippedChars++ < 8
         ) {
-          autocompletedText = relevantLocation.fromInputText;
+          autocompletedText = autocompletedText.substr(
+            0,
+            autocompletedText.length - 1,
+          );
           cache =
             state.geocoding.typeaheadCache['@' + autocompletedText.trim()];
-          fallbackToGeocodedLocationSourceText = true;
-        } else {
-          // Still nothing? Try prefixes of the input text. Example: current input text is
-          // "123 Main St" which hasn't been looked up yet but we have results for "123 Mai",
-          // which came back while you were typing.
-          let strippedChars = 0;
-          while (
-            autocompletedText &&
-            (!cache || cache.status !== 'succeeded') &&
-            strippedChars++ < 8
-          ) {
-            autocompletedText = autocompletedText.substr(
-              0,
-              autocompletedText.length - 1,
-            );
-            cache =
-              state.geocoding.typeaheadCache['@' + autocompletedText.trim()];
-          }
         }
       }
+    }
 
-      const other = startOrEnd === 'start' ? 'end' : 'start';
-      const canUseCurrentLocation =
-        'geolocation' in navigator &&
-        (!state.routeParams[other] ||
-          state.routeParams[other].source !==
-            LocationSourceType.UserGeolocation);
+    const other = startOrEnd === 'start' ? 'end' : 'start';
+    const canUseCurrentLocation =
+      'geolocation' in navigator &&
+      (!state.routeParams[other] ||
+        state.routeParams[other].source !== LocationSourceType.UserGeolocation);
 
-      // Only show the current location option if typed text is 1) blank, or 2)
-      // a prefix of "Current Location", case-insensitive
-      const showCurrentLocationOption =
-        canUseCurrentLocation &&
-        (fallbackToGeocodedLocationSourceText ||
-          currentLocationString
-            .toLocaleLowerCase(intl.locale)
-            .startsWith(inputText.toLocaleLowerCase(intl.locale)));
+    // Only show the current location option if typed text is 1) blank, or 2)
+    // a prefix of "Current Location", case-insensitive
+    const showCurrentLocationOption =
+      canUseCurrentLocation &&
+      (fallbackToGeocodedLocationSourceText ||
+        currentLocationString
+          .toLocaleLowerCase(intl.locale)
+          .startsWith(inputText.toLocaleLowerCase(intl.locale)));
 
-      let recentlyUsedFeatureIds = [];
-      let autocompleteFeatureIds = [];
+    let recentlyUsedFeatureIds = [];
+    let autocompleteFeatureIds = [];
 
-      if (inputText === '') {
-        // Suggest recently used locations
-        // NOTE: This is currently only done if input text is empty, but we
-        // could switch to always showing recently used locations that match
-        // the text typed, alongside Photon results.
-        recentlyUsedFeatureIds = state.geocoding.recentlyUsed.map((r) => r.id);
-      } else if (cache && cache.status === 'succeeded') {
-        autocompleteFeatureIds = cache.osmIds;
-      }
+    if (inputText === '') {
+      // Suggest recently used locations
+      // NOTE: This is currently only done if input text is empty, but we
+      // could switch to always showing recently used locations that match
+      // the text typed, alongside Photon results.
+      recentlyUsedFeatureIds = state.geocoding.recentlyUsed.map((r) => r.id);
+    } else if (cache?.osmIds?.length > 0) {
+      autocompleteFeatureIds = cache.osmIds;
+    }
 
-      // Limit result size, don't show the location already selected as start
-      // point as a candidate for end point (or vice versa), and hydrate.
-      const otherId =
-        state.routeParams[other]?.point?.properties?.osm_id &&
-        state.routeParams[other].point.properties.osm_type +
-          state.routeParams[other].point.properties.osm_id;
-      const shownFeatures = [
-        ...autocompleteFeatureIds.map((id) => state.geocoding.osmCache[id]),
-        ...recentlyUsedFeatureIds.map((id) => ({
-          ...state.geocoding.osmCache[id],
-          fromRecentlyUsed: true,
-        })),
-      ]
-        .filter(
-          (feat) =>
-            feat?.properties?.osm_type &&
-            feat.properties.osm_type + feat.properties.osm_id !== otherId,
-        )
-        .slice(0, 8);
+    // Limit result size, don't show the location already selected as start
+    // point as a candidate for end point (or vice versa), and hydrate.
+    const otherId =
+      state.routeParams[other]?.point?.properties?.osm_id &&
+      state.routeParams[other].point.properties.osm_type +
+        state.routeParams[other].point.properties.osm_id;
+    const shownFeatures = [
+      ...autocompleteFeatureIds.map((id) => state.geocoding.osmCache[id]),
+      ...recentlyUsedFeatureIds.map((id) => ({
+        ...state.geocoding.osmCache[id],
+        fromRecentlyUsed: true,
+      })),
+    ]
+      .filter(
+        (feat) =>
+          feat?.properties?.osm_type &&
+          feat.properties.osm_type + feat.properties.osm_id !== otherId,
+      )
+      .slice(0, 8);
 
-      return {
-        startOrEnd,
-        autocompletedText,
-        features: shownFeatures,
-        showCurrentLocationOption,
-      };
-    }, shallowEqual);
+    return {
+      startOrEnd,
+      inputText,
+      autocompletedText,
+      features: shownFeatures,
+      showCurrentLocationOption,
+      loading,
+      noResults,
+    };
+  }, shallowEqual);
 
   const handleClick = (index) => {
     dispatch(
@@ -187,6 +200,20 @@ export default function SearchAutocompleteDropdown(props) {
           />
         ))}
       </SelectionList>
+      {(loading || noResults) && (
+        <div className="relative inset-x-0 pt-4 pl-12 pointer-events-none">
+          <MoonLoader size={30} loading={loading} />
+          {noResults && (
+            <span className="text-sm">
+              <FormattedMessage
+                defaultMessage="Nothing found for ''{inputText}''"
+                description="Message when no search results are found"
+                values={{ inputText, strong }}
+              />
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }
