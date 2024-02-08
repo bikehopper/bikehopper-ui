@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import Icon from './Icon';
+import Icon from './primitives/Icon';
 import PlaceIcon from './PlaceIcon';
 import TimeBar from './TimeBar';
 import {

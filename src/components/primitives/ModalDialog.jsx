@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useIntl } from 'react-intl';
 import { Transition } from '@headlessui/react';
 import * as Dialog from '@radix-ui/react-dialog';
-import Icon from '../Icon';
+import Icon from './Icon';
 
 import { ReactComponent as CancelIcon } from 'iconoir/icons/cancel.svg';
 

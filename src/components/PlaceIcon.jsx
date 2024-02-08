@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Icon from './Icon';
+import Icon from './primitives/Icon';
 
 import { ReactComponent as Building } from 'iconoir/icons/building.svg';
 import { ReactComponent as Chocolate } from 'iconoir/icons/chocolate.svg';

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { formatDurationBetween } from '../lib/time';
 import { getAgencyDisplayName } from '../lib/region';
-import Icon from './Icon';
+import Icon from './primitives/Icon';
 import ItineraryBikeLeg from './ItineraryBikeLeg';
 import ItineraryHeader from './ItineraryHeader';
 import ItineraryTransitLeg from './ItineraryTransitLeg';

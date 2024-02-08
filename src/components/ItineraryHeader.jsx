@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useIntl } from 'react-intl';
 import classnames from 'classnames';
 import { getTextColor } from '../lib/colors';
-import Icon from './Icon';
+import Icon from './primitives/Icon';
 import ItineraryRow from './ItineraryRow';
 import { ReactComponent as WarningTriangle } from 'iconoir/icons/warning-triangle.svg';
 

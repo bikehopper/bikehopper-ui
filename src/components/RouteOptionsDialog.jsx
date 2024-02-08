@@ -3,7 +3,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
 import ModalDialog from './primitives/ModalDialog';
 import DialogSubmitButton from './primitives/DialogSubmitButton';
-import Icon from './Icon';
+import Icon from './primitives/Icon';
 import usePrevious from '../hooks/usePrevious';
 import { CATEGORIES } from '../lib/TransitModes';
 

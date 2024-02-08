@@ -3,7 +3,7 @@ import { useIntl } from 'react-intl';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import classnames from 'classnames';
 import { AlertSeverity, dismissAlert } from '../features/alerts';
-import Icon from './Icon';
+import Icon from './primitives/Icon';
 
 import { ReactComponent as Cancel } from 'iconoir/icons/cancel.svg';
 import { ReactComponent as WarningCircle } from 'iconoir/icons/warning-circle.svg';

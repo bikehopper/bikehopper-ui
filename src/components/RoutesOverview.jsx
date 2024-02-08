@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import formatDistance from '../lib/formatDistance';
 import { TRANSIT_DATA_ACKNOWLEDGEMENT } from '../lib/region';
 import { formatInterval } from '../lib/time';
-import Icon from './Icon';
+import Icon from './primitives/Icon';
 import RouteLeg from './RouteLeg';
 import SelectionList from './SelectionList';
 import SelectionListItem from './SelectionListItem';

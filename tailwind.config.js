@@ -11,6 +11,9 @@ module.exports = {
         bikehoppergreenlight: '#def0cc',
         bikehopperyellow: '#ffd18e',
       },
+      scale: {
+        '-100': '-1', // allow flipping
+      },
     },
   },
   plugins: [require('@tailwindcss/typography')],
