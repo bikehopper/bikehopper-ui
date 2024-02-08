@@ -69,6 +69,13 @@ export default function SearchAutocompleteDropdown(props) {
         autocompletedText = relevantLocation.fromInputText;
         cache = state.geocoding.typeaheadCache['@' + autocompletedText.trim()];
         fallbackToGeocodedLocationSourceText = true;
+        loading = false;
+      } else if (
+        relevantLocation?.source === LocationSourceType.UrlWithString &&
+        inputText === relevantLocation.fromInputText
+      ) {
+        // in this case we don't fetch autocompletes
+        loading = false;
       } else if (loading && !cache?.osmIds) {
         // Still nothing? Try prefixes of the input text. Example: current input text is
         // "123 Main St" which hasn't been looked up yet but we have results for "123 Mai",
