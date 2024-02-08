@@ -398,5 +398,9 @@
     "WJwBci": {
         "defaultMessage": "Pies",
         "description": "legend at the left (y-axis) of elevation graph"
+    },
+    "NhcP3d": {
+        "defaultMessage": "No se encontró nada para ''{inputText}''",
+        "description": "Message when no search results are found"
     }
 }
