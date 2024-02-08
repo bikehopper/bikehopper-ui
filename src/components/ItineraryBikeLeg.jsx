@@ -12,11 +12,15 @@ import ItineraryDivider from './ItineraryDivider';
 import ItinerarySpacer from './ItinerarySpacer';
 
 import { ReactComponent as BikeIcon } from 'iconoir/icons/bicycle.svg';
+import ItineraryElevationProfile from './ItineraryElevationProfile';
 
 export default function ItineraryBikeLeg({
   leg,
   legDestination,
+  isOnlyLeg,
+  expanded,
   onStepClick,
+  onIconClick,
   scrollToStep,
 }) {
   const intl = useIntl();
@@ -63,6 +67,10 @@ export default function ItineraryBikeLeg({
         icon={bikeIcon}
         iconColor={BIKEHOPPER_THEME_COLOR}
         alerts={alerts}
+        expanded={expanded}
+        displayArrow={true}
+        alertsExpanded={true}
+        onIconClick={onIconClick}
       >
         <span>
           <FormattedMessage
@@ -77,30 +85,40 @@ export default function ItineraryBikeLeg({
           {formatDurationBetween(leg.departure_time, leg.arrival_time, intl)}
         </span>
       </ItineraryHeader>
-      <ItineraryDivider />
-      {instructionsWithBikeInfra.map((step, stepIdx) =>
-        isArriveStep(step)
-          ? null
-          : [
-              <ItineraryBikeStep
-                key={stepIdx}
-                step={step}
-                isFirstStep={stepIdx === 0}
-                onClick={onStepClick.bind(null, stepIdx)}
-                rootRef={stepIdx === scrollToStep ? scrollToRef : null}
-              />,
-              <ItineraryDivider
-                key={stepIdx + 'd'}
-                transit={false}
-                detail={`${
-                  step.distance ? formatDistance(step.distance, intl) : null
-                }`}
-              >
-                {step.bikeInfra}
-              </ItineraryDivider>,
-            ],
+
+      {expanded ? (
+        <>
+          {isOnlyLeg ? null : (
+            <ItineraryElevationProfile route={{ legs: [leg] }} />
+          )}
+
+          {instructionsWithBikeInfra.map((step, stepIdx) =>
+            isArriveStep(step)
+              ? null
+              : [
+                  <ItineraryBikeStep
+                    key={stepIdx}
+                    step={step}
+                    isFirstStep={stepIdx === 0}
+                    onClick={onStepClick.bind(null, stepIdx)}
+                    rootRef={stepIdx === scrollToStep ? scrollToRef : null}
+                  />,
+                  <ItineraryDivider
+                    key={stepIdx + 'd'}
+                    transit={false}
+                    detail={`${
+                      step.distance ? formatDistance(step.distance, intl) : null
+                    }`}
+                  >
+                    {step.bikeInfra}
+                  </ItineraryDivider>,
+                ],
+          )}
+          <ItinerarySpacer />
+        </>
+      ) : (
+        <ItinerarySpacer />
       )}
-      <ItinerarySpacer />
     </>
   );
 }

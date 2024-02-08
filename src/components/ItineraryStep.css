@@ -7,8 +7,9 @@
 }
 
 .ItineraryStep_iconSmall {
+  position: relative;
   margin-left: 9px;
-  top: 10px;
+  top: 11px;
 }
 
 .ItineraryStep_iconSmall path {

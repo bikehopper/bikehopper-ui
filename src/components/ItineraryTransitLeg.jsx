@@ -11,13 +11,29 @@ import ItineraryDivider from './ItineraryDivider';
 import ItinerarySpacer from './ItinerarySpacer';
 import ItineraryStep from './ItineraryStep';
 import ModeIcon from './ModeIcon';
+import Icon from './Icon';
+import { ReactComponent as WarningTriangle } from 'iconoir/icons/warning-triangle.svg';
 
 import { ReactComponent as Circle } from 'iconoir/icons/circle.svg';
 
 import './ItineraryTransitLeg.css';
+import { useState, useCallback } from 'react';
 
-export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
+export default function ItineraryTransitLeg({
+  leg,
+  onStopClick,
+  onIconClick,
+  scrollTo,
+  expanded,
+}) {
   const intl = useIntl();
+
+  const [alertsExpanded, setAlertsExpanded] = useState(false);
+
+  const toggleAlertsExpanded = useCallback(
+    () => setAlertsExpanded(!alertsExpanded),
+    [alertsExpanded, setAlertsExpanded],
+  );
 
   const { stops } = leg;
 
@@ -45,8 +61,12 @@ export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
   return (
     <div className="ItineraryTransitLeg" ref={scrollTo ? scrollToRef : null}>
       <ItineraryHeader
-        icon={<ModeIcon mode={leg.route_type} />}
+        icon={<ModeIcon mode={leg.route_type} onClick={onIconClick} />}
         iconColor={leg.route_color || DEFAULT_PT_COLOR}
+        expanded={expanded}
+        displayArrow={true}
+        alertsExpanded={alertsExpanded}
+        onAlertClick={toggleAlertsExpanded}
         alerts={alertsForHeader}
       >
         <span>
@@ -58,6 +78,36 @@ export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
         </span>
         <span>
           <FormattedMessage
+            defaultMessage="<i>Towards {headsign}</i>"
+            description={
+              'describes where a transit trip is headed.' +
+              ' Often, the headsign is the name of the final stop.' +
+              ' This appears in an itinerary, along with other details about the' +
+              ' transit vehicle to board.'
+            }
+            values={{
+              i: (chunks) => <em>{chunks}</em>,
+              headsign: leg.trip_headsign,
+            }}
+          />
+          {/* {
+          alertsForHeader?.length > 0 ? <>
+          {spacerWithMiddot}
+          <Icon
+          className="ItineraryHeader_alertIcon"
+          label={intl.formatMessage({
+            defaultMessage: 'Alert',
+            description:
+            'labels a transit trip as having a service alert apply to it.',
+          })}
+          >
+          <WarningTriangle />
+        </Icon>
+          </> : null
+        }
+        <br /> */}
+          {spacerWithMiddot}
+          <FormattedMessage
             defaultMessage={
               '{numStops} {numStops, plural,' +
               ' one {stop}' +
@@ -65,66 +115,81 @@ export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
               '}'
             }
             description="the number of stops for which you should stay on a transit vehicle"
-            values={{ numStops: stopsTraveled }}
+            values={{
+              numStops: stopsTraveled,
+            }}
           />
           {spacerWithMiddot}
           {formatDurationBetween(leg.departure_time, leg.arrival_time, intl)}
         </span>
       </ItineraryHeader>
-      <ItineraryDivider />
       <ItineraryStep IconSVGComponent={Circle} smallIcon={true}>
-        <BorderlessButton onClick={onStopClick.bind(null, 0)}>
-          <FormattedMessage
-            defaultMessage="Board at {stop}"
-            description="instruction to board (a public transit vehicle) at the named stop"
-            values={{ stop: stops[0].stop_name }}
-          />
-          {spacerWithMiddot}
-          {departure}
-        </BorderlessButton>
-      </ItineraryStep>
-      <ItineraryDivider
-        transit={true}
-        detail={
-          stopsBetweenStartAndEnd > 0
-            ? intl.formatMessage(
-                {
-                  defaultMessage:
-                    '{numStops} {numStops, plural,' +
-                    ' one {stop}' +
-                    ' other {stops}' +
-                    '} before',
-                  description:
-                    'the number of stops between two listed transit stops',
-                },
-                { numStops: stopsBetweenStartAndEnd },
-              )
-            : null
-        }
-      >
         <FormattedMessage
-          defaultMessage="Towards {headsign}"
-          description={
-            'describes where a transit trip is headed.' +
-            ' Often, the headsign is the name of the final stop.' +
-            ' This appears in an itinerary, along with other details about the' +
-            ' transit vehicle to board.'
-          }
-          values={{ headsign: leg.trip_headsign }}
+          defaultMessage="<b>Board at {stop}</b>"
+          description="instruction to board (a public transit vehicle) at the named stop"
+          values={{
+            b: (chunks) => <strong>{chunks}</strong>,
+            stop: stops[0].stop_name,
+          }}
         />
-      </ItineraryDivider>
-      <ItineraryStep IconSVGComponent={Circle} smallIcon={true}>
-        <BorderlessButton onClick={onStopClick.bind(null, stops.length - 1)}>
-          <FormattedMessage
-            defaultMessage="Get off at {stop}"
-            description="instruction to exit (a public transit vehicle) at the named stop"
-            values={{ stop: stops[stops.length - 1].stop_name }}
-          />
-          {spacerWithMiddot}
-          {arrival}
-        </BorderlessButton>
+        {spacerWithMiddot}
+        {departure}
       </ItineraryStep>
-      <ItineraryDivider />
+      {expanded ? (
+        <div onClick={onIconClick}>
+          {stops.slice(1, -1).map((stop, stopIdx) => (
+            <ItineraryStep
+              IconSVGComponent={Circle}
+              smallIcon={true}
+              key={stopIdx}
+            >
+              <BorderlessButton onClick={onStopClick.bind(null, stopIdx + 1)}>
+                <FormattedMessage
+                  defaultMessage="{stop}"
+                  description="instruction to board (a public transit vehicle) at the named stop"
+                  values={{
+                    stop: stop.stop_name,
+                  }}
+                />
+              </BorderlessButton>
+            </ItineraryStep>
+          ))}
+        </div>
+      ) : (
+        <div onClick={onIconClick}>
+          <ItineraryDivider
+            transit={true}
+            detail={
+              stopsBetweenStartAndEnd > 0
+                ? intl.formatMessage(
+                    {
+                      defaultMessage:
+                        '{numStops} {numStops, plural,' +
+                        ' one {stop}' +
+                        ' other {stops}' +
+                        '} before',
+                      description:
+                        'the number of stops between two listed transit stops',
+                    },
+                    { numStops: stopsBetweenStartAndEnd },
+                  )
+                : null
+            }
+          />
+        </div>
+      )}
+      <ItineraryStep IconSVGComponent={Circle} smallIcon={true}>
+        <FormattedMessage
+          defaultMessage="<b>Get off at {stop}</b>"
+          description="instruction to exit (a public transit vehicle) at the named stop"
+          values={{
+            b: (chunks) => <strong>{chunks}</strong>,
+            stop: stops[stops.length - 1].stop_name,
+          }}
+        />
+        {spacerWithMiddot}
+        {arrival}
+      </ItineraryStep>
       <ItinerarySpacer />
     </div>
   );

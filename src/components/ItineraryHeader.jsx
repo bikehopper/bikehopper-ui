@@ -5,10 +5,25 @@ import { getTextColor } from '../lib/colors';
 import Icon from './Icon';
 import ItineraryRow from './ItineraryRow';
 import { ReactComponent as WarningTriangle } from 'iconoir/icons/warning-triangle.svg';
+import ArrowChevron from '../lib/icons/icon-chevron.svg';
 
 import './ItineraryHeader.css';
 
-export default function ItineraryHeader({ alerts, children, icon, iconColor }) {
+function alertSummary(alertBody) {
+  return alertBody.slice(0, 40) + '...';
+}
+
+export default function ItineraryHeader({
+  alerts,
+  children,
+  icon,
+  iconColor,
+  alertsExpanded,
+  onIconClick,
+  onAlertClick,
+  expanded,
+  displayArrow,
+}) {
   const intl = useIntl();
   const iconIsWhite = getTextColor(iconColor).main === 'white';
 
@@ -27,12 +42,22 @@ export default function ItineraryHeader({ alerts, children, icon, iconColor }) {
         })}
         style={{ backgroundColor: iconColor }}
       >
-        <Icon className="ItineraryHeader_icon">{icon}</Icon>
+        <Icon className="ItineraryHeader_icon" onClick={onIconClick}>
+          {icon}
+        </Icon>
+        {displayArrow && (
+          <img
+            src={ArrowChevron}
+            className={
+              expanded ? 'ItineraryHeader_arrow_90' : 'ItineraryHeader_arrow'
+            }
+          />
+        )}
       </span>
       <h3 className="ItineraryHeader_header">{header}</h3>
       {subheading && <p className="ItineraryHeader_subheading">{subheading}</p>}
       {alerts?.length > 0 && (
-        <ul className="ItineraryHeader_alerts">
+        <ul className="ItineraryHeader_alerts" onClick={onAlertClick}>
           {alerts.map(([alertHeader, alertBody], idx) => (
             <li className="ItineraryHeader_alert" key={idx}>
               <Icon
@@ -51,7 +76,9 @@ export default function ItineraryHeader({ alerts, children, icon, iconColor }) {
                 </span>
               )}
               {alertBody && (
-                <span className="ItineraryHeader_alertBody">{alertBody}</span>
+                <span className="ItineraryHeader_alertBody">
+                  {alertsExpanded ? alertBody : alertSummary(alertBody)}
+                </span>
               )}
             </li>
           ))}

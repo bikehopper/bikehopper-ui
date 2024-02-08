@@ -7,6 +7,7 @@ import { TRANSIT_SERVICE_AREA } from '../lib/region';
 import {
   routeClicked,
   itineraryBackClicked,
+  itineraryIconClicked,
   itineraryStepClicked,
   itineraryStepBackClicked,
 } from '../features/routes';
@@ -23,6 +24,7 @@ export default function Routes(props) {
     activeRoute,
     details,
     viewingStep,
+    viewingLeg,
     destinationDescription,
     outOfAreaStart,
     outOfAreaEnd,
@@ -50,6 +52,7 @@ export default function Routes(props) {
       routes: routes.routes,
       activeRoute: routes.activeRoute,
       details: routes.viewingDetails,
+      viewingLeg: routes.viewingLeg,
       viewingStep: routes.viewingStep,
       destinationDescription,
       outOfAreaStart,
@@ -65,6 +68,10 @@ export default function Routes(props) {
 
   const handleStepClick = (legClicked, stepClicked) => {
     dispatch(itineraryStepClicked(legClicked, stepClicked));
+  };
+
+  const handleIconClick = (legClicked) => {
+    dispatch(itineraryIconClicked(legClicked));
   };
 
   const handleBackClick = () => {
@@ -122,6 +129,8 @@ export default function Routes(props) {
         route={routes[activeRoute]}
         onBackClick={handleBackClick}
         onStepClick={handleStepClick}
+        onIconClick={handleIconClick}
+        viewingLeg={viewingLeg}
         destinationDescription={destinationDescription}
         scrollToStep={prevViewingStep}
       />
