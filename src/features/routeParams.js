@@ -67,7 +67,7 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
           source: LocationSourceType.SelectedOnMap,
         };
         draft[action.startOrEnd + 'InputText'] = '';
-        if (state.start == null) {
+        if (action.startOrEnd === 'end' && state.start == null) {
           // if no start point, and "directions to" was selected,
           // route from current location.
           draft.start = {
