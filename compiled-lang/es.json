@@ -645,6 +645,20 @@
       "value": "Opciones"
     }
   ],
+  "NhcP3d": [
+    {
+      "type": 0,
+      "value": "No se encontró nada para '"
+    },
+    {
+      "type": 1,
+      "value": "inputText"
+    },
+    {
+      "type": 0,
+      "value": "'"
+    }
+  ],
   "O53Ykk": [
     {
       "type": 0,
