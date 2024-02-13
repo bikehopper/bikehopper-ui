@@ -18,6 +18,7 @@ import { ReactComponent as PineTree } from 'iconoir/icons/pine-tree.svg';
 import { ReactComponent as Sandals } from 'iconoir/icons/sandals.svg';
 import { ReactComponent as Shop } from 'iconoir/icons/shop.svg';
 import { ReactComponent as StarOutline } from 'iconoir/icons/star.svg';
+import { ReactComponent as Summit } from '../../icons/summit.svg';
 import { ReactComponent as Swimming } from 'iconoir/icons/swimming.svg';
 import { ReactComponent as Trekking } from 'iconoir/icons/trekking.svg';
 
@@ -58,8 +59,10 @@ function _getSvgComponentForFeature(feature) {
   ) {
     // beach
     Klass = Sandals;
+  } else if (key === 'natural' && (value === 'peak' || value === 'hill')) {
+    Klass = Summit;
   } else if (
-    (key === 'natural' && ['peak', 'hill', 'rock', 'saddle'].includes(value)) ||
+    (key === 'natural' && (value === 'rock' || value === 'saddle')) ||
     (key === 'highway' && value === 'footway' && type === 'street')
   ) {
     // mountain, trail
