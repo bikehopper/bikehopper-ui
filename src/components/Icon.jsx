@@ -26,6 +26,7 @@ export default function Icon(props) {
         Icon_flipHorizontally: props.flipHorizontally,
         [props.className]: !!props.className,
       })}
+      onClick={props.onClick}
     >
       {props.children}
     </span>

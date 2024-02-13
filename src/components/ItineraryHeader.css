@@ -25,6 +25,14 @@
   height: 32px;
 }
 
+.ItineraryHeader_arrow {
+  transform: rotate(0deg);
+}
+
+.ItineraryHeader_arrow_90 {
+  transform: rotate(90deg);
+}
+
 .ItineraryHeader_header {
   font-size: 20px;
   font-weight: bold;
