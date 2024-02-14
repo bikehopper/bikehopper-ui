@@ -54,9 +54,8 @@ function App(props) {
   }
 
   const shouldDisplayTopBar = !viewingDetails;
-  const [haveTopBarIncludingFade, setHaveTopBarIncludingFade] = React.useState(
-    !shouldDisplayTopBar,
-  );
+  const [haveTopBarIncludingFade, setHaveTopBarIncludingFade] =
+    React.useState(shouldDisplayTopBar);
 
   const topBar = (
     <Transition
