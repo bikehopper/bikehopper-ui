@@ -105,14 +105,19 @@ export default function SearchBar(props) {
 
   const handleFocus = (which, event) => {
     dispatch(locationInputFocused(which));
+
+    const relevantLocation = which === 'start' ? startLocation : endLocation;
+    const textModified =
+      which === 'start' ? startTextModified : endTextModified;
+    // If the input contains the magic string "Current Location", or if it contains
+    // unmodified text from the geocoder (often a very long address), select all to
+    // make it easier to delete.
     if (
-      (which === 'start' &&
-        startLocation?.source === LocationSourceType.UserGeolocation) ||
-      (which === 'end' &&
-        endLocation?.source === LocationSourceType.UserGeolocation)
+      relevantLocation &&
+      (relevantLocation.source === LocationSourceType.UserGeolocation ||
+        (relevantLocation.source === LocationSourceType.Geocoded &&
+          !textModified))
     ) {
-      // Select the "Current Location" text so that any key input will replace it in its
-      // entirety, since it doesn't make sense to edit this magic string otherwise.
       event.target.select();
     }
   };
