@@ -40,6 +40,7 @@ import {
   DEFAULT_BIKE_COLOR,
   DEFAULT_INACTIVE_COLOR,
 } from '../lib/colors';
+import { useRealtimeVehiclePositions } from '../hooks/useRealtimeVehiclePositions';
 
 const _isTouch = 'ontouchstart' in window;
 
@@ -387,6 +388,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
   }, [routes, activePath, viewingDetails, viewingStep, mapRef]);
 
   const features = routes ? routesToGeoJSON(routes) : EMPTY_GEOJSON;
+  const realtimePositions = useRealtimeVehiclePositions();
 
   const navigationControlStyle = {
     visibility: mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden',
@@ -472,6 +474,10 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
           <Layer beforeId="road-label" {...getTransitionStyle(activePath)} />
           <Layer {...getTransitLabelStyle(activePath)} />
           <Layer {...getBikeLabelStyle(activePath)} />
+        </Source>
+        <Source id="liveVehicles" type="geojson" data={realtimePositions}>
+          {/* Order matters: lowest to highest */}
+          <Layer {...getVehicleLayerStyle()} />
         </Source>
         {startCoords && (
           <Marker
@@ -700,6 +706,16 @@ function getBikeLabelStyle(activePath) {
       'text-color': 'white',
       'text-halo-color': bikeColorStyle,
       'text-halo-width': 2,
+    },
+  };
+}
+
+function getVehicleLayerStyle() {
+  return {
+    id: 'liveVehicles',
+    type: 'circle',
+    paint: {
+      'circle-color': 'red',
     },
   };
 }
