@@ -34,6 +34,7 @@
     "mapbox-gl": "npm:empty-npm-package@^1.0.0",
     "maplibre-gl": "^1.15.2",
     "prompts": "^2.4.2",
+    "protobufjs": "^7.2.6",
     "react": "^18.2.0",
     "react-app-polyfill": "^3.0.0",
     "react-dev-utils": "^12.0.0",
@@ -54,6 +55,7 @@
     "start": "vite",
     "build": "vite build",
     "serve": "vite preview",
+    "compile-proto": "pbjs -t static-module -w es6 --no-encode -o src/lib/realtime-feed/FeedMessage.js src/lib/realtime-feed/gtfs-rt.proto",
     "extract": "formatjs extract 'src/**/*.{js,jsx}' --format=crowdin --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
     "compile": "formatjs compile --format=crowdin",
     "prepare": "husky install"
@@ -145,6 +147,7 @@
     "postcss": "^8.4.23",
     "postcss-import": "^15.1.0",
     "prettier": "^2.5.1",
+    "protobufjs-cli": "^1.1.2",
     "tailwindcss": "^3.3.2",
     "vite": "^4.3.9",
     "vite-plugin-eslint": "^1.8.1",
