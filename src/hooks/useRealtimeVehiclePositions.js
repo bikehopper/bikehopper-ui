@@ -1,7 +1,39 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { transit_realtime } from '../lib/realtime-feed/FeedMessage';
 import { featureCollection, point } from '@turf/helpers';
 import { EMPTY_GEOJSON } from '../lib/geometry';
+
+function usePollingEffect(
+  asyncCallback,
+  dependencies = [],
+  { 
+    interval = 60000, // 10 seconds,
+    onCleanUp = () => {}
+  } = {},
+) {
+  const timeoutIdRef = useRef(null)
+  useEffect(() => {
+    let _stopped = false
+    // Side note: preceding semicolon needed for IIFEs.
+    ;(async function pollingCallback() {
+      try {
+        await asyncCallback()
+      } finally {
+        // Set timeout after it finished, unless stopped
+        timeoutIdRef.current = !_stopped && setTimeout(
+          pollingCallback,
+          interval
+        )
+      }
+    })()
+    // Clean up if dependencies change
+    return () => {
+      _stopped = true // prevent racing conditions
+      clearTimeout(timeoutIdRef.current)
+      onCleanUp()
+    }
+  }, [...dependencies, interval])
+}
 
 export function useRealtimeVehiclePositions() {
   const [features, setFeatures] = useState(EMPTY_GEOJSON);
@@ -12,7 +44,14 @@ export function useRealtimeVehiclePositions() {
       const decoded = transit_realtime.FeedMessage.decode(new Uint8Array(buffer));
       const points = decoded.entity.map((feedEntity) => {
         const pos = feedEntity.vehicle.position;
-        return point([pos.longitude, pos.latitude]);
+        const routeId = feedEntity.vehicle?.trip?.routeId?.split(':') || [];
+
+        const agencyId = routeId[0];
+        const routeName = routeId[1];
+
+        return point([pos.longitude, pos.latitude], {
+          agencyId, routeName
+        });
       });
       const collection = featureCollection(points);
       setFeatures(collection);
@@ -23,18 +62,7 @@ export function useRealtimeVehiclePositions() {
     });
   };
 
-  useEffect(() => {
-    let interval = null;
-
-    const startTimeout = () => {
-      fetchData().then(() => {
-        interval = setTimeout(startTimeout, 60000);
-      });
-    };
-
-    startTimeout();
-    return () => {if (interval != null) clearTimeout(interval)};
-  });
+  usePollingEffect(fetchData);
 
   return features;
 }

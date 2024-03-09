@@ -713,9 +713,29 @@ function getBikeLabelStyle(activePath) {
 function getVehicleLayerStyle() {
   return {
     id: 'liveVehicles',
-    type: 'circle',
+    type: 'symbol',
+    layout: {
+      // These icons are a part of the Mapbox Light style.
+      // To view all images available in a Mapbox style, open
+      // the style in Mapbox Studio and click the "Images" tab.
+      // To add a new image to the style at runtime see
+      // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+      'icon-image': 'bus',
+      'icon-allow-overlap': true,
+      'text-field': ['get', 'routeName'],
+      'text-font': [
+          'Open Sans Bold',
+          'Arial Unicode MS Bold'
+      ],
+      'text-size': 11,
+      'text-transform': 'uppercase',
+      'text-letter-spacing': 0.05,
+      'text-offset': [0, 1.5]
+    },
     paint: {
-      'circle-color': 'red',
+      'text-color': '#202',
+      'text-halo-color': '#fff',
+      'text-halo-width': 2
     },
   };
 }
