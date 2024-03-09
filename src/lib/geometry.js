@@ -88,6 +88,14 @@ export function routesToGeoJSON(paths) {
   return turf.featureCollection(features);
 }
 
+export function edgeToGeoJSON(edge) {
+  const properties = { ...edge };
+  delete properties.points;
+  const returnFeature = { ...edge.points };
+  returnFeature.properties = properties;
+  return returnFeature;
+}
+
 /**
  * From a details object, generates a coherent set of lines such that no lines overlap.
  *

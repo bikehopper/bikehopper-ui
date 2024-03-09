@@ -10,9 +10,11 @@ import MapGL, {
   GeolocateControl,
   NavigationControl,
 } from 'react-map-gl/maplibre';
+import { featureCollection } from '@turf/helpers';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import {
   routesToGeoJSON,
+  edgeToGeoJSON,
   EMPTY_GEOJSON,
   BIKEABLE_HIGHWAYS,
 } from '../lib/geometry';
@@ -387,6 +389,8 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
   }, [routes, activePath, viewingDetails, viewingStep, mapRef]);
 
   const features = routes ? routesToGeoJSON(routes) : EMPTY_GEOJSON;
+  const edges = routes ? routes[activePath].edges?.map(edgeToGeoJSON) : null;
+  const debugEdges = edges ? featureCollection(edges) : null;
 
   const navigationControlStyle = {
     visibility: mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden',
@@ -473,6 +477,14 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
           <Layer {...getTransitLabelStyle(activePath)} />
           <Layer {...getBikeLabelStyle(activePath)} />
         </Source>
+        {debugEdges && (
+          <Source id="debug-edges" type="geojson" data={debugEdges}>
+            <Layer
+              beforeId="standardBikeLayer"
+              {...getDebugStyle(activePath)}
+            />
+          </Source>
+        )}
         {startCoords && (
           <Marker
             id="startMarker"
@@ -599,6 +611,19 @@ function getTransitionStyle(activePath) {
     paint: {
       'line-width': 3,
       'line-color': 'darkgray',
+      'line-dasharray': [1, 1],
+    },
+  };
+}
+
+function getDebugStyle(activePath) {
+  return {
+    id: 'debugLayer',
+    type: 'line',
+    layout: {},
+    paint: {
+      'line-width': 3,
+      'line-color': 'red',
       'line-dasharray': [1, 1],
     },
   };
