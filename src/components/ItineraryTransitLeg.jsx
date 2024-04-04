@@ -74,6 +74,7 @@ export default function ItineraryTransitLeg({
             name={leg.route_name || leg.route_id}
             mode={leg.route_type}
             agency={getAgencyDisplayName(leg.agency_name)}
+            lastStopName={leg.stops[leg.stops.length - 1].stop_name}
           />
         </span>
         <span>
@@ -197,119 +198,21 @@ export default function ItineraryTransitLeg({
 
 // Internal-only component that gives localized strings for all possible
 // transit modes.
-function ItineraryTransitLegHeaderMessage({ name, mode, agency }) {
-  switch (mode) {
-    case MODES.TRAM_STREETCAR_LIGHT_RAIL:
-      return (
-        <FormattedMessage
-          defaultMessage="Ride the {name} train ({agency})"
-          description={
-            'instructions header text.' +
-            ' Says to ride the named transit line, operated by the named agency.' +
-            ' The line is operated by tram, streetcar or light rail.'
-          }
-          values={{ name, agency }}
-        />
-      );
-    case MODES.MONORAIL:
-      return (
-        <FormattedMessage
-          defaultMessage="Ride the {name} train ({agency})"
-          description={
-            'instructions header text.' +
-            ' Says to ride the named transit line, operated by the named agency.' +
-            ' The line is operated by monorail.'
-          }
-          values={{ name, agency }}
-        />
-      );
-    case MODES.SUBWAY_METRO:
-      return (
-        <FormattedMessage
-          defaultMessage="Ride the {name} train ({agency})"
-          description={
-            'instructions header text.' +
-            ' Says to ride the named transit line, operated by the named agency.' +
-            ' The line is operated by a subway or metro train.'
-          }
-          values={{ name, agency }}
-        />
-      );
-    case MODES.RAIL_INTERCITY_LONG_DISTANCE:
-      return (
-        <FormattedMessage
-          defaultMessage="Ride the {name} train ({agency})"
-          description={
-            'instructions header text.' +
-            ' Says to ride the named transit line, operated by the named agency.' +
-            ' The line is an intercity or long-distance rail line.'
-          }
-          values={{ name, agency }}
-        />
-      );
-    case MODES.BUS:
-    case MODES.TROLLEYBUS:
-      return (
-        <FormattedMessage
-          defaultMessage="Ride the {name} bus ({agency})"
-          description={
-            'instructions header text.' +
-            ' Says to ride the named transit line, operated by the named agency.' +
-            ' The line is operated by a bus.'
-          }
-          values={{ name, agency }}
-        />
-      );
-    case MODES.FERRY:
-      return (
-        <FormattedMessage
-          defaultMessage="Ride the {name} ferry ({agency})"
-          description={
-            'instructions header text.' +
-            ' Says to ride the named transit line, operated by the named agency.' +
-            ' The line is operated by a ferry.'
-          }
-          values={{ name, agency }}
-        />
-      );
-    case MODES.CABLE_TRAM:
-    case MODES.AERIAL_TRAM_SUSPENDED_CABLE_CAR:
-      return (
-        <FormattedMessage
-          defaultMessage="Ride the {name} cable car ({agency})"
-          description={
-            'instructions header text.' +
-            ' Says to ride the named transit line, operated by the named agency.' +
-            ' The line is operated by a cable tram, cable car, aerial tram' +
-            ' or suspended cable car.'
-          }
-          values={{ name, agency }}
-        />
-      );
-    case MODES.FUNICULAR:
-      return (
-        <FormattedMessage
-          defaultMessage="Ride the {name} funicular ({agency})"
-          description={
-            'instructions header text.' +
-            ' Says to ride the named transit line, operated by the named agency.' +
-            ' The line is operated by a funicular.'
-          }
-          values={{ name, agency }}
-        />
-      );
-    default:
-      return (
-        <FormattedMessage
-          defaultMessage="Ride the {name} line ({agency})"
-          description={
-            'instructions header text.' +
-            ' Says to ride the named transit line, operated by the named agency.' +
-            ' This message is used when we don’t have specific information about' +
-            ' what kind of line (bus, train, etc) it is.'
-          }
-          values={{ name, agency }}
-        />
-      );
-  }
+function ItineraryTransitLegHeaderMessage({
+  name,
+  mode,
+  agency,
+  lastStopName,
+}) {
+  return (
+    <FormattedMessage
+      defaultMessage="Ride {agency} to {lastStopName}"
+      description={
+        'instructions header text.' +
+        ' Says to ride the named transit line, operated by the named agency.' +
+        ' The line is operated by a subway or metro train.'
+      }
+      values={{ name, agency, lastStopName }}
+    />
+  );
 }

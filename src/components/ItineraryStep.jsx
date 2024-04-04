@@ -11,7 +11,7 @@ export default function ItineraryStep({
   rootRef,
   children,
 }) {
-  const iconSize = smallIcon ? 15 : 30;
+  const iconSize = smallIcon ? 15 : 22;
   return (
     <ItineraryRow rootRef={rootRef}>
       <span

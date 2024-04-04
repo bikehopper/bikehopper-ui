@@ -59,6 +59,7 @@ export default function Itinerary({
           onIconClick={onIconClick.bind(null, idx)}
           expanded={viewingLeg === idx}
           scrollToStep={scrollToLegIdx === idx ? scrollToStepIdx : null}
+          displayLegElevation={false}
         />
       );
     }

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { BIKEHOPPER_THEME_COLOR } from '../lib/colors';
 import formatDistance from '../lib/formatDistance';
+import formatMajorStreets from '../lib/formatMajorStreets';
 import { describeBikeInfra } from '../lib/geometry';
 import { formatDurationBetween } from '../lib/time';
 import InstructionSigns from '../lib/InstructionSigns';
@@ -22,6 +23,7 @@ export default function ItineraryBikeLeg({
   onStepClick,
   onIconClick,
   scrollToStep,
+  displayLegElevation,
 }) {
   const intl = useIntl();
   const instructionsWithBikeInfra = React.useMemo(() => {
@@ -83,12 +85,14 @@ export default function ItineraryBikeLeg({
           {formatDistance(leg.distance, intl)}
           {spacer}
           {formatDurationBetween(leg.departure_time, leg.arrival_time, intl)}
+          {spacer}
+          {formatMajorStreets(leg)}
         </span>
       </ItineraryHeader>
 
       {expanded ? (
         <>
-          {isOnlyLeg ? null : (
+          {isOnlyLeg || !displayLegElevation ? null : (
             <ItineraryElevationProfile route={{ legs: [leg] }} />
           )}
 

@@ -45,14 +45,6 @@ export default function ItineraryHeader({
         <Icon className="ItineraryHeader_icon" onClick={onIconClick}>
           {icon}
         </Icon>
-        {displayArrow && (
-          <img
-            src={ArrowChevron}
-            className={
-              expanded ? 'ItineraryHeader_arrow_90' : 'ItineraryHeader_arrow'
-            }
-          />
-        )}
       </span>
       <h3 className="ItineraryHeader_header">{header}</h3>
       {subheading && <p className="ItineraryHeader_subheading">{subheading}</p>}
