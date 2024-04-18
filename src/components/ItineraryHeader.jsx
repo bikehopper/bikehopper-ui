@@ -7,7 +7,6 @@ import ItineraryRow from './ItineraryRow';
 import { ReactComponent as WarningTriangle } from 'iconoir/icons/warning-triangle.svg';
 import { ReactComponent as NavDownArrow } from 'iconoir/icons/nav-arrow-down.svg';
 import { ReactComponent as NavUpArrow } from 'iconoir/icons/nav-arrow-up.svg';
-import ArrowChevron from '../lib/icons/icon-chevron.svg';
 
 import './ItineraryHeader.css';
 

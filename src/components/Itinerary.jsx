@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { formatDurationBetween } from '../lib/time';
 import { getAgencyDisplayName } from '../lib/region';
@@ -23,7 +22,6 @@ export default function Itinerary({
   viewingLeg,
   scrollToStep,
 }) {
-  const dispatch = useDispatch();
   const intl = useIntl();
   const [scrollToLegIdx, scrollToStepIdx] = scrollToStep || [];
 
@@ -62,6 +60,8 @@ export default function Itinerary({
           displayLegElevation={false}
         />
       );
+    } else {
+      return null;
     }
   });
 
