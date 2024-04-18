@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { DEFAULT_PT_COLOR } from '../lib/colors';
+import { MODES } from '../lib/TransitModes';
 import { formatTime, formatDurationBetween } from '../lib/time';
 import classnames from 'classnames';
 import { getAgencyDisplayName } from '../lib/region';
