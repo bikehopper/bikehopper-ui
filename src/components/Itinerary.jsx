@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useDispatch } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { formatDurationBetween } from '../lib/time';
 import { getAgencyDisplayName } from '../lib/region';
@@ -7,6 +8,7 @@ import ItineraryBikeLeg from './ItineraryBikeLeg';
 import ItineraryHeader from './ItineraryHeader';
 import ItineraryTransitLeg from './ItineraryTransitLeg';
 import ItineraryElevationProfile from './ItineraryElevationProfile';
+import { isSignificantLeg } from '../lib/leg';
 
 import { ReactComponent as NavLeftArrow } from 'iconoir/icons/nav-arrow-left.svg';
 import { ReactComponent as ArriveIcon } from 'iconoir/icons/triangle-flag.svg';
@@ -17,8 +19,11 @@ export default function Itinerary({
   destinationDescription,
   onBackClick,
   onStepClick,
+  onToggleLegExpand,
+  viewingLeg,
   scrollToStep,
 }) {
+  const dispatch = useDispatch();
   const intl = useIntl();
   const [scrollToLegIdx, scrollToStepIdx] = scrollToStep || [];
 
@@ -29,10 +34,16 @@ export default function Itinerary({
           key={idx}
           leg={leg}
           onStopClick={onStepClick.bind(null, idx)}
+          onToggleLegExpand={onToggleLegExpand.bind(null, idx)}
+          expanded={viewingLeg === idx}
           scrollTo={scrollToLegIdx === idx}
         />
       );
-    } else {
+    } else if (isSignificantLeg(leg)) {
+      const isOnlyLeg = legs.length === 1;
+      if (isOnlyLeg) {
+        onToggleLegExpand(idx);
+      }
       // Where are we biking to? (Either final destination, or name of transit stop to board)
       const legDestination =
         idx === legs.length - 1
@@ -43,8 +54,12 @@ export default function Itinerary({
           key={idx}
           leg={leg}
           legDestination={legDestination}
+          isOnlyLeg={isOnlyLeg}
           onStepClick={onStepClick.bind(null, idx)}
+          onToggleLegExpand={onToggleLegExpand.bind(null, idx)}
+          expanded={viewingLeg === idx}
           scrollToStep={scrollToLegIdx === idx ? scrollToStepIdx : null}
+          displayLegElevation={false}
         />
       );
     }
@@ -130,7 +145,11 @@ export default function Itinerary({
       </div>
       <div className="Itinerary_timeline">
         {renderedLegs}
-        <ItineraryHeader icon={arriveIcon} iconColor="#ea526f">
+        <ItineraryHeader
+          icon={arriveIcon}
+          iconColor="#ea526f"
+          displayArrow={false}
+        >
           <FormattedMessage
             defaultMessage="Arrive at destination"
             description="header text at end of step by step travel instructions"

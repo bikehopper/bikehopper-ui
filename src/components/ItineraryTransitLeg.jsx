@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { DEFAULT_PT_COLOR } from '../lib/colors';
-import { formatTime, formatDurationBetween } from '../lib/time';
 import { MODES } from '../lib/TransitModes';
+import { formatTime, formatDurationBetween } from '../lib/time';
+import classnames from 'classnames';
 import { getAgencyDisplayName } from '../lib/region';
 import useScrollToRef from '../hooks/useScrollToRef';
 import BorderlessButton from './BorderlessButton';
@@ -15,9 +16,23 @@ import ModeIcon from './ModeIcon';
 import { ReactComponent as Circle } from 'iconoir/icons/circle.svg';
 
 import './ItineraryTransitLeg.css';
+import { useState, useCallback } from 'react';
 
-export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
+export default function ItineraryTransitLeg({
+  leg,
+  onStopClick,
+  onToggleLegExpand,
+  scrollTo,
+  expanded,
+}) {
   const intl = useIntl();
+
+  const [alertsExpanded, setAlertsExpanded] = useState(false);
+
+  const toggleAlertsExpanded = useCallback(
+    () => setAlertsExpanded(!alertsExpanded),
+    [alertsExpanded, setAlertsExpanded],
+  );
 
   const { stops } = leg;
 
@@ -47,13 +62,17 @@ export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
       <ItineraryHeader
         icon={<ModeIcon mode={leg.route_type} />}
         iconColor={leg.route_color || DEFAULT_PT_COLOR}
+        expanded={expanded}
+        alertsExpanded={alertsExpanded}
+        onToggleLegExpand={onToggleLegExpand}
+        onAlertClick={toggleAlertsExpanded}
         alerts={alertsForHeader}
       >
         <span>
           <ItineraryTransitLegHeaderMessage
-            name={leg.route_name || leg.route_id}
             mode={leg.route_type}
             agency={getAgencyDisplayName(leg.agency_name)}
+            lastStopName={leg.stops[leg.stops.length - 1].stop_name}
           />
         </span>
         <span>
@@ -65,185 +84,226 @@ export default function ItineraryTransitLeg({ leg, onStopClick, scrollTo }) {
               '}'
             }
             description="the number of stops for which you should stay on a transit vehicle"
-            values={{ numStops: stopsTraveled }}
+            values={{
+              numStops: stopsTraveled,
+            }}
           />
           {spacerWithMiddot}
           {formatDurationBetween(leg.departure_time, leg.arrival_time, intl)}
         </span>
       </ItineraryHeader>
-      <ItineraryDivider />
-      <ItineraryStep IconSVGComponent={Circle} smallIcon={true}>
-        <BorderlessButton onClick={onStopClick.bind(null, 0)}>
-          <FormattedMessage
-            defaultMessage="Board at {stop}"
-            description="instruction to board (a public transit vehicle) at the named stop"
-            values={{ stop: stops[0].stop_name }}
-          />
-          {spacerWithMiddot}
-          {departure}
-        </BorderlessButton>
-      </ItineraryStep>
-      <ItineraryDivider
-        transit={true}
-        detail={
-          stopsBetweenStartAndEnd > 0
-            ? intl.formatMessage(
-                {
-                  defaultMessage:
-                    '{numStops} {numStops, plural,' +
-                    ' one {stop}' +
-                    ' other {stops}' +
-                    '} before',
-                  description:
-                    'the number of stops between two listed transit stops',
-                },
-                { numStops: stopsBetweenStartAndEnd },
-              )
-            : null
-        }
+      <ItineraryStep
+        IconSVGComponent={Circle}
+        iconSize="small"
+        highMargin={true}
       >
         <FormattedMessage
-          defaultMessage="Towards {headsign}"
-          description={
-            'describes where a transit trip is headed.' +
-            ' Often, the headsign is the name of the final stop.' +
-            ' This appears in an itinerary, along with other details about the' +
-            ' transit vehicle to board.'
-          }
-          values={{ headsign: leg.trip_headsign }}
+          defaultMessage="Board at <b>{stop}</b>"
+          description="instruction to board (a public transit vehicle) at the named stop"
+          values={{
+            b: (chunks) => <strong>{chunks}</strong>,
+            stop: stops[0].stop_name,
+          }}
         />
-      </ItineraryDivider>
-      <ItineraryStep IconSVGComponent={Circle} smallIcon={true}>
-        <BorderlessButton onClick={onStopClick.bind(null, stops.length - 1)}>
+        {spacerWithMiddot}
+        {departure}
+        <div
+          className={classnames({
+            ItineraryDivider_headsign: true,
+          })}
+        >
           <FormattedMessage
-            defaultMessage="Get off at {stop}"
-            description="instruction to exit (a public transit vehicle) at the named stop"
-            values={{ stop: stops[stops.length - 1].stop_name }}
+            defaultMessage="Towards {headsign}"
+            description={
+              'describes where a transit trip is headed.' +
+              ' Often, the headsign is the name of the final stop.' +
+              ' This appears in an itinerary, along with other details about the' +
+              ' transit vehicle to board.'
+            }
+            values={{
+              headsign: leg.trip_headsign,
+            }}
           />
-          {spacerWithMiddot}
-          {arrival}
-        </BorderlessButton>
+        </div>
       </ItineraryStep>
-      <ItineraryDivider />
+
+      {expanded ? (
+        <div onClick={onToggleLegExpand}>
+          {stops.slice(1, -1).map((stop, stopIdx) => (
+            <ItineraryStep
+              IconSVGComponent={Circle}
+              iconSize="tiny"
+              highMargin={true}
+              key={stopIdx}
+            >
+              <BorderlessButton onClick={onStopClick.bind(null, stopIdx + 1)}>
+                <FormattedMessage
+                  defaultMessage="{stop}"
+                  description="listing of stops on the selected public transit route"
+                  values={{
+                    stop: stop.stop_name,
+                  }}
+                />
+              </BorderlessButton>
+            </ItineraryStep>
+          ))}
+        </div>
+      ) : (
+        <div onClick={onToggleLegExpand}>
+          <ItineraryDivider
+            transit={true}
+            detail={
+              stopsBetweenStartAndEnd > 0
+                ? intl.formatMessage(
+                    {
+                      defaultMessage:
+                        '{numStops} {numStops, plural,' +
+                        ' one {stop}' +
+                        ' other {stops}' +
+                        '} before',
+                      description:
+                        'the number of stops between two listed transit stops',
+                    },
+                    { numStops: stopsBetweenStartAndEnd },
+                  )
+                : null
+            }
+          />
+        </div>
+      )}
+      <ItineraryStep
+        IconSVGComponent={Circle}
+        iconSize="small"
+        highMargin={true}
+      >
+        <FormattedMessage
+          defaultMessage="Get off at <b>{stop}</b>"
+          description="instruction to exit (a public transit vehicle) at the named stop"
+          values={{
+            b: (chunks) => <strong>{chunks}</strong>,
+            stop: stops[stops.length - 1].stop_name,
+          }}
+        />
+        {spacerWithMiddot}
+        {arrival}
+      </ItineraryStep>
       <ItinerarySpacer />
     </div>
   );
 }
 
-// Internal-only component that gives localized strings for all possible
-// transit modes.
-function ItineraryTransitLegHeaderMessage({ name, mode, agency }) {
+function ItineraryTransitLegHeaderMessage({ mode, agency, lastStopName }) {
   switch (mode) {
     case MODES.TRAM_STREETCAR_LIGHT_RAIL:
       return (
         <FormattedMessage
-          defaultMessage="Ride the {name} train ({agency})"
+          defaultMessage="Ride {agency} to {lastStopName}"
           description={
             'instructions header text.' +
             ' Says to ride the named transit line, operated by the named agency.' +
             ' The line is operated by tram, streetcar or light rail.'
           }
-          values={{ name, agency }}
+          values={{ agency, lastStopName }}
         />
       );
     case MODES.MONORAIL:
       return (
         <FormattedMessage
-          defaultMessage="Ride the {name} train ({agency})"
+          defaultMessage="Ride {agency} to {lastStopName}"
           description={
             'instructions header text.' +
             ' Says to ride the named transit line, operated by the named agency.' +
             ' The line is operated by monorail.'
           }
-          values={{ name, agency }}
+          values={{ agency, lastStopName }}
         />
       );
     case MODES.SUBWAY_METRO:
       return (
         <FormattedMessage
-          defaultMessage="Ride the {name} train ({agency})"
+          defaultMessage="Ride {agency} to {lastStopName}"
           description={
             'instructions header text.' +
             ' Says to ride the named transit line, operated by the named agency.' +
             ' The line is operated by a subway or metro train.'
           }
-          values={{ name, agency }}
+          values={{ agency, lastStopName }}
         />
       );
     case MODES.RAIL_INTERCITY_LONG_DISTANCE:
       return (
         <FormattedMessage
-          defaultMessage="Ride the {name} train ({agency})"
+          defaultMessage="Ride {agency} to {lastStopName}"
           description={
             'instructions header text.' +
             ' Says to ride the named transit line, operated by the named agency.' +
             ' The line is an intercity or long-distance rail line.'
           }
-          values={{ name, agency }}
+          values={{ agency, lastStopName }}
         />
       );
     case MODES.BUS:
     case MODES.TROLLEYBUS:
       return (
         <FormattedMessage
-          defaultMessage="Ride the {name} bus ({agency})"
+          defaultMessage="Ride {agency} to {lastStopName}"
           description={
             'instructions header text.' +
             ' Says to ride the named transit line, operated by the named agency.' +
             ' The line is operated by a bus.'
           }
-          values={{ name, agency }}
+          values={{ agency, lastStopName }}
         />
       );
     case MODES.FERRY:
       return (
         <FormattedMessage
-          defaultMessage="Ride the {name} ferry ({agency})"
+          defaultMessage="Ride {agency} to {lastStopName}"
           description={
             'instructions header text.' +
             ' Says to ride the named transit line, operated by the named agency.' +
             ' The line is operated by a ferry.'
           }
-          values={{ name, agency }}
+          values={{ agency, lastStopName }}
         />
       );
     case MODES.CABLE_TRAM:
     case MODES.AERIAL_TRAM_SUSPENDED_CABLE_CAR:
       return (
         <FormattedMessage
-          defaultMessage="Ride the {name} cable car ({agency})"
+          defaultMessage="Ride {agency} to {lastStopName}"
           description={
             'instructions header text.' +
             ' Says to ride the named transit line, operated by the named agency.' +
             ' The line is operated by a cable tram, cable car, aerial tram' +
             ' or suspended cable car.'
           }
-          values={{ name, agency }}
+          values={{ agency, lastStopName }}
         />
       );
     case MODES.FUNICULAR:
       return (
         <FormattedMessage
-          defaultMessage="Ride the {name} funicular ({agency})"
+          defaultMessage="Ride {agency} to {lastStopName}"
           description={
             'instructions header text.' +
             ' Says to ride the named transit line, operated by the named agency.' +
             ' The line is operated by a funicular.'
           }
-          values={{ name, agency }}
+          values={{ agency, lastStopName }}
         />
       );
     default:
       return (
         <FormattedMessage
-          defaultMessage="Ride the {name} line ({agency})"
+          defaultMessage="Ride {agency} to {lastStopName}"
           description={
             'instructions header text.' +
             ' Says to ride the named transit line, operated by the named agency.' +
             ' This message is used when we don’t have specific information about' +
             ' what kind of line (bus, train, etc) it is.'
           }
-          values={{ name, agency }}
+          values={{ agency, lastStopName }}
         />
       );
   }

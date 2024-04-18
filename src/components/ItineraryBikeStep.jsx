@@ -3,6 +3,9 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import BorderlessButton from './BorderlessButton';
 import InstructionSigns from '../lib/InstructionSigns';
 import ItineraryStep from './ItineraryStep';
+import classnames from 'classnames';
+
+import './ItineraryBikeStep.css';
 
 import { ReactComponent as MapsTurnBack } from 'iconoir/icons/maps-turn-back.svg';
 import { ReactComponent as LongArrowUpLeft } from 'iconoir/icons/long-arrow-up-left.svg';
@@ -13,9 +16,12 @@ import { ReactComponent as QuestionMarkCircle } from 'iconoir/icons/help-circle.
 import { ReactComponent as ArrowTrCircle } from 'iconoir/icons/arrow-tr-circle.svg';
 
 let _warnedOfFallback = false;
+const spacerWithMiddot = ' \u00B7 ';
 
 export default function ItineraryBikeStep({
   step,
+  distance,
+  infra,
   isFirstStep,
   onClick,
   rootRef,
@@ -313,7 +319,25 @@ export default function ItineraryBikeStep({
 
   return (
     <ItineraryStep IconSVGComponent={IconComponent} rootRef={rootRef}>
-      <BorderlessButton onClick={onClick}>{msg}</BorderlessButton>
+      <div
+        className={classnames({
+          ItineraryBikeStep_content: true,
+        })}
+      >
+        <BorderlessButton onClick={onClick}>
+          {msg}
+          {spacerWithMiddot}
+          {distance}
+          {infra ? spacerWithMiddot : null}
+          <span
+            className={classnames({
+              ItineraryBikeStep_infra: true,
+            })}
+          >
+            {infra}
+          </span>
+        </BorderlessButton>
+      </div>
     </ItineraryStep>
   );
 }

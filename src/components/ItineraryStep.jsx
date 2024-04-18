@@ -7,33 +7,49 @@ import './ItineraryStep.css';
 
 export default function ItineraryStep({
   IconSVGComponent,
-  smallIcon,
+  iconSize,
+  highMargin = false,
   rootRef,
   children,
 }) {
-  const iconSize = smallIcon ? 15 : 30;
+  const iconSizePx = iconSize === 'tiny' ? 12 : iconSize === 'small' ? 15 : 22;
   return (
-    <ItineraryRow rootRef={rootRef}>
-      <span
-        className={classnames({
-          ItineraryStep_iconContainer: true,
-        })}
-      >
-        <Icon
+    <div
+      className={classnames({
+        ItineraryStep: true,
+      })}
+    >
+      <ItineraryRow rootRef={rootRef}>
+        <span
           className={classnames({
-            ItineraryStep_icon: true,
-            ItineraryStep_iconLarge: !smallIcon,
-            ItineraryStep_iconSmall: smallIcon,
+            ItineraryStep_iconContainer: true,
           })}
         >
-          <IconSVGComponent
-            className="ItineraryStep_iconSvg"
-            width={iconSize}
-            height={iconSize}
-          />
-        </Icon>
-      </span>
-      <p className="ItineraryStep_content">{children}</p>
-    </ItineraryRow>
+          <Icon
+            className={classnames({
+              ItineraryStep_icon: true,
+              ItineraryStep_iconLarge: !iconSize || iconSize === 'large',
+              ItineraryStep_iconSmall: iconSize === 'small',
+              ItineraryStep_iconTiny: iconSize === 'tiny',
+            })}
+          >
+            <IconSVGComponent
+              className="ItineraryStep_iconSvg"
+              width={iconSizePx}
+              height={iconSizePx}
+            />
+          </Icon>
+        </span>
+        <p
+          className={classnames({
+            ItineraryStep_content: true,
+            ItineraryStep_contentLowMargin: !highMargin,
+            ItineraryStep_contentHighMargin: highMargin,
+          })}
+        >
+          {children}
+        </p>
+      </ItineraryRow>
+    </div>
   );
 }

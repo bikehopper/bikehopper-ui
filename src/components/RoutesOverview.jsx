@@ -5,6 +5,7 @@ import formatDistance from '../lib/formatDistance';
 import { TRANSIT_DATA_ACKNOWLEDGEMENT } from '../lib/region';
 import { formatInterval } from '../lib/time';
 import Icon from './primitives/Icon';
+import { isSignificantLeg } from '../lib/leg';
 import RouteLeg from './RouteLeg';
 import SelectionList from './SelectionList';
 import SelectionListItem from './SelectionListItem';
@@ -46,7 +47,7 @@ export default function RoutesOverview({
           >
             <div className="RoutesOverview_row">
               <ul className="RoutesOverview_routeLegs">
-                {route.legs.filter(_isSignificantLeg).map((leg, index) => (
+                {route.legs.filter(isSignificantLeg).map((leg, index) => (
                   <React.Fragment key={route.nonce + ':' + index}>
                     {index > 0 && (
                       <li className="RoutesOverview_legSeparator">
@@ -163,16 +164,6 @@ export default function RoutesOverview({
         </p>
       )}
     </div>
-  );
-}
-
-function _isSignificantLeg(leg) {
-  // For filtering out short, interpolated legs
-  const THRESHOLD_IN_METERS = 120;
-  return !(
-    leg.type === 'bike2' &&
-    leg.interpolated &&
-    leg.distance < THRESHOLD_IN_METERS
   );
 }
 

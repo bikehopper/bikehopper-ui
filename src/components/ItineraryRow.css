@@ -5,17 +5,17 @@
 }
 
 .ItineraryRow_timeline {
-  width: 60px;
-  margin-right: 18px;
+  width: 36px;
+  margin-right: 12px;
   box-sizing: border-box;
   flex-shrink: 0;
 
   /* Draws the literal time*line* ... a dark gray line going down the middle. */
   background: linear-gradient(
     to right,
-    rgba(0, 0, 0, 0) 30px,
-    rgba(187, 187, 187, 1) 30px 33px,
-    rgba(0, 0, 0, 0) 33px 100%
+    rgba(0, 0, 0, 0) 17px,
+    rgba(187, 187, 187, 1) 17px 19px,
+    rgba(0, 0, 0, 0) 17px 100%
   );
 }
 
@@ -24,4 +24,5 @@
   flex-direction: column;
   display: flex;
   justify-content: space-evenly;
+  padding-bottom: 4px;
 }

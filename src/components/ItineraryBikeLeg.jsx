@@ -2,22 +2,27 @@ import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { BIKEHOPPER_THEME_COLOR } from '../lib/colors';
 import formatDistance from '../lib/formatDistance';
+import formatMajorStreets from '../lib/formatMajorStreets';
 import { describeBikeInfra } from '../lib/geometry';
 import { formatDurationBetween } from '../lib/time';
 import InstructionSigns from '../lib/InstructionSigns';
 import useScrollToRef from '../hooks/useScrollToRef';
 import ItineraryBikeStep from './ItineraryBikeStep';
 import ItineraryHeader from './ItineraryHeader';
-import ItineraryDivider from './ItineraryDivider';
 import ItinerarySpacer from './ItinerarySpacer';
 
 import { ReactComponent as BikeIcon } from 'iconoir/icons/bicycle.svg';
+import ItineraryElevationProfile from './ItineraryElevationProfile';
 
 export default function ItineraryBikeLeg({
   leg,
   legDestination,
+  isOnlyLeg,
+  expanded,
   onStepClick,
+  onToggleLegExpand,
   scrollToStep,
+  displayLegElevation,
 }) {
   const intl = useIntl();
   const instructionsWithBikeInfra = React.useMemo(() => {
@@ -63,6 +68,9 @@ export default function ItineraryBikeLeg({
         icon={bikeIcon}
         iconColor={BIKEHOPPER_THEME_COLOR}
         alerts={alerts}
+        expanded={expanded}
+        alertsExpanded={true}
+        onToggleLegExpand={onToggleLegExpand}
       >
         <span>
           <FormattedMessage
@@ -75,32 +83,40 @@ export default function ItineraryBikeLeg({
           {formatDistance(leg.distance, intl)}
           {spacer}
           {formatDurationBetween(leg.departure_time, leg.arrival_time, intl)}
+          {spacer}
+          {formatMajorStreets(leg)}
         </span>
       </ItineraryHeader>
-      <ItineraryDivider />
-      {instructionsWithBikeInfra.map((step, stepIdx) =>
-        isArriveStep(step)
-          ? null
-          : [
-              <ItineraryBikeStep
-                key={stepIdx}
-                step={step}
-                isFirstStep={stepIdx === 0}
-                onClick={onStepClick.bind(null, stepIdx)}
-                rootRef={stepIdx === scrollToStep ? scrollToRef : null}
-              />,
-              <ItineraryDivider
-                key={stepIdx + 'd'}
-                transit={false}
-                detail={`${
-                  step.distance ? formatDistance(step.distance, intl) : null
-                }`}
-              >
-                {step.bikeInfra}
-              </ItineraryDivider>,
-            ],
+
+      {expanded ? (
+        <div onClick={onToggleLegExpand}>
+          <ItinerarySpacer />
+
+          {isOnlyLeg || !displayLegElevation ? null : (
+            <ItineraryElevationProfile route={{ legs: [leg] }} />
+          )}
+
+          {instructionsWithBikeInfra.map((step, stepIdx) =>
+            isArriveStep(step)
+              ? null
+              : [
+                  <ItineraryBikeStep
+                    key={stepIdx}
+                    step={step}
+                    distance={
+                      step.distance ? formatDistance(step.distance, intl) : null
+                    }
+                    infra={step.bikeInfra}
+                    isFirstStep={stepIdx === 0}
+                    onClick={onStepClick.bind(null, stepIdx)}
+                    rootRef={stepIdx === scrollToStep ? scrollToRef : null}
+                  />,
+                ],
+          )}
+        </div>
+      ) : (
+        <ItinerarySpacer />
       )}
-      <ItinerarySpacer />
     </>
   );
 }
