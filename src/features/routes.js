@@ -125,7 +125,7 @@ export function routesReducer(state = DEFAULT_STATE, action) {
       });
     case 'itinerary_back_clicked':
       return { ...state, viewingDetails: false };
-    case 'itinerary_icon_clicked':
+    case 'leg_expand_toggled':
       if (state.viewingLeg === action.leg) {
         return { ...state, viewingLeg: null };
       } else {
@@ -273,9 +273,9 @@ export function itineraryStepBackClicked() {
   return { type: 'itinerary_step_back_clicked' };
 }
 
-export function itineraryIconClicked(legIndex) {
+export function legExpandToggled(legIndex) {
   return {
-    type: 'itinerary_icon_clicked',
+    type: 'leg_expand_toggled',
     leg: legIndex,
   };
 }

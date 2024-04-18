@@ -8,7 +8,7 @@ import ItineraryBikeLeg from './ItineraryBikeLeg';
 import ItineraryHeader from './ItineraryHeader';
 import ItineraryTransitLeg from './ItineraryTransitLeg';
 import ItineraryElevationProfile from './ItineraryElevationProfile';
-import { isSignificantLeg } from './RoutesOverview';
+import { isSignificantLeg } from '../lib/leg';
 
 import { ReactComponent as NavLeftArrow } from 'iconoir/icons/nav-arrow-left.svg';
 import { ReactComponent as ArriveIcon } from 'iconoir/icons/triangle-flag.svg';
@@ -19,7 +19,7 @@ export default function Itinerary({
   destinationDescription,
   onBackClick,
   onStepClick,
-  onIconClick,
+  onToggleLegExpand,
   viewingLeg,
   scrollToStep,
 }) {
@@ -34,7 +34,7 @@ export default function Itinerary({
           key={idx}
           leg={leg}
           onStopClick={onStepClick.bind(null, idx)}
-          onIconClick={onIconClick.bind(null, idx)}
+          onToggleLegExpand={onToggleLegExpand.bind(null, idx)}
           expanded={viewingLeg === idx}
           scrollTo={scrollToLegIdx === idx}
         />
@@ -42,7 +42,7 @@ export default function Itinerary({
     } else if (isSignificantLeg(leg)) {
       const isOnlyLeg = legs.length === 1;
       if (isOnlyLeg) {
-        onIconClick(idx);
+        onToggleLegExpand(idx);
       }
       // Where are we biking to? (Either final destination, or name of transit stop to board)
       const legDestination =
@@ -56,7 +56,7 @@ export default function Itinerary({
           legDestination={legDestination}
           isOnlyLeg={isOnlyLeg}
           onStepClick={onStepClick.bind(null, idx)}
-          onIconClick={onIconClick.bind(null, idx)}
+          onToggleLegExpand={onToggleLegExpand.bind(null, idx)}
           expanded={viewingLeg === idx}
           scrollToStep={scrollToLegIdx === idx ? scrollToStepIdx : null}
           displayLegElevation={false}

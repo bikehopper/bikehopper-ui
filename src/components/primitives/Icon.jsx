@@ -23,7 +23,6 @@ export default function Icon(props) {
         '-scale-x-100': props.flipHorizontally,
         [props.className]: !!props.className,
       })}
-      onClick={props.onClick}
     >
       {props.children}
     </span>

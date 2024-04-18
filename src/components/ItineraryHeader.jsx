@@ -5,6 +5,8 @@ import { getTextColor } from '../lib/colors';
 import Icon from './primitives/Icon';
 import ItineraryRow from './ItineraryRow';
 import { ReactComponent as WarningTriangle } from 'iconoir/icons/warning-triangle.svg';
+import { ReactComponent as NavDownArrow } from 'iconoir/icons/nav-arrow-down.svg';
+import { ReactComponent as NavUpArrow } from 'iconoir/icons/nav-arrow-up.svg';
 import ArrowChevron from '../lib/icons/icon-chevron.svg';
 
 import './ItineraryHeader.css';
@@ -18,11 +20,11 @@ export default function ItineraryHeader({
   children,
   icon,
   iconColor,
-  alertsExpanded,
-  onIconClick,
-  onAlertClick,
+  displayArrow = true,
   expanded,
-  displayArrow,
+  alertsExpanded,
+  onToggleLegExpand,
+  onAlertClick,
 }) {
   const intl = useIntl();
   const iconIsWhite = getTextColor(iconColor).main === 'white';
@@ -41,13 +43,34 @@ export default function ItineraryHeader({
           ItineraryHeader_iconContainer__isWhite: iconIsWhite,
         })}
         style={{ backgroundColor: iconColor }}
+        onClick={onToggleLegExpand}
       >
-        <Icon className="ItineraryHeader_icon" onClick={onIconClick}>
-          {icon}
-        </Icon>
+        <Icon className="ItineraryHeader_icon">{icon}</Icon>
       </span>
-      <h3 className="ItineraryHeader_header">{header}</h3>
-      {subheading && <p className="ItineraryHeader_subheading">{subheading}</p>}
+      <span className="ItineraryHeader_headerRow">
+        {displayArrow && (
+          <div onClick={onToggleLegExpand}>
+            <Icon
+              label={intl.formatMessage({
+                defaultMessage: 'Toggle expanded',
+                description: 'button to toggle if the leg steps are expanded',
+              })}
+            >
+              {expanded ? (
+                <NavUpArrow className="stroke-[3px]" />
+              ) : (
+                <NavDownArrow className="stroke-[3px]" />
+              )}
+            </Icon>
+          </div>
+        )}
+        <div>
+          <h3 className="ItineraryHeader_header">{header}</h3>
+          {subheading && (
+            <p className="ItineraryHeader_subheading">{subheading}</p>
+          )}
+        </div>
+      </span>
       {alerts?.length > 0 && (
         <ul className="ItineraryHeader_alerts" onClick={onAlertClick}>
           {alerts.map(([alertHeader, alertBody], idx) => (

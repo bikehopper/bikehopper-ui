@@ -5,6 +5,7 @@ import formatDistance from '../lib/formatDistance';
 import { TRANSIT_DATA_ACKNOWLEDGEMENT } from '../lib/region';
 import { formatInterval } from '../lib/time';
 import Icon from './primitives/Icon';
+import { isSignificantLeg } from '../lib/leg';
 import RouteLeg from './RouteLeg';
 import SelectionList from './SelectionList';
 import SelectionListItem from './SelectionListItem';
@@ -163,16 +164,6 @@ export default function RoutesOverview({
         </p>
       )}
     </div>
-  );
-}
-
-export function isSignificantLeg(leg) {
-  // For filtering out short, interpolated legs
-  const THRESHOLD_IN_METERS = 120;
-  return !(
-    leg.type === 'bike2' &&
-    leg.interpolated &&
-    leg.distance < THRESHOLD_IN_METERS
   );
 }
 

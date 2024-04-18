@@ -25,12 +25,8 @@
   height: 20px;
 }
 
-.ItineraryHeader_arrow {
-  transform: rotate(0deg);
-}
-
-.ItineraryHeader_arrow_90 {
-  transform: rotate(90deg);
+.ItineraryHeader_headerRow {
+  display: flex;
 }
 
 .ItineraryHeader_header {

@@ -9,7 +9,6 @@ import InstructionSigns from '../lib/InstructionSigns';
 import useScrollToRef from '../hooks/useScrollToRef';
 import ItineraryBikeStep from './ItineraryBikeStep';
 import ItineraryHeader from './ItineraryHeader';
-import ItineraryDivider from './ItineraryDivider';
 import ItinerarySpacer from './ItinerarySpacer';
 
 import { ReactComponent as BikeIcon } from 'iconoir/icons/bicycle.svg';
@@ -21,7 +20,7 @@ export default function ItineraryBikeLeg({
   isOnlyLeg,
   expanded,
   onStepClick,
-  onIconClick,
+  onToggleLegExpand,
   scrollToStep,
   displayLegElevation,
 }) {
@@ -70,9 +69,8 @@ export default function ItineraryBikeLeg({
         iconColor={BIKEHOPPER_THEME_COLOR}
         alerts={alerts}
         expanded={expanded}
-        displayArrow={true}
         alertsExpanded={true}
-        onIconClick={onIconClick}
+        onToggleLegExpand={onToggleLegExpand}
       >
         <span>
           <FormattedMessage
@@ -91,7 +89,9 @@ export default function ItineraryBikeLeg({
       </ItineraryHeader>
 
       {expanded ? (
-        <>
+        <div onClick={onToggleLegExpand}>
+          <ItinerarySpacer />
+
           {isOnlyLeg || !displayLegElevation ? null : (
             <ItineraryElevationProfile route={{ legs: [leg] }} />
           )}
@@ -103,23 +103,17 @@ export default function ItineraryBikeLeg({
                   <ItineraryBikeStep
                     key={stepIdx}
                     step={step}
+                    distance={
+                      step.distance ? formatDistance(step.distance, intl) : null
+                    }
+                    infra={step.bikeInfra}
                     isFirstStep={stepIdx === 0}
                     onClick={onStepClick.bind(null, stepIdx)}
                     rootRef={stepIdx === scrollToStep ? scrollToRef : null}
                   />,
-                  <ItineraryDivider
-                    key={stepIdx + 'd'}
-                    transit={false}
-                    detail={`${
-                      step.distance ? formatDistance(step.distance, intl) : null
-                    }`}
-                  >
-                    {step.bikeInfra}
-                  </ItineraryDivider>,
                 ],
           )}
-          <ItinerarySpacer />
-        </>
+        </div>
       ) : (
         <ItinerarySpacer />
       )}

@@ -10,17 +10,6 @@ export default function ItineraryDivider(props) {
   return (
     <ItineraryRow>
       {'' /* no content for timeline side of row */}
-      {subheading && (
-        <span
-          className={classnames({
-            ItineraryDivider_subheading: true,
-            ItineraryDivider_subheadingBike: !transit,
-            ItineraryDivider_subheadingTransit: transit,
-          })}
-        >
-          {subheading}
-        </span>
-      )}
       <span className="ItineraryDivider_horizontalRule">
         {detail && <span className="ItineraryDivider_detail">{detail}</span>}
       </span>

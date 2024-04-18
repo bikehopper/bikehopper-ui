@@ -1,24 +1,10 @@
-.ItineraryDivider_subheading {
-  font-weight: bold;
-  font-size: 14px;
-  line-height: 14px;
-  margin: 0 0 8px;
-}
-
-.ItineraryDivider_subheadingTransit {
-  color: #626262;
-}
-
-.ItineraryDivider_subheadingBike {
-  color: #438601;
-}
-
 .ItineraryDivider_horizontalRule {
   color: #626262;
   font-size: 12px;
   line-height: 12px;
-  margin-bottom: 12px;
-  margin-top: 8px;
+  margin-bottom: 5px;
+  margin-left: 25px;
+  margin-top: 5px;
   display: inline-block;
   height: 12px;
 

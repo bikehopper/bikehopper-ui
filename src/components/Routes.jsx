@@ -7,9 +7,9 @@ import { TRANSIT_SERVICE_AREA } from '../lib/region';
 import {
   routeClicked,
   itineraryBackClicked,
-  itineraryIconClicked,
   itineraryStepClicked,
   itineraryStepBackClicked,
+  legExpandToggled,
 } from '../features/routes';
 import describePlace from '../lib/describePlace';
 import RoutesOverview from './RoutesOverview';
@@ -70,8 +70,8 @@ export default function Routes(props) {
     dispatch(itineraryStepClicked(legClicked, stepClicked));
   };
 
-  const handleIconClick = (legClicked) => {
-    dispatch(itineraryIconClicked(legClicked));
+  const handleToggleLegExpand = (legClicked) => {
+    dispatch(legExpandToggled(legClicked));
   };
 
   const handleBackClick = () => {
@@ -129,7 +129,7 @@ export default function Routes(props) {
         route={routes[activeRoute]}
         onBackClick={handleBackClick}
         onStepClick={handleStepClick}
-        onIconClick={handleIconClick}
+        onToggleLegExpand={handleToggleLegExpand}
         viewingLeg={viewingLeg}
         destinationDescription={destinationDescription}
         scrollToStep={prevViewingStep}
