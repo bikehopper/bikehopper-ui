@@ -477,7 +477,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
         </Source>
         <Source id="liveVehicles" type="geojson" data={realtimePositions}>
           {/* Order matters: lowest to highest */}
-          <Layer {...getVehicleLayerStyle()} />
+          <Layer {...getVehicleLayerStyle(activePath, routes)} />
         </Source>
         {startCoords && (
           <Marker
@@ -710,10 +710,14 @@ function getBikeLabelStyle(activePath) {
   };
 }
 
-function getVehicleLayerStyle() {
+function getVehicleLayerStyle(activePath, routes) {
+  const activeRouteIds = activeRouteNames(activePath, routes);
+  const filter = activeRouteIds != null ? ['in', ['get', 'routeId'], activeRouteIds] : undefined;
+
   return {
     id: 'liveVehicles',
     type: 'symbol',
+    filter,
     layout: {
       // These icons are a part of the Mapbox Light style.
       // To view all images available in a Mapbox style, open
@@ -810,6 +814,22 @@ function propIs(key, ...values) {
 
 function pathIndexIs(index) {
   return ['==', ['get', 'path_index'], index];
+}
+
+function activeRouteNames(activePath, routes) {
+  if (activePath != null && routes != null && routes.length > 0) {
+    const route = routes[activePath];
+    if (route != null && route.legs != null && route.legs.length > 0) {
+      const routeIds = route.legs
+        .filter((l) => l.type === 'pt')
+        .map(l => l.route_id)
+        .filter(l => l != null);
+
+      return routeIds.join(' ');
+    }
+  }
+
+  return null;
 }
 
 export default BikehopperMap;

@@ -44,13 +44,14 @@ export function useRealtimeVehiclePositions() {
       const decoded = transit_realtime.FeedMessage.decode(new Uint8Array(buffer));
       const points = decoded.entity.map((feedEntity) => {
         const pos = feedEntity.vehicle.position;
-        const routeId = feedEntity.vehicle?.trip?.routeId?.split(':') || [];
+        const routeId = feedEntity.vehicle?.trip?.routeId;
+        const routeIdArr = routeId?.split(':') || [];
 
-        const agencyId = routeId[0];
-        const routeName = routeId[1];
+        const agencyId = routeIdArr[0];
+        const routeName = routeIdArr[1];
 
         return point([pos.longitude, pos.latitude], {
-          agencyId, routeName
+          agencyId, routeName, routeId
         });
       });
       const collection = featureCollection(points);
