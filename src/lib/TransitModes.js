@@ -36,3 +36,28 @@ export const CATEGORY_TO_MODES = {
   [CATEGORIES.BUSES]: [MODES.BUS, MODES.TROLLEYBUS],
   [CATEGORIES.FERRIES]: [MODES.FERRY],
 };
+
+export function modeToName(mode) {
+  switch (mode) {
+    case MODES.TRAM_STREETCAR_LIGHT_RAIL:
+      return 'tram/streetcar/light rail';
+    case MODES.MONORAIL:
+      return 'monorail';
+    case MODES.SUBWAY_METRO:
+      return 'subway/metro';
+    case MODES.RAIL_INTERCITY_LONG_DISTANCE:
+      return 'intercity/long-distance rail';
+    case MODES.BUS:
+    case MODES.TROLLEYBUS:
+      return 'bus';
+    case MODES.FERRY:
+      return 'ferry';
+    case MODES.CABLE_TRAM:
+    case MODES.AERIAL_TRAM_SUSPENDED_CABLE_CAR:
+      return 'cable tram/cable car/aerial tram/suspended cable car';
+    case MODES.FUNICULAR:
+      return 'funicular';
+    default:
+      return 'unknown mode';
+  }
+}

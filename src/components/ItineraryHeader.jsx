@@ -22,6 +22,7 @@ export default function ItineraryHeader({
   children,
   icon,
   iconColor,
+  iconLabel = '',
   displayArrow = true,
   expanded,
   alertsExpanded,
@@ -55,10 +56,13 @@ export default function ItineraryHeader({
           <BorderlessButton onClick={onToggleLegExpand} flex={true}>
             <Icon
               className="ItineraryHeader_arrow"
-              label={intl.formatMessage({
-                defaultMessage: 'Toggle expanded',
-                description: 'button to toggle if the leg steps are expanded',
-              })}
+              label={intl.formatMessage(
+                {
+                  defaultMessage: 'Toggle expanded {iconLabel}',
+                  description: 'button to toggle if the leg steps are expanded',
+                },
+                { iconLabel },
+              )}
             >
               {expanded ? (
                 <NavUpArrow className="stroke-[3px]" />
