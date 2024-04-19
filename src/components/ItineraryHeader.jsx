@@ -48,7 +48,9 @@ export default function ItineraryHeader({
           })}
           style={{ backgroundColor: iconColor }}
         >
-          <Icon className="ItineraryHeader_icon">{icon}</Icon>
+          <Icon className="ItineraryHeader_icon" label={iconLabel}>
+            {icon}
+          </Icon>
         </span>
       </BorderlessButton>
       <span className="ItineraryHeader_headerRow">
@@ -56,13 +58,10 @@ export default function ItineraryHeader({
           <BorderlessButton onClick={onToggleLegExpand} flex={true}>
             <Icon
               className="ItineraryHeader_arrow"
-              label={intl.formatMessage(
-                {
-                  defaultMessage: 'Toggle expanded {iconLabel}',
-                  description: 'button to toggle if the leg steps are expanded',
-                },
-                { iconLabel },
-              )}
+              label={intl.formatMessage({
+                defaultMessage: 'Toggle expanded',
+                description: 'button to toggle if the leg steps are expanded',
+              })}
             >
               {expanded ? (
                 <NavUpArrow className="stroke-[3px]" />

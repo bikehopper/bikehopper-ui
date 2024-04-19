@@ -72,13 +72,14 @@ export default function ItineraryTransitLeg({
       >
         <span>
           <FormattedMessage
-            defaultMessage="Ride {agency} to {lastStopName}"
+            defaultMessage="Ride {agency} {routeName} to {lastStopName}"
             description={
               'instructions header text.' +
-              ' Says to ride transit line to the named stop, operated by the named agency.'
+              ' Says to ride the named transit line to the named stop, operated by the named agency.'
             }
             values={{
               agency: getAgencyDisplayName(leg.agency_name),
+              routeName: leg.route_name || leg.route_id,
               lastStopName: stops[stops.length - 1].stop_name,
             }}
           />
