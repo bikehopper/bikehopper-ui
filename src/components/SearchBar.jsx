@@ -20,9 +20,10 @@ import {
 } from '../features/routeParams';
 import RouteOptionsDialog from './RouteOptionsDialog';
 import usePrevious from '../hooks/usePrevious';
-import { ReactComponent as NavLeftArrow } from 'iconoir/icons/nav-arrow-left.svg';
-import { ReactComponent as SwapArrows } from 'iconoir/icons/data-transfer-both.svg';
-import { ReactComponent as SettingsIcon } from 'iconoir/icons/settings.svg';
+
+import NavLeftArrow from 'iconoir/icons/nav-arrow-left.svg?react';
+import SwapArrows from 'iconoir/icons/data-transfer-both.svg?react';
+import SettingsIcon from 'iconoir/icons/settings.svg?react';
 
 const CURRENT_LOCATION_STRING = 'Current Location';
 

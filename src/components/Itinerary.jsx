@@ -10,8 +10,8 @@ import ItineraryTransitLeg from './ItineraryTransitLeg';
 import ItineraryElevationProfile from './ItineraryElevationProfile';
 import { isSignificantLeg } from '../lib/leg';
 
-import { ReactComponent as NavLeftArrow } from 'iconoir/icons/nav-arrow-left.svg';
-import { ReactComponent as ArriveIcon } from 'iconoir/icons/triangle-flag.svg';
+import NavLeftArrow from 'iconoir/icons/nav-arrow-left.svg?react';
+import ArriveIcon from 'iconoir/icons/triangle-flag.svg?react';
 import './Itinerary.css';
 
 export default function Itinerary({

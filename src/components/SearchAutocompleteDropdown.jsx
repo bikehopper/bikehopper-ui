@@ -15,7 +15,7 @@ import PlaceIcon from './PlaceIcon';
 import SelectionList from './SelectionList';
 import SelectionListItem from './SelectionListItem';
 
-import { ReactComponent as Position } from 'iconoir/icons/position.svg';
+import Position from 'iconoir/icons/position.svg?react';
 
 const LIST_ITEM_CLASSNAME = 'SearchAutocompleteDropdown_place';
 

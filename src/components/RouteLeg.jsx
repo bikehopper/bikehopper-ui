@@ -4,8 +4,8 @@ import { DEFAULT_PT_COLOR, getTextColor } from '../lib/colors';
 import ModeIcon from './ModeIcon';
 import { MODES } from '../lib/TransitModes';
 import Icon from './primitives/Icon';
-import { ReactComponent as Bicycle } from 'iconoir/icons/bicycle.svg';
-import { ReactComponent as WarningTriangle } from 'iconoir/icons/warning-triangle.svg';
+import Bicycle from 'iconoir/icons/bicycle.svg?react';
+import WarningTriangle from 'iconoir/icons/warning-triangle.svg?react';
 import { formatInterval } from '../lib/time';
 
 import './RouteLeg.css';

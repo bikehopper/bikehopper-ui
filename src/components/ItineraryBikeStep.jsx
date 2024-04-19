@@ -7,13 +7,13 @@ import classnames from 'classnames';
 
 import './ItineraryBikeStep.css';
 
-import { ReactComponent as MapsTurnBack } from 'iconoir/icons/maps-turn-back.svg';
-import { ReactComponent as LongArrowUpLeft } from 'iconoir/icons/long-arrow-up-left.svg';
-import { ReactComponent as LongArrowUpRight } from 'iconoir/icons/long-arrow-up-right.svg';
-import { ReactComponent as ArrowUp } from 'iconoir/icons/arrow-up.svg';
-import { ReactComponent as TriangleFlag } from 'iconoir/icons/triangle-flag.svg';
-import { ReactComponent as QuestionMarkCircle } from 'iconoir/icons/help-circle.svg';
-import { ReactComponent as ArrowTrCircle } from 'iconoir/icons/arrow-up-right-circle.svg';
+import MapsTurnBack from 'iconoir/icons/maps-turn-back.svg?react';
+import LongArrowUpLeft from 'iconoir/icons/long-arrow-up-left.svg?react';
+import LongArrowUpRight from 'iconoir/icons/long-arrow-up-right.svg?react';
+import ArrowUp from 'iconoir/icons/arrow-up.svg?react';
+import TriangleFlag from 'iconoir/icons/triangle-flag.svg?react';
+import QuestionMarkCircle from 'iconoir/icons/help-circle.svg?react';
+import ArrowTrCircle from 'iconoir/icons/arrow-up-right-circle.svg?react';
 
 let _warnedOfFallback = false;
 const spacerWithMiddot = ' \u00B7 ';

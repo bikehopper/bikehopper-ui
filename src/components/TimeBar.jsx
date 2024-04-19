@@ -9,7 +9,7 @@ import Icon from './primitives/Icon';
 
 import { departureChanged } from '../features/routeParams';
 
-import { ReactComponent as ClockOutline } from 'iconoir/icons/clock.svg';
+import ClockOutline from 'iconoir/icons/clock.svg?react';
 
 // contract:
 // receive departureType and initialTime from routeParams store
