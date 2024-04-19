@@ -1,26 +1,26 @@
 import * as React from 'react';
 import Icon from './primitives/Icon';
 
-import { ReactComponent as Building } from 'iconoir/icons/building.svg';
-import { ReactComponent as Chocolate } from 'iconoir/icons/chocolate.svg';
-import { ReactComponent as CoffeeCup } from 'iconoir/icons/coffee-cup.svg';
-import { ReactComponent as Cutlery } from 'iconoir/icons/cutlery.svg';
-import { ReactComponent as Cycling } from 'iconoir/icons/cycling.svg';
-import { ReactComponent as Flower } from 'iconoir/icons/flower.svg';
-import { ReactComponent as GlassHalf } from 'iconoir/icons/glass-half.svg';
-import { ReactComponent as Golf } from 'iconoir/icons/golf.svg';
-import { ReactComponent as Gym } from 'iconoir/icons/gym.svg';
-import { ReactComponent as Home } from 'iconoir/icons/home.svg';
-import { ReactComponent as Hospital } from 'iconoir/icons/hospital.svg';
-import { ReactComponent as PharmacyCrossCircle } from 'iconoir/icons/pharmacy-cross-circle.svg';
-import { ReactComponent as Pin } from 'iconoir/icons/map-pin.svg';
-import { ReactComponent as PineTree } from 'iconoir/icons/pine-tree.svg';
-import { ReactComponent as Sandals } from 'iconoir/icons/sandals.svg';
-import { ReactComponent as Shop } from 'iconoir/icons/shop.svg';
-import { ReactComponent as StarOutline } from 'iconoir/icons/star.svg';
-import { ReactComponent as Summit } from '../../icons/summit.svg';
-import { ReactComponent as Swimming } from 'iconoir/icons/swimming.svg';
-import { ReactComponent as Trekking } from 'iconoir/icons/trekking.svg';
+import Building from 'iconoir/icons/building.svg?react';
+import Chocolate from 'iconoir/icons/chocolate.svg?react';
+import CoffeeCup from 'iconoir/icons/coffee-cup.svg?react';
+import Cutlery from 'iconoir/icons/cutlery.svg?react';
+import Cycling from 'iconoir/icons/cycling.svg?react';
+import Flower from 'iconoir/icons/flower.svg?react';
+import GlassHalf from 'iconoir/icons/glass-half.svg?react';
+import Golf from 'iconoir/icons/golf.svg?react';
+import Gym from 'iconoir/icons/gym.svg?react';
+import Home from 'iconoir/icons/home.svg?react';
+import Hospital from 'iconoir/icons/hospital.svg?react';
+import PharmacyCrossCircle from 'iconoir/icons/pharmacy-cross-circle.svg?react';
+import Pin from 'iconoir/icons/map-pin.svg?react';
+import PineTree from 'iconoir/icons/pine-tree.svg?react';
+import Sandals from 'iconoir/icons/sandals.svg?react';
+import Shop from 'iconoir/icons/shop.svg?react';
+import StarOutline from 'iconoir/icons/star.svg?react';
+import Summit from '../../icons/summit.svg?react';
+import Swimming from 'iconoir/icons/swimming.svg?react';
+import Trekking from 'iconoir/icons/trekking.svg?react';
 
 /*
  * An icon to represent a place (place prop = GeoJSON result hash from Photon).

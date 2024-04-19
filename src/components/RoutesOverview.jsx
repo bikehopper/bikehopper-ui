@@ -10,9 +10,9 @@ import RouteLeg from './RouteLeg';
 import SelectionList from './SelectionList';
 import SelectionListItem from './SelectionListItem';
 
-import { ReactComponent as ArrowDown } from 'iconoir/icons/arrow-down.svg';
-import { ReactComponent as ArrowUp } from 'iconoir/icons/arrow-up.svg';
-import { ReactComponent as NavArrowRight } from 'iconoir/icons/nav-arrow-right.svg';
+import ArrowDown from 'iconoir/icons/arrow-down.svg?react';
+import ArrowUp from 'iconoir/icons/arrow-up.svg?react';
+import NavArrowRight from 'iconoir/icons/nav-arrow-right.svg?react';
 
 import './RoutesOverview.css';
 

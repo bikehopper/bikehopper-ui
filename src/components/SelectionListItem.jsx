@@ -3,7 +3,7 @@ import { useIntl } from 'react-intl';
 import classnames from 'classnames';
 import Icon from './primitives/Icon';
 
-import { ReactComponent as CancelIcon } from 'iconoir/icons/xmark.svg';
+import CancelIcon from 'iconoir/icons/xmark.svg?react';
 
 import './SelectionListItem.css';
 

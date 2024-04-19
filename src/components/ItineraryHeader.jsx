@@ -4,9 +4,9 @@ import classnames from 'classnames';
 import { getTextColor } from '../lib/colors';
 import Icon from './primitives/Icon';
 import ItineraryRow from './ItineraryRow';
-import { ReactComponent as WarningTriangle } from 'iconoir/icons/warning-triangle.svg';
-import { ReactComponent as NavDownArrow } from 'iconoir/icons/nav-arrow-down.svg';
-import { ReactComponent as NavUpArrow } from 'iconoir/icons/nav-arrow-up.svg';
+import WarningTriangle from 'iconoir/icons/warning-triangle.svg?react';
+import NavDownArrow from 'iconoir/icons/nav-arrow-down.svg?react';
+import NavUpArrow from 'iconoir/icons/nav-arrow-up.svg?react';
 import ArrowChevron from '../lib/icons/icon-chevron.svg';
 
 import './ItineraryHeader.css';

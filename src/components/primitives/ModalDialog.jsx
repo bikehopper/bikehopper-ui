@@ -4,7 +4,7 @@ import { Transition } from '@headlessui/react';
 import * as Dialog from '@radix-ui/react-dialog';
 import Icon from './Icon';
 
-import { ReactComponent as CancelIcon } from 'iconoir/icons/xmark.svg';
+import CancelIcon from 'iconoir/icons/xmark.svg?react';
 
 export default function ModalDialog({
   isOpen,

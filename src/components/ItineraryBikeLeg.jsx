@@ -11,7 +11,7 @@ import ItineraryBikeStep from './ItineraryBikeStep';
 import ItineraryHeader from './ItineraryHeader';
 import ItinerarySpacer from './ItinerarySpacer';
 
-import { ReactComponent as BikeIcon } from 'iconoir/icons/bicycle.svg';
+import BikeIcon from 'iconoir/icons/bicycle.svg?react';
 import ItineraryElevationProfile from './ItineraryElevationProfile';
 
 export default function ItineraryBikeLeg({
