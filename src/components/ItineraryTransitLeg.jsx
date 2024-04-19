@@ -67,12 +67,13 @@ export default function ItineraryTransitLeg({
         onToggleLegExpand={onToggleLegExpand}
         onAlertClick={toggleAlertsExpanded}
         alerts={alertsForHeader}
+        displayArrow={stops.length > 2}
       >
         <span>
           <ItineraryTransitLegHeaderMessage
             mode={leg.route_type}
             agency={getAgencyDisplayName(leg.agency_name)}
-            lastStopName={leg.stops[leg.stops.length - 1].stop_name}
+            lastStopName={stops[stops.length - 1].stop_name}
           />
         </span>
         <span>
@@ -148,7 +149,7 @@ export default function ItineraryTransitLeg({
             </ItineraryStep>
           ))}
         </div>
-      ) : (
+      ) : stops.length > 2 ? (
         <div onClick={onToggleLegExpand}>
           <ItineraryDivider
             transit={true}
@@ -170,7 +171,7 @@ export default function ItineraryTransitLeg({
             }
           />
         </div>
-      )}
+      ) : null}
       <ItineraryStep
         IconSVGComponent={Circle}
         iconSize="small"

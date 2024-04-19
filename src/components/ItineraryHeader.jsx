@@ -9,9 +9,12 @@ import { ReactComponent as NavDownArrow } from 'iconoir/icons/nav-arrow-down.svg
 import { ReactComponent as NavUpArrow } from 'iconoir/icons/nav-arrow-up.svg';
 
 import './ItineraryHeader.css';
+import BorderlessButton from './BorderlessButton';
+
+const ALERT_SUMMARY_LENGTH = 50;
 
 function alertSummary(alertBody) {
-  return alertBody.slice(0, 40) + '...';
+  return alertBody.slice(0, ALERT_SUMMARY_LENGTH) + '...';
 }
 
 export default function ItineraryHeader({
@@ -36,20 +39,22 @@ export default function ItineraryHeader({
 
   return (
     <ItineraryRow>
-      <span
-        className={classnames({
-          ItineraryHeader_iconContainer: true,
-          ItineraryHeader_iconContainer__isWhite: iconIsWhite,
-        })}
-        style={{ backgroundColor: iconColor }}
-        onClick={onToggleLegExpand}
-      >
-        <Icon className="ItineraryHeader_icon">{icon}</Icon>
-      </span>
+      <BorderlessButton onClick={onToggleLegExpand}>
+        <span
+          className={classnames({
+            ItineraryHeader_iconContainer: true,
+            ItineraryHeader_iconContainer__isWhite: iconIsWhite,
+          })}
+          style={{ backgroundColor: iconColor }}
+        >
+          <Icon className="ItineraryHeader_icon">{icon}</Icon>
+        </span>
+      </BorderlessButton>
       <span className="ItineraryHeader_headerRow">
-        {displayArrow && (
-          <div onClick={onToggleLegExpand}>
+        {displayArrow ? (
+          <BorderlessButton onClick={onToggleLegExpand} flex={true}>
             <Icon
+              className="ItineraryHeader_arrow"
               label={intl.formatMessage({
                 defaultMessage: 'Toggle expanded',
                 description: 'button to toggle if the leg steps are expanded',
@@ -61,7 +66,9 @@ export default function ItineraryHeader({
                 <NavDownArrow className="stroke-[3px]" />
               )}
             </Icon>
-          </div>
+          </BorderlessButton>
+        ) : (
+          <span className="ItineraryHeader_arrowSpacer" />
         )}
         <div>
           <h3 className="ItineraryHeader_header">{header}</h3>
@@ -85,13 +92,18 @@ export default function ItineraryHeader({
                 <WarningTriangle />
               </Icon>
               {alertHeader && (
-                <span className="ItineraryHeader_alertHeader">
-                  {alertHeader}
-                </span>
+                <>
+                  <span className="ItineraryHeader_alertHeader">
+                    {alertHeader}
+                  </span>
+                  <div />
+                </>
               )}
               {alertBody && (
                 <span className="ItineraryHeader_alertBody">
-                  {alertsExpanded ? alertBody : alertSummary(alertBody)}
+                  {alertsExpanded || alertBody.length <= ALERT_SUMMARY_LENGTH
+                    ? alertBody
+                    : alertSummary(alertBody)}
                 </span>
               )}
             </li>

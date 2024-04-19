@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { formatDurationBetween } from '../lib/time';
 import { getAgencyDisplayName } from '../lib/region';
@@ -7,7 +7,6 @@ import ItineraryBikeLeg from './ItineraryBikeLeg';
 import ItineraryHeader from './ItineraryHeader';
 import ItineraryTransitLeg from './ItineraryTransitLeg';
 import ItineraryElevationProfile from './ItineraryElevationProfile';
-import { isSignificantLeg } from '../lib/leg';
 
 import { ReactComponent as NavLeftArrow } from 'iconoir/icons/nav-arrow-left.svg';
 import { ReactComponent as ArriveIcon } from 'iconoir/icons/triangle-flag.svg';
@@ -18,12 +17,20 @@ export default function Itinerary({
   destinationDescription,
   onBackClick,
   onStepClick,
-  onToggleLegExpand,
-  viewingLeg,
   scrollToStep,
 }) {
   const intl = useIntl();
   const [scrollToLegIdx, scrollToStepIdx] = scrollToStep || [];
+
+  const [expandedLeg, setExpandedLeg] = useState(null);
+
+  const toggleExpandedLeg = (idx) => {
+    if (expandedLeg === idx) {
+      setExpandedLeg(null);
+    } else {
+      setExpandedLeg(idx);
+    }
+  };
 
   const renderedLegs = route.legs.map((leg, idx, legs) => {
     if (leg.type === 'pt') {
@@ -32,15 +39,15 @@ export default function Itinerary({
           key={idx}
           leg={leg}
           onStopClick={onStepClick.bind(null, idx)}
-          onToggleLegExpand={onToggleLegExpand.bind(null, idx)}
-          expanded={viewingLeg === idx}
+          onToggleLegExpand={toggleExpandedLeg.bind(null, idx)}
+          expanded={expandedLeg === idx}
           scrollTo={scrollToLegIdx === idx}
         />
       );
-    } else if (isSignificantLeg(leg)) {
+    } else {
       const isOnlyLeg = legs.length === 1;
-      if (isOnlyLeg) {
-        onToggleLegExpand(idx);
+      if (isOnlyLeg && expandedLeg !== idx) {
+        setExpandedLeg(idx);
       }
       // Where are we biking to? (Either final destination, or name of transit stop to board)
       const legDestination =
@@ -54,14 +61,12 @@ export default function Itinerary({
           legDestination={legDestination}
           isOnlyLeg={isOnlyLeg}
           onStepClick={onStepClick.bind(null, idx)}
-          onToggleLegExpand={onToggleLegExpand.bind(null, idx)}
-          expanded={viewingLeg === idx}
+          onToggleLegExpand={toggleExpandedLeg.bind(null, idx)}
+          expanded={expandedLeg === idx}
           scrollToStep={scrollToLegIdx === idx ? scrollToStepIdx : null}
           displayLegElevation={false}
         />
       );
-    } else {
-      return null;
     }
   });
 

@@ -1,4 +1,4 @@
-export default function formatMajorStreets(leg) {
+export default async function formatMajorStreets(leg) {
   var distanceByStreetName = {};
   leg.instructions.forEach((instruction) => {
     if (!instruction.street_name) {
@@ -23,16 +23,16 @@ export default function formatMajorStreets(leg) {
     return;
   }
 
-  var quartileDistance = quartileStreets(streetsWithDistance, 0.85);
+  var quartileDistance = await quartileStreets(streetsWithDistance, 0.85);
 
   var streetsOverQuartile = streetsWithDistance.filter((street) => {
     return street.totalDistance >= quartileDistance;
   });
 
-  return 'via ' + streetsOverQuartile.map((s) => s.name).join(', ');
+  return streetsOverQuartile.map((s) => s.name);
 }
 
-function quartileStreets(streets, q) {
+async function quartileStreets(streets, q) {
   streets = streets.concat([]);
   streets.sort((a, b) => {
     return a.totalDistance - b.totalDistance;

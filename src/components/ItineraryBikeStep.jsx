@@ -328,14 +328,13 @@ export default function ItineraryBikeStep({
           {msg}
           {spacerWithMiddot}
           {distance}
-          {infra ? spacerWithMiddot : null}
-          <span
+          <div
             className={classnames({
               ItineraryBikeStep_infra: true,
             })}
           >
             {infra}
-          </span>
+          </div>
         </BorderlessButton>
       </div>
     </ItineraryStep>

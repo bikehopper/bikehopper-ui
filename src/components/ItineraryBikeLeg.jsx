@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { BIKEHOPPER_THEME_COLOR } from '../lib/colors';
 import formatDistance from '../lib/formatDistance';
@@ -40,6 +40,16 @@ export default function ItineraryBikeLeg({
     });
   }, [leg]);
 
+  const [majorStreets, setMajorStreets] = useState(null);
+
+  useEffect(() => {
+    async function getMajorStreets() {
+      const majorStreets = await formatMajorStreets(leg);
+      setMajorStreets(majorStreets);
+    }
+    getMajorStreets();
+  }, [leg]);
+
   const scrollToRef = useScrollToRef();
   const spacer = ' \u00B7 ';
 
@@ -68,6 +78,7 @@ export default function ItineraryBikeLeg({
         icon={bikeIcon}
         iconColor={BIKEHOPPER_THEME_COLOR}
         alerts={alerts}
+        displayArrow={!isOnlyLeg}
         expanded={expanded}
         alertsExpanded={true}
         onToggleLegExpand={onToggleLegExpand}
@@ -83,13 +94,21 @@ export default function ItineraryBikeLeg({
           {formatDistance(leg.distance, intl)}
           {spacer}
           {formatDurationBetween(leg.departure_time, leg.arrival_time, intl)}
-          {spacer}
-          {formatMajorStreets(leg)}
+          {majorStreets ? (
+            <>
+              {spacer}
+              <FormattedMessage
+                defaultMessage="via {streets}"
+                description="list of major streets taken on bike leg"
+                values={{ streets: majorStreets.join(', ') }}
+              />
+            </>
+          ) : null}
         </span>
       </ItineraryHeader>
 
       {expanded ? (
-        <div onClick={onToggleLegExpand}>
+        <div>
           <ItinerarySpacer />
 
           {isOnlyLeg || !displayLegElevation ? null : (

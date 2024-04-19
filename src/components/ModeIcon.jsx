@@ -18,13 +18,7 @@ import { ReactComponent as FerryIcon } from 'iconoir/icons/sea-waves.svg';
  * <Icon> for you.
  */
 
-export default function ModeIcon({
-  mode,
-  width,
-  height,
-  onClick,
-  fallback = BusIcon,
-}) {
+export default function ModeIcon({ mode, width, height, fallback = BusIcon }) {
   let IconSvg;
 
   switch (mode) {
@@ -54,5 +48,5 @@ export default function ModeIcon({
       break;
   }
 
-  return <IconSvg width={width} height={height} onClick={onClick} />;
+  return <IconSvg width={width} height={height} />;
 }

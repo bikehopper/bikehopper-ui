@@ -13,7 +13,6 @@ const DEFAULT_STATE = {
 
   // State specific to an active route.
   viewingDetails: false, // True if viewing detailed itinerary for the active route
-  viewingLeg: null, // number leg if viewing a particular leg of active route.
   viewingStep: null, // Array [leg, step] if viewing a particular step of active route.
 };
 
@@ -124,13 +123,7 @@ export function routesReducer(state = DEFAULT_STATE, action) {
         }
       });
     case 'itinerary_back_clicked':
-      return { ...state, viewingDetails: false };
-    case 'leg_expand_toggled':
-      if (state.viewingLeg === action.leg) {
-        return { ...state, viewingLeg: null };
-      } else {
-        return { ...state, viewingLeg: action.leg };
-      }
+      return { ...state, viewingDetails: false, viewingLeg: null };
     case 'itinerary_step_clicked':
       return { ...state, viewingStep: [action.leg, action.step] };
     case 'itinerary_step_back_clicked':
@@ -271,11 +264,4 @@ export function itineraryStepClicked(legIndex, stepIndex) {
 
 export function itineraryStepBackClicked() {
   return { type: 'itinerary_step_back_clicked' };
-}
-
-export function legExpandToggled(legIndex) {
-  return {
-    type: 'leg_expand_toggled',
-    leg: legIndex,
-  };
 }
