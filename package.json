@@ -132,7 +132,7 @@
     ]
   },
   "devDependencies": {
-    "@formatjs/cli": "^5.1.12",
+    "@formatjs/cli": "^6.2.9",
     "@tailwindcss/typography": "^0.5.9",
     "@vitejs/plugin-basic-ssl": "^1.0.1",
     "@vitejs/plugin-react": "^4.0.0",
