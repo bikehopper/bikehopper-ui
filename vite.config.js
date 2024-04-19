@@ -27,7 +27,6 @@ export default defineConfig(() => {
       }),
       eslint(),
       basicSsl(),
-      fixRoutePathsPlugin(),
     ],
     server: {
       open: true,
@@ -38,19 +37,3 @@ export default defineConfig(() => {
     },
   };
 });
-
-function fixRoutePathsPlugin() {
-  // works around weird bug where paths with dots 404:
-  // https://github.com/vitejs/vite/issues/2415
-  // needed because our /route/*/to/*/ paths always contain dots since they contain
-  // lat-lng pairs!
-  return {
-    name: 'fix-route-paths-plugin',
-    configureServer: (server) => {
-      server.middlewares.use((req, res, next) => {
-        if (req.url.startsWith('/route/')) req.url = '/';
-        next();
-      });
-    },
-  };
-}
