@@ -13,7 +13,7 @@ import { ReactComponent as LongArrowUpRight } from 'iconoir/icons/long-arrow-up-
 import { ReactComponent as ArrowUp } from 'iconoir/icons/arrow-up.svg';
 import { ReactComponent as TriangleFlag } from 'iconoir/icons/triangle-flag.svg';
 import { ReactComponent as QuestionMarkCircle } from 'iconoir/icons/help-circle.svg';
-import { ReactComponent as ArrowTrCircle } from 'iconoir/icons/arrow-tr-circle.svg';
+import { ReactComponent as ArrowTrCircle } from 'iconoir/icons/arrow-up-right-circle.svg';
 
 let _warnedOfFallback = false;
 const spacerWithMiddot = ' \u00B7 ';
