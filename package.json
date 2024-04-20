@@ -5,6 +5,7 @@
   "engines": {
     "node": ">=18"
   },
+  "type": "module",
   "dependencies": {
     "@babel/core": "^7.16.0",
     "@formatjs/intl-listformat": "^7.1.7",
