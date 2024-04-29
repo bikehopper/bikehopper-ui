@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { DEFAULT_PT_COLOR } from '../lib/colors';
-import { modeToName } from '../lib/TransitModes';
+import { getModeLabel } from '../lib/TransitModes';
 import { formatTime, formatDurationBetween } from '../lib/time';
 import classnames from 'classnames';
 import { getAgencyDisplayName } from '../lib/region';
@@ -62,7 +62,7 @@ export default function ItineraryTransitLeg({
       <ItineraryHeader
         icon={<ModeIcon mode={leg.route_type} />}
         iconColor={leg.route_color || DEFAULT_PT_COLOR}
-        iconLabel={modeToName(leg.route_type)}
+        iconLabel={getModeLabel(leg.route_type, intl)}
         expanded={expanded}
         alertsExpanded={alertsExpanded}
         onToggleLegExpand={onToggleLegExpand}
