@@ -1,7 +1,7 @@
 import maplibregl from 'maplibre-gl';
 import { forwardRef, useEffect, useRef, useState } from 'react';
-import { useCallback, useLayoutEffect } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { useCallback, useLayoutEffect, useMemo } from 'react';
+import { useIntl, FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import MapGL, {
   Layer,
@@ -45,6 +45,7 @@ const _isTouch = 'ontouchstart' in window;
 
 const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
   const dispatch = useDispatch();
+  const intl = useIntl();
   const {
     routeStatus,
     startCoords,
@@ -386,7 +387,9 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
     });
   }, [routes, activePath, viewingDetails, viewingStep, mapRef]);
 
-  const features = routes ? routesToGeoJSON(routes) : EMPTY_GEOJSON;
+  const features = useMemo(() => {
+    return routes ? routesToGeoJSON(routes, intl) : EMPTY_GEOJSON;
+  }, [routes, intl]);
 
   const navigationControlStyle = {
     visibility: mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden',
