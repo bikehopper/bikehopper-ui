@@ -1,9 +1,11 @@
 import { useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import classnames from 'classnames';
+
 import BorderlessButton from './BorderlessButton';
+import { STEP_ANNOTATIONS, describeStepAnnotation } from '../lib/geometry';
 import InstructionSigns from '../lib/InstructionSigns';
 import ItineraryStep from './ItineraryStep';
-import classnames from 'classnames';
 
 import './ItineraryBikeStep.css';
 
@@ -333,7 +335,26 @@ export default function ItineraryBikeStep({
               ItineraryBikeStep_infra: true,
             })}
           >
-            {infra}
+            {infra.map((anno, idx) => (
+              <span
+                key={idx}
+                className={classnames({
+                  'mt-1 mr-1 rounded-md px-1 py-0.5 inline-block': true,
+                  'font-medium text-white text-xs': true,
+                  'bg-red-700': anno === STEP_ANNOTATIONS.mainRoad,
+                  'bg-gray-500':
+                    anno === STEP_ANNOTATIONS.steepHill ||
+                    anno === STEP_ANNOTATIONS.verySteepHill,
+                  'bg-bikeinfragreen': !(
+                    anno === STEP_ANNOTATIONS.mainRoad ||
+                    anno === STEP_ANNOTATIONS.steepHill ||
+                    anno === STEP_ANNOTATIONS.verySteepHill
+                  ),
+                })}
+              >
+                {describeStepAnnotation(anno, intl)}
+              </span>
+            ))}
           </div>
         </BorderlessButton>
       </div>

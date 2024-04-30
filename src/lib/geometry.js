@@ -29,7 +29,7 @@ export const MAIN_ROADS = [
   'trunk_link',
 ];
 
-export function routesToGeoJSON(paths) {
+export function routesToGeoJSON(paths, intl) {
   const features = [];
 
   // For-each path
@@ -80,6 +80,7 @@ export function routesToGeoJSON(paths) {
         leg.geometry.coordinates,
         leg.type,
         pathIdx,
+        intl,
       );
       if (detailFeatures) features.push(...detailFeatures);
     }
@@ -93,7 +94,7 @@ export function routesToGeoJSON(paths) {
  *
  * @param {object} details
  */
-function detailsToLines(details, coordinates, type, pathIdx) {
+function detailsToLines(details, coordinates, type, pathIdx, intl) {
   if (!details || !Object.keys(details).length) return;
   const lines = [];
   let currentStart = 0;
@@ -116,9 +117,12 @@ function detailsToLines(details, coordinates, type, pathIdx) {
           path_index: pathIdx,
           type,
           ...lineDetails,
-          bike_infra: _describeBikeInfraFromCyclewayAndRoadClass(
-            lineDetails['cycleway'],
-            lineDetails['road_class'],
+          bike_infra: describeStepAnnotation(
+            _describeBikeInfraFromCyclewayAndRoadClass(
+              lineDetails['cycleway'],
+              lineDetails['road_class'],
+            ),
+            intl,
           ),
         }),
       );
@@ -159,20 +163,111 @@ export function curveBetween(start, end, options, angle = 30) {
   );
 }
 
-// TODO: i18n by instead returning constants which are converted into
-// user-visible strings within a react component
+export const STEP_ANNOTATIONS = {
+  path: 1,
+  bikePath: 2,
+  footPath: 3,
+  promenade: 4,
+  steps: 5,
+  protectedBikeLane: 6,
+  bikeLane: 7,
+  sharedRoad: 8,
+  shoulder: 9,
+  mainRoad: 10,
+  steepHill: 11,
+  verySteepHill: 12,
+};
+
+export function describeStepAnnotation(sa, intl) {
+  switch (sa) {
+    case STEP_ANNOTATIONS.path:
+      return intl.formatMessage({
+        defaultMessage: 'path',
+        description:
+          'annotation for a step in a series of biking directions.' +
+          ' A path, such as foot path or bike path.',
+      });
+    case STEP_ANNOTATIONS.bikePath:
+      return intl.formatMessage({
+        defaultMessage: 'bike path',
+        description: 'annotation for a step in a series of biking directions.',
+      });
+    case STEP_ANNOTATIONS.footPath:
+      return intl.formatMessage({
+        defaultMessage: 'foot path',
+        description: 'annotation for a step in a series of biking directions.',
+      });
+    case STEP_ANNOTATIONS.promenade:
+      return intl.formatMessage({
+        defaultMessage: 'promenade',
+        description: 'annotation for a step in a series of biking directions.',
+      });
+    case STEP_ANNOTATIONS.steps:
+      return intl.formatMessage({
+        defaultMessage: 'steps',
+        description:
+          'annotation for a step in a series of biking directions.' +
+          ' Steps or a staircase.',
+      });
+    case STEP_ANNOTATIONS.protectedBikeLane:
+      return intl.formatMessage({
+        defaultMessage: 'protected bike lane',
+        description: 'annotation for a step in a series of biking directions.',
+      });
+    case STEP_ANNOTATIONS.bikeLane:
+      return intl.formatMessage({
+        defaultMessage: 'bike lane',
+        description: 'annotation for a step in a series of biking directions.',
+      });
+    case STEP_ANNOTATIONS.sharedRoad:
+      return intl.formatMessage({
+        defaultMessage: 'shared road',
+        description:
+          'annotation for a step in a series of biking directions.' +
+          ' A road intended for cycling but that cyclists must share with cars,' +
+          ' without a bike lane.',
+      });
+    case STEP_ANNOTATIONS.shoulder:
+      return intl.formatMessage({
+        defaultMessage: 'shoulder',
+        description:
+          'annotation for a step in a series of biking directions.' +
+          ' A road where bikes are recommended to ride on the shoulder.',
+      });
+    case STEP_ANNOTATIONS.mainRoad:
+      return intl.formatMessage({
+        defaultMessage: 'main road',
+        description:
+          'annotation for a step in a series of biking directions.' +
+          ' A main road which might have lots of fast traffic.',
+      });
+    case STEP_ANNOTATIONS.steepHill:
+      return intl.formatMessage({
+        defaultMessage: 'steep hill',
+        description: 'annotation for a step in a series of biking directions.',
+      });
+    case STEP_ANNOTATIONS.verySteepHill:
+      return intl.formatMessage({
+        defaultMessage: 'very steep hill',
+        description: 'annotation for a step in a series of biking directions.',
+      });
+    default:
+      return '';
+  }
+}
+
 function _describeBikeInfraFromCyclewayAndRoadClass(cycleway, roadClass) {
-  if (roadClass === 'path') return 'path';
-  if (roadClass === 'cycleway') return 'bike path';
-  if (roadClass === 'footway') return 'foot path';
-  if (roadClass === 'pedestrian') return 'promenade';
-  if (roadClass === 'steps') return 'steps';
-  if (cycleway === 'track') return 'protected bike lane';
-  if (cycleway === 'lane') return 'bike lane';
-  if (cycleway === 'shared_lane') return 'shared road';
-  if (cycleway === 'sidepath') return 'sidepath';
-  if (cycleway === 'shoulder') return 'shoulder';
-  if (MAIN_ROADS.includes(roadClass)) return 'main road';
+  if (roadClass === 'path') return STEP_ANNOTATIONS.path;
+  if (roadClass === 'cycleway') return STEP_ANNOTATIONS.bikePath;
+  if (roadClass === 'footway') return STEP_ANNOTATIONS.footPath;
+  if (roadClass === 'pedestrian') return STEP_ANNOTATIONS.promenade;
+  if (roadClass === 'steps') return STEP_ANNOTATIONS.steps;
+  if (cycleway === 'track') return STEP_ANNOTATIONS.protectedBikeLane;
+  if (cycleway === 'lane') return STEP_ANNOTATIONS.bikeLane;
+  if (cycleway === 'shared_lane') return STEP_ANNOTATIONS.sharedRoad;
+  if (cycleway === 'sidepath') return STEP_ANNOTATIONS.path;
+  if (cycleway === 'shoulder') return STEP_ANNOTATIONS.shoulder;
+  if (MAIN_ROADS.includes(roadClass)) return STEP_ANNOTATIONS.mainRoad;
   return null;
 }
 
@@ -182,7 +277,7 @@ function _describeBikeInfraFromCyclewayAndRoadClass(cycleway, roadClass) {
 // 'cyclewayValues' and 'roadClasses' are each arrays of triples [start, end, value]
 // in which the start and end refer to coordinate indexes in the lineString.
 //
-// TODO: localize this (how since it's outside of react? intl parameter?)
+// Return: array of STEP_ANNOTATIONS values.
 export function describeBikeInfra(
   lineString,
   cyclewayValues,
@@ -190,7 +285,7 @@ export function describeBikeInfra(
   start,
   end,
 ) {
-  if (end <= start) return ''; // Ignore instruction steps that travel zero distance.
+  if (end <= start) return []; // Ignore instruction steps that travel zero distance.
 
   const stepLineString = turf.lineString(
     lineString.coordinates.slice(start, end + 1),
@@ -206,7 +301,7 @@ export function describeBikeInfra(
 
   let cyclewayIndex = 0,
     roadClassIndex = 0;
-  const distanceByInfraType = {};
+  const distanceByInfraType = new Map();
   let gradesScratchpad = []; // array of [percent grade, length in km] tuples
   let maxGrade = 0;
 
@@ -227,9 +322,11 @@ export function describeBikeInfra(
     );
 
     if (infraType) {
-      distanceByInfraType[infraType] =
-        (distanceByInfraType[infraType] || 0) +
-        (segmentLength * 100) / stepTotalDistance;
+      distanceByInfraType.set(
+        infraType,
+        (distanceByInfraType.get(infraType) || 0) +
+          (segmentLength * 100) / stepTotalDistance,
+      );
     }
 
     // Compute windowed grade
@@ -261,35 +358,26 @@ export function describeBikeInfra(
     'kilometers',
   );
   if (stepTotalDistance < MIN_DISTANCE_TO_DESCRIBE) {
-    if (distanceByInfraType.steps) return 'steps';
-    return '';
+    if (distanceByInfraType.has(STEP_ANNOTATIONS.steps))
+      return [STEP_ANNOTATIONS.steps];
+    return [];
   }
 
-  let infraTypes = Object.entries(distanceByInfraType);
+  let infraTypes = Array.from(distanceByInfraType.entries());
   // Sort the infra types by most common first
   infraTypes.sort((a, b) => b[1] - a[1]);
 
   let descriptors = infraTypes
     .filter(([infraType, percent]) => percent > 25)
-    .map(([infraType, percent]) => `${_describePercent(percent)} ${infraType}`);
+    .map(([infraType, percent]) => infraType);
 
   if (maxGrade > 14) {
-    descriptors = [
-      'very steep hill (max grade ' + maxGrade.toFixed(1) + '%)',
-    ].concat(descriptors);
+    descriptors.unshift(STEP_ANNOTATIONS.verySteepHill);
   } else if (maxGrade > 8) {
-    descriptors = [
-      'steep hill (max grade ' + maxGrade.toFixed(1) + '%)',
-    ].concat(descriptors);
+    descriptors.unshift(STEP_ANNOTATIONS.steepHill);
   }
 
-  return descriptors.join(', ');
-}
-
-function _describePercent(percent) {
-  if (percent > 75) return '';
-  if (percent > 50) return 'mostly ';
-  return 'partial ';
+  return descriptors;
 }
 
 function _elevationChangeInKm(lineSegment) {
