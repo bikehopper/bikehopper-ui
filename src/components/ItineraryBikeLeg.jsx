@@ -87,7 +87,9 @@ export default function ItineraryBikeLeg({
               <FormattedMessage
                 defaultMessage="via {streets}"
                 description="list of major streets taken on bike leg"
-                values={{ streets: majorStreets.join(', ') }}
+                values={{
+                  streets: intl.formatList(majorStreets, { type: 'unit' }),
+                }}
               />
             </>
           ) : null}
