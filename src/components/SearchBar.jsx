@@ -4,10 +4,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './primitives/Icon';
 import PlaceIcon from './PlaceIcon';
 import TimeBar from './TimeBar';
-import {
-  isAutocompleteResultElement,
-  getLastAutocompleteResultMousedownTime,
-} from './SearchAutocompleteDropdown';
+import SearchAutocompleteDropdown from './SearchAutocompleteDropdown';
 import {
   blurSearchWithUnchangedLocations,
   changeConnectingModes,
@@ -133,8 +130,12 @@ export default function SearchBar(props) {
     // an autocomplete result. However, the mousedown on the button does happen before
     // the blur, so that's what we use here.
     const isAutocompleteResultTapped =
-      isAutocompleteResultElement(event.relatedTarget) ||
-      Date.now() - getLastAutocompleteResultMousedownTime() < 1000;
+      SearchAutocompleteDropdown.isAutocompleteResultElement(
+        event.relatedTarget,
+      ) ||
+      Date.now() -
+        SearchAutocompleteDropdown.getLastAutocompleteResultMousedownTime() <
+        1000;
 
     const haveLocations = !!(startLocation && endLocation);
 

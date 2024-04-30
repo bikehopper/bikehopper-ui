@@ -226,16 +226,16 @@ export default function SearchAutocompleteDropdown(props) {
 }
 
 // Hack for letting search bar see if an autocomplete result was focused
-export function isAutocompleteResultElement(domElement) {
+SearchAutocompleteDropdown.isAutocompleteResultElement = (domElement) => {
   if (!domElement) return false;
   return Array.from(domElement.classList).includes(LIST_ITEM_CLASSNAME);
-}
+};
 
 // Hack for letting search bar see if an autocomplete result was just tapped on
 // but the browser in question does not focus it
-export function getLastAutocompleteResultMousedownTime() {
+SearchAutocompleteDropdown.getLastAutocompleteResultMousedownTime = () => {
   return _resultMousedownTime;
-}
+};
 
 function AutocompleteItem({ onClick, onMouseDown, onRemoveClick, icon, text }) {
   return (
