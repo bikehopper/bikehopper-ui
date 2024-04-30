@@ -1,4 +1,3 @@
-import * as React from 'react';
 import ItineraryRow from './ItineraryRow';
 
 import './ItineraryDivider.css';

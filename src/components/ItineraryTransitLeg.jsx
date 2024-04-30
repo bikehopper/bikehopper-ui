@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { DEFAULT_PT_COLOR } from '../lib/colors';
 import { getModeLabel } from '../lib/TransitModes';

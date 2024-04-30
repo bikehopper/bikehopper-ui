@@ -77,8 +77,8 @@ export async function fetchRoute({
 }
 
 function parse(route) {
-  for (const path of route?.paths) {
-    for (const leg of path?.legs) {
+  for (const path of route?.paths || []) {
+    for (const leg of path?.legs || []) {
       if (leg.type === 'pt' && leg.route_color)
         leg.route_color = '#' + leg.route_color;
 

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useIntl } from 'react-intl';
 import { DEFAULT_PT_COLOR, getTextColor } from '../lib/colors';
 import ModeIcon from './ModeIcon';

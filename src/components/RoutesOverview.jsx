@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { Fragment } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import classnames from 'classnames';
 import formatDistance from '../lib/formatDistance';
@@ -47,7 +47,7 @@ export default function RoutesOverview({
             <div className="RoutesOverview_row">
               <ul className="RoutesOverview_routeLegs">
                 {route.legs.filter(_isSignificantLeg).map((leg, index) => (
-                  <React.Fragment key={route.nonce + ':' + index}>
+                  <Fragment key={route.nonce + ':' + index}>
                     {index > 0 && (
                       <li className="RoutesOverview_legSeparator">
                         <Icon>
@@ -78,7 +78,7 @@ export default function RoutesOverview({
                         }
                       />
                     </li>
-                  </React.Fragment>
+                  </Fragment>
                 ))}
               </ul>
               <p className="RoutesOverview_timeEstimate">

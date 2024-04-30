@@ -1,4 +1,3 @@
-import * as React from 'react';
 import classnames from 'classnames';
 import Icon from './primitives/Icon';
 import ItineraryRow from './ItineraryRow';

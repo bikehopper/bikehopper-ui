@@ -1,5 +1,5 @@
 import maplibregl from 'maplibre-gl';
-import * as React from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import { useCallback, useLayoutEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
@@ -43,7 +43,7 @@ import {
 
 const _isTouch = 'ontouchstart' in window;
 
-const BikehopperMap = React.forwardRef((props, mapRef) => {
+const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
   const dispatch = useDispatch();
   const {
     routeStatus,
@@ -75,11 +75,11 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
   const prevRouteStatus = usePrevious(routeStatus);
 
   // If non-null, a [clientX, clientY, lng, lat] of where the context menu is open from.
-  const [contextMenuAt, setContextMenuAt] = React.useState(null);
+  const [contextMenuAt, setContextMenuAt] = useState(null);
 
   // MapLibre doesn't natively support long press, so we use a timer to detect it,
   // along with the clientX and clientY of the initial touch.
-  const longPressTimerIdAndPos = React.useRef(null);
+  const longPressTimerIdAndPos = useRef(null);
 
   const resetLongPressTimer = () => {
     if (longPressTimerIdAndPos.current) {
@@ -355,7 +355,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
   ]);
 
   // When viewing a specific step of a route, zoom to where it starts.
-  React.useEffect(() => {
+  useEffect(() => {
     if (
       !routes ||
       activePath == null ||
@@ -396,7 +396,7 @@ const BikehopperMap = React.forwardRef((props, mapRef) => {
     (state) => ({ ...state.viewport }),
     shallowEqual,
   );
-  const viewStateOnFirstRender = React.useRef(viewState);
+  const viewStateOnFirstRender = useRef(viewState);
 
   return (
     <div className="BikehopperMap" ref={resizeRef}>

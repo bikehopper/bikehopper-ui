@@ -7,7 +7,6 @@
   },
   "type": "module",
   "dependencies": {
-    "@babel/core": "^7.16.0",
     "@formatjs/intl-listformat": "^7.1.7",
     "@headlessui/react": "^1.7.14",
     "@nivo/core": "^0.85.1",
@@ -49,8 +48,9 @@
   },
   "scripts": {
     "start": "vite",
-    "build": "vite build",
+    "build": "npm run lint && vite build",
     "serve": "vite preview",
+    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "extract": "formatjs extract 'src/**/*.{js,jsx}' --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
     "compile": "formatjs compile",
     "prepare": "husky"
@@ -69,14 +69,16 @@
     "babel-plugin-formatjs": "^10.3.35",
     "csv": "^6.2.5",
     "eslint": "^8.57.0",
-    "eslint-config-react-app": "^7.0.0",
     "eslint-plugin-formatjs": "^4.5.0",
+    "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-refresh": "^0.4.6",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
     "prettier": "^3.2.5",
     "tailwindcss": "^3.3.2",
     "vite": "^5.2.9",
-    "vite-plugin-eslint": "^1.8.1",
+    "vite-plugin-eslint2": "^4.4.0",
     "vite-plugin-svgr": "^4.2.0"
   },
   "lint-staged": {

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import BorderlessButton from './BorderlessButton';
 import InstructionSigns from '../lib/InstructionSigns';
@@ -34,7 +34,7 @@ export default function ItineraryBikeStep({
 
   const street = step.street_name;
   const haveStreet = street ? 'name' : 'none';
-  const strong = React.useCallback((txt) => <strong>{txt}</strong>, []);
+  const strong = useCallback((txt) => <strong>{txt}</strong>, []);
 
   // TODO: Get better icons for u-turn, sharp left/right, slight left/right, etc.
   switch (step.sign) {

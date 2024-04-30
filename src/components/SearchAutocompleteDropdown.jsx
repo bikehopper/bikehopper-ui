@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { cloneElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import classnames from 'classnames';
@@ -31,7 +31,7 @@ export default function SearchAutocompleteDropdown(props) {
       'option that can be selected (or typed in) to get directions from or ' +
       'to the current location of the user, as determined by GPS',
   });
-  const strong = React.useCallback((txt) => <strong>{txt}</strong>, []);
+  const strong = useCallback((txt) => <strong>{txt}</strong>, []);
 
   const {
     startOrEnd,
@@ -226,16 +226,16 @@ export default function SearchAutocompleteDropdown(props) {
 }
 
 // Hack for letting search bar see if an autocomplete result was focused
-export function isAutocompleteResultElement(domElement) {
+SearchAutocompleteDropdown.isAutocompleteResultElement = (domElement) => {
   if (!domElement) return false;
   return Array.from(domElement.classList).includes(LIST_ITEM_CLASSNAME);
-}
+};
 
 // Hack for letting search bar see if an autocomplete result was just tapped on
 // but the browser in question does not focus it
-export function getLastAutocompleteResultMousedownTime() {
+SearchAutocompleteDropdown.getLastAutocompleteResultMousedownTime = () => {
   return _resultMousedownTime;
-}
+};
 
 function AutocompleteItem({ onClick, onMouseDown, onRemoveClick, icon, text }) {
   return (
@@ -248,7 +248,7 @@ function AutocompleteItem({ onClick, onMouseDown, onRemoveClick, icon, text }) {
       onMouseDown={onMouseDown}
       onRemoveClick={onRemoveClick}
     >
-      {React.cloneElement(icon, {
+      {cloneElement(icon, {
         className: 'relative top-0.5 my-0 -ml-2 md:ml-6 mr-2',
       })}
       <span className="align-middle">{text}</span>

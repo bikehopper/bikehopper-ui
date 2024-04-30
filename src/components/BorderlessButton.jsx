@@ -1,4 +1,3 @@
-import * as React from 'react';
 import classnames from 'classnames';
 
 // A button with the styles reset, for when you have something that
