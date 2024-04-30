@@ -1,3 +1,6 @@
+/* eslint-disable react-refresh/only-export-components */
+/* eslint-disable formatjs/no-literal-string-in-jsx */
+
 export function SupportedRegionText(props) {
   // TODO: localize
   return (
