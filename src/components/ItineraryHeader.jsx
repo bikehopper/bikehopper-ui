@@ -23,10 +23,9 @@ export default function ItineraryHeader({
   icon,
   iconColor,
   iconLabel = '',
-  displayArrow = true,
   expanded,
-  alertsExpanded,
   onToggleLegExpand,
+  alertsExpanded,
   onAlertClick,
 }) {
   const intl = useIntl();
@@ -54,7 +53,7 @@ export default function ItineraryHeader({
         </span>
       </BorderlessButton>
       <span className="ItineraryHeader_headerRow">
-        {displayArrow ? (
+        {onToggleLegExpand ? (
           <BorderlessButton onClick={onToggleLegExpand} flex={true}>
             <Icon
               className="ItineraryHeader_arrow"

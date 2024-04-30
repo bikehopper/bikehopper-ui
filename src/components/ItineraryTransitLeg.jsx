@@ -31,7 +31,7 @@ export default function ItineraryTransitLeg({
 
   const toggleAlertsExpanded = useCallback(
     () => setAlertsExpanded(!alertsExpanded),
-    [alertsExpanded, setAlertsExpanded],
+    [alertsExpanded],
   );
 
   const { stops } = leg;
@@ -41,6 +41,7 @@ export default function ItineraryTransitLeg({
 
   const stopsTraveled = stops.length - 1;
   const stopsBetweenStartAndEnd = stopsTraveled - 1;
+  const expandable = stopsBetweenStartAndEnd > 0;
 
   const spacerWithMiddot = ' \u00B7 ';
 
@@ -65,10 +66,9 @@ export default function ItineraryTransitLeg({
         iconLabel={getModeLabel(leg.route_type, intl)}
         expanded={expanded}
         alertsExpanded={alertsExpanded}
-        onToggleLegExpand={onToggleLegExpand}
+        onToggleLegExpand={expandable ? onToggleLegExpand : null}
         onAlertClick={toggleAlertsExpanded}
         alerts={alertsForHeader}
-        displayArrow={stops.length > 2}
       >
         <span>
           <FormattedMessage
@@ -157,26 +157,21 @@ export default function ItineraryTransitLeg({
             </ItineraryStep>
           ))}
         </div>
-      ) : stops.length > 2 ? (
+      ) : expandable ? (
         <div onClick={onToggleLegExpand}>
           <ItineraryDivider
-            transit={true}
-            detail={
-              stopsBetweenStartAndEnd > 0
-                ? intl.formatMessage(
-                    {
-                      defaultMessage:
-                        '{numStops} {numStops, plural,' +
-                        ' one {stop}' +
-                        ' other {stops}' +
-                        '} before',
-                      description:
-                        'the number of stops between two listed transit stops',
-                    },
-                    { numStops: stopsBetweenStartAndEnd },
-                  )
-                : null
-            }
+            detail={intl.formatMessage(
+              {
+                defaultMessage:
+                  '{numStops} {numStops, plural,' +
+                  ' one {stop}' +
+                  ' other {stops}' +
+                  '} before',
+                description:
+                  'the number of stops between two listed transit stops',
+              },
+              { numStops: stopsBetweenStartAndEnd },
+            )}
           />
         </div>
       ) : null}
