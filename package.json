@@ -7,7 +7,6 @@
   },
   "type": "module",
   "dependencies": {
-    "@babel/core": "^7.16.0",
     "@formatjs/intl-listformat": "^7.1.7",
     "@headlessui/react": "^1.7.14",
     "@nivo/core": "^0.85.1",
