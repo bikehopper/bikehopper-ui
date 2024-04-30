@@ -12,17 +12,14 @@ import ItineraryHeader from './ItineraryHeader';
 import ItinerarySpacer from './ItinerarySpacer';
 
 import { ReactComponent as BikeIcon } from 'iconoir/icons/bicycle.svg';
-import ItineraryElevationProfile from './ItineraryElevationProfile';
 
 export default function ItineraryBikeLeg({
   leg,
   legDestination,
-  isOnlyLeg,
   expanded,
   onStepClick,
   onToggleLegExpand,
   scrollToStep,
-  displayLegElevation,
 }) {
   const intl = useIntl();
   const instructionsWithBikeInfra = React.useMemo(() => {
@@ -78,7 +75,6 @@ export default function ItineraryBikeLeg({
         icon={bikeIcon}
         iconColor={BIKEHOPPER_THEME_COLOR}
         alerts={alerts}
-        displayArrow={!isOnlyLeg}
         expanded={expanded}
         alertsExpanded={true}
         onToggleLegExpand={onToggleLegExpand}
@@ -110,11 +106,6 @@ export default function ItineraryBikeLeg({
       {expanded ? (
         <div>
           <ItinerarySpacer />
-
-          {isOnlyLeg || !displayLegElevation ? null : (
-            <ItineraryElevationProfile route={{ legs: [leg] }} />
-          )}
-
           {instructionsWithBikeInfra.map((step, stepIdx) =>
             isArriveStep(step)
               ? null

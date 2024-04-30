@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { formatDurationBetween } from '../lib/time';
 import { getAgencyDisplayName } from '../lib/region';
@@ -22,14 +22,21 @@ export default function Itinerary({
   const intl = useIntl();
   const [scrollToLegIdx, scrollToStepIdx] = scrollToStep || [];
 
-  const [expandedLeg, setExpandedLeg] = useState(null);
+  // array of booleans: whether the leg at that index is expanded.
+  const [expandedLegs, setExpandedLegs] = useState([]);
+
+  useEffect(() => {
+    if (route.legs.length === 1) {
+      setExpandedLegs([true]);
+    } else {
+      setExpandedLegs(Array(route.legs.length).fill(false));
+    }
+  }, [route]);
 
   const toggleExpandedLeg = (idx) => {
-    if (expandedLeg === idx) {
-      setExpandedLeg(null);
-    } else {
-      setExpandedLeg(idx);
-    }
+    const newValue = [...expandedLegs];
+    newValue[idx] = !newValue[idx];
+    setExpandedLegs(newValue);
   };
 
   const renderedLegs = route.legs.map((leg, idx, legs) => {
@@ -40,31 +47,28 @@ export default function Itinerary({
           leg={leg}
           onStopClick={onStepClick.bind(null, idx)}
           onToggleLegExpand={toggleExpandedLeg.bind(null, idx)}
-          expanded={expandedLeg === idx}
+          expanded={expandedLegs[idx]}
           scrollTo={scrollToLegIdx === idx}
         />
       );
     } else {
-      const isOnlyLeg = legs.length === 1;
-      if (isOnlyLeg && expandedLeg !== idx) {
-        setExpandedLeg(idx);
-      }
       // Where are we biking to? (Either final destination, or name of transit stop to board)
       const legDestination =
         idx === legs.length - 1
           ? destinationDescription
           : legs[idx + 1].stops[0].stop_name;
+      const expandable = legs.length > 1;
       return (
         <ItineraryBikeLeg
           key={idx}
           leg={leg}
           legDestination={legDestination}
-          isOnlyLeg={isOnlyLeg}
           onStepClick={onStepClick.bind(null, idx)}
-          onToggleLegExpand={toggleExpandedLeg.bind(null, idx)}
-          expanded={expandedLeg === idx}
+          onToggleLegExpand={
+            expandable ? toggleExpandedLeg.bind(null, idx) : null
+          }
+          expanded={expandedLegs[idx]}
           scrollToStep={scrollToLegIdx === idx ? scrollToStepIdx : null}
-          displayLegElevation={false}
         />
       );
     }
@@ -150,11 +154,7 @@ export default function Itinerary({
       </div>
       <div className="Itinerary_timeline">
         {renderedLegs}
-        <ItineraryHeader
-          icon={arriveIcon}
-          iconColor="#ea526f"
-          displayArrow={false}
-        >
+        <ItineraryHeader icon={arriveIcon} iconColor="#ea526f">
           <FormattedMessage
             defaultMessage="Arrive at destination"
             description="header text at end of step by step travel instructions"
