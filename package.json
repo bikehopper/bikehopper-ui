@@ -48,7 +48,7 @@
   },
   "scripts": {
     "start": "vite",
-    "build": "vite build",
+    "build": "npm run lint && vite build",
     "serve": "vite preview",
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "extract": "formatjs extract 'src/**/*.{js,jsx}' --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
