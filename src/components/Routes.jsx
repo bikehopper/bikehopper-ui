@@ -9,7 +9,6 @@ import {
   itineraryBackClicked,
   itineraryStepClicked,
   itineraryStepBackClicked,
-  legExpandToggled,
 } from '../features/routes';
 import describePlace from '../lib/describePlace';
 import RoutesOverview from './RoutesOverview';
@@ -70,10 +69,6 @@ export default function Routes(props) {
     dispatch(itineraryStepClicked(legClicked, stepClicked));
   };
 
-  const handleToggleLegExpand = (legClicked) => {
-    dispatch(legExpandToggled(legClicked));
-  };
-
   const handleBackClick = () => {
     dispatch(itineraryBackClicked());
   };
@@ -129,7 +124,6 @@ export default function Routes(props) {
         route={routes[activeRoute]}
         onBackClick={handleBackClick}
         onStepClick={handleStepClick}
-        onToggleLegExpand={handleToggleLegExpand}
         viewingLeg={viewingLeg}
         destinationDescription={destinationDescription}
         scrollToStep={prevViewingStep}

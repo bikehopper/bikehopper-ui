@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { BIKEHOPPER_THEME_COLOR } from '../lib/colors';
 import formatDistance from '../lib/formatDistance';
@@ -12,20 +12,17 @@ import ItineraryHeader from './ItineraryHeader';
 import ItinerarySpacer from './ItinerarySpacer';
 
 import BikeIcon from 'iconoir/icons/bicycle.svg?react';
-import ItineraryElevationProfile from './ItineraryElevationProfile';
 
 export default function ItineraryBikeLeg({
   leg,
   legDestination,
-  isOnlyLeg,
   expanded,
   onStepClick,
   onToggleLegExpand,
   scrollToStep,
-  displayLegElevation,
 }) {
   const intl = useIntl();
-  const instructionsWithBikeInfra = React.useMemo(() => {
+  const instructionsWithBikeInfra = useMemo(() => {
     return leg.instructions.map((step) => {
       return {
         ...step,
@@ -39,6 +36,7 @@ export default function ItineraryBikeLeg({
       };
     });
   }, [leg]);
+  const majorStreets = useMemo(() => formatMajorStreets(leg), [leg]);
 
   const scrollToRef = useScrollToRef();
   const spacer = ' \u00B7 ';
@@ -83,19 +81,24 @@ export default function ItineraryBikeLeg({
           {formatDistance(leg.distance, intl)}
           {spacer}
           {formatDurationBetween(leg.departure_time, leg.arrival_time, intl)}
-          {spacer}
-          {formatMajorStreets(leg)}
+          {majorStreets ? (
+            <>
+              {spacer}
+              <FormattedMessage
+                defaultMessage="via {streets}"
+                description="list of major streets taken on bike leg"
+                values={{
+                  streets: intl.formatList(majorStreets, { type: 'unit' }),
+                }}
+              />
+            </>
+          ) : null}
         </span>
       </ItineraryHeader>
 
       {expanded ? (
-        <div onClick={onToggleLegExpand}>
+        <div>
           <ItinerarySpacer />
-
-          {isOnlyLeg || !displayLegElevation ? null : (
-            <ItineraryElevationProfile route={{ legs: [leg] }} />
-          )}
-
           {instructionsWithBikeInfra.map((step, stepIdx) =>
             isArriveStep(step)
               ? null

@@ -29,7 +29,7 @@ export default function formatMajorStreets(leg) {
     return street.totalDistance >= quartileDistance;
   });
 
-  return 'via ' + streetsOverQuartile.map((s) => s.name).join(', ');
+  return streetsOverQuartile.map((s) => s.name);
 }
 
 function quartileStreets(streets, q) {

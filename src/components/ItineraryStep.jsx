@@ -40,7 +40,7 @@ export default function ItineraryStep({
             />
           </Icon>
         </span>
-        <p
+        <div
           className={classnames({
             ItineraryStep_content: true,
             ItineraryStep_contentLowMargin: !highMargin,
@@ -48,7 +48,7 @@ export default function ItineraryStep({
           })}
         >
           {children}
-        </p>
+        </div>
       </ItineraryRow>
     </div>
   );

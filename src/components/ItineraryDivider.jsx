@@ -1,11 +1,10 @@
 import * as React from 'react';
-import classnames from 'classnames';
 import ItineraryRow from './ItineraryRow';
 
 import './ItineraryDivider.css';
 
 export default function ItineraryDivider(props) {
-  const { transit, detail, children: subheading } = props;
+  const { detail } = props;
 
   return (
     <ItineraryRow>

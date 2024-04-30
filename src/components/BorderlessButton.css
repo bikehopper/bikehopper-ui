@@ -7,4 +7,9 @@
   padding: 0;
   cursor: pointer;
   text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.BorderlessButton_flex {
+  display: flex;
 }
