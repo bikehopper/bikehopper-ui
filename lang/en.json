@@ -11,21 +11,25 @@
     "defaultMessage": "Back to routes",
     "description": "button to return from a detailed itinerary to routes overview"
   },
-  "2XfHiz": {
-    "defaultMessage": "Ride the {name} train ({agency})",
-    "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by monorail."
+  "0ko9Cn": {
+    "defaultMessage": "Ride {agency} {routeName} to {lastStopName}",
+    "description": "instructions header text. Says to ride the named transit line to the named stop, operated by the named agency."
+  },
+  "3BihQG": {
+    "defaultMessage": "{stop}",
+    "description": "listing of stops on the selected public transit route"
   },
   "3uzNHk": {
     "defaultMessage": "Get off at {stop}",
     "description": "instruction to exit a transit vehicle at the named stop"
   },
+  "4FG83p": {
+    "defaultMessage": "Get off at <b>{stop}</b>",
+    "description": "instruction to exit (a public transit vehicle) at the named stop"
+  },
   "4cy0Qt": {
     "defaultMessage": "Bus",
     "description": "labels a transit line as being operated by a bus. Appears next to the name or number of the bus line."
-  },
-  "4d3x5P": {
-    "defaultMessage": "Ride the {name} train ({agency})",
-    "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a subway or metro train."
   },
   "4o9TQr": {
     "defaultMessage": "Bike",
@@ -67,10 +71,6 @@
     "defaultMessage": "Miles",
     "description": "legend at the bottom (x-axis) of elevation graph"
   },
-  "AVwHUu": {
-    "defaultMessage": "Ride the {name} train ({agency})",
-    "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is an intercity or long-distance rail line."
-  },
   "Ap/CxF": {
     "defaultMessage": "Arriving {datetime}",
     "description": "description of trip arriving by the given date and time. The datetime is localized but an example for an American English locale would be \"May 21, 2023, 2:30PM\"."
@@ -110,10 +110,6 @@
   "Ec4ONr": {
     "defaultMessage": "Train",
     "description": "labels a transit line as being operated by a train; specifically intercity or long-distance rail, but the label need not be that specific. Appears next to the name or number of the line."
-  },
-  "Ew3thc": {
-    "defaultMessage": "Board at {stop}",
-    "description": "instruction to board (a public transit vehicle) at the named stop"
   },
   "FlS1Kt": {
     "defaultMessage": "Current Location",
@@ -171,6 +167,10 @@
     "defaultMessage": "Nothing found for ''{inputText}''",
     "description": "Message when no search results are found"
   },
+  "Nv7ZIk": {
+    "defaultMessage": "Toggle expanded",
+    "description": "button to toggle if the leg steps are expanded"
+  },
   "O53Ykk": {
     "defaultMessage": "Destination",
     "description": "label for input box for the place you want directions to"
@@ -183,10 +183,6 @@
     "defaultMessage": "southwest",
     "description": "cardinal direction, used in a sentence like \"Head southwest\""
   },
-  "P2HscU": {
-    "defaultMessage": "Get off at {stop}",
-    "description": "instruction to exit (a public transit vehicle) at the named stop"
-  },
   "QiY1oM": {
     "defaultMessage": "Elevation loss",
     "description": "Accessible alt text for a down-arrow icon that appears next to a measurement of the elevation loss on a route, such as (in English) 200 ft or 50 m."
@@ -198,10 +194,6 @@
   "RRZB26": {
     "defaultMessage": "<strong>Welcome to BikeHopper!</strong> This is a new bike navigation app that suggests ways to combine biking and transit, expanding your options for getting around without a car.",
     "description": "paragraph in welcome screen"
-  },
-  "SFcnNL": {
-    "defaultMessage": "Ride the {name} train ({agency})",
-    "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by tram, streetcar or light rail."
   },
   "SyUGCG": {
     "defaultMessage": "Turn <dir>left</dir>{haveStreet, select, name { onto <name>{street}</name>} other {}}",
@@ -239,6 +231,10 @@
     "defaultMessage": "bike",
     "description": "Description of bike as a travel mode. Appears in a list of travel modes along with transit agency names, such as \"via bike, BART, AC Transit\" or just \"via bike\""
   },
+  "auQB8d": {
+    "defaultMessage": "Board at <b>{stop}</b>",
+    "description": "instruction to board (a public transit vehicle) at the named stop"
+  },
   "b+OvtM": {
     "defaultMessage": "northwest",
     "description": "cardinal direction, used in a sentence like \"Head northwest\""
@@ -262,6 +258,10 @@
   "dkJRew": {
     "defaultMessage": "Get started by entering a destination above.",
     "description": "text in welcome screen. appears below an input box for destination"
+  },
+  "eXZGQC": {
+    "defaultMessage": "via {streets}",
+    "description": "list of major streets taken on bike leg"
   },
   "f1xi7R": {
     "defaultMessage": "Train",
@@ -299,14 +299,6 @@
     "defaultMessage": "Leaving now",
     "description": "description of departure time for a trip leaving now."
   },
-  "mrDIsv": {
-    "defaultMessage": "Ride the {name} ferry ({agency})",
-    "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a ferry."
-  },
-  "nXDFzI": {
-    "defaultMessage": "Ride the {name} line ({agency})",
-    "description": "instructions header text. Says to ride the named transit line, operated by the named agency. This message is used when we don’t have specific information about what kind of line (bus, train, etc) it is."
-  },
   "oLvgp2": {
     "defaultMessage": "Point",
     "description": "generic description of a location we don’t have more info about"
@@ -319,21 +311,9 @@
     "defaultMessage": "Custom",
     "description": "description of a route start/end point that was selected on the map"
   },
-  "pVxO+H": {
-    "defaultMessage": "Ride the {name} bus ({agency})",
-    "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a bus."
-  },
-  "pkeVF/": {
-    "defaultMessage": "Ride the {name} funicular ({agency})",
-    "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a funicular."
-  },
   "qyWb6X": {
     "defaultMessage": "Connecting modes",
     "description": "dialog header. In this dialog you can toggle which modes of transit, such as bus, train, or ferry, can be used in giving directions."
-  },
-  "solefl": {
-    "defaultMessage": "Ride the {name} cable car ({agency})",
-    "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a cable tram, cable car, aerial tram or suspended cable car."
   },
   "t2BmWO": {
     "defaultMessage": "Train",
