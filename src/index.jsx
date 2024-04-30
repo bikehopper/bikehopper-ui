@@ -2,7 +2,6 @@ import Bowser from 'bowser';
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom';
 import { shouldPolyfill as listFormatShouldPolyfill } from '@formatjs/intl-listformat/should-polyfill';
 import reportWebVitals from './reportWebVitals';
 import App from './components/App';
@@ -73,11 +72,9 @@ async function bootstrapApp() {
 
   root.render(
     <React.StrictMode>
-      <Router>
-        <Provider store={store}>
-          <App messages={messages} locale={locale} />
-        </Provider>
-      </Router>
+      <Provider store={store}>
+        <App messages={messages} locale={locale} />
+      </Provider>
     </React.StrictMode>,
   );
 

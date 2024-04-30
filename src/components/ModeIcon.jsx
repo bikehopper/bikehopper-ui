@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { MODES } from '../lib/TransitModes';
 
-import { ReactComponent as BusIcon } from 'iconoir/icons/bus.svg';
-import { ReactComponent as TrainIcon } from 'iconoir/icons/train.svg';
-import { ReactComponent as TramIcon } from 'iconoir/icons/tram.svg';
-import { ReactComponent as MetroIcon } from 'iconoir/icons/metro.svg';
+import BusIcon from 'iconoir/icons/bus.svg?react';
+import TrainIcon from 'iconoir/icons/train.svg?react';
+import TramIcon from 'iconoir/icons/tram.svg?react';
+import MetroIcon from 'iconoir/icons/metro.svg?react';
 // There's no ferry icon in iconoir! Sea waves is the best I can do.
-import { ReactComponent as FerryIcon } from 'iconoir/icons/sea-waves.svg';
+import FerryIcon from 'iconoir/icons/sea-waves.svg?react';
 
 /*
  * An icon to represent a transit mode, such as bus, ferry, or streetcar.

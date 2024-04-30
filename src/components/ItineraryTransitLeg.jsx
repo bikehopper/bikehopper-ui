@@ -13,7 +13,7 @@ import ItinerarySpacer from './ItinerarySpacer';
 import ItineraryStep from './ItineraryStep';
 import ModeIcon from './ModeIcon';
 
-import { ReactComponent as Circle } from 'iconoir/icons/circle.svg';
+import Circle from 'iconoir/icons/circle.svg?react';
 
 import './ItineraryTransitLeg.css';
 import { useState, useCallback } from 'react';

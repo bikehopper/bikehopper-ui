@@ -7,9 +7,9 @@ import Icon from './primitives/Icon';
 import usePrevious from '../hooks/usePrevious';
 import { CATEGORIES } from '../lib/TransitModes';
 
-import { ReactComponent as BusIcon } from 'iconoir/icons/bus.svg';
-import { ReactComponent as TrainIcon } from 'iconoir/icons/train.svg';
-import { ReactComponent as FerryIcon } from 'iconoir/icons/sea-waves.svg';
+import BusIcon from 'iconoir/icons/bus.svg?react';
+import TrainIcon from 'iconoir/icons/train.svg?react';
+import FerryIcon from 'iconoir/icons/sea-waves.svg?react';
 
 export default function RouteOptionsDialog({
   isOpen,

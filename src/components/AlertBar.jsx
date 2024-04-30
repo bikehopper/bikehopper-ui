@@ -5,9 +5,9 @@ import classnames from 'classnames';
 import { AlertSeverity, dismissAlert } from '../features/alerts';
 import Icon from './primitives/Icon';
 
-import { ReactComponent as Cancel } from 'iconoir/icons/cancel.svg';
-import { ReactComponent as WarningCircle } from 'iconoir/icons/warning-circle.svg';
-import { ReactComponent as WarningTriangle } from 'iconoir/icons/warning-triangle.svg';
+import Cancel from 'iconoir/icons/xmark.svg?react';
+import WarningCircle from 'iconoir/icons/warning-circle.svg?react';
+import WarningTriangle from 'iconoir/icons/warning-triangle.svg?react';
 import './AlertBar.css';
 
 export default function AlertBar(props) {
