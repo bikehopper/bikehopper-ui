@@ -107,11 +107,10 @@ export default function ItineraryTransitLeg({
         highMargin={true}
       >
         <FormattedMessage
-          defaultMessage="Board at <b>{stop}</b>"
+          defaultMessage="Board at {stop}"
           description="instruction to board (a public transit vehicle) at the named stop"
           values={{
-            b: (chunks) => <strong>{chunks}</strong>,
-            stop: stops[0].stop_name,
+            stop: <strong>{stops[0].stop_name}</strong>,
           }}
         />
         {spacerWithMiddot}
@@ -175,11 +174,10 @@ export default function ItineraryTransitLeg({
         highMargin={true}
       >
         <FormattedMessage
-          defaultMessage="Get off at <b>{stop}</b>"
+          defaultMessage="Get off at {stop}"
           description="instruction to exit (a public transit vehicle) at the named stop"
           values={{
-            b: (chunks) => <strong>{chunks}</strong>,
-            stop: stops[stops.length - 1].stop_name,
+            stop: <strong>{stops[stops.length - 1].stop_name}</strong>,
           }}
         />
         {spacerWithMiddot}

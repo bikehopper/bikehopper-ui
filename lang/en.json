@@ -19,10 +19,6 @@
     "defaultMessage": "Get off at {stop}",
     "description": "instruction to exit a transit vehicle at the named stop"
   },
-  "4FG83p": {
-    "defaultMessage": "Get off at <b>{stop}</b>",
-    "description": "instruction to exit (a public transit vehicle) at the named stop"
-  },
   "4cy0Qt": {
     "defaultMessage": "Bus",
     "description": "labels a transit line as being operated by a bus. Appears next to the name or number of the bus line."
@@ -107,6 +103,10 @@
     "defaultMessage": "Train",
     "description": "labels a transit line as being operated by a train; specifically intercity or long-distance rail, but the label need not be that specific. Appears next to the name or number of the line."
   },
+  "Ew3thc": {
+    "defaultMessage": "Board at {stop}",
+    "description": "instruction to board (a public transit vehicle) at the named stop"
+  },
   "FlS1Kt": {
     "defaultMessage": "Current Location",
     "description": "option that can be selected (or typed in) to get directions from or to the current location of the user, as determined by GPS"
@@ -179,6 +179,10 @@
     "defaultMessage": "southwest",
     "description": "cardinal direction, used in a sentence like \"Head southwest\""
   },
+  "P2HscU": {
+    "defaultMessage": "Get off at {stop}",
+    "description": "instruction to exit (a public transit vehicle) at the named stop"
+  },
   "QiY1oM": {
     "defaultMessage": "Elevation loss",
     "description": "Accessible alt text for a down-arrow icon that appears next to a measurement of the elevation loss on a route, such as (in English) 200 ft or 50 m."
@@ -226,10 +230,6 @@
   "Y8DFEd": {
     "defaultMessage": "bike",
     "description": "Description of bike as a travel mode. Appears in a list of travel modes along with transit agency names, such as \"via bike, BART, AC Transit\" or just \"via bike\""
-  },
-  "auQB8d": {
-    "defaultMessage": "Board at <b>{stop}</b>",
-    "description": "instruction to board (a public transit vehicle) at the named stop"
   },
   "b+OvtM": {
     "defaultMessage": "northwest",

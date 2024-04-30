@@ -85,22 +85,6 @@
       "value": "stop"
     }
   ],
-  "4FG83p": [
-    {
-      "type": 0,
-      "value": "Get off at "
-    },
-    {
-      "children": [
-        {
-          "type": 1,
-          "value": "stop"
-        }
-      ],
-      "type": 8,
-      "value": "b"
-    }
-  ],
   "4cy0Qt": [
     {
       "type": 0,
@@ -431,6 +415,16 @@
       "value": "Train"
     }
   ],
+  "Ew3thc": [
+    {
+      "type": 0,
+      "value": "Board at "
+    },
+    {
+      "type": 1,
+      "value": "stop"
+    }
+  ],
   "FlS1Kt": [
     {
       "type": 0,
@@ -651,6 +645,16 @@
     {
       "type": 0,
       "value": "southwest"
+    }
+  ],
+  "P2HscU": [
+    {
+      "type": 0,
+      "value": "Get off at "
+    },
+    {
+      "type": 1,
+      "value": "stop"
     }
   ],
   "QiY1oM": [
@@ -885,22 +889,6 @@
     {
       "type": 0,
       "value": "bike"
-    }
-  ],
-  "auQB8d": [
-    {
-      "type": 0,
-      "value": "Board at "
-    },
-    {
-      "children": [
-        {
-          "type": 1,
-          "value": "stop"
-        }
-      ],
-      "type": 8,
-      "value": "b"
     }
   ],
   "b+OvtM": [
