@@ -15,10 +15,6 @@
     "defaultMessage": "Ride {agency} {routeName} to {lastStopName}",
     "description": "instructions header text. Says to ride the named transit line to the named stop, operated by the named agency."
   },
-  "3BihQG": {
-    "defaultMessage": "{stop}",
-    "description": "listing of stops on the selected public transit route"
-  },
   "3uzNHk": {
     "defaultMessage": "Get off at {stop}",
     "description": "instruction to exit a transit vehicle at the named stop"

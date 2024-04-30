@@ -146,13 +146,7 @@ export default function ItineraryTransitLeg({
               key={stopIdx}
             >
               <BorderlessButton onClick={onStopClick.bind(null, stopIdx + 1)}>
-                <FormattedMessage
-                  defaultMessage="{stop}"
-                  description="listing of stops on the selected public transit route"
-                  values={{
-                    stop: stop.stop_name,
-                  }}
-                />
+                {stop.stop_name}
               </BorderlessButton>
             </ItineraryStep>
           ))}
