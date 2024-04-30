@@ -123,7 +123,7 @@ export function routesReducer(state = DEFAULT_STATE, action) {
         }
       });
     case 'itinerary_back_clicked':
-      return { ...state, viewingDetails: false, viewingLeg: null };
+      return { ...state, viewingDetails: false };
     case 'itinerary_step_clicked':
       return { ...state, viewingStep: [action.leg, action.step] };
     case 'itinerary_step_back_clicked':
