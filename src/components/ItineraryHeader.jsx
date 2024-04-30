@@ -102,7 +102,7 @@ export default function ItineraryHeader({
                 </>
               )}
               {alertBody && (
-                <span className="ItineraryHeader_alertBody">
+                <span className="break-words whitespace-pre-wrap hyphens-auto">
                   {alertsExpanded || alertBody.length <= ALERT_SUMMARY_LENGTH
                     ? alertBody
                     : alertSummary(alertBody)}
