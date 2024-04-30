@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { BIKEHOPPER_THEME_COLOR } from '../lib/colors';
 import formatDistance from '../lib/formatDistance';
@@ -22,7 +22,7 @@ export default function ItineraryBikeLeg({
   scrollToStep,
 }) {
   const intl = useIntl();
-  const instructionsWithBikeInfra = React.useMemo(() => {
+  const instructionsWithBikeInfra = useMemo(() => {
     return leg.instructions.map((step) => {
       return {
         ...step,
@@ -36,16 +36,7 @@ export default function ItineraryBikeLeg({
       };
     });
   }, [leg]);
-
-  const [majorStreets, setMajorStreets] = useState(null);
-
-  useEffect(() => {
-    async function getMajorStreets() {
-      const majorStreets = await formatMajorStreets(leg);
-      setMajorStreets(majorStreets);
-    }
-    getMajorStreets();
-  }, [leg]);
+  const majorStreets = useMemo(() => formatMajorStreets(leg), [leg]);
 
   const scrollToRef = useScrollToRef();
   const spacer = ' \u00B7 ';
