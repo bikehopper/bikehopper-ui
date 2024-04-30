@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useIntl } from 'react-intl';
 import classnames from 'classnames';
 import Icon from './primitives/Icon';

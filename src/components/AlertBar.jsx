@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import classnames from 'classnames';

@@ -37,8 +37,7 @@ export function initFromStorage() {
     const json = localStorage.getItem('ru');
     if (json) recentlyUsedRaw = JSON.parse(json);
   } catch (e) {
-    if (process.env.NODE_ENV !== 'production')
-      console.warn("Can't load from localstorage:", e);
+    if (import.meta.env.DEV) console.warn("Can't load from localstorage:", e);
   }
 
   const osmCache = {};
@@ -61,7 +60,7 @@ export function initFromStorage() {
         lastUsed: entry.ts,
         id: idWithType,
       });
-    } else if (process.env.NODE_ENV !== 'production') {
+    } else if (import.meta.env.DEV) {
       console.warn('Ignoring invalid recently used entry:', entry);
     }
   }

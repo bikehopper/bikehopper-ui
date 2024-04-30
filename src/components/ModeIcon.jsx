@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { MODES } from '../lib/TransitModes';
 
 import BusIcon from 'iconoir/icons/bus.svg?react';

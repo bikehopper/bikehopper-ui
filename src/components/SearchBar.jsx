@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './primitives/Icon';
@@ -50,13 +50,13 @@ export default function SearchBar(props) {
     shallowEqual,
   );
 
-  const startRef = React.useRef();
-  const endRef = React.useRef();
+  const startRef = useRef();
+  const endRef = useRef();
 
   // Has the text of start/end been modified, since something that aborted or
   // completed the edit?
-  const [startTextModified, setStartTextModified] = React.useState(false);
-  const [endTextModified, setEndTextModified] = React.useState(false);
+  const [startTextModified, setStartTextModified] = useState(false);
+  const [endTextModified, setEndTextModified] = useState(false);
 
   const displayedStart = _getDisplayedText(
     intl,
@@ -153,7 +153,7 @@ export default function SearchBar(props) {
   const prevStartLocation = usePrevious(startLocation);
   const prevEndLocation = usePrevious(endLocation);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const justFilledStart = Boolean(
       startLocation && startLocation !== prevStartLocation,
     );
@@ -192,7 +192,7 @@ export default function SearchBar(props) {
     if (evt.key === 'Enter') handleSubmit(evt);
   };
 
-  const [isOptionsDialogOpen, setIsOptionsDialogOpen] = React.useState(false);
+  const [isOptionsDialogOpen, setIsOptionsDialogOpen] = useState(false);
   const handleOptionsDialogTrigger = () => setIsOptionsDialogOpen(true);
   const handleOptionsDialogCancel = () => setIsOptionsDialogOpen(false);
   const handleOptionsDialogApply = (values) => {

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { Fragment } from 'react';
 import { useIntl } from 'react-intl';
 import { Transition } from '@headlessui/react';
 import * as Dialog from '@radix-ui/react-dialog';
@@ -21,7 +21,7 @@ export default function ModalDialog({
       <Dialog.Portal forceMount>
         <Transition show={isOpen}>
           <Transition.Child
-            as={React.Fragment}
+            as={Fragment}
             enter="transition-opacity ease-out duration-300"
             enterFrom="opacity-0"
             enterTo="opacity-100"
@@ -36,7 +36,7 @@ export default function ModalDialog({
             />
           </Transition.Child>
           <Transition.Child
-            as={React.Fragment}
+            as={Fragment}
             enter="transition-opacity ease-out duration-300"
             enterFrom="opacity-0"
             enterTo="opacity-100"

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { IntlProvider } from 'react-intl';
 import { Transition } from '@headlessui/react';
@@ -55,7 +55,7 @@ function App(props) {
 
   const shouldDisplayTopBar = !viewingDetails;
   const [haveTopBarIncludingFade, setHaveTopBarIncludingFade] =
-    React.useState(shouldDisplayTopBar);
+    useState(shouldDisplayTopBar);
 
   const topBar = (
     <Transition

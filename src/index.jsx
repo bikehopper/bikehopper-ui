@@ -1,5 +1,5 @@
 import Bowser from 'bowser';
-import * as React from 'react';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { shouldPolyfill as listFormatShouldPolyfill } from '@formatjs/intl-listformat/should-polyfill';
@@ -71,11 +71,11 @@ async function bootstrapApp() {
   const messages = await loadMessages(locale);
 
   root.render(
-    <React.StrictMode>
+    <StrictMode>
       <Provider store={store}>
         <App messages={messages} locale={locale} />
       </Provider>
-    </React.StrictMode>,
+    </StrictMode>,
   );
 
   // If you want to start measuring performance in your app, pass a function

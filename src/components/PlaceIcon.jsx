@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Icon from './primitives/Icon';
 
 import Building from 'iconoir/icons/building.svg?react';
