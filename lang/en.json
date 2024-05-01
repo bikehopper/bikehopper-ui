@@ -15,6 +15,10 @@
     "defaultMessage": "Ride {agency} {routeName} to {lastStopName}",
     "description": "instructions header text. Says to ride the named transit line to the named stop, operated by the named agency."
   },
+  "27z4LC": {
+    "defaultMessage": "very steep hill",
+    "description": "annotation for a step in a series of biking directions."
+  },
   "3uzNHk": {
     "defaultMessage": "Get off at {stop}",
     "description": "instruction to exit a transit vehicle at the named stop"
@@ -30,6 +34,10 @@
   "5eSv1b": {
     "defaultMessage": "Arrive at destination",
     "description": "header text at end of step by step travel instructions"
+  },
+  "6fUhae": {
+    "defaultMessage": "shared road",
+    "description": "annotation for a step in a series of biking directions. A road intended for cycling but that cyclists must share with cars, without a bike lane."
   },
   "6r9qOW": {
     "defaultMessage": "Directions from",
@@ -63,6 +71,10 @@
     "defaultMessage": "Miles",
     "description": "legend at the bottom (x-axis) of elevation graph"
   },
+  "AcRwTq": {
+    "defaultMessage": "path",
+    "description": "annotation for a step in a series of biking directions. A path, such as foot path or bike path."
+  },
   "Ap/CxF": {
     "defaultMessage": "Arriving {datetime}",
     "description": "description of trip arriving by the given date and time. The datetime is localized but an example for an American English locale would be \"May 21, 2023, 2:30PM\"."
@@ -86,6 +98,10 @@
   "Cv5F7V": {
     "defaultMessage": "Make a <dir>U-turn</dir>{haveStreet, select, name { on <name>{street}</name>} other {}}",
     "description": "instruction"
+  },
+  "D42N3T": {
+    "defaultMessage": "promenade",
+    "description": "annotation for a step in a series of biking directions."
   },
   "DYUDwR": {
     "defaultMessage": "south",
@@ -123,6 +139,10 @@
     "defaultMessage": "In this early beta, BikeHopper is <strong>designed for phone screens</strong>, so it might look strange on your computer.",
     "description": "paragraph in welcome screen"
   },
+  "HQldX2": {
+    "defaultMessage": "shoulder",
+    "description": "annotation for a step in a series of biking directions. A road where bikes are recommended to ride on the shoulder."
+  },
   "HV9VrT": {
     "defaultMessage": "Go back",
     "description": "button to return to a previous screen"
@@ -142,6 +162,10 @@
   "IwYCsk": {
     "defaultMessage": "Bike to {place}",
     "description": "header for step by step bike directions"
+  },
+  "JHZsFt": {
+    "defaultMessage": "steep hill",
+    "description": "annotation for a step in a series of biking directions."
   },
   "JPe1q0": {
     "defaultMessage": "{startTime} to {endTime}",
@@ -183,6 +207,10 @@
     "defaultMessage": "Get off at {stop}",
     "description": "instruction to exit (a public transit vehicle) at the named stop"
   },
+  "P9mrv3": {
+    "defaultMessage": "bike path",
+    "description": "annotation for a step in a series of biking directions."
+  },
   "QiY1oM": {
     "defaultMessage": "Elevation loss",
     "description": "Accessible alt text for a down-arrow icon that appears next to a measurement of the elevation loss on a route, such as (in English) 200 ft or 50 m."
@@ -210,6 +238,10 @@
   "UsTGr8": {
     "defaultMessage": "Update",
     "description": "button. Saves changes made in a dialog box."
+  },
+  "Uu8GjL": {
+    "defaultMessage": "bike lane",
+    "description": "annotation for a step in a series of biking directions."
   },
   "V5A9AA": {
     "defaultMessage": "Ferries",
@@ -246,6 +278,10 @@
   "ccL55O": {
     "defaultMessage": "This route may require carrying your bike up or down steps.",
     "description": "warning displayed in trip itinerary. Warns you that you may have to lift your bicycle up steps, such as an outdoor staircase, to complete the trip."
+  },
+  "cmOEmT": {
+    "defaultMessage": "main road",
+    "description": "annotation for a step in a series of biking directions. A main road which might have lots of fast traffic."
   },
   "cyZrT2": {
     "defaultMessage": "{numStops} {numStops, plural, one {stop} other {stops}}",
@@ -287,6 +323,10 @@
     "defaultMessage": "Depart at",
     "description": "option in a dropdown list for departure time. There is another input next to it to select the time to depart at."
   },
+  "llIv2N": {
+    "defaultMessage": "foot path",
+    "description": "annotation for a step in a series of biking directions."
+  },
   "mDnFtf": {
     "defaultMessage": "southeast",
     "description": "cardinal direction, used in a sentence like \"Head southeast\""
@@ -310,6 +350,10 @@
   "qyWb6X": {
     "defaultMessage": "Connecting modes",
     "description": "dialog header. In this dialog you can toggle which modes of transit, such as bus, train, or ferry, can be used in giving directions."
+  },
+  "rWgPzR": {
+    "defaultMessage": "steps",
+    "description": "annotation for a step in a series of biking directions. Steps or a staircase."
   },
   "t2BmWO": {
     "defaultMessage": "Train",
@@ -362,6 +406,10 @@
   "y9hwj+": {
     "defaultMessage": "Board at {stop}",
     "description": "instruction to board a transit vehicle at the named stop"
+  },
+  "yfE0fS": {
+    "defaultMessage": "protected bike lane",
+    "description": "annotation for a step in a series of biking directions."
   },
   "zOmTEh": {
     "defaultMessage": "Dismiss",

@@ -75,6 +75,12 @@
       "value": "lastStopName"
     }
   ],
+  "27z4LC": [
+    {
+      "type": 0,
+      "value": "very steep hill"
+    }
+  ],
   "3uzNHk": [
     {
       "type": 0,
@@ -101,6 +107,12 @@
     {
       "type": 0,
       "value": "Arrive at destination"
+    }
+  ],
+  "6fUhae": [
+    {
+      "type": 0,
+      "value": "shared road"
     }
   ],
   "6r9qOW": [
@@ -207,6 +219,12 @@
     {
       "type": 0,
       "value": "Miles"
+    }
+  ],
+  "AcRwTq": [
+    {
+      "type": 0,
+      "value": "path"
     }
   ],
   "Ap/CxF": [
@@ -357,6 +375,12 @@
       "value": "haveStreet"
     }
   ],
+  "D42N3T": [
+    {
+      "type": 0,
+      "value": "promenade"
+    }
+  ],
   "DYUDwR": [
     {
       "type": 0,
@@ -501,6 +525,12 @@
       "value": ", so it might look strange on your computer."
     }
   ],
+  "HQldX2": [
+    {
+      "type": 0,
+      "value": "shoulder"
+    }
+  ],
   "HV9VrT": [
     {
       "type": 0,
@@ -571,6 +601,12 @@
     {
       "type": 1,
       "value": "place"
+    }
+  ],
+  "JHZsFt": [
+    {
+      "type": 0,
+      "value": "steep hill"
     }
   ],
   "JPe1q0": [
@@ -655,6 +691,12 @@
     {
       "type": 1,
       "value": "stop"
+    }
+  ],
+  "P9mrv3": [
+    {
+      "type": 0,
+      "value": "bike path"
     }
   ],
   "QiY1oM": [
@@ -783,6 +825,12 @@
     {
       "type": 0,
       "value": "Update"
+    }
+  ],
+  "Uu8GjL": [
+    {
+      "type": 0,
+      "value": "bike lane"
     }
   ],
   "V5A9AA": [
@@ -915,6 +963,12 @@
       "value": "This route may require carrying your bike up or down steps."
     }
   ],
+  "cmOEmT": [
+    {
+      "type": 0,
+      "value": "main road"
+    }
+  ],
   "cyZrT2": [
     {
       "type": 1,
@@ -1043,6 +1097,12 @@
       "value": "Depart at"
     }
   ],
+  "llIv2N": [
+    {
+      "type": 0,
+      "value": "foot path"
+    }
+  ],
   "mDnFtf": [
     {
       "type": 0,
@@ -1077,6 +1137,12 @@
     {
       "type": 0,
       "value": "Connecting modes"
+    }
+  ],
+  "rWgPzR": [
+    {
+      "type": 0,
+      "value": "steps"
     }
   ],
   "t2BmWO": [
@@ -1235,6 +1301,12 @@
     {
       "type": 1,
       "value": "stop"
+    }
+  ],
+  "yfE0fS": [
+    {
+      "type": 0,
+      "value": "protected bike lane"
     }
   ],
   "zOmTEh": [
