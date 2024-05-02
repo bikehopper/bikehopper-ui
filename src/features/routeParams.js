@@ -395,9 +395,8 @@ export function locationSelectedOnMap(startOrEnd, coords) {
     });
 
     // If we have a location for the other point, fetch a route.
-    const state = getState();
     let { start, end, arriveBy, initialTime, connectingModes } =
-      state.routeParams;
+      getState().routeParams;
     if (startOrEnd === 'start' && end?.point?.geometry.coordinates) {
       await fetchRoute(
         coords,
