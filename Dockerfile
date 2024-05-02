@@ -8,6 +8,7 @@ ENV VITE_API_DOMAIN=$API_DOMAIN
 
 COPY . .
 RUN npm install && \
+    npx tsc && \
     npm run build
 
 FROM nginx:1.25-alpine
