@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import * as React from 'react';
+import { useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import ModalDialog from './primitives/ModalDialog';
 import DialogSubmitButton from './primitives/DialogSubmitButton';
@@ -9,7 +9,7 @@ import Icon from './primitives/Icon';
 
 import { departureChanged } from '../features/routeParams';
 
-import { ReactComponent as ClockOutline } from 'iconoir/icons/clock.svg';
+import ClockOutline from 'iconoir/icons/clock.svg?react';
 
 // contract:
 // receive departureType and initialTime from routeParams store
@@ -36,14 +36,14 @@ export default function TimeBar(props) {
   const globalDateTime = DateTime.fromMillis(globalInitialTime || Date.now());
   const [globalDate, globalTime] = formatForDateAndTimeInputs(globalDateTime);
 
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Local state for the departure type, date and time, as it is being actively edited
   // in the dialog, and has not yet been committed to global state.
   const [pendingDepartureType, setPendingDepartureType] =
-    React.useState(globalDepartureType);
-  const [pendingDate, setPendingDate] = React.useState(globalDate);
-  const [pendingTime, setPendingTime] = React.useState(globalTime);
+    useState(globalDepartureType);
+  const [pendingDate, setPendingDate] = useState(globalDate);
+  const [pendingTime, setPendingTime] = useState(globalTime);
 
   const handleTrigger = () => {
     // Initialize the local (pending) state to match the global state.
@@ -232,11 +232,11 @@ function TimeBarRadioGroupItem({ value, id, children }) {
 }
 
 function TimeBarDateTimePicker({ date, time, onDateChange, onTimeChange }) {
-  const handleDateChange = React.useCallback(
+  const handleDateChange = useCallback(
     (evt) => onDateChange(evt.target.value),
     [onDateChange],
   );
-  const handleTimeChange = React.useCallback(
+  const handleTimeChange = useCallback(
     (evt) => onTimeChange(evt.target.value),
     [onTimeChange],
   );

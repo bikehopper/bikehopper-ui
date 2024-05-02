@@ -4,11 +4,20 @@
   flex-direction: row;
 }
 
+.ItineraryHeader_arrow {
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+.ItineraryHeader_arrowSpacer {
+  margin-left: 30px;
+}
+
 .ItineraryHeader_iconContainer {
   display: inline-flex;
-  width: 60px;
-  height: 60px;
-  border-radius: 30px;
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
   text-align: center;
   flex-direction: column;
   justify-content: space-around;
@@ -21,35 +30,48 @@
 
 .ItineraryHeader_icon {
   top: 0;
-  width: 32px;
-  height: 32px;
+  width: 20px;
+  height: 20px;
+}
+
+.ItineraryHeader_headerRow {
+  display: flex;
 }
 
 .ItineraryHeader_header {
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 17px;
+  font-weight: 500;
   margin: 0;
 }
 
 .ItineraryHeader_subheading {
   font-weight: normal;
-  font-size: 16px;
-  margin: 8px 0;
+  font-size: 14px;
+  margin: 2px 0 0 0;
+  opacity: 0.6;
 }
 
 .ItineraryHeader_alerts {
-  background-color: #fffbca;
+  background-color: #fff5c0;
   padding: 8px;
-  margin: 0;
+  margin: 8px 0 0 30px;
   list-style-type: none;
-  border: 1px solid rgb(187, 187, 187);
+  border: 1px solid #f4d598;
   border-radius: 4px;
+  font-size: 14px;
 }
 
 .ItineraryHeader_alertIcon {
   margin-right: 4px;
   position: relative;
-  top: 4px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.ItineraryHeader_alertIcon svg {
+  width: 18px;
+  height: 18px;
+  float: left;
 }
 
 .ItineraryHeader_alertHeader {

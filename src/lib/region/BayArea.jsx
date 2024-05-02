@@ -1,5 +1,6 @@
-import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
+
+/* eslint-disable react-refresh/only-export-components */
 
 export function SupportedRegionText(props) {
   return (

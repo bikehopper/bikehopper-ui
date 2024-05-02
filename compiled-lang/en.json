@@ -49,18 +49,10 @@
       "value": "Back to routes"
     }
   ],
-  "2XfHiz": [
+  "0ko9Cn": [
     {
       "type": 0,
-      "value": "Ride the "
-    },
-    {
-      "type": 1,
-      "value": "name"
-    },
-    {
-      "type": 0,
-      "value": " train ("
+      "value": "Ride "
     },
     {
       "type": 1,
@@ -68,7 +60,25 @@
     },
     {
       "type": 0,
-      "value": ")"
+      "value": " "
+    },
+    {
+      "type": 1,
+      "value": "routeName"
+    },
+    {
+      "type": 0,
+      "value": " to "
+    },
+    {
+      "type": 1,
+      "value": "lastStopName"
+    }
+  ],
+  "27z4LC": [
+    {
+      "type": 0,
+      "value": "very steep hill"
     }
   ],
   "3uzNHk": [
@@ -87,28 +97,6 @@
       "value": "Bus"
     }
   ],
-  "4d3x5P": [
-    {
-      "type": 0,
-      "value": "Ride the "
-    },
-    {
-      "type": 1,
-      "value": "name"
-    },
-    {
-      "type": 0,
-      "value": " train ("
-    },
-    {
-      "type": 1,
-      "value": "agency"
-    },
-    {
-      "type": 0,
-      "value": ")"
-    }
-  ],
   "4o9TQr": [
     {
       "type": 0,
@@ -119,6 +107,12 @@
     {
       "type": 0,
       "value": "Arrive at destination"
+    }
+  ],
+  "6fUhae": [
+    {
+      "type": 0,
+      "value": "shared road"
     }
   ],
   "6r9qOW": [
@@ -227,26 +221,10 @@
       "value": "Miles"
     }
   ],
-  "AVwHUu": [
+  "AcRwTq": [
     {
       "type": 0,
-      "value": "Ride the "
-    },
-    {
-      "type": 1,
-      "value": "name"
-    },
-    {
-      "type": 0,
-      "value": " train ("
-    },
-    {
-      "type": 1,
-      "value": "agency"
-    },
-    {
-      "type": 0,
-      "value": ")"
+      "value": "path"
     }
   ],
   "Ap/CxF": [
@@ -397,6 +375,12 @@
       "value": "haveStreet"
     }
   ],
+  "D42N3T": [
+    {
+      "type": 0,
+      "value": "promenade"
+    }
+  ],
   "DYUDwR": [
     {
       "type": 0,
@@ -541,6 +525,12 @@
       "value": ", so it might look strange on your computer."
     }
   ],
+  "HQldX2": [
+    {
+      "type": 0,
+      "value": "shoulder"
+    }
+  ],
   "HV9VrT": [
     {
       "type": 0,
@@ -613,6 +603,12 @@
       "value": "place"
     }
   ],
+  "JHZsFt": [
+    {
+      "type": 0,
+      "value": "steep hill"
+    }
+  ],
   "JPe1q0": [
     {
       "type": 1,
@@ -659,6 +655,12 @@
       "value": "'"
     }
   ],
+  "Nv7ZIk": [
+    {
+      "type": 0,
+      "value": "Toggle expanded"
+    }
+  ],
   "O53Ykk": [
     {
       "type": 0,
@@ -689,6 +691,12 @@
     {
       "type": 1,
       "value": "stop"
+    }
+  ],
+  "P9mrv3": [
+    {
+      "type": 0,
+      "value": "bike path"
     }
   ],
   "QiY1oM": [
@@ -757,28 +765,6 @@
       "value": " This is a new bike navigation app that suggests ways to combine biking and transit, expanding your options for getting around without a car."
     }
   ],
-  "SFcnNL": [
-    {
-      "type": 0,
-      "value": "Ride the "
-    },
-    {
-      "type": 1,
-      "value": "name"
-    },
-    {
-      "type": 0,
-      "value": " train ("
-    },
-    {
-      "type": 1,
-      "value": "agency"
-    },
-    {
-      "type": 0,
-      "value": ")"
-    }
-  ],
   "SyUGCG": [
     {
       "type": 0,
@@ -839,6 +825,12 @@
     {
       "type": 0,
       "value": "Update"
+    }
+  ],
+  "Uu8GjL": [
+    {
+      "type": 0,
+      "value": "bike lane"
     }
   ],
   "V5A9AA": [
@@ -971,6 +963,12 @@
       "value": "This route may require carrying your bike up or down steps."
     }
   ],
+  "cmOEmT": [
+    {
+      "type": 0,
+      "value": "main road"
+    }
+  ],
   "cyZrT2": [
     {
       "type": 1,
@@ -1009,6 +1007,16 @@
     {
       "type": 0,
       "value": "Get started by entering a destination above."
+    }
+  ],
+  "eXZGQC": [
+    {
+      "type": 0,
+      "value": "via "
+    },
+    {
+      "type": 1,
+      "value": "streets"
     }
   ],
   "f1xi7R": [
@@ -1089,6 +1097,12 @@
       "value": "Depart at"
     }
   ],
+  "llIv2N": [
+    {
+      "type": 0,
+      "value": "foot path"
+    }
+  ],
   "mDnFtf": [
     {
       "type": 0,
@@ -1099,50 +1113,6 @@
     {
       "type": 0,
       "value": "Leaving now"
-    }
-  ],
-  "mrDIsv": [
-    {
-      "type": 0,
-      "value": "Ride the "
-    },
-    {
-      "type": 1,
-      "value": "name"
-    },
-    {
-      "type": 0,
-      "value": " ferry ("
-    },
-    {
-      "type": 1,
-      "value": "agency"
-    },
-    {
-      "type": 0,
-      "value": ")"
-    }
-  ],
-  "nXDFzI": [
-    {
-      "type": 0,
-      "value": "Ride the "
-    },
-    {
-      "type": 1,
-      "value": "name"
-    },
-    {
-      "type": 0,
-      "value": " line ("
-    },
-    {
-      "type": 1,
-      "value": "agency"
-    },
-    {
-      "type": 0,
-      "value": ")"
     }
   ],
   "oLvgp2": [
@@ -1163,76 +1133,16 @@
       "value": "Custom"
     }
   ],
-  "pVxO+H": [
-    {
-      "type": 0,
-      "value": "Ride the "
-    },
-    {
-      "type": 1,
-      "value": "name"
-    },
-    {
-      "type": 0,
-      "value": " bus ("
-    },
-    {
-      "type": 1,
-      "value": "agency"
-    },
-    {
-      "type": 0,
-      "value": ")"
-    }
-  ],
-  "pkeVF/": [
-    {
-      "type": 0,
-      "value": "Ride the "
-    },
-    {
-      "type": 1,
-      "value": "name"
-    },
-    {
-      "type": 0,
-      "value": " funicular ("
-    },
-    {
-      "type": 1,
-      "value": "agency"
-    },
-    {
-      "type": 0,
-      "value": ")"
-    }
-  ],
   "qyWb6X": [
     {
       "type": 0,
       "value": "Connecting modes"
     }
   ],
-  "solefl": [
+  "rWgPzR": [
     {
       "type": 0,
-      "value": "Ride the "
-    },
-    {
-      "type": 1,
-      "value": "name"
-    },
-    {
-      "type": 0,
-      "value": " cable car ("
-    },
-    {
-      "type": 1,
-      "value": "agency"
-    },
-    {
-      "type": 0,
-      "value": ")"
+      "value": "steps"
     }
   ],
   "t2BmWO": [
@@ -1391,6 +1301,12 @@
     {
       "type": 1,
       "value": "stop"
+    }
+  ],
+  "yfE0fS": [
+    {
+      "type": 0,
+      "value": "protected bike lane"
     }
   ],
   "zOmTEh": [

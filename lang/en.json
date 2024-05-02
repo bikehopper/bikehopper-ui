@@ -11,9 +11,13 @@
     "defaultMessage": "Back to routes",
     "description": "button to return from a detailed itinerary to routes overview"
   },
-  "2XfHiz": {
-    "defaultMessage": "Ride the {name} train ({agency})",
-    "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by monorail."
+  "0ko9Cn": {
+    "defaultMessage": "Ride {agency} {routeName} to {lastStopName}",
+    "description": "instructions header text. Says to ride the named transit line to the named stop, operated by the named agency."
+  },
+  "27z4LC": {
+    "defaultMessage": "very steep hill",
+    "description": "annotation for a step in a series of biking directions."
   },
   "3uzNHk": {
     "defaultMessage": "Get off at {stop}",
@@ -23,10 +27,6 @@
     "defaultMessage": "Bus",
     "description": "labels a transit line as being operated by a bus. Appears next to the name or number of the bus line."
   },
-  "4d3x5P": {
-    "defaultMessage": "Ride the {name} train ({agency})",
-    "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a subway or metro train."
-  },
   "4o9TQr": {
     "defaultMessage": "Bike",
     "description": "alt text for bicycle icon displayed in a summary of an itinerary"
@@ -34,6 +34,10 @@
   "5eSv1b": {
     "defaultMessage": "Arrive at destination",
     "description": "header text at end of step by step travel instructions"
+  },
+  "6fUhae": {
+    "defaultMessage": "shared road",
+    "description": "annotation for a step in a series of biking directions. A road intended for cycling but that cyclists must share with cars, without a bike lane."
   },
   "6r9qOW": {
     "defaultMessage": "Directions from",
@@ -67,9 +71,9 @@
     "defaultMessage": "Miles",
     "description": "legend at the bottom (x-axis) of elevation graph"
   },
-  "AVwHUu": {
-    "defaultMessage": "Ride the {name} train ({agency})",
-    "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is an intercity or long-distance rail line."
+  "AcRwTq": {
+    "defaultMessage": "path",
+    "description": "annotation for a step in a series of biking directions. A path, such as foot path or bike path."
   },
   "Ap/CxF": {
     "defaultMessage": "Arriving {datetime}",
@@ -94,6 +98,10 @@
   "Cv5F7V": {
     "defaultMessage": "Make a <dir>U-turn</dir>{haveStreet, select, name { on <name>{street}</name>} other {}}",
     "description": "instruction"
+  },
+  "D42N3T": {
+    "defaultMessage": "promenade",
+    "description": "annotation for a step in a series of biking directions."
   },
   "DYUDwR": {
     "defaultMessage": "south",
@@ -131,6 +139,10 @@
     "defaultMessage": "In this early beta, BikeHopper is <strong>designed for phone screens</strong>, so it might look strange on your computer.",
     "description": "paragraph in welcome screen"
   },
+  "HQldX2": {
+    "defaultMessage": "shoulder",
+    "description": "annotation for a step in a series of biking directions. A road where bikes are recommended to ride on the shoulder."
+  },
   "HV9VrT": {
     "defaultMessage": "Go back",
     "description": "button to return to a previous screen"
@@ -150,6 +162,10 @@
   "IwYCsk": {
     "defaultMessage": "Bike to {place}",
     "description": "header for step by step bike directions"
+  },
+  "JHZsFt": {
+    "defaultMessage": "steep hill",
+    "description": "annotation for a step in a series of biking directions."
   },
   "JPe1q0": {
     "defaultMessage": "{startTime} to {endTime}",
@@ -171,6 +187,10 @@
     "defaultMessage": "Nothing found for ''{inputText}''",
     "description": "Message when no search results are found"
   },
+  "Nv7ZIk": {
+    "defaultMessage": "Toggle expanded",
+    "description": "button to toggle if the leg steps are expanded"
+  },
   "O53Ykk": {
     "defaultMessage": "Destination",
     "description": "label for input box for the place you want directions to"
@@ -187,6 +207,10 @@
     "defaultMessage": "Get off at {stop}",
     "description": "instruction to exit (a public transit vehicle) at the named stop"
   },
+  "P9mrv3": {
+    "defaultMessage": "bike path",
+    "description": "annotation for a step in a series of biking directions."
+  },
   "QiY1oM": {
     "defaultMessage": "Elevation loss",
     "description": "Accessible alt text for a down-arrow icon that appears next to a measurement of the elevation loss on a route, such as (in English) 200 ft or 50 m."
@@ -198,10 +222,6 @@
   "RRZB26": {
     "defaultMessage": "<strong>Welcome to BikeHopper!</strong> This is a new bike navigation app that suggests ways to combine biking and transit, expanding your options for getting around without a car.",
     "description": "paragraph in welcome screen"
-  },
-  "SFcnNL": {
-    "defaultMessage": "Ride the {name} train ({agency})",
-    "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by tram, streetcar or light rail."
   },
   "SyUGCG": {
     "defaultMessage": "Turn <dir>left</dir>{haveStreet, select, name { onto <name>{street}</name>} other {}}",
@@ -218,6 +238,10 @@
   "UsTGr8": {
     "defaultMessage": "Update",
     "description": "button. Saves changes made in a dialog box."
+  },
+  "Uu8GjL": {
+    "defaultMessage": "bike lane",
+    "description": "annotation for a step in a series of biking directions."
   },
   "V5A9AA": {
     "defaultMessage": "Ferries",
@@ -255,6 +279,10 @@
     "defaultMessage": "This route may require carrying your bike up or down steps.",
     "description": "warning displayed in trip itinerary. Warns you that you may have to lift your bicycle up steps, such as an outdoor staircase, to complete the trip."
   },
+  "cmOEmT": {
+    "defaultMessage": "main road",
+    "description": "annotation for a step in a series of biking directions. A main road which might have lots of fast traffic."
+  },
   "cyZrT2": {
     "defaultMessage": "{numStops} {numStops, plural, one {stop} other {stops}}",
     "description": "the number of stops for which you should stay on a transit vehicle"
@@ -262,6 +290,10 @@
   "dkJRew": {
     "defaultMessage": "Get started by entering a destination above.",
     "description": "text in welcome screen. appears below an input box for destination"
+  },
+  "eXZGQC": {
+    "defaultMessage": "via {streets}",
+    "description": "list of major streets taken on bike leg"
   },
   "f1xi7R": {
     "defaultMessage": "Train",
@@ -291,6 +323,10 @@
     "defaultMessage": "Depart at",
     "description": "option in a dropdown list for departure time. There is another input next to it to select the time to depart at."
   },
+  "llIv2N": {
+    "defaultMessage": "foot path",
+    "description": "annotation for a step in a series of biking directions."
+  },
   "mDnFtf": {
     "defaultMessage": "southeast",
     "description": "cardinal direction, used in a sentence like \"Head southeast\""
@@ -298,14 +334,6 @@
   "mG9do/": {
     "defaultMessage": "Leaving now",
     "description": "description of departure time for a trip leaving now."
-  },
-  "mrDIsv": {
-    "defaultMessage": "Ride the {name} ferry ({agency})",
-    "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a ferry."
-  },
-  "nXDFzI": {
-    "defaultMessage": "Ride the {name} line ({agency})",
-    "description": "instructions header text. Says to ride the named transit line, operated by the named agency. This message is used when we don’t have specific information about what kind of line (bus, train, etc) it is."
   },
   "oLvgp2": {
     "defaultMessage": "Point",
@@ -319,21 +347,13 @@
     "defaultMessage": "Custom",
     "description": "description of a route start/end point that was selected on the map"
   },
-  "pVxO+H": {
-    "defaultMessage": "Ride the {name} bus ({agency})",
-    "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a bus."
-  },
-  "pkeVF/": {
-    "defaultMessage": "Ride the {name} funicular ({agency})",
-    "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a funicular."
-  },
   "qyWb6X": {
     "defaultMessage": "Connecting modes",
     "description": "dialog header. In this dialog you can toggle which modes of transit, such as bus, train, or ferry, can be used in giving directions."
   },
-  "solefl": {
-    "defaultMessage": "Ride the {name} cable car ({agency})",
-    "description": "instructions header text. Says to ride the named transit line, operated by the named agency. The line is operated by a cable tram, cable car, aerial tram or suspended cable car."
+  "rWgPzR": {
+    "defaultMessage": "steps",
+    "description": "annotation for a step in a series of biking directions. Steps or a staircase."
   },
   "t2BmWO": {
     "defaultMessage": "Train",
@@ -386,6 +406,10 @@
   "y9hwj+": {
     "defaultMessage": "Board at {stop}",
     "description": "instruction to board a transit vehicle at the named stop"
+  },
+  "yfE0fS": {
+    "defaultMessage": "protected bike lane",
+    "description": "annotation for a step in a series of biking directions."
   },
   "zOmTEh": {
     "defaultMessage": "Dismiss",

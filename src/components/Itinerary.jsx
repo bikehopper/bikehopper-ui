@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { formatDurationBetween } from '../lib/time';
 import { getAgencyDisplayName } from '../lib/region';
@@ -8,8 +8,8 @@ import ItineraryHeader from './ItineraryHeader';
 import ItineraryTransitLeg from './ItineraryTransitLeg';
 import ItineraryElevationProfile from './ItineraryElevationProfile';
 
-import { ReactComponent as NavLeftArrow } from 'iconoir/icons/nav-arrow-left.svg';
-import { ReactComponent as ArriveIcon } from 'iconoir/icons/triangle-flag.svg';
+import NavLeftArrow from 'iconoir/icons/nav-arrow-left.svg?react';
+import ArriveIcon from 'iconoir/icons/triangle-flag.svg?react';
 import './Itinerary.css';
 
 export default function Itinerary({
@@ -22,6 +22,23 @@ export default function Itinerary({
   const intl = useIntl();
   const [scrollToLegIdx, scrollToStepIdx] = scrollToStep || [];
 
+  // array of booleans: whether the leg at that index is expanded.
+  const [expandedLegs, setExpandedLegs] = useState([]);
+
+  useEffect(() => {
+    if (route.legs.length === 1) {
+      setExpandedLegs([true]);
+    } else {
+      setExpandedLegs(Array(route.legs.length).fill(false));
+    }
+  }, [route]);
+
+  const toggleExpandedLeg = (idx) => {
+    const newValue = [...expandedLegs];
+    newValue[idx] = !newValue[idx];
+    setExpandedLegs(newValue);
+  };
+
   const renderedLegs = route.legs.map((leg, idx, legs) => {
     if (leg.type === 'pt') {
       return (
@@ -29,6 +46,8 @@ export default function Itinerary({
           key={idx}
           leg={leg}
           onStopClick={onStepClick.bind(null, idx)}
+          onToggleLegExpand={toggleExpandedLeg.bind(null, idx)}
+          expanded={expandedLegs[idx]}
           scrollTo={scrollToLegIdx === idx}
         />
       );
@@ -38,12 +57,17 @@ export default function Itinerary({
         idx === legs.length - 1
           ? destinationDescription
           : legs[idx + 1].stops[0].stop_name;
+      const expandable = legs.length > 1;
       return (
         <ItineraryBikeLeg
           key={idx}
           leg={leg}
           legDestination={legDestination}
           onStepClick={onStepClick.bind(null, idx)}
+          onToggleLegExpand={
+            expandable ? toggleExpandedLeg.bind(null, idx) : null
+          }
+          expanded={expandedLegs[idx]}
           scrollToStep={scrollToLegIdx === idx ? scrollToStepIdx : null}
         />
       );

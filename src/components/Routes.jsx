@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import pointInPolygon from '@turf/boolean-point-in-polygon';
 import usePrevious from '../hooks/usePrevious';
@@ -23,6 +23,7 @@ export default function Routes(props) {
     activeRoute,
     details,
     viewingStep,
+    viewingLeg,
     destinationDescription,
     outOfAreaStart,
     outOfAreaEnd,
@@ -50,6 +51,7 @@ export default function Routes(props) {
       routes: routes.routes,
       activeRoute: routes.activeRoute,
       details: routes.viewingDetails,
+      viewingLeg: routes.viewingLeg,
       viewingStep: routes.viewingStep,
       destinationDescription,
       outOfAreaStart,
@@ -76,10 +78,10 @@ export default function Routes(props) {
   };
 
   const wasViewingDetails = usePrevious(details);
-  const rootRef = React.useRef();
-  const scrollTopBeforeItineraryOpen = React.useRef();
+  const rootRef = useRef();
+  const scrollTopBeforeItineraryOpen = useRef();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const el = rootRef.current;
     const container = el?.offsetParent;
     if (!el || !container) return;
@@ -122,6 +124,7 @@ export default function Routes(props) {
         route={routes[activeRoute]}
         onBackClick={handleBackClick}
         onStepClick={handleStepClick}
+        viewingLeg={viewingLeg}
         destinationDescription={destinationDescription}
         scrollToStep={prevViewingStep}
       />

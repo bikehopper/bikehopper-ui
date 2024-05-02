@@ -1,8 +1,7 @@
-import * as React from 'react';
 import classnames from 'classnames';
 
 // Usage:
-// import {ReactComponent as Blah} from 'iconoir/icons/blah.svg';
+// import Blah from 'iconoir/icons/blah.svg?react';
 // <Icon><Blah /></Icon>
 //
 // For accessibility you should do one of:

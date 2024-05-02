@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { Fragment } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import classnames from 'classnames';
 import formatDistance from '../lib/formatDistance';
@@ -9,9 +9,9 @@ import RouteLeg from './RouteLeg';
 import SelectionList from './SelectionList';
 import SelectionListItem from './SelectionListItem';
 
-import { ReactComponent as ArrowDown } from 'iconoir/icons/arrow-down.svg';
-import { ReactComponent as ArrowUp } from 'iconoir/icons/arrow-up.svg';
-import { ReactComponent as NavArrowRight } from 'iconoir/icons/nav-arrow-right.svg';
+import ArrowDown from 'iconoir/icons/arrow-down.svg?react';
+import ArrowUp from 'iconoir/icons/arrow-up.svg?react';
+import NavArrowRight from 'iconoir/icons/nav-arrow-right.svg?react';
 
 import './RoutesOverview.css';
 
@@ -47,7 +47,7 @@ export default function RoutesOverview({
             <div className="RoutesOverview_row">
               <ul className="RoutesOverview_routeLegs">
                 {route.legs.filter(_isSignificantLeg).map((leg, index) => (
-                  <React.Fragment key={route.nonce + ':' + index}>
+                  <Fragment key={route.nonce + ':' + index}>
                     {index > 0 && (
                       <li className="RoutesOverview_legSeparator">
                         <Icon>
@@ -78,7 +78,7 @@ export default function RoutesOverview({
                         }
                       />
                     </li>
-                  </React.Fragment>
+                  </Fragment>
                 ))}
               </ul>
               <p className="RoutesOverview_timeEstimate">
@@ -166,16 +166,6 @@ export default function RoutesOverview({
   );
 }
 
-function _isSignificantLeg(leg) {
-  // For filtering out short, interpolated legs
-  const THRESHOLD_IN_METERS = 120;
-  return !(
-    leg.type === 'bike2' &&
-    leg.interpolated &&
-    leg.distance < THRESHOLD_IN_METERS
-  );
-}
-
 function _outOfAreaMsg(intl, start, end) {
   const which = start ? (end ? 'both' : 'start') : end ? 'end' : 'neither';
   if (which === 'neither') return null;
@@ -191,5 +181,15 @@ function _outOfAreaMsg(intl, start, end) {
       description: 'warning shown above routes',
     },
     { which },
+  );
+}
+
+function _isSignificantLeg(leg) {
+  // For filtering out short, interpolated legs
+  const THRESHOLD_IN_METERS = 120;
+  return !(
+    leg.type === 'bike2' &&
+    leg.interpolated &&
+    leg.distance < THRESHOLD_IN_METERS
   );
 }

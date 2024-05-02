@@ -1,5 +1,11 @@
 import Bowser from 'bowser';
-import * as React from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useSelector } from 'react-redux';
 import classnames from 'classnames';
 import MoonLoader from 'react-spinners/MoonLoader';
@@ -33,11 +39,11 @@ function MapPlusOverlay(props) {
       state.geolocation.geolocationInProgress,
   );
 
-  const mapRef = React.useRef();
-  const mapControlBottomLeftRef = React.useRef();
-  const mapControlBottomRightRef = React.useRef();
-  const mapControlTopLeftRef = React.useRef();
-  const mapControlTopRightRef = React.useRef();
+  const mapRef = useRef();
+  const mapControlBottomLeftRef = useRef();
+  const mapControlBottomRightRef = useRef();
+  const mapControlTopLeftRef = useRef();
+  const mapControlTopRightRef = useRef();
 
   const handleMapLoad = () => {
     mapControlBottomLeftRef.current = document.getElementsByClassName(
@@ -73,11 +79,11 @@ function MapPlusOverlay(props) {
       'translate3d(0,' + topContentHeight + 'px,0)';
   };
 
-  const columnRef = React.useRef();
+  const columnRef = useRef();
 
   // Holds state relating to a series of touch events (touchstart -> 0 to many
   // touchmove -> touchcancel or touchend).
-  const mapTouchStateRef = React.useRef();
+  const mapTouchStateRef = useRef();
 
   const handleMapTouchEvent = (eventName, evt) => {
     // On mobile, when you think you're touching the map, you are actually touching a
@@ -180,8 +186,8 @@ function MapPlusOverlay(props) {
     }
   };
 
-  const mapOverlayTransparentRef = React.useRef();
-  const mapOverlayTransparentRefCallback = React.useCallback((node) => {
+  const mapOverlayTransparentRef = useRef();
+  const mapOverlayTransparentRefCallback = useCallback((node) => {
     if (node) {
       ['touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach(
         (eventName) => {
@@ -195,8 +201,8 @@ function MapPlusOverlay(props) {
     mapOverlayTransparentRef.current = node;
   }, []);
 
-  const topContentRef = React.useRef();
-  React.useLayoutEffect(() => {
+  const topContentRef = useRef();
+  useLayoutEffect(() => {
     if (!mapRef.current) return;
     updateMapTopControls();
   });
@@ -226,23 +232,22 @@ function MapPlusOverlay(props) {
   const handleMapOverlayScroll = (evt) => {
     window.requestAnimationFrame(updateMapBottomControls);
   };
-  React.useLayoutEffect(updateMapBottomControls);
+  useLayoutEffect(updateMapBottomControls);
 
   // For non-touch devices, we use a much simpler method to allow map
   // interaction and scrolling. Instead of forwarding mouse events, we can just
   // enable the bottom drawer to receive mouse events only when the mouse is
   // over it.
-  const [isMouseOverBottomPane, setIsMouseOverBottomPane] =
-    React.useState(false);
+  const [isMouseOverBottomPane, setIsMouseOverBottomPane] = useState(false);
   const handleBottomPaneEnter = setIsMouseOverBottomPane.bind(null, true);
   const handleBottomPaneLeave = setIsMouseOverBottomPane.bind(null, false);
 
-  const mapOverlayRef = React.useRef();
+  const mapOverlayRef = useRef();
 
   const hasBottomContentWithMap = Boolean(bottomContent) && !hideMap;
 
   // When the bottom drawer appears, start it somewhat taller than its minimum height.
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     if (mapOverlayRef.current && hasBottomContentWithMap) {
       mapOverlayRef.current.scrollTop = BOTTOM_DRAWER_DEFAULT_SCROLL;
     }
@@ -250,7 +255,7 @@ function MapPlusOverlay(props) {
 
   // iOS/Android hack: Shrink body when virtual keyboard is hiding content, so
   // you can't be scrolled down.
-  const adjustHeightBasedOnVisualViewport = React.useCallback((height) => {
+  const adjustHeightBasedOnVisualViewport = useCallback((height) => {
     const isIos = Bowser.parse(navigator.userAgent).os.name === 'iOS';
     if (isIos) {
       // Ignore small discrepancies between visual viewport height and
@@ -264,7 +269,7 @@ function MapPlusOverlay(props) {
       document.body.style.height = Math.floor(height) + 'px';
     }
   }, []);
-  React.useEffect(() => {
+  useEffect(() => {
     if (VisualViewportTracker.isSupported()) {
       VisualViewportTracker.listen(adjustHeightBasedOnVisualViewport);
       // Make one initial call -- required on Android Chrome so you can scroll

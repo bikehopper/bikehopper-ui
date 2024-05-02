@@ -1,5 +1,7 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+import typographyPlugin from '@tailwindcss/typography';
+
+export default {
   corePlugins: {
     preflight: false,
   },
@@ -10,11 +12,12 @@ module.exports = {
         bikehoppergreen: '#5aaa0a',
         bikehoppergreenlight: '#def0cc',
         bikehopperyellow: '#ffd18e',
+        bikeinfragreen: '#438601',
       },
       scale: {
         '-100': '-1', // allow flipping
       },
     },
   },
-  plugins: [require('@tailwindcss/typography')],
+  plugins: [typographyPlugin],
 };

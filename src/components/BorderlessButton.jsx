@@ -1,4 +1,4 @@
-import * as React from 'react';
+import classnames from 'classnames';
 
 // A button with the styles reset, for when you have something that
 // functions as a button (and want to use the <button> tag for
@@ -7,5 +7,14 @@ import * as React from 'react';
 import './BorderlessButton.css';
 
 export default function BorderlessButton(props) {
-  return <button className="BorderlessButton" {...props} />;
+  const { flex, ...rest } = props;
+  return (
+    <button
+      className={classnames({
+        BorderlessButton: true,
+        BorderlessButton_flex: flex,
+      })}
+      {...rest}
+    />
+  );
 }

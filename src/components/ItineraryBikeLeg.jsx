@@ -1,26 +1,28 @@
-import * as React from 'react';
+import { useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { BIKEHOPPER_THEME_COLOR } from '../lib/colors';
 import formatDistance from '../lib/formatDistance';
+import formatMajorStreets from '../lib/formatMajorStreets';
 import { describeBikeInfra } from '../lib/geometry';
 import { formatDurationBetween } from '../lib/time';
 import InstructionSigns from '../lib/InstructionSigns';
 import useScrollToRef from '../hooks/useScrollToRef';
 import ItineraryBikeStep from './ItineraryBikeStep';
 import ItineraryHeader from './ItineraryHeader';
-import ItineraryDivider from './ItineraryDivider';
 import ItinerarySpacer from './ItinerarySpacer';
 
-import { ReactComponent as BikeIcon } from 'iconoir/icons/bicycle.svg';
+import BikeIcon from 'iconoir/icons/bicycle.svg?react';
 
 export default function ItineraryBikeLeg({
   leg,
   legDestination,
+  expanded,
   onStepClick,
+  onToggleLegExpand,
   scrollToStep,
 }) {
   const intl = useIntl();
-  const instructionsWithBikeInfra = React.useMemo(() => {
+  const instructionsWithBikeInfra = useMemo(() => {
     return leg.instructions.map((step) => {
       return {
         ...step,
@@ -34,6 +36,7 @@ export default function ItineraryBikeLeg({
       };
     });
   }, [leg]);
+  const majorStreets = useMemo(() => formatMajorStreets(leg), [leg]);
 
   const scrollToRef = useScrollToRef();
   const spacer = ' \u00B7 ';
@@ -63,6 +66,9 @@ export default function ItineraryBikeLeg({
         icon={bikeIcon}
         iconColor={BIKEHOPPER_THEME_COLOR}
         alerts={alerts}
+        expanded={expanded}
+        alertsExpanded={true}
+        onToggleLegExpand={onToggleLegExpand}
       >
         <span>
           <FormattedMessage
@@ -75,32 +81,45 @@ export default function ItineraryBikeLeg({
           {formatDistance(leg.distance, intl)}
           {spacer}
           {formatDurationBetween(leg.departure_time, leg.arrival_time, intl)}
+          {majorStreets ? (
+            <>
+              {spacer}
+              <FormattedMessage
+                defaultMessage="via {streets}"
+                description="list of major streets taken on bike leg"
+                values={{
+                  streets: intl.formatList(majorStreets, { type: 'unit' }),
+                }}
+              />
+            </>
+          ) : null}
         </span>
       </ItineraryHeader>
-      <ItineraryDivider />
-      {instructionsWithBikeInfra.map((step, stepIdx) =>
-        isArriveStep(step)
-          ? null
-          : [
-              <ItineraryBikeStep
-                key={stepIdx}
-                step={step}
-                isFirstStep={stepIdx === 0}
-                onClick={onStepClick.bind(null, stepIdx)}
-                rootRef={stepIdx === scrollToStep ? scrollToRef : null}
-              />,
-              <ItineraryDivider
-                key={stepIdx + 'd'}
-                transit={false}
-                detail={`${
-                  step.distance ? formatDistance(step.distance, intl) : null
-                }`}
-              >
-                {step.bikeInfra}
-              </ItineraryDivider>,
-            ],
+
+      {expanded ? (
+        <div>
+          <ItinerarySpacer />
+          {instructionsWithBikeInfra.map((step, stepIdx) =>
+            isArriveStep(step)
+              ? null
+              : [
+                  <ItineraryBikeStep
+                    key={stepIdx}
+                    step={step}
+                    distance={
+                      step.distance ? formatDistance(step.distance, intl) : null
+                    }
+                    infra={step.bikeInfra}
+                    isFirstStep={stepIdx === 0}
+                    onClick={onStepClick.bind(null, stepIdx)}
+                    rootRef={stepIdx === scrollToStep ? scrollToRef : null}
+                  />,
+                ],
+          )}
+        </div>
+      ) : (
+        <ItinerarySpacer />
       )}
-      <ItinerarySpacer />
     </>
   );
 }

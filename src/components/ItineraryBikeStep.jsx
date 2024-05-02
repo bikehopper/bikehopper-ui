@@ -1,21 +1,29 @@
-import * as React from 'react';
+import { useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import classnames from 'classnames';
+
 import BorderlessButton from './BorderlessButton';
+import { STEP_ANNOTATIONS, describeStepAnnotation } from '../lib/geometry';
 import InstructionSigns from '../lib/InstructionSigns';
 import ItineraryStep from './ItineraryStep';
 
-import { ReactComponent as MapsTurnBack } from 'iconoir/icons/maps-turn-back.svg';
-import { ReactComponent as LongArrowUpLeft } from 'iconoir/icons/long-arrow-up-left.svg';
-import { ReactComponent as LongArrowUpRight } from 'iconoir/icons/long-arrow-up-right.svg';
-import { ReactComponent as ArrowUp } from 'iconoir/icons/arrow-up.svg';
-import { ReactComponent as TriangleFlag } from 'iconoir/icons/triangle-flag.svg';
-import { ReactComponent as QuestionMarkCircle } from 'iconoir/icons/help-circle.svg';
-import { ReactComponent as ArrowTrCircle } from 'iconoir/icons/arrow-tr-circle.svg';
+import './ItineraryBikeStep.css';
+
+import MapsTurnBack from 'iconoir/icons/maps-turn-back.svg?react';
+import LongArrowUpLeft from 'iconoir/icons/long-arrow-up-left.svg?react';
+import LongArrowUpRight from 'iconoir/icons/long-arrow-up-right.svg?react';
+import ArrowUp from 'iconoir/icons/arrow-up.svg?react';
+import TriangleFlag from 'iconoir/icons/triangle-flag.svg?react';
+import QuestionMarkCircle from 'iconoir/icons/help-circle.svg?react';
+import ArrowTrCircle from 'iconoir/icons/arrow-up-right-circle.svg?react';
 
 let _warnedOfFallback = false;
+const spacerWithMiddot = ' \u00B7 ';
 
 export default function ItineraryBikeStep({
   step,
+  distance,
+  infra,
   isFirstStep,
   onClick,
   rootRef,
@@ -28,7 +36,7 @@ export default function ItineraryBikeStep({
 
   const street = step.street_name;
   const haveStreet = street ? 'name' : 'none';
-  const strong = React.useCallback((txt) => <strong>{txt}</strong>, []);
+  const strong = useCallback((txt) => <strong>{txt}</strong>, []);
 
   // TODO: Get better icons for u-turn, sharp left/right, slight left/right, etc.
   switch (step.sign) {
@@ -313,7 +321,43 @@ export default function ItineraryBikeStep({
 
   return (
     <ItineraryStep IconSVGComponent={IconComponent} rootRef={rootRef}>
-      <BorderlessButton onClick={onClick}>{msg}</BorderlessButton>
+      <div
+        className={classnames({
+          ItineraryBikeStep_content: true,
+        })}
+      >
+        <BorderlessButton onClick={onClick}>
+          {msg}
+          {spacerWithMiddot}
+          {distance}
+          <div
+            className={classnames({
+              ItineraryBikeStep_infra: true,
+            })}
+          >
+            {infra.map((anno, idx) => (
+              <span
+                key={idx}
+                className={classnames({
+                  'mt-1 mr-1 rounded-md px-1 py-0.5 inline-block': true,
+                  'font-medium text-white text-xs': true,
+                  'bg-red-700': anno === STEP_ANNOTATIONS.mainRoad,
+                  'bg-gray-500':
+                    anno === STEP_ANNOTATIONS.steepHill ||
+                    anno === STEP_ANNOTATIONS.verySteepHill,
+                  'bg-bikeinfragreen': !(
+                    anno === STEP_ANNOTATIONS.mainRoad ||
+                    anno === STEP_ANNOTATIONS.steepHill ||
+                    anno === STEP_ANNOTATIONS.verySteepHill
+                  ),
+                })}
+              >
+                {describeStepAnnotation(anno, intl)}
+              </span>
+            ))}
+          </div>
+        </BorderlessButton>
+      </div>
     </ItineraryStep>
   );
 }

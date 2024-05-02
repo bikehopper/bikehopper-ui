@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
 import ModalDialog from './primitives/ModalDialog';
@@ -7,9 +7,9 @@ import Icon from './primitives/Icon';
 import usePrevious from '../hooks/usePrevious';
 import { CATEGORIES } from '../lib/TransitModes';
 
-import { ReactComponent as BusIcon } from 'iconoir/icons/bus.svg';
-import { ReactComponent as TrainIcon } from 'iconoir/icons/train.svg';
-import { ReactComponent as FerryIcon } from 'iconoir/icons/sea-waves.svg';
+import BusIcon from 'iconoir/icons/bus.svg?react';
+import TrainIcon from 'iconoir/icons/train.svg?react';
+import FerryIcon from 'iconoir/icons/sea-waves.svg?react';
 
 export default function RouteOptionsDialog({
   isOpen,
@@ -19,13 +19,11 @@ export default function RouteOptionsDialog({
 }) {
   const intl = useIntl();
 
-  const [connectingModes, setConnectingModes] = React.useState(
-    globalConnectingModes,
-  );
+  const [connectingModes, setConnectingModes] = useState(globalConnectingModes);
 
   const wasOpen = usePrevious(isOpen);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // when dialog opens, initialize to match global state.
     if (isOpen && !wasOpen) {
       setConnectingModes(globalConnectingModes);

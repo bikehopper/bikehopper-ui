@@ -1,6 +1,6 @@
-import * as React from 'react';
+import { useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { ReactComponent as MagnifyingGlass } from 'iconoir/icons/search.svg';
+import MagnifyingGlass from 'iconoir/icons/search.svg?react';
 import Icon from './primitives/Icon';
 import { SupportedRegionText } from '../lib/region';
 
@@ -12,7 +12,7 @@ export default function DirectionsNullState(props) {
   // The <input> rendered here is fake: its only function is to get focused and then
   // switch to a different UI that has the real input box.
 
-  const strong = React.useCallback((jsx) => <strong>{jsx}</strong>, []);
+  const strong = useCallback((jsx) => <strong>{jsx}</strong>, []);
 
   return (
     <article className="prose prose-sm md:prose-base lg:prose-lg max-w-none m-6">

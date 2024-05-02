@@ -1,13 +1,10 @@
-import * as React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './primitives/Icon';
 import PlaceIcon from './PlaceIcon';
 import TimeBar from './TimeBar';
-import {
-  isAutocompleteResultElement,
-  getLastAutocompleteResultMousedownTime,
-} from './SearchAutocompleteDropdown';
+import SearchAutocompleteDropdown from './SearchAutocompleteDropdown';
 import {
   blurSearchWithUnchangedLocations,
   changeConnectingModes,
@@ -20,9 +17,10 @@ import {
 } from '../features/routeParams';
 import RouteOptionsDialog from './RouteOptionsDialog';
 import usePrevious from '../hooks/usePrevious';
-import { ReactComponent as NavLeftArrow } from 'iconoir/icons/nav-arrow-left.svg';
-import { ReactComponent as SwapArrows } from 'iconoir/icons/data-transfer-both.svg';
-import { ReactComponent as SettingsIcon } from 'iconoir/icons/settings.svg';
+
+import NavLeftArrow from 'iconoir/icons/nav-arrow-left.svg?react';
+import SwapArrows from 'iconoir/icons/data-transfer-both.svg?react';
+import SettingsIcon from 'iconoir/icons/settings.svg?react';
 
 const CURRENT_LOCATION_STRING = 'Current Location';
 
@@ -49,13 +47,13 @@ export default function SearchBar(props) {
     shallowEqual,
   );
 
-  const startRef = React.useRef();
-  const endRef = React.useRef();
+  const startRef = useRef();
+  const endRef = useRef();
 
   // Has the text of start/end been modified, since something that aborted or
   // completed the edit?
-  const [startTextModified, setStartTextModified] = React.useState(false);
-  const [endTextModified, setEndTextModified] = React.useState(false);
+  const [startTextModified, setStartTextModified] = useState(false);
+  const [endTextModified, setEndTextModified] = useState(false);
 
   const displayedStart = _getDisplayedText(
     intl,
@@ -132,8 +130,12 @@ export default function SearchBar(props) {
     // an autocomplete result. However, the mousedown on the button does happen before
     // the blur, so that's what we use here.
     const isAutocompleteResultTapped =
-      isAutocompleteResultElement(event.relatedTarget) ||
-      Date.now() - getLastAutocompleteResultMousedownTime() < 1000;
+      SearchAutocompleteDropdown.isAutocompleteResultElement(
+        event.relatedTarget,
+      ) ||
+      Date.now() -
+        SearchAutocompleteDropdown.getLastAutocompleteResultMousedownTime() <
+        1000;
 
     const haveLocations = !!(startLocation && endLocation);
 
@@ -152,7 +154,7 @@ export default function SearchBar(props) {
   const prevStartLocation = usePrevious(startLocation);
   const prevEndLocation = usePrevious(endLocation);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const justFilledStart = Boolean(
       startLocation && startLocation !== prevStartLocation,
     );
@@ -191,7 +193,7 @@ export default function SearchBar(props) {
     if (evt.key === 'Enter') handleSubmit(evt);
   };
 
-  const [isOptionsDialogOpen, setIsOptionsDialogOpen] = React.useState(false);
+  const [isOptionsDialogOpen, setIsOptionsDialogOpen] = useState(false);
   const handleOptionsDialogTrigger = () => setIsOptionsDialogOpen(true);
   const handleOptionsDialogCancel = () => setIsOptionsDialogOpen(false);
   const handleOptionsDialogApply = (values) => {

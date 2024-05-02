@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import './ItineraryRow.css';
 
 export default function ItineraryRow(props) {
