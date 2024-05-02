@@ -32,7 +32,7 @@ export default function routesUrlMiddleware(store) {
       action.type === 'route_fetch_failed' &&
       history.location.pathname !== '/'
     ) {
-      history.replace('/');
+      history.replace('/' + history.location.search);
       return;
     } else if (routeStateBefore.routes === routeStateAfter.routes) {
       return;
