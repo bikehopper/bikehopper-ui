@@ -42,6 +42,9 @@ const DEFAULT_STATE = {
     TransitModes.CATEGORIES.TRAINS,
     TransitModes.CATEGORIES.FERRIES,
   ],
+
+  // Can we default to geolocating for the start location?
+  canDefaultStartToGeolocation: true,
 };
 
 export function routeParamsReducer(state = DEFAULT_STATE, action) {
@@ -67,7 +70,11 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
           source: LocationSourceType.SelectedOnMap,
         };
         draft[action.startOrEnd + 'InputText'] = '';
-        if (action.startOrEnd === 'end' && state.start == null) {
+        if (
+          action.startOrEnd === 'end' &&
+          state.start == null &&
+          state.canDefaultStartToGeolocation
+        ) {
           // if no start point, and "directions to" was selected,
           // route from current location.
           draft.start = {
@@ -105,10 +112,12 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
       return produce(state, (draft) => {
         draft.editingLocation = 'end';
         // TODO don't default start to current location on desktop
-        draft.start = {
-          point: null,
-          source: LocationSourceType.UserGeolocation,
-        };
+        if (state.canDefaultStartToGeolocation) {
+          draft.start = {
+            point: null,
+            source: LocationSourceType.UserGeolocation,
+          };
+        }
       });
     case 'route_fetch_attempted':
       return produce(state, (draft) => {
@@ -154,6 +163,18 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
           draft.end = null;
           draft.endInputText = '';
         }
+
+        // If we were denied permission, don't try to default to geolocation
+        // next time.
+        if (action.code === window.GeolocationPositionError.PERMISSION_DENIED) {
+          draft.canDefaultStartToGeolocation = false;
+        }
+      });
+    case 'geolocated':
+      return produce(state, (draft) => {
+        // Since geolocation has worked, we can default to it again (if we
+        // stopped trying).
+        draft.canDefaultStartToGeolocation = true;
       });
     case 'location_text_input_changed':
       return produce(state, (draft) => {
@@ -374,8 +395,9 @@ export function locationSelectedOnMap(startOrEnd, coords) {
     });
 
     // If we have a location for the other point, fetch a route.
+    const state = getState();
     let { start, end, arriveBy, initialTime, connectingModes } =
-      getState().routeParams;
+      state.routeParams;
     if (startOrEnd === 'start' && end?.point?.geometry.coordinates) {
       await fetchRoute(
         coords,
