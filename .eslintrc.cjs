@@ -28,4 +28,11 @@ module.exports = {
     'no-empty': ['warn', { allowEmptyCatch: true }],
     'no-constant-condition': 'warn',
   },
+  overrides: [
+    {
+      files: ['*.{ts,tsx}'],
+      parser: '@typescript-eslint/parser',
+      plugins: ['@typescript-eslint'],
+    },
+  ],
 };

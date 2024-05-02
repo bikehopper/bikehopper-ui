@@ -9,7 +9,7 @@ import store from './store';
 
 import './index.css';
 
-async function loadMessages(locale) {
+async function loadMessages(locale: string) {
   if (listFormatShouldPolyfill(locale)) {
     await import('@formatjs/intl-listformat/polyfill-force');
     // hack: vite doesn't support this kind of dynamic import,
@@ -39,7 +39,7 @@ async function loadMessages(locale) {
   }
 }
 
-function selectLocale() {
+function selectLocale(): string {
   // override via query params
   const overrideLocale = new URLSearchParams(document.location.search).get(
     'locale',
@@ -57,7 +57,7 @@ function selectLocale() {
   return navigator.language;
 }
 
-async function bootstrapApp() {
+async function bootstrapApp(): Promise<void> {
   const ua = Bowser.parse(navigator.userAgent);
   if (
     ua.os.name === 'iOS' &&
@@ -66,7 +66,7 @@ async function bootstrapApp() {
     document.body.className += ' isIOSChromeOrSafari';
   }
 
-  const root = createRoot(document.getElementById('root'));
+  const root = createRoot(document.getElementById('root')!);
   const locale = selectLocale();
   const messages = await loadMessages(locale);
 
