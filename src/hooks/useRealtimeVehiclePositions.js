@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { transit_realtime } from '../lib/realtime-feed/FeedMessage';
 import { featureCollection, point } from '@turf/helpers';
 import { EMPTY_GEOJSON } from '../lib/geometry';
+import { getApiPath } from '../lib/BikehopperClient';
 
 function usePollingEffect(
   asyncCallback,
@@ -38,7 +39,7 @@ function usePollingEffect(
 export function useRealtimeVehiclePositions() {
   const [features, setFeatures] = useState(EMPTY_GEOJSON);
   const fetchData = () => {
-    return fetch(import.meta.env.VITE_GTFS_RT_URL).then((response) => {
+    return fetch(`${getApiPath()}/api/v1/realtime/vehiclepositions`).then((response) => {
       return response.arrayBuffer();
     }).then((buffer) => {
       const decoded = transit_realtime.FeedMessage.decode(new Uint8Array(buffer));

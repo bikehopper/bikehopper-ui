@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import delay from './delay';
 import { DEFAULT_VIEWPORT_BOUNDS } from './region';
 
-function getApiPath() {
+export function getApiPath() {
   const apiDomain = import.meta.env.VITE_API_DOMAIN;
   // If not running on one of the above domains, default to making API requests
   // to same domain, which is what we generally want for development.

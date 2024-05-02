@@ -712,7 +712,7 @@ function getBikeLabelStyle(activePath) {
 
 function getVehicleLayerStyle(activePath, routes) {
   const activeRouteIds = activeRouteNames(activePath, routes);
-  const filter = activeRouteIds != null ? ['in', ['get', 'routeId'], activeRouteIds] : undefined;
+  const filter = activeRouteIds != null ? ['in', ['get', 'routeId'], activeRouteIds] : true;
 
   return {
     id: 'liveVehicles',
