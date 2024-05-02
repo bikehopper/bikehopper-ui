@@ -402,5 +402,65 @@
     "NhcP3d": {
         "defaultMessage": "No se encontró nada para ''{inputText}''",
         "description": "Message when no search results are found"
+    },
+    "0ko9Cn": {
+        "defaultMessage": "Viajar en {agency} a {routeName} hasta {lastStopName}",
+        "description": "instructions header text. Says to ride the named transit line to the named stop, operated by the named agency."
+    },
+    "Nv7ZIk": {
+        "defaultMessage": "Alternar ampliado",
+        "description": "button to toggle if the leg steps are expanded"
+    },
+    "eXZGQC": {
+        "defaultMessage": "por {streets}",
+        "description": "list of major streets taken on bike leg"
+    },
+    "27z4LC": {
+        "defaultMessage": "colina muy empinada",
+        "description": "annotation for a step in a series of biking directions."
+    },
+    "D42N3T": {
+        "defaultMessage": "paseo",
+        "description": "annotation for a step in a series of biking directions."
+    },
+    "6fUhae": {
+        "defaultMessage": "carretera compartida",
+        "description": "annotation for a step in a series of biking directions. A road intended for cycling but that cyclists must share with cars, without a bike lane."
+    },
+    "JHZsFt": {
+        "defaultMessage": "colina empinada",
+        "description": "annotation for a step in a series of biking directions."
+    },
+    "Uu8GjL": {
+        "defaultMessage": "Carril bici",
+        "description": "annotation for a step in a series of biking directions."
+    },
+    "llIv2N": {
+        "defaultMessage": "A pie",
+        "description": "annotation for a step in a series of biking directions."
+    },
+    "rWgPzR": {
+        "defaultMessage": "pasos",
+        "description": "annotation for a step in a series of biking directions. Steps or a staircase."
+    },
+    "yfE0fS": {
+        "defaultMessage": "carril bici",
+        "description": "annotation for a step in a series of biking directions."
+    },
+    "AcRwTq": {
+        "defaultMessage": "camino",
+        "description": "annotation for a step in a series of biking directions. A path, such as foot path or bike path."
+    },
+    "HQldX2": {
+        "defaultMessage": "arcén",
+        "description": "annotation for a step in a series of biking directions. A road where bikes are recommended to ride on the shoulder."
+    },
+    "P9mrv3": {
+        "defaultMessage": "Ruta ciclista",
+        "description": "annotation for a step in a series of biking directions."
+    },
+    "cmOEmT": {
+        "defaultMessage": "Carretera principal",
+        "description": "annotation for a step in a series of biking directions. A main road which might have lots of fast traffic."
     }
 }
