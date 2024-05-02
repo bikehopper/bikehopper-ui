@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "allowJs": true,
+    "target": "es6",
+    "module": "ESNext",
+    "jsx": "preserve",
+    "moduleResolution": "Bundler",
+    "noImplicitAny": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["./src/**/*"]
+}
