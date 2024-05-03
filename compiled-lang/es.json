@@ -49,6 +49,38 @@
       "value": "Volver a las rutas"
     }
   ],
+  "0ko9Cn": [
+    {
+      "type": 0,
+      "value": "Viajar en "
+    },
+    {
+      "type": 1,
+      "value": "agency"
+    },
+    {
+      "type": 0,
+      "value": " a "
+    },
+    {
+      "type": 1,
+      "value": "routeName"
+    },
+    {
+      "type": 0,
+      "value": " hasta "
+    },
+    {
+      "type": 1,
+      "value": "lastStopName"
+    }
+  ],
+  "27z4LC": [
+    {
+      "type": 0,
+      "value": "colina muy empinada"
+    }
+  ],
   "2XfHiz": [
     {
       "type": 0,
@@ -119,6 +151,12 @@
     {
       "type": 0,
       "value": "Llegó al destino"
+    }
+  ],
+  "6fUhae": [
+    {
+      "type": 0,
+      "value": "carretera compartida"
     }
   ],
   "6r9qOW": [
@@ -247,6 +285,12 @@
     {
       "type": 0,
       "value": ")"
+    }
+  ],
+  "AcRwTq": [
+    {
+      "type": 0,
+      "value": "camino"
     }
   ],
   "Ap/CxF": [
@@ -397,6 +441,12 @@
       "value": "haveStreet"
     }
   ],
+  "D42N3T": [
+    {
+      "type": 0,
+      "value": "paseo"
+    }
+  ],
   "DYUDwR": [
     {
       "type": 0,
@@ -541,6 +591,12 @@
       "value": ", así que podría verse algo extraño en tu computadora."
     }
   ],
+  "HQldX2": [
+    {
+      "type": 0,
+      "value": "arcén"
+    }
+  ],
   "HV9VrT": [
     {
       "type": 0,
@@ -613,6 +669,12 @@
       "value": "place"
     }
   ],
+  "JHZsFt": [
+    {
+      "type": 0,
+      "value": "colina empinada"
+    }
+  ],
   "JPe1q0": [
     {
       "type": 1,
@@ -659,6 +721,12 @@
       "value": "'"
     }
   ],
+  "Nv7ZIk": [
+    {
+      "type": 0,
+      "value": "Alternar ampliado"
+    }
+  ],
   "O53Ykk": [
     {
       "type": 0,
@@ -689,6 +757,12 @@
     {
       "type": 1,
       "value": "stop"
+    }
+  ],
+  "P9mrv3": [
+    {
+      "type": 0,
+      "value": "Ruta ciclista"
     }
   ],
   "QiY1oM": [
@@ -841,6 +915,12 @@
       "value": "Actualizar"
     }
   ],
+  "Uu8GjL": [
+    {
+      "type": 0,
+      "value": "Carril bici"
+    }
+  ],
   "V5A9AA": [
     {
       "type": 0,
@@ -971,6 +1051,12 @@
       "value": "Esta ruta puede requerir subir o bajar escalones con la bicicleta."
     }
   ],
+  "cmOEmT": [
+    {
+      "type": 0,
+      "value": "Carretera principal"
+    }
+  ],
   "coeI+2": [
     {
       "type": 0,
@@ -1015,6 +1101,16 @@
     {
       "type": 0,
       "value": "Inicia ingresando un destino arriba."
+    }
+  ],
+  "eXZGQC": [
+    {
+      "type": 0,
+      "value": "por "
+    },
+    {
+      "type": 1,
+      "value": "streets"
     }
   ],
   "f1xi7R": [
@@ -1093,6 +1189,12 @@
     {
       "type": 0,
       "value": "Salir a"
+    }
+  ],
+  "llIv2N": [
+    {
+      "type": 0,
+      "value": "A pie"
     }
   ],
   "mDnFtf": [
@@ -1217,6 +1319,12 @@
     {
       "type": 0,
       "value": "Modos de conexión"
+    }
+  ],
+  "rWgPzR": [
+    {
+      "type": 0,
+      "value": "pasos"
     }
   ],
   "solefl": [
@@ -1397,6 +1505,12 @@
     {
       "type": 1,
       "value": "stop"
+    }
+  ],
+  "yfE0fS": [
+    {
+      "type": 0,
+      "value": "carril bici"
     }
   ],
   "zOmTEh": [
