@@ -7,6 +7,7 @@ import ItineraryBikeLeg from './ItineraryBikeLeg';
 import ItineraryHeader from './ItineraryHeader';
 import ItineraryTransitLeg from './ItineraryTransitLeg';
 import ItineraryElevationProfile from './ItineraryElevationProfile';
+import ShareFit from './ShareFit';
 
 import NavLeftArrow from 'iconoir/icons/nav-arrow-left.svg?react';
 import ArriveIcon from 'iconoir/icons/triangle-flag.svg?react';
@@ -148,6 +149,7 @@ export default function Itinerary({
             />
           </h3>
         </div>
+        <ShareFit />
       </div>
       <div className="Itinerary_elevation">
         <ItineraryElevationProfile route={route} />
