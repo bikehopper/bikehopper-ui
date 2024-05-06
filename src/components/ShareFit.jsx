@@ -27,7 +27,7 @@ export default function ShareFit({ route }) {
         className="bg-transparent h-8 block border-0 cursor-pointer text-black"
         onClick={downloadFit}
       >
-        <div className="flex items-center mr-8 text-[.80rem]">
+        <div className="flex items-center mr-8 text-sm">
           <Icon
             label={intl.formatMessage({
               defaultMessage: 'Download FIT',
