@@ -8,8 +8,11 @@ import App from './components/App';
 import store from './store';
 
 import './index.css';
+import type { MessageFormatElement } from 'react-intl';
 
-async function loadMessages(locale: string) {
+async function loadMessages(
+  locale: string,
+): Promise<Record<string, MessageFormatElement[]>> {
   if (listFormatShouldPolyfill(locale)) {
     await import('@formatjs/intl-listformat/polyfill-force');
     // hack: vite doesn't support this kind of dynamic import,

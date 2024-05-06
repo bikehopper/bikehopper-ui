@@ -33,7 +33,6 @@ export async function fetchRoute({
   pointsEncoded = false,
   details,
   points,
-  signal,
   blockRouteTypes,
 }) {
   const params = new URLSearchParams({
@@ -68,7 +67,6 @@ export async function fetchRoute({
   const route = await fetch(url, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
-    signal,
   });
 
   if (!route.ok) throw new BikehopperClientError(route);
@@ -115,7 +113,6 @@ export async function geocode(
     zoom = 12,
     lang = 'en',
     locationBias = '0.1',
-    signal,
   },
 ) {
   let url;
@@ -150,7 +147,6 @@ export async function geocode(
   const geocoding = await fetch(url, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
-    signal,
   });
 
   if (!geocoding.ok) throw new BikehopperClientError(geocoding);

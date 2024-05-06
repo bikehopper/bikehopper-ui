@@ -1,4 +1,4 @@
-import { MODES } from '../lib/TransitModes';
+import { TransitMode } from '../lib/TransitModes';
 
 import BusIcon from 'iconoir/icons/bus.svg?react';
 import TrainIcon from 'iconoir/icons/train.svg?react';
@@ -21,24 +21,24 @@ export default function ModeIcon({ mode, width, height, fallback = BusIcon }) {
   let IconSvg;
 
   switch (mode) {
-    case MODES.TRAM_STREETCAR_LIGHT_RAIL:
-    case MODES.MONORAIL:
-    case MODES.CABLE_TRAM:
-    case MODES.AERIAL_TRAM_SUSPENDED_CABLE_CAR:
-    case MODES.FUNICULAR:
+    case TransitMode.TRAM_STREETCAR_LIGHT_RAIL:
+    case TransitMode.MONORAIL:
+    case TransitMode.CABLE_TRAM:
+    case TransitMode.AERIAL_TRAM_SUSPENDED_CABLE_CAR:
+    case TransitMode.FUNICULAR:
       IconSvg = TramIcon;
       break;
-    case MODES.SUBWAY_METRO:
+    case TransitMode.SUBWAY_METRO:
       IconSvg = MetroIcon;
       break;
-    case MODES.RAIL_INTERCITY_LONG_DISTANCE:
+    case TransitMode.RAIL_INTERCITY_LONG_DISTANCE:
       IconSvg = TrainIcon;
       break;
-    case MODES.BUS:
-    case MODES.TROLLEYBUS:
+    case TransitMode.BUS:
+    case TransitMode.TROLLEYBUS:
       IconSvg = BusIcon;
       break;
-    case MODES.FERRY:
+    case TransitMode.FERRY:
       IconSvg = FerryIcon;
       break;
     default:

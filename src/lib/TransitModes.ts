@@ -1,45 +1,47 @@
 // The meaning of the route "route_type" enum in GTFS.
 // See: https://gtfs.org/schedule/reference/#routestxt
 
-export const MODES = {
-  TRAM_STREETCAR_LIGHT_RAIL: 0,
-  SUBWAY_METRO: 1,
-  RAIL_INTERCITY_LONG_DISTANCE: 2,
-  MONORAIL: 12,
+import type { IntlShape } from 'react-intl';
 
-  BUS: 3,
-  TROLLEYBUS: 11,
+export enum TransitMode {
+  TRAM_STREETCAR_LIGHT_RAIL = 0,
+  SUBWAY_METRO = 1,
+  RAIL_INTERCITY_LONG_DISTANCE = 2,
+  MONORAIL = 12,
 
-  FERRY: 4,
+  BUS = 3,
+  TROLLEYBUS = 11,
 
-  CABLE_TRAM: 5,
-  AERIAL_TRAM_SUSPENDED_CABLE_CAR: 6,
-  FUNICULAR: 7,
-};
+  FERRY = 4,
 
-export const CATEGORIES = {
-  TRAINS: 'trains',
-  BUSES: 'buses',
-  FERRIES: 'ferries',
-};
+  CABLE_TRAM = 5,
+  AERIAL_TRAM_SUSPENDED_CABLE_CAR = 6,
+  FUNICULAR = 7,
+}
 
-export const CATEGORY_TO_MODES = {
-  [CATEGORIES.TRAINS]: [
-    MODES.TRAM_STREETCAR_LIGHT_RAIL,
-    MODES.SUBWAY_METRO,
-    MODES.RAIL_INTERCITY_LONG_DISTANCE,
-    MODES.MONORAIL,
-    MODES.CABLE_TRAM,
-    MODES.AERIAL_TRAM_SUSPENDED_CABLE_CAR,
-    MODES.FUNICULAR,
+export enum TransitModeCategory {
+  TRAINS = 'trains',
+  BUSES = 'buses',
+  FERRIES = 'ferries',
+}
+
+export const CATEGORY_TO_MODE: Record<TransitModeCategory, TransitMode[]> = {
+  [TransitModeCategory.TRAINS]: [
+    TransitMode.TRAM_STREETCAR_LIGHT_RAIL,
+    TransitMode.SUBWAY_METRO,
+    TransitMode.RAIL_INTERCITY_LONG_DISTANCE,
+    TransitMode.MONORAIL,
+    TransitMode.CABLE_TRAM,
+    TransitMode.AERIAL_TRAM_SUSPENDED_CABLE_CAR,
+    TransitMode.FUNICULAR,
   ],
-  [CATEGORIES.BUSES]: [MODES.BUS, MODES.TROLLEYBUS],
-  [CATEGORIES.FERRIES]: [MODES.FERRY],
+  [TransitModeCategory.BUSES]: [TransitMode.BUS, TransitMode.TROLLEYBUS],
+  [TransitModeCategory.FERRIES]: [TransitMode.FERRY],
 };
 
-export function getModeLabel(mode, intl) {
+export function getModeLabel(mode: TransitMode, intl: IntlShape) {
   switch (mode) {
-    case MODES.TRAM_STREETCAR_LIGHT_RAIL:
+    case TransitMode.TRAM_STREETCAR_LIGHT_RAIL:
       return intl.formatMessage({
         defaultMessage: 'Train',
         description:
@@ -48,14 +50,14 @@ export function getModeLabel(mode, intl) {
           ' For American English, we match common usage by saying "train",' +
           ' but "tram" might be appropriate for other dialects of English.',
       });
-    case MODES.MONORAIL:
+    case TransitMode.MONORAIL:
       return intl.formatMessage({
         defaultMessage: 'Monorail',
         description:
           'labels a transit line as being operated by a tram, streetcar or light rail.' +
           ' Appears next to the name or number of the line.',
       });
-    case MODES.SUBWAY_METRO:
+    case TransitMode.SUBWAY_METRO:
       return intl.formatMessage({
         defaultMessage: 'Train',
         description:
@@ -63,7 +65,7 @@ export function getModeLabel(mode, intl) {
           ' specifically a subway or metro train but the label need not be that specific.' +
           ' Appears next to the name or number of the line.',
       });
-    case MODES.RAIL_INTERCITY_LONG_DISTANCE:
+    case TransitMode.RAIL_INTERCITY_LONG_DISTANCE:
       return intl.formatMessage({
         defaultMessage: 'Train',
         description:
@@ -72,14 +74,14 @@ export function getModeLabel(mode, intl) {
           ' but the label need not be that specific.' +
           ' Appears next to the name or number of the line.',
       });
-    case MODES.BUS:
+    case TransitMode.BUS:
       return intl.formatMessage({
         defaultMessage: 'Bus',
         description:
           'labels a transit line as being operated by a bus.' +
           ' Appears next to the name or number of the bus line.',
       });
-    case MODES.TROLLEYBUS:
+    case TransitMode.TROLLEYBUS:
       return intl.formatMessage({
         defaultMessage: 'Bus',
         description:
@@ -87,21 +89,21 @@ export function getModeLabel(mode, intl) {
           ' Specifically a trolleybus but the label need not be that specific.' +
           ' Appears next to the name or number of the bus line.',
       });
-    case MODES.FERRY:
+    case TransitMode.FERRY:
       return intl.formatMessage({
         defaultMessage: 'Ferry',
         description:
           'labels a transit line as being operated by a ferry.' +
           ' Appears next to the name or number of the line.',
       });
-    case MODES.CABLE_TRAM:
+    case TransitMode.CABLE_TRAM:
       return intl.formatMessage({
         defaultMessage: 'Cable car',
         description:
           'labels a transit line as being operated by a cable tram/cable car.' +
           ' Appears next to the name or number of the line.',
       });
-    case MODES.AERIAL_TRAM_SUSPENDED_CABLE_CAR:
+    case TransitMode.AERIAL_TRAM_SUSPENDED_CABLE_CAR:
       return intl.formatMessage({
         defaultMessage: 'Cable car',
         description:
@@ -109,7 +111,7 @@ export function getModeLabel(mode, intl) {
           ' suspended cable car.' +
           ' Appears next to the name or number of the line.',
       });
-    case MODES.FUNICULAR:
+    case TransitMode.FUNICULAR:
       return intl.formatMessage({
         defaultMessage: 'Funicular',
         description:

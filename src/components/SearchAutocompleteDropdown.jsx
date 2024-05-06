@@ -5,10 +5,10 @@ import classnames from 'classnames';
 import MoonLoader from 'react-spinners/MoonLoader';
 import { removeRecentlyUsedLocation } from '../features/geocoding';
 import {
-  LocationSourceType,
   selectCurrentLocation,
   selectGeocodedLocation,
 } from '../features/routeParams';
+import { LocationSourceType } from '../features/types';
 import describePlace from '../lib/describePlace';
 import Icon from './primitives/Icon';
 import PlaceIcon from './PlaceIcon';

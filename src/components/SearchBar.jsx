@@ -12,9 +12,9 @@ import {
   clearRouteParams,
   locationInputFocused,
   locationsSubmitted,
-  LocationSourceType,
   swapLocations,
 } from '../features/routeParams';
+import { LocationSourceType } from '../features/types';
 import RouteOptionsDialog from './RouteOptionsDialog';
 import usePrevious from '../hooks/usePrevious';
 
@@ -329,12 +329,12 @@ function _getDisplayedText(intl, text, loc, isFocused) {
   if (!loc) return text;
 
   switch (loc.source) {
-    case LocationSourceType.Geocoded:
-    case LocationSourceType.UrlWithString:
+    case LocationSourceType.GEOCODED:
+    case LocationSourceType.URL_WITH_STRING:
       // Initially set to address from geocoder/URL; may have been modified by user.
       return text;
-    case LocationSourceType.SelectedOnMap:
-    case LocationSourceType.UrlWithoutString:
+    case LocationSourceType.SELECTED_ON_MAP:
+    case LocationSourceType.USER_WITHOUT_STRING:
       if (text !== '') return text;
       return isFocused
         ? ''
@@ -343,7 +343,7 @@ function _getDisplayedText(intl, text, loc, isFocused) {
             description:
               'description of a route start/end point that was selected on the map',
           });
-    case LocationSourceType.UserGeolocation:
+    case LocationSourceType.USER_GEOLOCATION:
       if (text !== '') return text;
       return CURRENT_LOCATION_STRING;
     default:

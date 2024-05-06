@@ -5,7 +5,7 @@ import ModalDialog from './primitives/ModalDialog';
 import DialogSubmitButton from './primitives/DialogSubmitButton';
 import Icon from './primitives/Icon';
 import usePrevious from '../hooks/usePrevious';
-import { CATEGORIES } from '../lib/TransitModes';
+import { TransitModeCategory } from '../lib/TransitModes';
 
 import BusIcon from 'iconoir/icons/bus.svg?react';
 import TrainIcon from 'iconoir/icons/train.svg?react';
@@ -59,7 +59,7 @@ export default function RouteOptionsDialog({
           className="my-3"
         >
           <ModeToggleGroupItem
-            value={CATEGORIES.TRAINS}
+            value={TransitModeCategory.TRAINS}
             label={intl.formatMessage({
               defaultMessage: 'Trains',
               description:
@@ -70,7 +70,7 @@ export default function RouteOptionsDialog({
             icon={<TrainIcon />}
           />
           <ModeToggleGroupItem
-            value={CATEGORIES.BUSES}
+            value={TransitModeCategory.BUSES}
             label={intl.formatMessage({
               defaultMessage: 'Buses',
               description: 'toggle for whether to use buses in directions.',
@@ -78,7 +78,7 @@ export default function RouteOptionsDialog({
             icon={<BusIcon />}
           />
           <ModeToggleGroupItem
-            value={CATEGORIES.FERRIES}
+            value={TransitModeCategory.FERRIES}
             label={intl.formatMessage({
               defaultMessage: 'Ferries',
               description: 'toggle for whether to use ferries in directions.',

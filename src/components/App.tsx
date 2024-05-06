@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { IntlProvider } from 'react-intl';
+import { IntlProvider, MessageFormatElement } from 'react-intl';
+import type { OnErrorFn } from '@formatjs/intl';
 import { Transition } from '@headlessui/react';
 import AlertBar from './AlertBar';
 import DirectionsNullState from './DirectionsNullState';
@@ -8,24 +9,35 @@ import MapPlusOverlay from './MapPlusOverlay';
 import Routes from './Routes';
 import SearchAutocompleteDropdown from './SearchAutocompleteDropdown';
 import TopBar from './TopBar';
-import {
-  LocationSourceType,
-  enterDestinationFocused,
-} from '../features/routeParams';
+import { enterDestinationFocused } from '../features/routeParams';
 
 import './App.css';
+import { RootState } from '../store';
+import { LocationSourceType } from '../features/types';
 
-function App(props) {
+type AppProps = {
+  messages: Record<string, MessageFormatElement[]>;
+  locale: string;
+};
+
+type AppSelectorReturn = {
+  hasRoutes: boolean;
+  hasLocations: boolean;
+  isEditingLocations: boolean;
+  viewingDetails: unknown;
+};
+
+function App(props: AppProps) {
   const { hasRoutes, hasLocations, isEditingLocations, viewingDetails } =
-    useSelector(
+    useSelector<RootState, AppSelectorReturn>(
       (state) => ({
         hasLocations: !!(
           state.routeParams.end ||
           (state.routeParams.start &&
             state.routeParams.start.source !==
-              LocationSourceType.UserGeolocation)
+              LocationSourceType.USER_GEOLOCATION)
         ),
-        hasRoutes: !!state.routes.routes,
+        hasRoutes: Boolean(state.routes.routes),
         isEditingLocations: state.routeParams.editingLocation != null,
         viewingDetails: state.routes.viewingDetails,
       }),
@@ -34,7 +46,7 @@ function App(props) {
 
   const dispatch = useDispatch();
 
-  const handleBottomInputFocus = (evt) => {
+  const handleBottomInputFocus = (evt: FocusEvent) => {
     // Scroll up to counteract iOS Safari scrolling down towards the input.
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
@@ -42,7 +54,7 @@ function App(props) {
     dispatch(enterDestinationFocused());
   };
 
-  let bottomContent;
+  let bottomContent: React.JSX.Element | undefined;
   if (isEditingLocations) {
     bottomContent = <SearchAutocompleteDropdown />;
   } else if (hasRoutes) {
@@ -99,7 +111,7 @@ function App(props) {
   );
 }
 
-function handleDebugIntlError(err) {
+function handleDebugIntlError(err: Parameters<OnErrorFn>[0]) {
   // By default, react-intl spams the console with "Missing message" errors when you're
   // developing. Suppress these.
   if (err.code === 'MISSING_TRANSLATION') {

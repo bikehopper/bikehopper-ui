@@ -1,10 +1,8 @@
 import { createBrowserHistory } from 'history';
 import describePlace from '../lib/describePlace';
 import { isPWA } from '../lib/pwa';
-import {
-  LocationSourceType,
-  hydrateParamsFromUrl,
-} from '../features/routeParams';
+import { hydrateParamsFromUrl } from '../features/routeParams';
+import { LocationSourceType } from '../features/types';
 
 /*
  * Middleware for maintaining the URL in the browser location bar.

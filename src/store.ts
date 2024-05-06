@@ -9,6 +9,12 @@ import { storageMiddleware, initFromStorage } from './features/storage';
 import { viewportReducer } from './features/viewport';
 import urlMiddleware from './lib/urlMiddleware';
 
+declare global {
+  interface Window {
+    __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
+  }
+}
+
 const rootReducer = combineReducers({
   alerts: alertsReducer,
   geocoding: geocodingReducer,
@@ -26,6 +32,11 @@ const store = createStore(
     applyMiddleware(thunkMiddleware, urlMiddleware, storageMiddleware),
   ),
 );
+
+// Infer the `GetAppState` and `AppDispatch` types from the store itself
+export type GetAppState = typeof store.getState;
+export type RootState = ReturnType<GetAppState>;
+export type AppDispatch = typeof store.dispatch;
 
 store.dispatch(initFromStorage());
 
