@@ -1,4 +1,4 @@
-import InstructionSigns from '../../lib/InstructionSigns';
+import InstructionSigns from './InstructionSigns';
 
 export default function getCoursePointMessage(instruction, rMsg) {
   return {

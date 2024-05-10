@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import Icon from './primitives/Icon';
 import DownloadIcon from 'iconoir/icons/download.svg?react';
-import getFitBlob from '../lib/FitFileEncoder/getFitBlob.js';
+import getFitBlob from '../lib/getFitBlob.js';
 import { FormattedMessage, useIntl } from 'react-intl';
 import ModalDialog from './primitives/ModalDialog';
 
