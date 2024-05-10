@@ -41,6 +41,11 @@ function createRecordMessages(leg, startDate) {
 
 // Calculate the great circle distance between two GPS points.
 function distanceBetween2Points(lat1, lon1, lat2, lon2) {
+  // Convert degrees to radians
+  const degToRad = (degrees) => {
+    return degrees * (Math.PI / 180);
+  };
+
   const earthRadius = 6371000; // Meters
   const dLat = degToRad(lat2 - lat1);
   const dLng = degToRad(lon2 - lon1);
@@ -86,11 +91,6 @@ function calculateDistanceToPriorPointInMeters(recordMessages) {
     }
     currentRecord.distance = distance;
   }
-}
-
-// Convert degrees to radians
-function degToRad(degrees) {
-  return degrees * (Math.PI / 180);
 }
 
 function startTimer(encoder, recordMessages) {
