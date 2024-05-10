@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
 
 import Icon from './primitives/Icon';
 import DownloadIcon from 'iconoir/icons/download.svg?react';
-import FitFileEncoder from '../lib/FitFileEncoder';
+import getFitBlob from '../lib/FitFileEncoder/getFitBlob.js';
 import { FormattedMessage, useIntl } from 'react-intl';
 import ModalDialog from './primitives/ModalDialog';
 
@@ -15,10 +14,7 @@ export default function ShareFit({ route }) {
 
   // Download the fit file.
   const downloadFit = () => {
-    const fitFileEncoder = new FitFileEncoder(route.legs[0]);
-    fitFileEncoder.createFit();
-    const fBlob = fitFileEncoder.getBlob();
-    setFitURL(URL.createObjectURL(fBlob));
+    setFitURL(URL.createObjectURL(getFitBlob(route.legs[0])));
   };
 
   return (
@@ -27,7 +23,7 @@ export default function ShareFit({ route }) {
         className="bg-transparent h-8 block border-0 cursor-pointer text-black"
         onClick={downloadFit}
       >
-        <div className="flex items-center mr-8 text-sm">
+        <div className="flex items-center mr-8 text-[.80rem]">
           <Icon
             label={intl.formatMessage({
               defaultMessage: 'Download FIT',
