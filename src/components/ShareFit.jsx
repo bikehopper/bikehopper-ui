@@ -32,10 +32,6 @@ export default function ShareFit({ route }) {
           >
             <DownloadIcon className="align-middle" />
           </Icon>
-          {intl.formatMessage({
-            defaultMessage: 'FIT',
-            description: 'Button used to download FIT file.',
-          })}
         </div>
       </button>
       <ModalDialog
