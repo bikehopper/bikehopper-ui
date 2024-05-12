@@ -8,11 +8,12 @@ export default function getFitBlob(leg) {
   let recordMessages = createRecordMessages(leg);
 
   writeFileIdMessage(encoder, startDate);
-  writeStartTimer(encoder, recordMessages);
+  // calculateDistanceToPriorPointInMeters(recordMessages);
+  startTimer(encoder, recordMessages);
   writeRecordMessages(encoder, recordMessages);
   writeLapMessage(encoder, recordMessages);
   writeCoursePointMessages(encoder, leg, recordMessages);
-  writeStopTimer(encoder, recordMessages);
+  stopTimer(encoder, recordMessages);
   return encoder.createBlob();
 }
 
@@ -25,8 +26,8 @@ function writeFileIdMessage(encoder, startDate) {
 
 // Create our record messages.
 function createRecordMessages(leg, startDate) {
-  let lastTimeStamp = new Date(startDate).getTime();
   let distance = 0;
+  let lastTimeStamp = new Date(startDate).getTime();
 
   return leg.geometry.coordinates.map((m, i) => {
     lastTimeStamp += 10;
@@ -39,13 +40,14 @@ function createRecordMessages(leg, startDate) {
             m.positionLong,
           )
         : 0;
+
     return {
       positionLong: m[0],
       positionLat: m[1],
       altitude: m[2],
       timeStamp: lastTimeStamp,
       localNum: 5,
-      distance,
+      distance: distance,
     };
   });
 }
@@ -83,7 +85,30 @@ function writeRecordMessages(encoder, recordMessages) {
   });
 }
 
-function writeStartTimer(encoder, recordMessages) {
+// Compute distance for every record message and update the record.
+// function calculateDistanceToPriorPointInMeters(recordMessages) {
+//   let distance = 0;
+//   let currentRecord;
+//   let priorRecord;
+//
+//   for (let i = 0; i < recordMessages.length; i++) {
+//     currentRecord = recordMessages[i];
+//     if (i > 0) {
+//       priorRecord = recordMessages[i - 1];
+//       distance += distanceBetween2Points(
+//         priorRecord.positionLat,
+//         priorRecord.positionLong,
+//         currentRecord.positionLat,
+//         currentRecord.positionLong,
+//       );
+//     }
+//     currentRecord.distance = distance;
+//   }
+//
+//   // TODO: Convert this to a more functional style.
+// }
+
+function startTimer(encoder, recordMessages) {
   encoder.writeEvent({
     timestamp: recordMessages[0].timeStamp,
     event: 'timer',
@@ -92,7 +117,7 @@ function writeStartTimer(encoder, recordMessages) {
   });
 }
 
-function writeStopTimer(encoder, recordMessages) {
+function stopTimer(encoder, recordMessages) {
   encoder.writeEvent({
     timestamp: recordMessages[recordMessages.length - 1].timeStamp,
     event: 'timer',
