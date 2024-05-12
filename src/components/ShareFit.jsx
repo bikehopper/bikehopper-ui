@@ -26,12 +26,16 @@ export default function ShareFit({ route }) {
         <div className="flex items-center mr-8 text-[.80rem]">
           <Icon
             label={intl.formatMessage({
-              defaultMessage: 'Download FIT',
+              defaultMessage: 'Download',
               description: 'Button used to download FIT file.',
             })}
           >
             <DownloadIcon className="align-middle" />
           </Icon>
+          {intl.formatMessage({
+            defaultMessage: 'FIT',
+            description: 'Button used to download FIT file.',
+          })}
         </div>
       </button>
       <ModalDialog
