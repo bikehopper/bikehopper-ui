@@ -3,6 +3,10 @@
     "defaultMessage": "{numStops} {numStops, plural, one {stop} other {stops}} before",
     "description": "the number of stops between two listed transit stops"
   },
+  "+xBFGe": {
+    "defaultMessage": "FIT",
+    "description": "Button used to download FIT file."
+  },
   "/AzFxf": {
     "defaultMessage": "Directions to",
     "description": "menu item. Appears in context menu under a location you have selected on the map. When clicked, computes directions to that location."
@@ -102,6 +106,10 @@
   "D42N3T": {
     "defaultMessage": "promenade",
     "description": "annotation for a step in a series of biking directions."
+  },
+  "DWlYrF": {
+    "defaultMessage": "Download FIT file",
+    "description": "dialog header. In this dialog you can downloadFIT file which you can import into your cyclingcomputer."
   },
   "DYUDwR": {
     "defaultMessage": "south",
@@ -219,6 +227,10 @@
     "defaultMessage": "Keep <dir>right</dir>{haveStreet, select, name { on <name>{street}</name>} other {}}",
     "description": "instruction"
   },
+  "R90dWv": {
+    "defaultMessage": "Download",
+    "description": "Button used to download FIT file."
+  },
   "RRZB26": {
     "defaultMessage": "<strong>Welcome to BikeHopper!</strong> This is a new bike navigation app that suggests ways to combine biking and transit, expanding your options for getting around without a car.",
     "description": "paragraph in welcome screen"
@@ -334,6 +346,10 @@
   "mG9do/": {
     "defaultMessage": "Leaving now",
     "description": "description of departure time for a trip leaving now."
+  },
+  "nSPIt1": {
+    "defaultMessage": "Press here to download the FIT file.",
+    "description": "Link to download the FIT file."
   },
   "oLvgp2": {
     "defaultMessage": "Point",

@@ -37,6 +37,12 @@
       "value": " before"
     }
   ],
+  "+xBFGe": [
+    {
+      "type": 0,
+      "value": "FIT"
+    }
+  ],
   "/AzFxf": [
     {
       "type": 0,
@@ -379,6 +385,12 @@
     {
       "type": 0,
       "value": "promenade"
+    }
+  ],
+  "DWlYrF": [
+    {
+      "type": 0,
+      "value": "Download FIT file"
     }
   ],
   "DYUDwR": [
@@ -749,6 +761,12 @@
       "value": "haveStreet"
     }
   ],
+  "R90dWv": [
+    {
+      "type": 0,
+      "value": "Download"
+    }
+  ],
   "RRZB26": [
     {
       "children": [
@@ -1113,6 +1131,12 @@
     {
       "type": 0,
       "value": "Leaving now"
+    }
+  ],
+  "nSPIt1": [
+    {
+      "type": 0,
+      "value": "Press here to download the FIT file."
     }
   ],
   "oLvgp2": [
