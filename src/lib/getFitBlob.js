@@ -33,12 +33,13 @@ function createRecordMessages(leg, startDate) {
     distance +=
       i > 0
         ? distanceBetween2Points(
-            leg.geometry.coordinates[i - 1].positionLat,
-            leg.geometry.coordinates[i - 1].positionLong,
-            m.positionLat,
-            m.positionLong,
+            leg.geometry.coordinates[i - 1][1],
+            leg.geometry.coordinates[i - 1][0],
+            m[1],
+            m[0],
           )
         : 0;
+
     return {
       positionLong: m[0],
       positionLat: m[1],
