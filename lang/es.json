@@ -462,5 +462,21 @@
     "cmOEmT": {
         "defaultMessage": "Carretera principal",
         "description": "annotation for a step in a series of biking directions. A main road which might have lots of fast traffic."
+    },
+    "+xBFGe": {
+        "defaultMessage": "FIT",
+        "description": "Button used to download FIT file."
+    },
+    "R90dWv": {
+        "defaultMessage": "Descargar",
+        "description": "Button used to download FIT file."
+    },
+    "nSPIt1": {
+        "defaultMessage": "Presiona aquí para descargar el archivo FIT.",
+        "description": "Link to download the FIT file."
+    },
+    "DWlYrF": {
+        "defaultMessage": "Descargar el archivo fit",
+        "description": "dialog header. In this dialog you can downloadFIT file which you can import into your cyclingcomputer."
     }
 }
