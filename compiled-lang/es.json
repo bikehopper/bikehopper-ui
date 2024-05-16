@@ -37,6 +37,12 @@
       "value": " antes"
     }
   ],
+  "+xBFGe": [
+    {
+      "type": 0,
+      "value": "FIT"
+    }
+  ],
   "/AzFxf": [
     {
       "type": 0,
@@ -447,6 +453,12 @@
       "value": "paseo"
     }
   ],
+  "DWlYrF": [
+    {
+      "type": 0,
+      "value": "Descargar el archivo fit"
+    }
+  ],
   "DYUDwR": [
     {
       "type": 0,
@@ -813,6 +825,12 @@
       },
       "type": 5,
       "value": "haveStreet"
+    }
+  ],
+  "R90dWv": [
+    {
+      "type": 0,
+      "value": "Descargar"
     }
   ],
   "RRZB26": [
@@ -1229,6 +1247,12 @@
     {
       "type": 0,
       "value": ")"
+    }
+  ],
+  "nSPIt1": [
+    {
+      "type": 0,
+      "value": "Presiona aquí para descargar el archivo FIT."
     }
   ],
   "nXDFzI": [
