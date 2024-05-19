@@ -188,7 +188,6 @@ export function fetchRoute(
         ],
         arriveBy,
         earliestDepartureTime: initialTime,
-        optimize: true,
         pointsEncoded: false,
         details: ['cycleway', 'road_class', 'street_name'],
         blockRouteTypes,
