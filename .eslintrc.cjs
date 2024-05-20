@@ -27,6 +27,7 @@ module.exports = {
     'react/jsx-key': 'warn',
     'no-empty': ['warn', { allowEmptyCatch: true }],
     'no-constant-condition': 'warn',
+    'require-await': 'warn',
   },
   overrides: [
     {

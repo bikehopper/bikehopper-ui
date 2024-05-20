@@ -485,7 +485,7 @@ export function changeLocationTextInput(startOrEnd, value) {
       value,
     });
 
-    dispatch(
+    await dispatch(
       geocodeTypedLocation(value, startOrEnd, { fromTextAutocomplete: true }),
     );
   };
@@ -500,7 +500,7 @@ export function selectGeocodedLocation(startOrEnd, point, fromInputText) {
       fromInputText,
     });
 
-    dispatch(locationsSubmitted());
+    await dispatch(locationsSubmitted());
   };
 }
 
@@ -511,7 +511,7 @@ export function selectCurrentLocation(startOrEnd) {
       startOrEnd,
     });
 
-    dispatch(locationsSubmitted());
+    await dispatch(locationsSubmitted());
   };
 }
 
@@ -535,7 +535,7 @@ export function swapLocations() {
       type: 'locations_swapped',
     });
 
-    dispatch(locationsSubmitted());
+    await dispatch(locationsSubmitted());
   };
 }
 
@@ -550,7 +550,7 @@ export function departureChanged(departureType, initialTime) {
     });
 
     // If we have a location, fetch a route.
-    dispatch(locationsSubmitted());
+    await dispatch(locationsSubmitted());
   };
 }
 
@@ -562,7 +562,7 @@ export function changeConnectingModes(newConnectingModes) {
     });
 
     // If we have a location, fetch a route.
-    dispatch(locationsSubmitted());
+    await dispatch(locationsSubmitted());
   };
 }
 
