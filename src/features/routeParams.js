@@ -409,7 +409,17 @@ export function locationSelectedOnMap(startOrEnd, coords) {
       // Potentially geolocate user for start point
       if (start?.source === LocationSourceType.UserGeolocation) {
         await dispatch(geolocate());
-        const { lng, lat } = getState().geolocation;
+
+        const stateAfterGeolocate = getState();
+        if (
+          !stateAfterGeolocate.start ||
+          stateAfterGeolocate.start.source !==
+            LocationSourceType.UserGeolocation
+        ) {
+          // While geolocating, a different start point was selected.
+          return;
+        }
+        const { lng, lat } = stateAfterGeolocate.geolocation;
         if (lng == null || lat == null) return;
 
         start = {
