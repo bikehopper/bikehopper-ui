@@ -28,6 +28,7 @@ module.exports = {
     'no-empty': ['warn', { allowEmptyCatch: true }],
     'no-constant-condition': 'warn',
     'require-await': 'warn',
+    'no-undef': 'off', // handled by TypeScript
   },
   overrides: [
     {

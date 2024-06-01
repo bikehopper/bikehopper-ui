@@ -1,8 +1,19 @@
+import type { Action } from 'redux';
+import type { BikeHopperAction, Dispatch, GetState } from '../store';
+
 import produce from 'immer';
 import getCurrentPosition from '../lib/getCurrentPosition';
 import { AlertSeverity } from './alerts';
 
-const DEFAULT_STATE = {
+type GeolocationState = {
+  lat: number | null;
+  lng: number | null;
+  accuracy: number | null;
+  timestamp: number | null;
+  geolocationInProgress: boolean;
+};
+
+const DEFAULT_STATE: GeolocationState = {
   lat: null,
   lng: null,
   accuracy: null,
@@ -12,7 +23,10 @@ const DEFAULT_STATE = {
   geolocationInProgress: false,
 };
 
-export function geolocationReducer(state = DEFAULT_STATE, action) {
+export function geolocationReducer(
+  state = DEFAULT_STATE,
+  action: BikeHopperAction,
+): GeolocationState {
   switch (action.type) {
     case 'geolocate_attempted':
       return produce(state, (draft) => {
@@ -37,7 +51,22 @@ export function geolocationReducer(state = DEFAULT_STATE, action) {
 
 // Actions
 
-export function geolocated(coords, timestamp) {
+export type GeolocatedAction = Action<'geolocated'> & {
+  coords: {
+    latitude: number;
+    longitude: number;
+    accuracy: number;
+    altitude: number | null;
+    altitudeAccuracy: number | null;
+    heading: number | null;
+    speed: number | null;
+  };
+  timestamp: number;
+};
+export function geolocated(
+  coords: GeolocationCoordinates,
+  timestamp: number,
+): GeolocatedAction {
   return {
     type: 'geolocated',
     // we have to explicitly copy everything out of the GeolocationCoordinates;
@@ -58,8 +87,13 @@ export function geolocated(coords, timestamp) {
 const MAX_AGE_MS = 30000;
 const TIMEOUT_MS = 15000;
 
+export type GeolocateAttemptedAction = Action<'geolocate_attempted'>;
+export type GeolocateFailedAction = Action<'geolocate_failed'> & {
+  code: number | null;
+};
+
 export function geolocate() {
-  return async function geolocateThunk(dispatch, getState) {
+  return async function geolocateThunk(dispatch: Dispatch, getState: GetState) {
     dispatch({ type: 'geolocate_attempted' });
 
     let pos;
@@ -104,3 +138,8 @@ export function geolocate() {
     dispatch(geolocated(pos.coords, pos.timestamp));
   };
 }
+
+export type GeolocationAction =
+  | GeolocateAttemptedAction
+  | GeolocatedAction
+  | GeolocateFailedAction;

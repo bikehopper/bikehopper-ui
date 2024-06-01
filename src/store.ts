@@ -4,6 +4,7 @@ import { alertsReducer } from './features/alerts';
 import type { ActionAlertMixin, AlertAction } from './features/alerts';
 import { geocodingReducer } from './features/geocoding';
 import { geolocationReducer } from './features/geolocation';
+import type { GeolocationAction } from './features/geolocation';
 import type { MiscAction } from './features/misc';
 import { routeParamsReducer } from './features/routeParams';
 import { routesReducer } from './features/routes';
@@ -37,9 +38,17 @@ const store = createStore(
   ),
 );
 
+export type Dispatch = typeof store.dispatch;
+export type GetState = typeof store.getState;
+
 store.dispatch(initFromStorage());
 
-export type BikeHopperAction = (ViewportAction | AlertAction | MiscAction) &
+export type BikeHopperAction = (
+  | AlertAction
+  | GeolocationAction
+  | MiscAction
+  | ViewportAction
+) &
   ActionAlertMixin;
 
 export default store;
