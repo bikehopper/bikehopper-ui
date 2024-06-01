@@ -1,6 +1,7 @@
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import { alertsReducer } from './features/alerts';
+import type { ActionAlertMixin, AlertAction } from './features/alerts';
 import { geocodingReducer } from './features/geocoding';
 import { geolocationReducer } from './features/geolocation';
 import { routeParamsReducer } from './features/routeParams';
@@ -37,6 +38,7 @@ const store = createStore(
 
 store.dispatch(initFromStorage());
 
-export type BikeHopperAction = ViewportAction;
+export type BikeHopperAction = (ViewportAction | AlertAction) &
+  ActionAlertMixin;
 
 export default store;

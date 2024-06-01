@@ -1,9 +1,28 @@
-export const AlertSeverity = {
-  WARNING: 'warning',
-  ERROR: 'error',
+import type { Action } from 'redux';
+import type { BikeHopperAction } from '../store';
+
+export enum AlertSeverity {
+  // eslint-disable-next-line no-unused-vars
+  WARNING = 'warning',
+  // eslint-disable-next-line no-unused-vars
+  ERROR = 'error',
+}
+
+type Alert = {
+  message: string;
+  severity: AlertSeverity;
+  id: number;
 };
 
-const DEFAULT_STATE = {
+export type ActionAlertMixin = {
+  alert?: Alert;
+};
+
+type AlertState = {
+  alerts: Array<Alert>;
+};
+
+const DEFAULT_STATE: AlertState = {
   // Each alert: {
   //   severity: one of AlertSeverity constants,
   //   message: string,
@@ -12,7 +31,7 @@ const DEFAULT_STATE = {
   alerts: [],
 };
 
-export function alertsReducer(state = DEFAULT_STATE, action) {
+export function alertsReducer(state = DEFAULT_STATE, action: BikeHopperAction) {
   switch (action.type) {
     case 'alert_dismissed':
       return {
@@ -29,7 +48,11 @@ export function alertsReducer(state = DEFAULT_STATE, action) {
   }
 }
 
-function _addAlert(state, severity = AlertSeverity.ERROR, message) {
+function _addAlert(
+  state: AlertState,
+  severity = AlertSeverity.ERROR,
+  message: string,
+) {
   return {
     ...state,
     alerts: [_createAlert(severity, message), ...state.alerts],
@@ -38,7 +61,7 @@ function _addAlert(state, severity = AlertSeverity.ERROR, message) {
 
 let _alertNonce = 90000; // For assigning a unique ID to each alert in a session
 
-function _createAlert(severity, message) {
+function _createAlert(severity: AlertSeverity, message: string) {
   return {
     severity,
     message,
@@ -48,9 +71,12 @@ function _createAlert(severity, message) {
 
 // Actions
 
-export function dismissAlert(id) {
+export type DismissAlertAction = Action<'alert_dismissed'> & { id: number };
+export function dismissAlert(id: number): DismissAlertAction {
   return {
     type: 'alert_dismissed',
     id,
   };
 }
+
+export type AlertAction = DismissAlertAction;
