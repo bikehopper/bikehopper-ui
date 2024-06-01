@@ -1,3 +1,8 @@
+import type { Action, Middleware } from 'redux';
+
+import type { RootState } from '../store';
+import type { OsmId, PhotonOsmHash, RecentlyUsedItem } from './geocoding';
+
 /*
  * Middleware for syncing stuff to LocalStorage to persist across sessions, and
  * an initialization routine to load the stuff.
@@ -5,8 +10,8 @@
 
 let _warned = false;
 
-export function storageMiddleware(store) {
-  return (next) => (action) => {
+export const storageMiddleware: Middleware<{}, RootState> =
+  (store) => (next) => (action) => {
     const before = store.getState();
     next(action);
     const after = store.getState();
@@ -28,10 +33,15 @@ export function storageMiddleware(store) {
       }
     }
   };
-}
+
+type HydrateFromLocalStorageAction = Action<'hydrate_from_localstorage'> & {
+  geocodingOsmCache: Record<OsmId, PhotonOsmHash>;
+  geocodingRecentlyUsed: RecentlyUsedItem[];
+};
+export type StorageAction = HydrateFromLocalStorageAction;
 
 // This returns an action, which should be dispatched.
-export function initFromStorage() {
+export function initFromStorage(): HydrateFromLocalStorageAction {
   let recentlyUsedRaw = [];
   try {
     const json = localStorage.getItem('ru');
@@ -40,8 +50,8 @@ export function initFromStorage() {
     if (import.meta.env.DEV) console.warn("Can't load from localstorage:", e);
   }
 
-  const osmCache = {};
-  const recentlyUsedCooked = [];
+  const osmCache: Record<OsmId, PhotonOsmHash> = {};
+  const recentlyUsedCooked: RecentlyUsedItem[] = [];
 
   for (const entry of recentlyUsedRaw) {
     // Do some basic validation before using them

@@ -23,7 +23,7 @@ export type OsmCacheItem = {
 };
 
 // FIXME: put the rest of the Photon fields in this definition
-type PhotonOsmHash = GeoJSON.Feature<
+export type PhotonOsmHash = GeoJSON.Feature<
   GeoJSON.Point,
   {
     osm_type: string;
@@ -40,7 +40,7 @@ export type GeocodingState = {
   recentlyUsed: RecentlyUsedItem[];
 };
 
-type RecentlyUsedItem = {
+export type RecentlyUsedItem = {
   id: OsmId; // should be in osmCache
   lastUsed: number; // time of last use as returned from Date.now()
 };

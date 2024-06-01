@@ -11,6 +11,7 @@ import type { MiscAction } from './features/misc';
 import { routeParamsReducer } from './features/routeParams';
 import { routesReducer } from './features/routes';
 import { storageMiddleware, initFromStorage } from './features/storage';
+import type { StorageAction } from './features/storage';
 import { viewportReducer } from './features/viewport';
 import type { ViewportAction } from './features/viewport';
 import urlMiddleware from './lib/urlMiddleware';
@@ -42,6 +43,7 @@ const store = createStore(
 
 export type Dispatch = typeof store.dispatch;
 export type GetState = typeof store.getState;
+export type RootState = ReturnType<typeof rootReducer>;
 
 store.dispatch(initFromStorage());
 
@@ -50,12 +52,9 @@ export type BikeHopperAction = (
   | GeocodingAction
   | GeolocationAction
   | MiscAction
+  | StorageAction
   | ViewportAction
   // TODO fix fake types below
-  | (Action<'hydrate_from_localstorage'> & {
-      geocodingOsmCache: any;
-      geocodingRecentlyUsed: any;
-    })
   | (Action<'locations_set'> & Record<string, any>)
   | (Action<'geocoded_location_selected'> & Record<string, any>)
 ) &
