@@ -1,8 +1,10 @@
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
+import type { Action } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import { alertsReducer } from './features/alerts';
 import type { ActionAlertMixin, AlertAction } from './features/alerts';
 import { geocodingReducer } from './features/geocoding';
+import type { GeocodingAction } from './features/geocoding';
 import { geolocationReducer } from './features/geolocation';
 import type { GeolocationAction } from './features/geolocation';
 import type { MiscAction } from './features/misc';
@@ -45,9 +47,17 @@ store.dispatch(initFromStorage());
 
 export type BikeHopperAction = (
   | AlertAction
+  | GeocodingAction
   | GeolocationAction
   | MiscAction
   | ViewportAction
+  // TODO fix fake types below
+  | (Action<'hydrate_from_localstorage'> & {
+      geocodingOsmCache: any;
+      geocodingRecentlyUsed: any;
+    })
+  | (Action<'locations_set'> & Record<string, any>)
+  | (Action<'geocoded_location_selected'> & Record<string, any>)
 ) &
   ActionAlertMixin;
 

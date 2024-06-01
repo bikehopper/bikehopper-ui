@@ -1,7 +1,9 @@
 import produce from 'immer';
 import uniqBy from 'lodash/uniqBy';
+import type { Action } from 'redux';
 import * as BikehopperClient from '../lib/BikehopperClient';
 import delay from '../lib/delay';
+import type { BikeHopperAction, Dispatch, GetState } from '../store';
 
 const GEOCODE_RESULT_LIMIT = 8;
 
@@ -12,29 +14,47 @@ const RECENTLY_USED_MAX_AGE_MS = (7 * 24 + 6) * 60 * 60 * 1000;
 // note: all uses of OSM IDs as keys should be prefixed with one character
 // representing the type N for node, R for relation, W for way.
 // for example osm_id 100 and osm_type N => "N100"
+export type OsmId = string;
 
-const DEFAULT_STATE = {
-  // maps location strings to {
-  //    status: 'fetching' | 'failed' | 'succeeded',
-  //    time: /* time as returned from Date.now() */,
-  //    osmIds: OSM type + ID strings,
-  // }
-  // all location strings are prefixed with '@' to avoid collisions w built-in attributes.
-  // if status is 'fetching', osmIds may still be present but stale, from an older fetch.
+export type OsmCacheItem = {
+  status: 'fetching' | 'failed' | 'succeeded';
+  time: number; // as returned from Date.now()
+  osmIds?: OsmId[];
+};
+
+// FIXME: put the rest of the Photon fields in this definition
+type PhotonOsmHash = GeoJSON.Feature<
+  GeoJSON.Point,
+  {
+    osm_type: string;
+    osm_id: string;
+  }
+>;
+
+export type GeocodingState = {
+  // all location strings are prefixed with '@' to avoid collisions w built-in
+  // attributes. If status is 'fetching', osmIds may still be present but
+  // stale, from an older fetch.
+  typeaheadCache: Record<string, OsmCacheItem>;
+  osmCache: Record<OsmId, PhotonOsmHash>;
+  recentlyUsed: RecentlyUsedItem[];
+};
+
+type RecentlyUsedItem = {
+  id: OsmId; // should be in osmCache
+  lastUsed: number; // time of last use as returned from Date.now()
+};
+
+const DEFAULT_STATE: GeocodingState = {
   typeaheadCache: {},
-
-  // maps OSM types + IDs (stringified) to Photon GeoJSON hashes
   osmCache: {},
-
-  // recently used locations
-  // each record contains {
-  //    id: /* OSM type + ID, should be in osmCache */,
-  //    lastUsed: /* time of last use as returned from Date.now() */
-  // }
   recentlyUsed: [],
 };
 
-export function geocodingReducer(state = DEFAULT_STATE, action) {
+export function geocodingReducer(
+  state = DEFAULT_STATE,
+  action: BikeHopperAction,
+): GeocodingState {
   switch (action.type) {
     case 'hydrate_from_localstorage':
       return produce(state, (draft) => {
@@ -68,7 +88,7 @@ export function geocodingReducer(state = DEFAULT_STATE, action) {
       });
     case 'geocode_succeeded':
       return produce(state, (draft) => {
-        const osmIds = [];
+        const osmIds: OsmId[] = [];
         // TODO: Denormalize and somehow save both osm_key/osm_value pairs when we get dupes
         const dedupedFeatures = uniqBy(action.features, 'properties.osm_id');
 
@@ -120,13 +140,37 @@ export function geocodingReducer(state = DEFAULT_STATE, action) {
 // Actions
 
 // Only for use in the action creator below, for debouncing.
-const _LOCATION_TYPED_ACTION_LAST_TEXT_FOR_KEY = {};
+const _LOCATION_TYPED_ACTION_LAST_TEXT_FOR_KEY: Record<string, string> = {};
+
+type GeocodeAttemptedAction = Action<'geocode_attempted'> & {
+  text: string;
+  time: number;
+};
+
+type GeocodeSucceededAction = Action<'geocode_succeeded'> & {
+  text: string;
+  time: number;
+  features: PhotonOsmHash[];
+};
+
+type GeocodeFailedAction = Action<'geocode_failed'> & {
+  text: string;
+  time: number;
+  failureType: string;
+};
 
 // The user has typed some text representing a location (which may be
 // incomplete). That's our cue to try geocoding it. The key is used to
 // debounce, e.g. 'start' vs 'end' location.
-export function geocodeTypedLocation(text, key, { fromTextAutocomplete } = {}) {
-  return async function geocodeTypedLocationThunk(dispatch, getState) {
+export function geocodeTypedLocation(
+  text: string,
+  key: string,
+  { fromTextAutocomplete }: { fromTextAutocomplete?: boolean } = {},
+) {
+  return async function geocodeTypedLocationThunk(
+    dispatch: Dispatch,
+    getState: GetState,
+  ) {
     text = text.trim();
     if (text === '') return;
 
@@ -220,7 +264,13 @@ export function geocodeTypedLocation(text, key, { fromTextAutocomplete } = {}) {
   };
 }
 
-export function removeRecentlyUsedLocation(id) {
+type RecentlyUsedLocationRemovedAction =
+  Action<'recently_used_location_removed'> & {
+    id: OsmId;
+  };
+export function removeRecentlyUsedLocation(
+  id: OsmId,
+): RecentlyUsedLocationRemovedAction {
   return {
     type: 'recently_used_location_removed',
     id,
@@ -228,7 +278,10 @@ export function removeRecentlyUsedLocation(id) {
 }
 
 // update the recently used list with zero or more (in practice 0-2) just used OSM IDs
-function _updateRecentlyUsed(recentlyUsed, justUsedIds) {
+function _updateRecentlyUsed(
+  recentlyUsed: RecentlyUsedItem[],
+  justUsedIds: OsmId[],
+): RecentlyUsedItem[] {
   const now = Date.now();
   return [
     ...justUsedIds.map((id) => ({
@@ -242,3 +295,9 @@ function _updateRecentlyUsed(recentlyUsed, justUsedIds) {
     ),
   ].slice(0, RECENTLY_USED_LIMIT);
 }
+
+export type GeocodingAction =
+  | GeocodeAttemptedAction
+  | GeocodeFailedAction
+  | GeocodeSucceededAction
+  | RecentlyUsedLocationRemovedAction;

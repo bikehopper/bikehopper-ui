@@ -41,18 +41,18 @@ export async function fetchRoute({
   signal,
   blockRouteTypes,
 }: {
-  profile: string,
-  connectingProfile: string,
-  arriveBy: boolean,
-  earliestDepartureTime?: number,
-  optimize: boolean,
-  pointsEncoded: boolean,
-  details?: string[],
-  points: GeoJSON.Position[],
-  signal?: AbortSignal,
-  blockRouteTypes?: GtfsRouteType[],
+  profile: string;
+  connectingProfile: string;
+  arriveBy: boolean;
+  earliestDepartureTime?: number;
+  optimize: boolean;
+  pointsEncoded: boolean;
+  details?: string[];
+  points: GeoJSON.Position[];
+  signal?: AbortSignal;
+  blockRouteTypes?: GtfsRouteType[];
 }) {
-  const isDebugMode = !!((window as any).debug);
+  const isDebugMode = !!(window as any).debug;
 
   const params = new URLSearchParams({
     locale: 'en-US',
@@ -137,15 +137,15 @@ export async function geocode(
     locationBias = 0.1,
     signal,
   }: {
-    limit: number,
-    latitude: number,
-    longitude: number,
-    zoom: number,
-    lang: string,
-    locationBias: number,
-    signal?: AbortSignal,
+    limit?: number;
+    latitude: number;
+    longitude: number;
+    zoom?: number;
+    lang?: string;
+    locationBias?: number;
+    signal?: AbortSignal;
   },
-) {
+): Promise<GeoJSON.GeoJSON> {
   let url;
   if (import.meta.env.VITE_USE_PUBLIC_NOMINATIM) {
     // Note: This flag is for demo/dev purposes only and will not produce as high quality
