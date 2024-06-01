@@ -412,8 +412,8 @@ export function locationSelectedOnMap(startOrEnd, coords) {
 
         const stateAfterGeolocate = getState();
         if (
-          !stateAfterGeolocate.start ||
-          stateAfterGeolocate.start.source !==
+          !stateAfterGeolocate.routeParams.start ||
+          stateAfterGeolocate.routeParams.start.source !==
             LocationSourceType.UserGeolocation
         ) {
           // While geolocating, a different start point was selected.
