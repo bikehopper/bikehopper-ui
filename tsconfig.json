@@ -3,7 +3,7 @@
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "allowJs": true,
-    "target": "es6",
+    "target": "es2020",
     "module": "ESNext",
     "jsx": "preserve",
     "moduleResolution": "Bundler",
