@@ -18,6 +18,6 @@ export {
   TRANSIT_DATA_ACKNOWLEDGEMENT,
 };
 
-export function getAgencyDisplayName(gtfsAgencyName) {
+export function getAgencyDisplayName(gtfsAgencyName: string): string {
   return AGENCY_COMMON_NAMES[gtfsAgencyName] || gtfsAgencyName;
 }

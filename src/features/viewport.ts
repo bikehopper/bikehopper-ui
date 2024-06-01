@@ -9,12 +9,15 @@
 // In other words, just to make it super clear: the map itself never moves
 // around in (direct) response to the state in this reducer, only vice versa.
 
+import type { Action } from 'redux';
+import type { ViewState } from 'react-map-gl';
 import * as geoViewport from '@placemarkio/geo-viewport';
 import { DEFAULT_VIEWPORT_BOUNDS } from '../lib/region';
+import type { BikeHopperAction } from '../store';
 
 const MAPBOX_VT_SIZE = 512;
 
-function viewportForScreen(screenDims) {
+function viewportForScreen(screenDims: [number, number]) {
   const viewport = geoViewport.viewport(DEFAULT_VIEWPORT_BOUNDS, screenDims, {
     minzoom: 0,
     maxzoom: 14,
@@ -36,7 +39,10 @@ export const DEFAULT_VIEWPORT = viewportForScreen([
 
 const DEFAULT_STATE = { ...DEFAULT_VIEWPORT };
 
-export function viewportReducer(state = DEFAULT_STATE, action) {
+export function viewportReducer(
+  state = DEFAULT_STATE,
+  action: BikeHopperAction,
+) {
   switch (action.type) {
     case 'map_moved':
       return {
@@ -54,9 +60,12 @@ export function viewportReducer(state = DEFAULT_STATE, action) {
 
 // Actions
 
-export function mapMoved(newViewport) {
+export type MapMovedAction = Action<'map_moved'> & ViewState;
+export function mapMoved(newViewport: ViewState): MapMovedAction {
   return {
     type: 'map_moved',
     ...newViewport,
   };
 }
+
+export type ViewportAction = MapMovedAction;

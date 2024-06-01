@@ -7,6 +7,7 @@ import { routeParamsReducer } from './features/routeParams';
 import { routesReducer } from './features/routes';
 import { storageMiddleware, initFromStorage } from './features/storage';
 import { viewportReducer } from './features/viewport';
+import type { ViewportAction } from './features/viewport';
 import urlMiddleware from './lib/urlMiddleware';
 
 const rootReducer = combineReducers({
@@ -18,6 +19,13 @@ const rootReducer = combineReducers({
   viewport: viewportReducer,
 });
 
+declare global {
+  // eslint-disable-next-line no-unused-vars
+  interface Window {
+    __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
+  }
+}
+
 const enhancedCompose = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore(
@@ -28,5 +36,7 @@ const store = createStore(
 );
 
 store.dispatch(initFromStorage());
+
+export type BikeHopperAction = ViewportAction;
 
 export default store;
