@@ -12,17 +12,22 @@ function getApiPath() {
 const POINT_PRECISION = 5;
 
 export class BikehopperClientError extends Error {
-  constructor(response) {
+  code: number;
+  json: any;
+
+  constructor(response: Response) {
     super(response.statusText);
     let json;
     try {
       json = response.json();
     } catch (e) {}
-    this.code = response.code;
+    this.code = response.status;
     this.name = 'BikehopperClientError';
     this.json = json;
   }
 }
+
+type GtfsRouteType = number;
 
 export async function fetchRoute({
   profile = 'pt',
@@ -35,29 +40,42 @@ export async function fetchRoute({
   points,
   signal,
   blockRouteTypes,
+}: {
+  profile: string,
+  connectingProfile: string,
+  arriveBy: boolean,
+  earliestDepartureTime?: number,
+  optimize: boolean,
+  pointsEncoded: boolean,
+  details?: string[],
+  points: GeoJSON.Position[],
+  signal?: AbortSignal,
+  blockRouteTypes?: GtfsRouteType[],
 }) {
+  const isDebugMode = !!((window as any).debug);
+
   const params = new URLSearchParams({
     locale: 'en-US',
-    elevation: true,
-    include_edges: window.debug, // TODO: pipe debug through the whole app
-    useMiles: false,
+    elevation: 'true',
+    include_edges: String(isDebugMode), // TODO: pipe debug through the whole app
+    useMiles: 'false',
     layer: 'OpenStreetMap',
     profile,
-    optimize,
-    pointsEncoded,
+    optimize: String(optimize),
+    pointsEncoded: String(pointsEncoded),
     'pt.earliest_departure_time': earliestDepartureTime
       ? new Date(earliestDepartureTime).toISOString()
       : new Date().toISOString(),
     'pt.connecting_profile': connectingProfile,
-    'pt.arrive_by': arriveBy,
+    'pt.arrive_by': String(arriveBy),
   });
   for (const detail of details || []) params.append('details', detail);
   for (const routeType of blockRouteTypes || [])
-    params.append('pt.block_route_types', routeType);
+    params.append('pt.block_route_types', String(routeType));
   for (const pt of points)
     params.append(
       'point',
-      pt.map((coord) => coord.toFixed(POINT_PRECISION)),
+      String(pt.map((coord) => coord.toFixed(POINT_PRECISION))),
     );
 
   let graphHopperPath = getApiPath() + '/api/v1/route';
@@ -76,7 +94,9 @@ export async function fetchRoute({
   return parse(await route.json());
 }
 
-function parse(route) {
+type FixmeAddType = any;
+
+function parse(route: FixmeAddType) {
   for (const path of route?.paths || []) {
     for (const leg of path?.legs || []) {
       if (leg.type === 'pt' && leg.route_color)
@@ -91,7 +111,7 @@ function parse(route) {
       // mark bike legs that have steps
       if (leg.type === 'bike2') {
         leg.has_steps = leg.details?.road_class?.some(
-          ([_start, _end, roadClass]) => roadClass === 'steps',
+          ([_start, _end, roadClass]: FixmeAddType) => roadClass === 'steps',
         );
       }
     }
@@ -107,15 +127,23 @@ let _lastNominatimReqTime = 0;
 const NOMINATIM_RATE_LIMIT = 3000;
 
 export async function geocode(
-  placeString,
+  placeString: string,
   {
     limit = 1,
     latitude,
     longitude,
     zoom = 12,
     lang = 'en',
-    locationBias = '0.1',
+    locationBias = 0.1,
     signal,
+  }: {
+    limit: number,
+    latitude: number,
+    longitude: number,
+    zoom: number,
+    lang: string,
+    locationBias: number,
+    signal?: AbortSignal,
   },
 ) {
   let url;
