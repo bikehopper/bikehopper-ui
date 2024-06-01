@@ -9,7 +9,8 @@
     "moduleResolution": "Bundler",
     "noImplicitAny": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["vite/client"]
   },
   "include": ["./src/**/*"]
 }
