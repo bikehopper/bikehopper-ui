@@ -19,4 +19,4 @@ env:
 jobs:
   call-workflow-passing-data:
     uses: bikehopper/github-workflows/.github/workflows/build-publish-docker-image.yml@main
-  secrets: inherit
+    secrets: inherit
