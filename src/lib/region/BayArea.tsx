@@ -21,7 +21,7 @@ export const DEFAULT_VIEWPORT_BOUNDS: [number, number, number, number] = [
   -122.597652, 37.330751, -121.669687, 37.858476,
 ];
 
-export const AGENCY_COMMON_NAMES: { [key: string]: string } = {
+export const AGENCY_COMMON_NAMES: Record<string, string> = {
   'AC TRANSIT': 'AC Transit',
   'Bay Area Rapid Transit': 'BART',
   'San Francisco Municipal Transportation Agency': 'Muni',

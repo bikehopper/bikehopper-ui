@@ -17,7 +17,15 @@ import type { BikeHopperAction } from '../store';
 
 const MAPBOX_VT_SIZE = 512;
 
-function viewportForScreen(screenDims: [number, number]) {
+type ViewportInfo = {
+  latitude: number;
+  longitude: number;
+  zoom: number;
+  bearing: number;
+  pitch: number;
+};
+
+function viewportForScreen(screenDims: [number, number]): ViewportInfo {
   const viewport = geoViewport.viewport(DEFAULT_VIEWPORT_BOUNDS, screenDims, {
     minzoom: 0,
     maxzoom: 14,
@@ -37,12 +45,12 @@ export const DEFAULT_VIEWPORT = viewportForScreen([
   window.innerHeight,
 ]);
 
-const DEFAULT_STATE = { ...DEFAULT_VIEWPORT };
+const DEFAULT_STATE: ViewportInfo = { ...DEFAULT_VIEWPORT };
 
 export function viewportReducer(
   state = DEFAULT_STATE,
   action: BikeHopperAction,
-) {
+): ViewportInfo {
   switch (action.type) {
     case 'map_moved':
       return {
