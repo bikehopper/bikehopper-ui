@@ -1,7 +1,9 @@
+import type { MouseEvent, TouchEvent } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import classnames from 'classnames';
 import { AlertSeverity, dismissAlert } from '../features/alerts';
+import type { RootState } from '../store';
 import Icon from './primitives/Icon';
 
 import Cancel from 'iconoir/icons/xmark.svg?react';
@@ -9,9 +11,9 @@ import WarningCircle from 'iconoir/icons/warning-circle.svg?react';
 import WarningTriangle from 'iconoir/icons/warning-triangle.svg?react';
 import './AlertBar.css';
 
-export default function AlertBar(props) {
+export default function AlertBar() {
   // Only display newest alert if multiple, for now
-  const { severity, message, id } = useSelector((state) => {
+  const { severity, message, id } = useSelector((state: RootState) => {
     return (
       state.alerts.alerts[0] || { severity: null, message: null, id: null }
     );
@@ -22,7 +24,7 @@ export default function AlertBar(props) {
 
   if (!message) return null;
 
-  const handleDismissClick = (evt) => {
+  const handleDismissClick = (evt: TouchEvent | MouseEvent) => {
     evt.preventDefault();
     dispatch(dismissAlert(id));
   };
