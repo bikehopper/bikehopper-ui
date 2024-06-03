@@ -2,7 +2,7 @@ import { FormattedMessage } from 'react-intl';
 
 /* eslint-disable react-refresh/only-export-components */
 
-export function SupportedRegionText(props) {
+export function SupportedRegionText() {
   return (
     <span>
       <FormattedMessage
@@ -17,11 +17,11 @@ export function SupportedRegionText(props) {
   );
 }
 
-export const DEFAULT_VIEWPORT_BOUNDS = [
+export const DEFAULT_VIEWPORT_BOUNDS: [number, number, number, number] = [
   -122.597652, 37.330751, -121.669687, 37.858476,
 ];
 
-export const AGENCY_COMMON_NAMES = {
+export const AGENCY_COMMON_NAMES: Record<string, string> = {
   'AC TRANSIT': 'AC Transit',
   'Bay Area Rapid Transit': 'BART',
   'San Francisco Municipal Transportation Agency': 'Muni',

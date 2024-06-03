@@ -23,3 +23,6 @@ const InstructionSigns = {
 };
 
 export default InstructionSigns;
+
+export type InstructionSign =
+  (typeof InstructionSigns)[keyof typeof InstructionSigns];

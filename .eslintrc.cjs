@@ -22,12 +22,14 @@ module.exports = {
     'formatjs/no-id': 'error',
     'formatjs/no-literal-string-in-jsx': 'warn',
     'react-refresh/only-export-components': 'warn',
-    'no-unused-vars': ['warn', { args: 'none' }],
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': ['warn', { args: 'none' }],
     'react/prop-types': 'off',
     'react/jsx-key': 'warn',
     'no-empty': ['warn', { allowEmptyCatch: true }],
     'no-constant-condition': 'warn',
     'require-await': 'warn',
+    'no-undef': 'off', // handled by TypeScript
   },
   overrides: [
     {

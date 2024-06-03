@@ -1,3 +1,5 @@
+import type { IntlShape } from 'react-intl';
+
 // The meaning of the route "route_type" enum in GTFS.
 // See: https://gtfs.org/schedule/reference/#routestxt
 
@@ -16,14 +18,16 @@ export const MODES = {
   AERIAL_TRAM_SUSPENDED_CABLE_CAR: 6,
   FUNICULAR: 7,
 };
+export type Mode = (typeof MODES)[keyof typeof MODES];
 
 export const CATEGORIES = {
   TRAINS: 'trains',
   BUSES: 'buses',
   FERRIES: 'ferries',
 };
+export type ModeCategory = (typeof CATEGORIES)[keyof typeof CATEGORIES];
 
-export const CATEGORY_TO_MODES = {
+export const CATEGORY_TO_MODES: Record<ModeCategory, Mode[]> = {
   [CATEGORIES.TRAINS]: [
     MODES.TRAM_STREETCAR_LIGHT_RAIL,
     MODES.SUBWAY_METRO,
@@ -37,7 +41,7 @@ export const CATEGORY_TO_MODES = {
   [CATEGORIES.FERRIES]: [MODES.FERRY],
 };
 
-export function getModeLabel(mode, intl) {
+export function getModeLabel(mode: Mode, intl: IntlShape) {
   switch (mode) {
     case MODES.TRAM_STREETCAR_LIGHT_RAIL:
       return intl.formatMessage({

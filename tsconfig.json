@@ -1,14 +1,16 @@
 {
   "compilerOptions": {
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "allowJs": true,
-    "target": "es6",
+    "target": "es2020",
     "module": "ESNext",
     "jsx": "preserve",
     "moduleResolution": "Bundler",
     "noImplicitAny": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["vite/client"]
   },
   "include": ["./src/**/*"]
 }

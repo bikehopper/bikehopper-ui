@@ -1,32 +1,52 @@
 import produce from 'immer';
+import type { Action } from 'redux';
 import * as BikehopperClient from '../lib/BikehopperClient';
+import type { BikeHopperAction, BikeHopperThunkAction } from '../store';
+import type { Mode } from '../lib/TransitModes';
 
-const DEFAULT_STATE = {
-  routes: null,
-  routeStatus: 'none', // one of none/fetching/failed/succeeded
+type RoutesState = {
+  routes: any; // FIXME
+  routeStatus: 'none' | 'fetching' | 'failed' | 'succeeded';
   // If we have routes, then the start and end coords they're for, as [lng, lat]:
-  routeStartCoords: null,
-  routeEndCoords: null,
+  routeStartCoords: GeoJSON.Position | null;
+  routeEndCoords: GeoJSON.Position | null;
   // Index of the selected route. This should always be null if routes is null,
   // and otherwise, 0 <= activeRoute < routes.length
-  activeRoute: null,
+  activeRoute: number | null;
 
   // State specific to an active route.
-  viewingDetails: false, // True if viewing detailed itinerary for the active route
-  viewingStep: null, // Array [leg, step] if viewing a particular step of active route.
+  // True if viewing detailed itinerary for the active route:
+  viewingDetails: boolean;
+  // Array [leg, step] if viewing a particular step of active route:
+  viewingStep: [number, number] | null;
 };
 
-function _coordsEqual(a, b) {
+const DEFAULT_STATE: RoutesState = {
+  routes: null,
+  routeStatus: 'none',
+  routeStartCoords: null,
+  routeEndCoords: null,
+  activeRoute: null,
+  viewingDetails: false,
+  viewingStep: null,
+};
+
+function _coordsEqual(
+  a: number[] | null | undefined,
+  b: number[] | null | undefined,
+) {
   if (!a || !b) return a === b; // handle null input
   return a[0] === b[0] && a[1] === b[1];
 }
 
-export function routesReducer(state = DEFAULT_STATE, action) {
+export function routesReducer(
+  state: RoutesState = DEFAULT_STATE,
+  action: BikeHopperAction,
+): RoutesState {
   switch (action.type) {
     case 'route_cleared':
     case 'route_params_cleared':
     case 'location_dragged': // assume drag is to new location
-    case 'locations_hydrated_from_url':
       return _clearRoutes(state);
     case 'locations_set':
       // clear routes if new start and/or end point differ from the routes we have
@@ -133,7 +153,7 @@ export function routesReducer(state = DEFAULT_STATE, action) {
   }
 }
 
-function _clearRoutes(state) {
+function _clearRoutes(state: RoutesState): RoutesState {
   return produce(state, (draft) => {
     draft.routes =
       draft.routeStartCoords =
@@ -146,23 +166,36 @@ function _clearRoutes(state) {
 
 // Actions
 
-let _routeNonce = 10000000; // For assigning a unique ID to each route fetched in a session
-
 const COORD_EPSILON = 1e-5;
 
-export function fetchRoute(
-  startCoords,
-  endCoords,
-  arriveBy,
-  initialTime,
-  blockRouteTypes,
-) {
-  return async function fetchRouteThunk(dispatch, getState) {
-    if (!startCoords || !endCoords) {
-      dispatch({ type: 'route_cleared' });
-      return;
-    }
+// rarely used. Usually it would be route_params_cleared
+type RouteClearedAction = Action<'route_cleared'>;
 
+type RouteFetchAttemptedAction = Action<'route_fetch_attempted'> & {
+  startCoords: GeoJSON.Position;
+  endCoords: GeoJSON.Position;
+};
+
+type RouteFetchFailedAction = Action<'route_fetch_failed'> & {
+  startCoords: GeoJSON.Position;
+  endCoords: GeoJSON.Position;
+  failureType: string;
+};
+
+type RouteFetchSucceededAction = Action<'route_fetch_succeeded'> & {
+  startCoords: GeoJSON.Position;
+  endCoords: GeoJSON.Position;
+  routes: BikehopperClient.RouteResponsePath[];
+};
+
+export function fetchRoute(
+  startCoords: GeoJSON.Position,
+  endCoords: GeoJSON.Position,
+  arriveBy: boolean,
+  initialTime: number | null,
+  blockRouteTypes: Mode[],
+): BikeHopperThunkAction {
+  return async function fetchRouteThunk(dispatch, getState) {
     if (
       Math.abs(startCoords[0] - endCoords[0]) < COORD_EPSILON &&
       Math.abs(startCoords[1] - endCoords[1]) < COORD_EPSILON
@@ -188,7 +221,6 @@ export function fetchRoute(
         ],
         arriveBy,
         earliestDepartureTime: initialTime,
-        pointsEncoded: false,
         details: ['cycleway', 'road_class', 'street_name'],
         blockRouteTypes,
       });
@@ -228,10 +260,6 @@ export function fetchRoute(
       return;
     }
 
-    for (const path of paths) {
-      path.nonce = ++_routeNonce;
-    }
-
     dispatch({
       type: 'route_fetch_succeeded',
       routes: paths,
@@ -241,19 +269,30 @@ export function fetchRoute(
   };
 }
 
-export function routeClicked(index, source) {
+type RouteClickSource = 'map' | 'list';
+type RouteClickedAction = Action<'route_clicked'> & {
+  index: number;
+  source: RouteClickSource;
+};
+
+export function routeClicked(index: number, source: RouteClickSource) {
   return {
     type: 'route_clicked',
     index,
-    source, // where was it clicked? should be 'map' or 'list'
+    source,
   };
 }
 
+type ItineraryBackClickedAction = Action<'itinerary_back_clicked'>;
 export function itineraryBackClicked() {
   return { type: 'itinerary_back_clicked' };
 }
 
-export function itineraryStepClicked(legIndex, stepIndex) {
+type ItineraryStepClickedAction = Action<'itinerary_step_clicked'> & {
+  leg: number;
+  step: number;
+};
+export function itineraryStepClicked(legIndex: number, stepIndex: number) {
   return {
     type: 'itinerary_step_clicked',
     leg: legIndex,
@@ -261,6 +300,17 @@ export function itineraryStepClicked(legIndex, stepIndex) {
   };
 }
 
+type ItineraryStepBackClickedAction = Action<'itinerary_step_back_clicked'>;
 export function itineraryStepBackClicked() {
   return { type: 'itinerary_step_back_clicked' };
 }
+
+export type RoutesAction =
+  | RouteClearedAction
+  | RouteFetchAttemptedAction
+  | RouteFetchFailedAction
+  | RouteFetchSucceededAction
+  | RouteClickedAction
+  | ItineraryBackClickedAction
+  | ItineraryStepClickedAction
+  | ItineraryStepBackClickedAction;

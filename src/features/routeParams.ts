@@ -1,53 +1,94 @@
 import produce from 'immer';
-import * as turf from '@turf/helpers';
+import type { Action } from 'redux';
+// @ts-ignore
+import { point as turfPoint } from '@turf/helpers';
 import describePlace from '../lib/describePlace';
 import * as TransitModes from '../lib/TransitModes';
+import type { ModeCategory } from '../lib/TransitModes';
 import { geocodeTypedLocation } from './geocoding';
+import type { PhotonOsmHash } from '../lib/BikehopperClient';
 import { geolocate } from './geolocation';
 import { fetchRoute } from './routes';
+import type { BikeHopperAction, BikeHopperThunkAction } from '../store';
 
-export const LocationSourceType = {
-  Geocoded: 'geocoded',
-  SelectedOnMap: 'selected_on_map', // marker drag or long-press/right-click
-  UserGeolocation: 'user_geolocation',
-  UrlWithString: 'url_with_string',
-  UrlWithoutString: 'url_without_string',
-};
+export enum LocationSourceType {
+  Geocoded = 'geocoded',
+  SelectedOnMap = 'selected_on_map', // marker drag or long-press/right-click
+  UserGeolocation = 'user_geolocation',
+  UrlWithString = 'url_with_string',
+  UrlWithoutString = 'url_without_string',
+}
 
-const DEFAULT_STATE = {
-  // When set, start and end have the format: {
-  //   point: a geoJSON point (can be null if source === UserGeolocation),
-  //   source: a LocationSourceType,
-  //   fromInputText: the source input text (if source === Geocoded or UrlWithString),
-  // }
-  start: null,
-  end: null,
+type Location =
+  | {
+      source: LocationSourceType.UserGeolocation;
+      point: GeoJSON.Feature<GeoJSON.Point> | null;
+    }
+  | {
+      source: LocationSourceType.Geocoded;
+      point: PhotonOsmHash;
+      fromInputText: string;
+    }
+  | {
+      source: LocationSourceType.UrlWithString;
+      point: GeoJSON.Feature<GeoJSON.Point>;
+      fromInputText: string;
+    }
+  | {
+      source:
+        | LocationSourceType.SelectedOnMap
+        | LocationSourceType.UrlWithoutString;
+      point: GeoJSON.Feature<GeoJSON.Point>;
+    };
+
+type StartOrEnd = 'start' | 'end';
+
+type RouteParamsState = {
+  start: Location | null;
+  end: Location | null;
 
   // Transient input state. Which location input ('start', 'end' or null) is
   // currently being edited, and what text is in the box (which may not yet be
   // reflected in the above state)? Note: if a location input is focused, it
   // should be reflected in editingLocation, but editingLocation being set may
   // not necessarily mean a location input is focused.
+  editingLocation: StartOrEnd | null;
+
+  startInputText: string;
+  endInputText: string;
+
+  arriveBy: boolean;
+  // If initialTime == null, this means depart now (should be used with
+  // arriveBy === false)
+  initialTime: number | null;
+
+  // Transit modes that can be used
+  connectingModes: ModeCategory[];
+
+  // Can we default to geolocating for the start location?
+  canDefaultStartToGeolocation: boolean;
+};
+
+const DEFAULT_STATE: RouteParamsState = {
+  start: null,
+  end: null,
   editingLocation: null,
   startInputText: '',
   endInputText: '',
   arriveBy: false,
-  // If initialTime == null, this means depart now (should be used with
-  // arriveBy === false)
   initialTime: null,
-
-  // Transit modes that can be used
   connectingModes: [
     TransitModes.CATEGORIES.BUSES,
     TransitModes.CATEGORIES.TRAINS,
     TransitModes.CATEGORIES.FERRIES,
   ],
-
-  // Can we default to geolocating for the start location?
   canDefaultStartToGeolocation: true,
 };
 
-export function routeParamsReducer(state = DEFAULT_STATE, action) {
+export function routeParamsReducer(
+  state = DEFAULT_STATE,
+  action: BikeHopperAction,
+): RouteParamsState {
   switch (action.type) {
     case 'locations_set':
       return produce(state, (draft) => {
@@ -66,10 +107,10 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
     case 'location_selected_on_map':
       return produce(state, (draft) => {
         draft[action.startOrEnd] = {
-          point: turf.point(action.coords),
+          point: turfPoint(action.coords),
           source: LocationSourceType.SelectedOnMap,
         };
-        draft[action.startOrEnd + 'InputText'] = '';
+        draft[startOrEndInputText(action.startOrEnd)] = '';
         if (
           action.startOrEnd === 'end' &&
           state.start == null &&
@@ -85,20 +126,31 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
       });
     case 'params_hydrated_from_url':
       return produce(state, (draft) => {
-        draft.start = {
-          point: turf.point(action.startCoords),
-          source: action.startText
-            ? LocationSourceType.UrlWithString
-            : LocationSourceType.UrlWithoutString,
-          fromInputText: action.startText || null,
-        };
-        draft.end = {
-          point: turf.point(action.endCoords),
-          source: action.endText
-            ? LocationSourceType.UrlWithString
-            : LocationSourceType.UrlWithoutString,
-          fromInputText: action.endText || null,
-        };
+        if (action.startText) {
+          draft.start = {
+            point: turfPoint(action.startCoords),
+            source: LocationSourceType.UrlWithString,
+            fromInputText: action.startText,
+          };
+        } else {
+          draft.start = {
+            point: turfPoint(action.startCoords),
+            source: LocationSourceType.UrlWithoutString,
+          };
+        }
+
+        if (action.endText) {
+          draft.end = {
+            point: turfPoint(action.endCoords),
+            source: LocationSourceType.UrlWithString,
+            fromInputText: action.endText,
+          };
+        } else {
+          draft.end = {
+            point: turfPoint(action.endCoords),
+            source: LocationSourceType.UrlWithoutString,
+          };
+        }
         draft.startInputText = action.startText || '';
         draft.endInputText = action.endText || '';
         draft.arriveBy = action.arriveBy;
@@ -134,7 +186,9 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
           source: LocationSourceType.Geocoded,
           fromInputText: action.fromInputText,
         };
-        draft[action.startOrEnd + 'InputText'] = describePlace(action.point);
+        draft[startOrEndInputText(action.startOrEnd)] = describePlace(
+          action.point,
+        );
         // This probably will result in editingLocation changing but other
         // actions should take care of that
       });
@@ -144,7 +198,7 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
           point: null, // To be hydrated by a later action
           source: LocationSourceType.UserGeolocation,
         };
-        draft[action.startOrEnd + 'InputText'] = '';
+        draft[startOrEndInputText(action.startOrEnd)] = '';
       });
     case 'geolocate_failed':
       // If we were waiting on geolocation to hydrate a location, clear it
@@ -178,7 +232,7 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
       });
     case 'location_text_input_changed':
       return produce(state, (draft) => {
-        draft[action.startOrEnd + 'InputText'] = action.value;
+        draft[startOrEndInputText(action.startOrEnd)] = action.value;
 
         // Hack: In order to make it possible to clear out "Current Location,"
         // we must empty out the location value if the corresponding text
@@ -217,7 +271,17 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
   }
 }
 
+// Utility to help dynamic property accesses typecheck
+function startOrEndInputText(startOrEnd: StartOrEnd) {
+  return startOrEnd === 'start' ? 'startInputText' : 'endInputText';
+}
+
 // Actions
+
+type LocationsSetAction = Action<'locations_set'> & {
+  start: Location | null;
+  end: Location | null;
+};
 
 // This can be triggered either directly by pressing Enter in the location
 // input form (or the mobile equivalent: submitting the form), or indirectly
@@ -226,7 +290,7 @@ export function routeParamsReducer(state = DEFAULT_STATE, action) {
 // If we have start and end location info, hydrate the locations if possible
 // and then fetch routes. Hydrating can mean geocoding input text or finding
 // the current geolocation if a location has source type UserGeolocation.
-export function locationsSubmitted() {
+export function locationsSubmitted(): BikeHopperThunkAction {
   return async function locationsSubmittedThunk(dispatch, getState) {
     const {
       start,
@@ -238,7 +302,11 @@ export function locationsSubmitted() {
       connectingModes,
     } = getState().routeParams;
 
-    const hydrate = async function hydrate(text, location, startOrEnd) {
+    const hydrate = async function hydrate(
+      text: string,
+      location: Location | null,
+      startOrEnd: StartOrEnd,
+    ): Promise<Location | null> {
       // Decide whether to use the text or location:
       let useLocation = false;
 
@@ -275,6 +343,7 @@ export function locationsSubmitted() {
           return {
             point: geocodingState.osmCache[cacheEntry.osmIds[0]],
             source: LocationSourceType.Geocoded,
+            fromInputText: text,
           };
         }
 
@@ -289,11 +358,12 @@ export function locationsSubmitted() {
           return {
             point: geocodingState.osmCache[cacheEntry.osmIds[0]],
             source: LocationSourceType.Geocoded,
+            fromInputText: text,
           };
         }
 
         return null;
-      } else if (location.source === LocationSourceType.UserGeolocation) {
+      } else if (location?.source === LocationSourceType.UserGeolocation) {
         // Always geolocate anew; never use the stored point. Geolocation does its own
         // short-term caching.
         await dispatch(geolocate());
@@ -301,10 +371,10 @@ export function locationsSubmitted() {
         const { lng, lat } = getState().geolocation;
         if (lng == null || lat == null) return null;
         return {
-          point: turf.point([lng, lat]),
+          point: turfPoint([lng, lat]),
           source: LocationSourceType.UserGeolocation,
         };
-      } else if (location.point) {
+      } else if (location?.point) {
         // If we already have a point, not from geolocation, pass through
         return location;
       } else {
@@ -341,7 +411,7 @@ export function locationsSubmitted() {
       end: resultingEndLocation,
     });
 
-    if (resultingStartLocation && resultingEndLocation) {
+    if (resultingStartLocation?.point && resultingEndLocation?.point) {
       await fetchRoute(
         resultingStartLocation.point.geometry.coordinates,
         resultingEndLocation.point.geometry.coordinates,
@@ -353,7 +423,15 @@ export function locationsSubmitted() {
   };
 }
 
-export function locationDragged(startOrEnd, coords) {
+type LocationDraggedAction = Action<'location_dragged'> & {
+  startOrEnd: StartOrEnd;
+  coords: [number, number];
+};
+
+export function locationDragged(
+  startOrEnd: StartOrEnd,
+  coords: [number, number],
+): BikeHopperThunkAction {
   return async function locationDraggedThunk(dispatch, getState) {
     dispatch({
       type: 'location_dragged',
@@ -384,9 +462,16 @@ export function locationDragged(startOrEnd, coords) {
   };
 }
 
+type LocationSelectedOnMapAction = Action<'location_selected_on_map'> & {
+  startOrEnd: StartOrEnd;
+  coords: [number, number];
+};
 // Location selected on map via context menu (long press or right-click).
 // Similar to a drag, except might be starting from no location selected.
-export function locationSelectedOnMap(startOrEnd, coords) {
+export function locationSelectedOnMap(
+  startOrEnd: StartOrEnd,
+  coords: [number, number],
+): BikeHopperThunkAction {
   return async function locationSelectedOnMapThunk(dispatch, getState) {
     dispatch({
       type: 'location_selected_on_map',
@@ -423,7 +508,7 @@ export function locationSelectedOnMap(startOrEnd, coords) {
         if (lng == null || lat == null) return;
 
         start = {
-          point: turf.point([lng, lat]),
+          point: turfPoint([lng, lat]),
           source: LocationSourceType.UserGeolocation,
         };
 
@@ -447,14 +532,23 @@ export function locationSelectedOnMap(startOrEnd, coords) {
   };
 }
 
+type ParamsHydratedFromUrlAction = Action<'params_hydrated_from_url'> & {
+  startCoords: [number, number];
+  endCoords: [number, number];
+  startText: string;
+  endText: string;
+  arriveBy: boolean;
+  initialTime: number | null;
+};
+
 export function hydrateParamsFromUrl(
-  startCoords,
-  endCoords,
+  startCoords: [number, number],
+  endCoords: [number, number],
   startText = '',
   endText = '',
-  arriveBy,
-  initialTime,
-) {
+  arriveBy: boolean,
+  initialTime: number | null,
+): BikeHopperThunkAction {
   return async function hydrateParamsFromUrlThunk(dispatch, getState) {
     dispatch({
       type: 'params_hydrated_from_url',
@@ -470,24 +564,38 @@ export function hydrateParamsFromUrl(
       endCoords,
       arriveBy,
       initialTime,
+      [],
     )(dispatch, getState);
   };
 }
 
-export function locationInputFocused(startOrEnd) {
+type LocationInputFocusedAction = Action<'location_input_focused'> & {
+  startOrEnd: StartOrEnd;
+};
+export function locationInputFocused(
+  startOrEnd: StartOrEnd,
+): LocationInputFocusedAction {
   return {
     type: 'location_input_focused',
     startOrEnd,
   };
 }
 
-export function enterDestinationFocused() {
+type EnterDestinationFocusedAction = Action<'enter_destination_focused'>;
+export function enterDestinationFocused(): EnterDestinationFocusedAction {
   return {
     type: 'enter_destination_focused',
   };
 }
 
-export function changeLocationTextInput(startOrEnd, value) {
+type LocationTextInputChangedAction = Action<'location_text_input_changed'> & {
+  startOrEnd: StartOrEnd;
+  value: string;
+};
+export function changeLocationTextInput(
+  startOrEnd: StartOrEnd,
+  value: string,
+): BikeHopperThunkAction {
   return async function locationTextInputChangedThunk(dispatch, getState) {
     dispatch({
       type: 'location_text_input_changed',
@@ -501,7 +609,16 @@ export function changeLocationTextInput(startOrEnd, value) {
   };
 }
 
-export function selectGeocodedLocation(startOrEnd, point, fromInputText) {
+type GeocodedLocationSelectedAction = Action<'geocoded_location_selected'> & {
+  startOrEnd: StartOrEnd;
+  point: PhotonOsmHash;
+  fromInputText: string;
+};
+export function selectGeocodedLocation(
+  startOrEnd: StartOrEnd,
+  point: PhotonOsmHash,
+  fromInputText: string,
+): BikeHopperThunkAction {
   return async function selectGeocodedLocationThunk(dispatch, getState) {
     dispatch({
       type: 'geocoded_location_selected',
@@ -514,7 +631,13 @@ export function selectGeocodedLocation(startOrEnd, point, fromInputText) {
   };
 }
 
-export function selectCurrentLocation(startOrEnd) {
+export type CurrentLocationSelectedAction =
+  Action<'current_location_selected'> & {
+    startOrEnd: StartOrEnd;
+  };
+export function selectCurrentLocation(
+  startOrEnd: StartOrEnd,
+): BikeHopperThunkAction {
   return async function selectCurrentLocationThunk(dispatch, getState) {
     dispatch({
       type: 'current_location_selected',
@@ -525,12 +648,14 @@ export function selectCurrentLocation(startOrEnd) {
   };
 }
 
+type RouteParamsClearedAction = Action<'route_params_cleared'>;
 export function clearRouteParams() {
   return {
     type: 'route_params_cleared',
   };
 }
 
+type SearchBlurredAction = Action<'search_blurred_with_unchanged_locations'>;
 export function blurSearchWithUnchangedLocations() {
   // When you focus the start or end input but then blur it without changing existing
   // (geocoded, geolocated, marker dragged, etc.) locations.
@@ -539,7 +664,8 @@ export function blurSearchWithUnchangedLocations() {
   };
 }
 
-export function swapLocations() {
+type LocationsSwappedAction = Action<'locations_swapped'>;
+export function swapLocations(): BikeHopperThunkAction {
   return async function swapLocationsThunk(dispatch, getState) {
     dispatch({
       type: 'locations_swapped',
@@ -549,9 +675,17 @@ export function swapLocations() {
   };
 }
 
+export type DepartureType = 'now' | 'departAt' | 'arriveBy';
+type DepartureChangedAction = Action<'departure_changed'> & {
+  departureType: DepartureType;
+  initialTime: number | null;
+};
 // departureType: 'now', 'departAt', 'arriveBy'
 // initialTime: if not 'now', the time to depart at or arrive by, millis since epoch
-export function departureChanged(departureType, initialTime) {
+export function departureChanged(
+  departureType: DepartureType,
+  initialTime: number | null,
+): BikeHopperThunkAction {
   return async function departureChangedThunk(dispatch, getState) {
     dispatch({
       type: 'departure_changed',
@@ -564,7 +698,12 @@ export function departureChanged(departureType, initialTime) {
   };
 }
 
-export function changeConnectingModes(newConnectingModes) {
+type ConnectingModesChangedAction = Action<'connecting_modes_changed'> & {
+  connectingModes: ModeCategory[];
+};
+export function changeConnectingModes(
+  newConnectingModes: ModeCategory[],
+): BikeHopperThunkAction {
   return async function changeConnectingModesThunk(dispatch, getState) {
     dispatch({
       type: 'connecting_modes_changed',
@@ -576,7 +715,7 @@ export function changeConnectingModes(newConnectingModes) {
   };
 }
 
-function _computeBlockRouteTypes(connectingModes) {
+function _computeBlockRouteTypes(connectingModes: ModeCategory[]) {
   const blockRouteTypes = [];
   for (const modeCategory of Object.values(TransitModes.CATEGORIES)) {
     if (!connectingModes.includes(modeCategory)) {
@@ -589,3 +728,19 @@ function _computeBlockRouteTypes(connectingModes) {
   }
   return blockRouteTypes;
 }
+
+export type RouteParamsAction =
+  | ConnectingModesChangedAction
+  | CurrentLocationSelectedAction
+  | DepartureChangedAction
+  | EnterDestinationFocusedAction
+  | GeocodedLocationSelectedAction
+  | LocationDraggedAction
+  | LocationInputFocusedAction
+  | LocationSelectedOnMapAction
+  | LocationTextInputChangedAction
+  | LocationsSetAction
+  | LocationsSwappedAction
+  | ParamsHydratedFromUrlAction
+  | RouteParamsClearedAction
+  | SearchBlurredAction;

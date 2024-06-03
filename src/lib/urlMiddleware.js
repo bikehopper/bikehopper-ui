@@ -48,7 +48,7 @@ export default function routesUrlMiddleware(store) {
       if (
         _coordsEqual(
           routeStateAfter.routeStartCoords,
-          params.start.point?.geometry.coordinates,
+          params.start?.point?.geometry.coordinates,
         )
       ) {
         let fromText = describePlace(params.start.point, { fallback: '' });
