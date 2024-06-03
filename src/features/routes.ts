@@ -166,8 +166,6 @@ function _clearRoutes(state: RoutesState): RoutesState {
 
 // Actions
 
-let _routeNonce = 10000000; // For assigning a unique ID to each route fetched in a session
-
 const COORD_EPSILON = 1e-5;
 
 // rarely used. Usually it would be route_params_cleared
@@ -184,12 +182,10 @@ type RouteFetchFailedAction = Action<'route_fetch_failed'> & {
   failureType: string;
 };
 
-type FixmeAddType = any;
-
 type RouteFetchSucceededAction = Action<'route_fetch_succeeded'> & {
   startCoords: GeoJSON.Position;
   endCoords: GeoJSON.Position;
-  routes: FixmeAddType[];
+  routes: BikehopperClient.RouteResponsePath[];
 };
 
 export function fetchRoute(
@@ -225,7 +221,6 @@ export function fetchRoute(
         ],
         arriveBy,
         earliestDepartureTime: initialTime,
-        pointsEncoded: false,
         details: ['cycleway', 'road_class', 'street_name'],
         blockRouteTypes,
       });
@@ -263,10 +258,6 @@ export function fetchRoute(
         alert: { message: "Can't find a route" },
       });
       return;
-    }
-
-    for (const path of paths) {
-      path.nonce = ++_routeNonce;
     }
 
     dispatch({
