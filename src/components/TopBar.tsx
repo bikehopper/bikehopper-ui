@@ -6,7 +6,13 @@ import './TopBar.css';
 const BRAND_PART_1 = 'Bike';
 const BRAND_PART_2 = 'Hopper';
 
-export default function TopBar({ showSearchBar, initiallyFocusDestination }) {
+export default function TopBar({
+  showSearchBar,
+  initiallyFocusDestination,
+}: {
+  showSearchBar: boolean;
+  initiallyFocusDestination: boolean;
+}) {
   const logoAndInfoButton = (
     <div className="mx-3 flex items-center justify-between">
       <span className="TopBar_logo">
