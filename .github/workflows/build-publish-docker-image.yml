@@ -17,6 +17,6 @@ env:
   VITE_MAPBOX_TOKEN: ${{ secrets.MAPBOX_PRODUCTION }}
 
 jobs:
-  call-workflow-passing-data:
+  call-workflow-build-publish-docker-image:
     uses: bikehopper/github-workflows/.github/workflows/build-publish-docker-image.yml@main
     secrets: inherit
