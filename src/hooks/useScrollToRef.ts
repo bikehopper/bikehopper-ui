@@ -4,14 +4,16 @@ import { useRef, useEffect } from 'react';
 // The offsetParent must be the container in which to scroll.
 
 export default function useScrollToRef() {
-  const scrollToRef = useRef();
+  const scrollToRef = useRef<HTMLElement>();
 
   useEffect(() => {
     const el = scrollToRef.current;
     if (el) {
       const container = el.offsetParent;
-      container.scrollTop =
-        el.offsetTop + el.clientHeight / 2 - container.clientHeight / 2;
+      if (container) {
+        container.scrollTop =
+          el.offsetTop + el.clientHeight / 2 - container.clientHeight / 2;
+      }
     }
   }, []);
 
