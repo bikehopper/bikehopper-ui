@@ -6,7 +6,9 @@ import classnames from 'classnames';
 
 import './BorderlessButton.css';
 
-export default function BorderlessButton(props) {
+type Props = { flex?: boolean } & React.ButtonHTMLAttributes<HTMLButtonElement>;
+
+export default function BorderlessButton(props: Props) {
   const { flex, ...rest } = props;
   return (
     <button
