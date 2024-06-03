@@ -2,9 +2,7 @@ import type { Action } from 'redux';
 import type { BikeHopperAction } from '../store';
 
 export enum AlertSeverity {
-  // eslint-disable-next-line no-unused-vars
   WARNING = 'warning',
-  // eslint-disable-next-line no-unused-vars
   ERROR = 'error',
 }
 
