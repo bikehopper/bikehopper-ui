@@ -1,5 +1,6 @@
 import maplibregl from 'maplibre-gl';
 import { forwardRef, useEffect, useRef, useState } from 'react';
+import type { MouseEvent, Ref } from 'react';
 import { useCallback, useLayoutEffect, useMemo } from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
@@ -9,6 +10,14 @@ import MapGL, {
   Source,
   GeolocateControl,
   NavigationControl,
+} from 'react-map-gl/maplibre';
+import type {
+  GeolocateResultEvent,
+  MapEvent,
+  MapLayerMouseEvent,
+  MapLayerTouchEvent,
+  MarkerDragEvent,
+  ViewStateChangeEvent,
 } from 'react-map-gl/maplibre';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import {
@@ -32,6 +41,7 @@ import {
   BOTTOM_DRAWER_DEFAULT_SCROLL,
   BOTTOM_DRAWER_MIN_HEIGHT,
 } from '../lib/layout';
+import type { Dispatch, RootState } from '../store';
 
 import './BikehopperMap.css';
 import {
@@ -43,8 +53,16 @@ import {
 
 const _isTouch = 'ontouchstart' in window;
 
-const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
-  const dispatch = useDispatch();
+type Props = {
+  onMapLoad: () => void,
+  overlayRef: Ref<HTMLElement>,
+};
+
+const BikehopperMap = forwardRef(function _BikehopperMap(
+  props: Props,
+  mapRef: Ref<maplibregl.Map>,
+) {
+  const dispatch: Dispatch = useDispatch();
   const intl = useIntl();
   const {
     routeStatus,
@@ -55,7 +73,7 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
     viewingDetails,
     viewingStep,
   } = useSelector(
-    (state) => ({
+    (state: RootState) => ({
       routes: state.routes.routes,
       routeStatus: state.routes.routeStatus,
       // If we have fetched routes, display start and end markers at the coords
@@ -75,12 +93,20 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
   );
   const prevRouteStatus = usePrevious(routeStatus);
 
-  // If non-null, a [clientX, clientY, lng, lat] of where the context menu is open from.
-  const [contextMenuAt, setContextMenuAt] = useState(null);
+  // If non-null, a [clientX, clientY, lng, lat] of where the context menu is
+  // open from.
+  const [contextMenuAt, setContextMenuAt] = useState<
+    [number, number, number, number] | null
+  >(null);
 
   // MapLibre doesn't natively support long press, so we use a timer to detect it,
   // along with the clientX and clientY of the initial touch.
-  const longPressTimerIdAndPos = useRef(null);
+  type LongPressState = {
+    timer: number,
+    clientX: number,
+    clientY: number,
+  };
+  const longPressTimerIdAndPos = useRef<LongPressState | null>(null);
 
   const resetLongPressTimer = () => {
     if (longPressTimerIdAndPos.current) {
@@ -89,14 +115,17 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
     }
   };
 
-  const handleMapClick = (evt) => {
+  const handleMapClick = (evt: MapLayerMouseEvent) => {
     resetLongPressTimer();
     if (evt.features?.length) {
-      dispatch(routeClicked(evt.features[0].properties.path_index, 'map'));
+      const featureProperties = evt.features[0].properties;
+      if (featureProperties) {
+        dispatch(routeClicked(featureProperties.path_index, 'map'));
+      }
     }
   };
 
-  const handleMapRightClick = (evt) => {
+  const handleMapRightClick = (evt: MapLayerMouseEvent) => {
     resetLongPressTimer();
     setContextMenuAt([
       evt.originalEvent.clientX,
@@ -106,12 +135,17 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
     ]);
   };
 
-  const handleMapLongPress = (clientX, clientY, lng, lat) => {
+  const handleMapLongPress = (
+    clientX: number,
+    clientY: number,
+    lng: number,
+    lat: number,
+  ) => {
     setContextMenuAt([clientX, clientY, lng, lat]);
     resetLongPressTimer();
   };
 
-  const handleTouchStart = (evt) => {
+  const handleTouchStart = (evt: MapLayerTouchEvent) => {
     resetLongPressTimer();
     if (evt.originalEvent.touches.length !== 1) return;
     const { lng, lat } = evt.lngLat;
@@ -126,14 +160,14 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
     };
   };
 
-  const handleTouchMove = (evt) => {
+  const handleTouchMove = (evt: MapLayerTouchEvent) => {
     if (!longPressTimerIdAndPos.current) return;
 
     // Reset long-press timer if finger moved more than a little.
     if (
       isTouchMoveSignificant(
-        longPressTimerIdAndPos.clientX,
-        longPressTimerIdAndPos.clientY,
+        longPressTimerIdAndPos.current.clientX,
+        longPressTimerIdAndPos.current.clientY,
         evt.originalEvent.touches[0].clientX,
         evt.originalEvent.touches[0].clientY,
       )
@@ -142,51 +176,51 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
     }
   };
 
-  const handleContextMenuOpenChange = (isOpen) => {
+  const handleContextMenuOpenChange = (isOpen: boolean) => {
     resetLongPressTimer();
     if (!isOpen) setContextMenuAt(null);
   };
 
-  const handleMouseDown = (evt) => {
+  const handleMouseDown = (evt: MapLayerMouseEvent) => {
     setContextMenuAt(null);
   };
 
-  const handleMoveEnd = (evt) => {
+  const handleMoveEnd = (evt: ViewStateChangeEvent) => {
     resetLongPressTimer();
     setContextMenuAt(null);
     dispatch(mapMoved(evt.viewState));
   };
 
-  const handleMoveStart = (evt) => {
+  const handleMoveStart = (evt: ViewStateChangeEvent) => {
     resetLongPressTimer();
     setContextMenuAt(null);
   };
 
-  const handleDirectionsFromClick = (evt) => {
+  const handleDirectionsFromClick = (evt: MouseEvent) => {
     if (contextMenuAt)
       dispatch(
         locationSelectedOnMap('start', [contextMenuAt[2], contextMenuAt[3]]),
       );
   };
 
-  const handleDirectionsToClick = (evt) => {
+  const handleDirectionsToClick = (evt: MouseEvent) => {
     if (contextMenuAt)
       dispatch(
         locationSelectedOnMap('end', [contextMenuAt[2], contextMenuAt[3]]),
       );
   };
 
-  const handleStartMarkerDrag = (evt) => {
+  const handleStartMarkerDrag = (evt: MarkerDragEvent) => {
     resetLongPressTimer();
     dispatch(locationDragged('start', lngLatToCoords(evt.lngLat)));
   };
 
-  const handleEndMarkerDrag = (evt) => {
+  const handleEndMarkerDrag = (evt: MarkerDragEvent) => {
     resetLongPressTimer();
     dispatch(locationDragged('end', lngLatToCoords(evt.lngLat)));
   };
 
-  const handleGeolocate = (geolocateResultEvent) => {
+  const handleGeolocate = (geolocateResultEvent: GeolocateResultEvent) => {
     dispatch(
       geolocated(geolocateResultEvent.coords, geolocateResultEvent.timestamp),
     );
@@ -429,11 +463,11 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
         onClick={handleMapClick}
         onContextMenu={handleMapRightClick}
         onMoveEnd={handleMoveEnd}
-        onMoveStart={_isTouch ? handleMoveStart : null}
-        onTouchStart={_isTouch ? handleTouchStart : null}
-        onTouchMove={_isTouch ? handleTouchMove : null}
-        onTouchEnd={_isTouch ? resetLongPressTimer : null}
-        onTouchCancel={_isTouch ? resetLongPressTimer : null}
+        onMoveStart={_isTouch ? handleMoveStart : undefined}
+        onTouchStart={_isTouch ? handleTouchStart : undefined}
+        onTouchMove={_isTouch ? handleTouchMove : undefined}
+        onTouchEnd={_isTouch ? resetLongPressTimer : undefined}
+        onTouchCancel={_isTouch ? resetLongPressTimer : undefined}
       >
         <GeolocateControl
           trackUserLocation={true}

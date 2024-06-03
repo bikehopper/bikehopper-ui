@@ -1,7 +1,7 @@
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import type { AnyAction } from 'redux';
 import thunkMiddleware from 'redux-thunk';
-import type { ThunkAction } from 'redux-thunk';
+import type { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import { alertsReducer } from './features/alerts';
 import type { ActionAlertMixin, AlertAction } from './features/alerts';
 import { geocodingReducer } from './features/geocoding';
@@ -44,9 +44,9 @@ const store = createStore(
   ),
 );
 
-export type Dispatch = typeof store.dispatch;
 export type GetState = typeof store.getState;
 export type RootState = ReturnType<typeof rootReducer>;
+export type Dispatch = ThunkDispatch<RootState, any, AnyAction>;
 export type BikeHopperThunkAction = ThunkAction<
   void,
   RootState,
