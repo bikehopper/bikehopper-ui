@@ -10,7 +10,7 @@
     "noImplicitAny": true,
     "strict": true,
     "skipLibCheck": true,
-    "types": ["vite/client"]
+    "types": ["vite/client", "vite-plugin-svgr/client"]
   },
   "include": ["./src/**/*"]
 }

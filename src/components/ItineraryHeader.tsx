@@ -1,6 +1,7 @@
 import { useIntl } from 'react-intl';
 import classnames from 'classnames';
 import { getTextColor } from '../lib/colors';
+import BorderlessButton from './BorderlessButton';
 import Icon from './primitives/Icon';
 import ItineraryRow from './ItineraryRow';
 import WarningTriangle from 'iconoir/icons/warning-triangle.svg?react';
@@ -8,13 +9,24 @@ import NavDownArrow from 'iconoir/icons/nav-arrow-down.svg?react';
 import NavUpArrow from 'iconoir/icons/nav-arrow-up.svg?react';
 
 import './ItineraryHeader.css';
-import BorderlessButton from './BorderlessButton';
 
 const ALERT_SUMMARY_LENGTH = 50;
 
-function alertSummary(alertBody) {
+function alertSummary(alertBody: string) {
   return alertBody.slice(0, ALERT_SUMMARY_LENGTH) + '...';
 }
+
+type Props = {
+  alerts: [string, string][];
+  children: React.ReactNode | React.ReactNode[];
+  icon: React.ReactNode;
+  iconColor: string;
+  iconLabel?: string;
+  expanded?: boolean;
+  onToggleLegExpand?: React.MouseEventHandler;
+  alertsExpanded?: boolean;
+  onAlertClick?: React.MouseEventHandler;
+};
 
 export default function ItineraryHeader({
   alerts,
@@ -26,7 +38,7 @@ export default function ItineraryHeader({
   onToggleLegExpand,
   alertsExpanded,
   onAlertClick,
-}) {
+}: Props) {
   const intl = useIntl();
   const iconIsWhite = getTextColor(iconColor).main === 'white';
 
