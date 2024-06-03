@@ -16,11 +16,24 @@ const RECENTLY_USED_MAX_AGE_MS = (7 * 24 + 6) * 60 * 60 * 1000;
 // for example osm_id 100 and osm_type N => "N100"
 export type OsmId = string;
 
-export type OsmCacheItem = {
-  status: 'fetching' | 'failed' | 'succeeded';
-  time: number; // as returned from Date.now()
+type OsmCacheItemFetching = {
+  status: 'fetching';
+  time: number;
   osmIds?: OsmId[];
 };
+type OsmCacheItemFailed = {
+  status: 'failed';
+  time: number;
+};
+type OsmCacheItemSucceeded = {
+  status: 'succeeded';
+  time: number;
+  osmIds: OsmId[];
+};
+export type OsmCacheItem =
+  | OsmCacheItemFetching
+  | OsmCacheItemFailed
+  | OsmCacheItemSucceeded;
 
 // FIXME: put the rest of the Photon fields in this definition
 export type PhotonOsmHash = GeoJSON.Feature<
@@ -70,14 +83,16 @@ export function geocodingReducer(
     case 'geocode_attempted':
       return produce(state, (draft) => {
         const key = '@' + action.text;
-        draft.typeaheadCache[key] = {
+        const newCacheItem: OsmCacheItemFetching = {
           status: 'fetching',
           time: action.time,
         };
-        if (state.typeaheadCache[key]?.status === 'succeeded') {
+        const oldCacheItem = state.typeaheadCache[key];
+        if (oldCacheItem?.status === 'succeeded') {
           // keep stale results available while the re-fetch is in progress
-          draft.typeaheadCache[key].osmIds = state.typeaheadCache[key].osmIds;
+          newCacheItem.osmIds = oldCacheItem.osmIds;
         }
+        draft.typeaheadCache[key] = newCacheItem;
       });
     case 'geocode_failed':
       return produce(state, (draft) => {
@@ -118,11 +133,14 @@ export function geocodingReducer(
         draft.recentlyUsed = _updateRecentlyUsed(
           state.recentlyUsed,
           [action.start, action.end]
-            .filter((loc) => loc?.point?.properties?.osm_id != null)
-            .map(
-              (loc) =>
-                loc.point.properties.osm_type + loc.point.properties.osm_id,
-            ),
+            .map((loc) => {
+              if (loc?.point?.properties?.osm_id != null) {
+                return (
+                  loc.point.properties.osm_type + loc.point.properties.osm_id
+                );
+              } else return null;
+            })
+            .filter((possibleOsmId) => possibleOsmId != null),
         );
       });
     case 'recently_used_location_removed':

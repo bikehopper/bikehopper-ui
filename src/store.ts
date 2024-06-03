@@ -9,6 +9,7 @@ import { geolocationReducer } from './features/geolocation';
 import type { GeolocationAction } from './features/geolocation';
 import type { MiscAction } from './features/misc';
 import { routeParamsReducer } from './features/routeParams';
+import type { RouteParamsAction } from './features/routeParams';
 import { routesReducer } from './features/routes';
 import { storageMiddleware, initFromStorage } from './features/storage';
 import type { StorageAction } from './features/storage';
@@ -52,11 +53,11 @@ export type BikeHopperAction = (
   | GeocodingAction
   | GeolocationAction
   | MiscAction
+  | RouteParamsAction
   | StorageAction
   | ViewportAction
   // TODO fix fake types below
-  | (Action<'locations_set'> & Record<string, any>)
-  | (Action<'geocoded_location_selected'> & Record<string, any>)
+  | (Action<'route_fetch_attempted'> & Record<string, any>)
 ) &
   ActionAlertMixin;
 
