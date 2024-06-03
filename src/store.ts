@@ -1,6 +1,7 @@
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
-import type { Action } from 'redux';
+import type { AnyAction } from 'redux';
 import thunkMiddleware from 'redux-thunk';
+import type { ThunkAction } from 'redux-thunk';
 import { alertsReducer } from './features/alerts';
 import type { ActionAlertMixin, AlertAction } from './features/alerts';
 import { geocodingReducer } from './features/geocoding';
@@ -11,6 +12,7 @@ import type { MiscAction } from './features/misc';
 import { routeParamsReducer } from './features/routeParams';
 import type { RouteParamsAction } from './features/routeParams';
 import { routesReducer } from './features/routes';
+import type { RoutesAction } from './features/routes';
 import { storageMiddleware, initFromStorage } from './features/storage';
 import type { StorageAction } from './features/storage';
 import { viewportReducer } from './features/viewport';
@@ -45,6 +47,12 @@ const store = createStore(
 export type Dispatch = typeof store.dispatch;
 export type GetState = typeof store.getState;
 export type RootState = ReturnType<typeof rootReducer>;
+export type BikeHopperThunkAction = ThunkAction<
+  void,
+  RootState,
+  void,
+  AnyAction
+>;
 
 store.dispatch(initFromStorage());
 
@@ -54,10 +62,9 @@ export type BikeHopperAction = (
   | GeolocationAction
   | MiscAction
   | RouteParamsAction
+  | RoutesAction
   | StorageAction
   | ViewportAction
-  // TODO fix fake types below
-  | (Action<'route_fetch_attempted'> & Record<string, any>)
 ) &
   ActionAlertMixin;
 

@@ -1,5 +1,5 @@
 import type { Action } from 'redux';
-import type { BikeHopperAction, Dispatch, GetState } from '../store';
+import type { BikeHopperAction, BikeHopperThunkAction } from '../store';
 
 import produce from 'immer';
 import getCurrentPosition from '../lib/getCurrentPosition';
@@ -92,8 +92,8 @@ export type GeolocateFailedAction = Action<'geolocate_failed'> & {
   code: number | null;
 };
 
-export function geolocate() {
-  return async function geolocateThunk(dispatch: Dispatch, getState: GetState) {
+export function geolocate(): BikeHopperThunkAction {
+  return async function geolocateThunk(dispatch, getState) {
     dispatch({ type: 'geolocate_attempted' });
 
     let pos;

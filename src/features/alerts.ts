@@ -12,8 +12,13 @@ type Alert = {
   id: number;
 };
 
+type AlertParams = {
+  message: string;
+  severity?: AlertSeverity;
+};
+
 export type ActionAlertMixin = {
-  alert?: Alert;
+  alert?: AlertParams;
 };
 
 type AlertState = {

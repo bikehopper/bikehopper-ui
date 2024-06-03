@@ -5,10 +5,11 @@ import { point as turfPoint } from '@turf/helpers';
 import describePlace from '../lib/describePlace';
 import * as TransitModes from '../lib/TransitModes';
 import type { ModeCategory } from '../lib/TransitModes';
-import { PhotonOsmHash, geocodeTypedLocation } from './geocoding';
+import { geocodeTypedLocation } from './geocoding';
+import type { PhotonOsmHash } from '../lib/BikehopperClient';
 import { geolocate } from './geolocation';
 import { fetchRoute } from './routes';
-import type { BikeHopperAction, Dispatch, GetState } from '../store';
+import type { BikeHopperAction, BikeHopperThunkAction } from '../store';
 
 export enum LocationSourceType {
   Geocoded = 'geocoded',
@@ -278,8 +279,8 @@ function startOrEndInputText(startOrEnd: StartOrEnd) {
 // Actions
 
 type LocationsSetAction = Action<'locations_set'> & {
-  start: Location;
-  end: Location;
+  start: Location | null;
+  end: Location | null;
 };
 
 // This can be triggered either directly by pressing Enter in the location
@@ -289,11 +290,8 @@ type LocationsSetAction = Action<'locations_set'> & {
 // If we have start and end location info, hydrate the locations if possible
 // and then fetch routes. Hydrating can mean geocoding input text or finding
 // the current geolocation if a location has source type UserGeolocation.
-export function locationsSubmitted() {
-  return async function locationsSubmittedThunk(
-    dispatch: Dispatch,
-    getState: GetState,
-  ) {
+export function locationsSubmitted(): BikeHopperThunkAction {
+  return async function locationsSubmittedThunk(dispatch, getState) {
     const {
       start,
       startInputText,
@@ -308,7 +306,7 @@ export function locationsSubmitted() {
       text: string,
       location: Location | null,
       startOrEnd: StartOrEnd,
-    ) {
+    ): Promise<Location | null> {
       // Decide whether to use the text or location:
       let useLocation = false;
 
@@ -345,6 +343,7 @@ export function locationsSubmitted() {
           return {
             point: geocodingState.osmCache[cacheEntry.osmIds[0]],
             source: LocationSourceType.Geocoded,
+            fromInputText: text,
           };
         }
 
@@ -359,6 +358,7 @@ export function locationsSubmitted() {
           return {
             point: geocodingState.osmCache[cacheEntry.osmIds[0]],
             source: LocationSourceType.Geocoded,
+            fromInputText: text,
           };
         }
 
@@ -411,7 +411,7 @@ export function locationsSubmitted() {
       end: resultingEndLocation,
     });
 
-    if (resultingStartLocation && resultingEndLocation) {
+    if (resultingStartLocation?.point && resultingEndLocation?.point) {
       await fetchRoute(
         resultingStartLocation.point.geometry.coordinates,
         resultingEndLocation.point.geometry.coordinates,
@@ -431,11 +431,8 @@ type LocationDraggedAction = Action<'location_dragged'> & {
 export function locationDragged(
   startOrEnd: StartOrEnd,
   coords: [number, number],
-) {
-  return async function locationDraggedThunk(
-    dispatch: Dispatch,
-    getState: GetState,
-  ) {
+): BikeHopperThunkAction {
+  return async function locationDraggedThunk(dispatch, getState) {
     dispatch({
       type: 'location_dragged',
       startOrEnd,
@@ -474,11 +471,8 @@ type LocationSelectedOnMapAction = Action<'location_selected_on_map'> & {
 export function locationSelectedOnMap(
   startOrEnd: StartOrEnd,
   coords: [number, number],
-) {
-  return async function locationSelectedOnMapThunk(
-    dispatch: Dispatch,
-    getState: GetState,
-  ) {
+): BikeHopperThunkAction {
+  return async function locationSelectedOnMapThunk(dispatch, getState) {
     dispatch({
       type: 'location_selected_on_map',
       startOrEnd,
@@ -554,11 +548,8 @@ export function hydrateParamsFromUrl(
   endText = '',
   arriveBy: boolean,
   initialTime: number | null,
-) {
-  return async function hydrateParamsFromUrlThunk(
-    dispatch: Dispatch,
-    getState: GetState,
-  ) {
+): BikeHopperThunkAction {
+  return async function hydrateParamsFromUrlThunk(dispatch, getState) {
     dispatch({
       type: 'params_hydrated_from_url',
       startCoords,
@@ -573,6 +564,7 @@ export function hydrateParamsFromUrl(
       endCoords,
       arriveBy,
       initialTime,
+      [],
     )(dispatch, getState);
   };
 }
@@ -600,11 +592,11 @@ type LocationTextInputChangedAction = Action<'location_text_input_changed'> & {
   startOrEnd: StartOrEnd;
   value: string;
 };
-export function changeLocationTextInput(startOrEnd: StartOrEnd, value: string) {
-  return async function locationTextInputChangedThunk(
-    dispatch: Dispatch,
-    getState: GetState,
-  ) {
+export function changeLocationTextInput(
+  startOrEnd: StartOrEnd,
+  value: string,
+): BikeHopperThunkAction {
+  return async function locationTextInputChangedThunk(dispatch, getState) {
     dispatch({
       type: 'location_text_input_changed',
       startOrEnd,
@@ -626,11 +618,8 @@ export function selectGeocodedLocation(
   startOrEnd: StartOrEnd,
   point: PhotonOsmHash,
   fromInputText: string,
-) {
-  return async function selectGeocodedLocationThunk(
-    dispatch: Dispatch,
-    getState: GetState,
-  ) {
+): BikeHopperThunkAction {
+  return async function selectGeocodedLocationThunk(dispatch, getState) {
     dispatch({
       type: 'geocoded_location_selected',
       startOrEnd,
@@ -646,11 +635,10 @@ export type CurrentLocationSelectedAction =
   Action<'current_location_selected'> & {
     startOrEnd: StartOrEnd;
   };
-export function selectCurrentLocation(startOrEnd: StartOrEnd) {
-  return async function selectCurrentLocationThunk(
-    dispatch: Dispatch,
-    getState: GetState,
-  ) {
+export function selectCurrentLocation(
+  startOrEnd: StartOrEnd,
+): BikeHopperThunkAction {
+  return async function selectCurrentLocationThunk(dispatch, getState) {
     dispatch({
       type: 'current_location_selected',
       startOrEnd,
@@ -677,11 +665,8 @@ export function blurSearchWithUnchangedLocations() {
 }
 
 type LocationsSwappedAction = Action<'locations_swapped'>;
-export function swapLocations() {
-  return async function swapLocationsThunk(
-    dispatch: Dispatch,
-    getState: GetState,
-  ) {
+export function swapLocations(): BikeHopperThunkAction {
+  return async function swapLocationsThunk(dispatch, getState) {
     dispatch({
       type: 'locations_swapped',
     });
@@ -700,11 +685,8 @@ type DepartureChangedAction = Action<'departure_changed'> & {
 export function departureChanged(
   departureType: DepartureType,
   initialTime: number | null,
-) {
-  return async function departureChangedThunk(
-    dispatch: Dispatch,
-    getState: GetState,
-  ) {
+): BikeHopperThunkAction {
+  return async function departureChangedThunk(dispatch, getState) {
     dispatch({
       type: 'departure_changed',
       initialTime,
@@ -719,11 +701,10 @@ export function departureChanged(
 type ConnectingModesChangedAction = Action<'connecting_modes_changed'> & {
   connectingModes: ModeCategory[];
 };
-export function changeConnectingModes(newConnectingModes: ModeCategory[]) {
-  return async function changeConnectingModesThunk(
-    dispatch: Dispatch,
-    getState: GetState,
-  ) {
+export function changeConnectingModes(
+  newConnectingModes: ModeCategory[],
+): BikeHopperThunkAction {
+  return async function changeConnectingModesThunk(dispatch, getState) {
     dispatch({
       type: 'connecting_modes_changed',
       connectingModes: newConnectingModes,

@@ -3,7 +3,7 @@ import uniqBy from 'lodash/uniqBy';
 import type { Action } from 'redux';
 import * as BikehopperClient from '../lib/BikehopperClient';
 import delay from '../lib/delay';
-import type { BikeHopperAction, Dispatch, GetState } from '../store';
+import type { BikeHopperAction, BikeHopperThunkAction } from '../store';
 
 const GEOCODE_RESULT_LIMIT = 8;
 
@@ -35,21 +35,12 @@ export type OsmCacheItem =
   | OsmCacheItemFailed
   | OsmCacheItemSucceeded;
 
-// FIXME: put the rest of the Photon fields in this definition
-export type PhotonOsmHash = GeoJSON.Feature<
-  GeoJSON.Point,
-  {
-    osm_type: string;
-    osm_id: string;
-  }
->;
-
 export type GeocodingState = {
   // all location strings are prefixed with '@' to avoid collisions w built-in
   // attributes. If status is 'fetching', osmIds may still be present but
   // stale, from an older fetch.
   typeaheadCache: Record<string, OsmCacheItem>;
-  osmCache: Record<OsmId, PhotonOsmHash>;
+  osmCache: Record<OsmId, BikehopperClient.PhotonOsmHash>;
   recentlyUsed: RecentlyUsedItem[];
 };
 
@@ -168,7 +159,7 @@ type GeocodeAttemptedAction = Action<'geocode_attempted'> & {
 type GeocodeSucceededAction = Action<'geocode_succeeded'> & {
   text: string;
   time: number;
-  features: PhotonOsmHash[];
+  features: BikehopperClient.PhotonOsmHash[];
 };
 
 type GeocodeFailedAction = Action<'geocode_failed'> & {
@@ -184,11 +175,8 @@ export function geocodeTypedLocation(
   text: string,
   key: string,
   { fromTextAutocomplete }: { fromTextAutocomplete?: boolean } = {},
-) {
-  return async function geocodeTypedLocationThunk(
-    dispatch: Dispatch,
-    getState: GetState,
-  ) {
+): BikeHopperThunkAction {
+  return async function geocodeTypedLocationThunk(dispatch, getState) {
     text = text.trim();
     if (text === '') return;
 
@@ -242,7 +230,7 @@ export function geocodeTypedLocation(
         text,
         failureType,
         time: Date.now(),
-        alert: alertOnFailure && { message: alertMsg },
+        alert: alertOnFailure ? { message: alertMsg } : undefined,
       });
       return;
     }
@@ -253,7 +241,9 @@ export function geocodeTypedLocation(
         text,
         failureType: 'not a FeatureCollection',
         time: Date.now(),
-        alert: alertOnFailure && { message: `Couldn't find ${text}` },
+        alert: alertOnFailure
+          ? { message: `Couldn't find ${text}` }
+          : undefined,
       });
       return;
     }
@@ -268,7 +258,9 @@ export function geocodeTypedLocation(
         text,
         failureType: 'no points found',
         time: Date.now(),
-        alert: alertOnFailure && { message: `Couldn't find ${text}` },
+        alert: alertOnFailure
+          ? { message: `Couldn't find ${text}` }
+          : undefined,
       });
       return;
     }

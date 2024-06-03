@@ -41,11 +41,11 @@ export async function fetchRoute({
   signal,
   blockRouteTypes,
 }: {
-  profile: string;
-  connectingProfile: string;
+  profile?: string;
+  connectingProfile?: string;
   arriveBy: boolean;
-  earliestDepartureTime?: number;
-  optimize: boolean;
+  earliestDepartureTime?: number | null;
+  optimize?: boolean;
   pointsEncoded: boolean;
   details?: string[];
   points: GeoJSON.Position[];
@@ -126,6 +126,15 @@ let _lastNominatimReqTime = 0;
 // rate limit to every 3 sec per user:
 const NOMINATIM_RATE_LIMIT = 3000;
 
+// FIXME: put the rest of the Photon fields in this definition
+type PhotonProperties = {
+  osm_type: string,
+  osm_id: string,
+};
+
+export type PhotonOsmHash = GeoJSON.Feature<GeoJSON.Point, PhotonProperties>;
+type PhotonCollection = GeoJSON.FeatureCollection<GeoJSON.Point, PhotonProperties>;
+
 export async function geocode(
   placeString: string,
   {
@@ -145,7 +154,7 @@ export async function geocode(
     locationBias?: number;
     signal?: AbortSignal;
   },
-): Promise<GeoJSON.GeoJSON> {
+): Promise<PhotonCollection> {
   let url;
   if (import.meta.env.VITE_USE_PUBLIC_NOMINATIM) {
     // Note: This flag is for demo/dev purposes only and will not produce as high quality
