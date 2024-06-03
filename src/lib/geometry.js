@@ -10,7 +10,7 @@ import {
   DEFAULT_PT_COLOR,
   TRANSITION_COLOR,
   getTextColor,
-} from './colors.js';
+} from './colors';
 
 export const EMPTY_GEOJSON = {
   type: 'FeatureCollection',

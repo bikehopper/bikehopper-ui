@@ -8,10 +8,8 @@ export const DEFAULT_INACTIVE_COLOR = 'darkgray';
 export const BIKEHOPPER_THEME_COLOR = '#5aaa0a';
 export const TRANSITION_COLOR = DEFAULT_BIKE_COLOR;
 
-export function darkenLegColor(legColorString) {
-  if (legColorString == null) return null;
-
-  const color = Color(legColorString);
+export function darkenLegColor(legColor: string) {
+  const color = Color(legColor);
 
   const factor = 0.1 + color.luminosity() * 0.2;
   return color
@@ -20,13 +18,14 @@ export function darkenLegColor(legColorString) {
     .hex();
 }
 
-export function getTextColor(legColorString) {
-  if (legColorString == null) return 'white';
-
-  const color = Color(legColorString);
+export function getTextColor(legColor: string): {
+  main: string;
+  halo: string;
+} {
+  const color = Color(legColor);
   if (color.luminosity() > 0.5) {
     return { main: 'black', halo: color.lighten(0.4).hex() };
   } else {
-    return { main: 'white', halo: darkenLegColor(legColorString) };
+    return { main: 'white', halo: darkenLegColor(legColor) };
   }
 }
