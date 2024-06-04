@@ -4,7 +4,7 @@ import { DEFAULT_VIEWPORT_BOUNDS } from './region';
 import { InstructionSign } from './InstructionSigns';
 import { Mode } from './TransitModes';
 
-function getApiPath() {
+function getApiPath(): string {
   const apiDomain = import.meta.env.VITE_API_DOMAIN;
   // If not running on one of the above domains, default to making API requests
   // to same domain, which is what we generally want for development.
