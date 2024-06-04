@@ -8,27 +8,6 @@ import babelPluginFormatjs from 'babel-plugin-formatjs';
 export default defineConfig(() => {
   return {
     build: {
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            'maplibre-gl': ['maplibre-gl'],
-            gpx2fit: ['gpx2fit'],
-            '@nivo': ['@nivo/core', '@nivo/line'],
-            '@turf': [
-              '@turf/bezier-spline',
-              '@turf/boolean-point-in-polygon',
-              '@turf/buffer',
-              '@turf/convex',
-              '@turf/distance',
-              '@turf/helpers',
-              '@turf/length',
-              '@turf/line-slice-along',
-              '@turf/meta',
-              '@turf/transform-rotate',
-            ],
-          },
-        },
-      },
       outDir: 'build',
     },
     plugins: [
