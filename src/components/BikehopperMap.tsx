@@ -1,6 +1,6 @@
 import maplibregl from 'maplibre-gl';
 import { forwardRef, useEffect, useRef, useState } from 'react';
-import type { MouseEvent, Ref } from 'react';
+import type { MouseEvent, Ref, RefObject } from 'react';
 import { useCallback, useLayoutEffect, useMemo } from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
@@ -16,6 +16,7 @@ import type {
   MapEvent,
   MapLayerMouseEvent,
   MapLayerTouchEvent,
+  MapRef,
   MarkerDragEvent,
   ViewStateChangeEvent,
 } from 'react-map-gl/maplibre';
@@ -54,14 +55,19 @@ import {
 const _isTouch = 'ontouchstart' in window;
 
 type Props = {
-  onMapLoad: () => void,
-  overlayRef: Ref<HTMLElement>,
+  onMapLoad: () => void;
+  overlayRef: RefObject<HTMLElement>;
 };
 
 const BikehopperMap = forwardRef(function _BikehopperMap(
   props: Props,
-  mapRef: Ref<maplibregl.Map>,
+  mapRef: Ref<MapRef>,
 ) {
+  if (!mapRef || !('current' in mapRef) || !mapRef.current) {
+    // TODO: handle nulls
+    return;
+  }
+
   const dispatch: Dispatch = useDispatch();
   const intl = useIntl();
   const {
@@ -102,9 +108,9 @@ const BikehopperMap = forwardRef(function _BikehopperMap(
   // MapLibre doesn't natively support long press, so we use a timer to detect it,
   // along with the clientX and clientY of the initial touch.
   type LongPressState = {
-    timer: number,
-    clientX: number,
-    clientY: number,
+    timer: number;
+    clientX: number;
+    clientY: number;
   };
   const longPressTimerIdAndPos = useRef<LongPressState | null>(null);
 
@@ -233,7 +239,7 @@ const BikehopperMap = forwardRef(function _BikehopperMap(
 
     // Make road labels larger
     mapRef.current
-      .getMap()
+      ?.getMap()
       // This expression is copied over from mapbox-streets-v11 style,
       // but with all the size values increated by 2
       .setLayoutProperty('road-label', 'text-size', [
@@ -281,7 +287,7 @@ const BikehopperMap = forwardRef(function _BikehopperMap(
       ]);
 
     mapRef.current
-      .getMap()
+      ?.getMap()
       .setPaintProperty('road-label', 'text-halo-width', 3);
   };
 
@@ -429,7 +435,7 @@ const BikehopperMap = forwardRef(function _BikehopperMap(
     visibility: mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden',
   };
 
-  const viewState = useSelector(
+  const viewState = useSelector<RootState, RootState['viewport']>(
     (state) => ({ ...state.viewport }),
     shallowEqual,
   );

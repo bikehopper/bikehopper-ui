@@ -23,7 +23,7 @@ export default function useResizeObserver(
   const observerRef = useRef<ResizeObserver | null>(null);
   const nodeRef = useRef<Element | null>(null);
 
-  const nodeCallbackRef = useCallback((newNode: Element) => {
+  const nodeCallbackRef = useCallback((newNode: Element | null) => {
     if (observerRef.current) {
       if (nodeRef.current) observerRef.current.unobserve(nodeRef.current);
       if (newNode) observerRef.current.observe(newNode);
