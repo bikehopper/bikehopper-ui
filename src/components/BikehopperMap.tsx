@@ -72,7 +72,7 @@ const BikehopperMap = forwardRef(function _BikehopperMap(
 ) {
   const dispatch: Dispatch = useDispatch();
   const intl = useIntl();
-  const mapRef: RefObject<MapRef> = mapRef_ as RefObject<MapRef>;
+  const mapRef = mapRef_ as RefObject<MapRef>;
   const {
     routeStatus,
     startCoords,
