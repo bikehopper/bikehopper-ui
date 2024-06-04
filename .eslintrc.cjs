@@ -9,7 +9,6 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
-    tsConfigRootDir: __dirname,
     project: true,
   },
   settings: { react: { version: '18.2' } },
