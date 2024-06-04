@@ -4,7 +4,7 @@ import { DEFAULT_VIEWPORT_BOUNDS } from './region';
 import { InstructionSign } from './InstructionSigns';
 import { Mode } from './TransitModes';
 
-function getApiPath() {
+function getApiPath(): string {
   const apiDomain = import.meta.env.VITE_API_DOMAIN;
   // If not running on one of the above domains, default to making API requests
   // to same domain, which is what we generally want for development.
@@ -262,10 +262,20 @@ let _lastNominatimReqTime = 0;
 // rate limit to every 3 sec per user:
 const NOMINATIM_RATE_LIMIT = 3000;
 
-// FIXME: put the rest of the Photon fields in this definition
 type PhotonProperties = {
+  name: string;
+  street?: string;
+  housenumber?: string;
+  postcode?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  countrycode?: string;
+  osm_key: string;
+  osm_value: string;
   osm_type: string;
-  osm_id: string;
+  osm_id: number;
+  type?: string /** can be street or house, etc */;
 };
 
 export type PhotonOsmHash = GeoJSON.Feature<GeoJSON.Point, PhotonProperties>;

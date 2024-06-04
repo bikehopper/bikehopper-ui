@@ -1,5 +1,11 @@
-import maplibregl from 'maplibre-gl';
+import type {
+  ExpressionFilterSpecification,
+  ExpressionSpecification,
+  LineLayerSpecification,
+  SymbolLayerSpecification,
+} from '@maplibre/maplibre-gl-style-spec';
 import { forwardRef, useEffect, useRef, useState } from 'react';
+import type { MouseEvent, Ref, RefObject } from 'react';
 import { useCallback, useLayoutEffect, useMemo } from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
@@ -9,6 +15,14 @@ import MapGL, {
   Source,
   GeolocateControl,
   NavigationControl,
+} from 'react-map-gl/maplibre';
+import type {
+  GeolocateResultEvent,
+  MapLayerMouseEvent,
+  MapLayerTouchEvent,
+  MapRef,
+  MarkerDragEvent,
+  ViewStateChangeEvent,
 } from 'react-map-gl/maplibre';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import {
@@ -32,6 +46,7 @@ import {
   BOTTOM_DRAWER_DEFAULT_SCROLL,
   BOTTOM_DRAWER_MIN_HEIGHT,
 } from '../lib/layout';
+import type { Dispatch, RootState } from '../store';
 
 import './BikehopperMap.css';
 import {
@@ -40,12 +55,24 @@ import {
   DEFAULT_BIKE_COLOR,
   DEFAULT_INACTIVE_COLOR,
 } from '../lib/colors';
+import { RouteResponsePath } from '../lib/BikehopperClient';
 
 const _isTouch = 'ontouchstart' in window;
 
-const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
-  const dispatch = useDispatch();
+type Props = {
+  onMapLoad: () => void;
+  overlayRef: RefObject<HTMLElement>;
+};
+
+type Bbox = [number, number, number, number];
+
+const BikehopperMap = forwardRef(function _BikehopperMap(
+  props: Props,
+  mapRef_: Ref<MapRef>,
+) {
+  const dispatch: Dispatch = useDispatch();
   const intl = useIntl();
+  const mapRef = mapRef_ as RefObject<MapRef>;
   const {
     routeStatus,
     startCoords,
@@ -55,7 +82,7 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
     viewingDetails,
     viewingStep,
   } = useSelector(
-    (state) => ({
+    (state: RootState) => ({
       routes: state.routes.routes,
       routeStatus: state.routes.routeStatus,
       // If we have fetched routes, display start and end markers at the coords
@@ -75,12 +102,20 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
   );
   const prevRouteStatus = usePrevious(routeStatus);
 
-  // If non-null, a [clientX, clientY, lng, lat] of where the context menu is open from.
-  const [contextMenuAt, setContextMenuAt] = useState(null);
+  // If non-null, a [clientX, clientY, lng, lat] of where the context menu is
+  // open from.
+  const [contextMenuAt, setContextMenuAt] = useState<
+    [number, number, number, number] | null
+  >(null);
 
   // MapLibre doesn't natively support long press, so we use a timer to detect it,
   // along with the clientX and clientY of the initial touch.
-  const longPressTimerIdAndPos = useRef(null);
+  type LongPressState = {
+    timer: number;
+    clientX: number;
+    clientY: number;
+  };
+  const longPressTimerIdAndPos = useRef<LongPressState | null>(null);
 
   const resetLongPressTimer = () => {
     if (longPressTimerIdAndPos.current) {
@@ -89,14 +124,17 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
     }
   };
 
-  const handleMapClick = (evt) => {
+  const handleMapClick = (evt: MapLayerMouseEvent) => {
     resetLongPressTimer();
     if (evt.features?.length) {
-      dispatch(routeClicked(evt.features[0].properties.path_index, 'map'));
+      const featureProperties = evt.features[0].properties;
+      if (featureProperties) {
+        dispatch(routeClicked(featureProperties.path_index, 'map'));
+      }
     }
   };
 
-  const handleMapRightClick = (evt) => {
+  const handleMapRightClick = (evt: MapLayerMouseEvent) => {
     resetLongPressTimer();
     setContextMenuAt([
       evt.originalEvent.clientX,
@@ -106,12 +144,17 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
     ]);
   };
 
-  const handleMapLongPress = (clientX, clientY, lng, lat) => {
+  const handleMapLongPress = (
+    clientX: number,
+    clientY: number,
+    lng: number,
+    lat: number,
+  ) => {
     setContextMenuAt([clientX, clientY, lng, lat]);
     resetLongPressTimer();
   };
 
-  const handleTouchStart = (evt) => {
+  const handleTouchStart = (evt: MapLayerTouchEvent) => {
     resetLongPressTimer();
     if (evt.originalEvent.touches.length !== 1) return;
     const { lng, lat } = evt.lngLat;
@@ -126,14 +169,14 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
     };
   };
 
-  const handleTouchMove = (evt) => {
+  const handleTouchMove = (evt: MapLayerTouchEvent) => {
     if (!longPressTimerIdAndPos.current) return;
 
     // Reset long-press timer if finger moved more than a little.
     if (
       isTouchMoveSignificant(
-        longPressTimerIdAndPos.clientX,
-        longPressTimerIdAndPos.clientY,
+        longPressTimerIdAndPos.current.clientX,
+        longPressTimerIdAndPos.current.clientY,
         evt.originalEvent.touches[0].clientX,
         evt.originalEvent.touches[0].clientY,
       )
@@ -142,51 +185,51 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
     }
   };
 
-  const handleContextMenuOpenChange = (isOpen) => {
+  const handleContextMenuOpenChange = (isOpen: boolean) => {
     resetLongPressTimer();
     if (!isOpen) setContextMenuAt(null);
   };
 
-  const handleMouseDown = (evt) => {
+  const handleMouseDown = (evt: MapLayerMouseEvent) => {
     setContextMenuAt(null);
   };
 
-  const handleMoveEnd = (evt) => {
+  const handleMoveEnd = (evt: ViewStateChangeEvent) => {
     resetLongPressTimer();
     setContextMenuAt(null);
     dispatch(mapMoved(evt.viewState));
   };
 
-  const handleMoveStart = (evt) => {
+  const handleMoveStart = (evt: ViewStateChangeEvent) => {
     resetLongPressTimer();
     setContextMenuAt(null);
   };
 
-  const handleDirectionsFromClick = (evt) => {
+  const handleDirectionsFromClick = (evt: MouseEvent) => {
     if (contextMenuAt)
       dispatch(
         locationSelectedOnMap('start', [contextMenuAt[2], contextMenuAt[3]]),
       );
   };
 
-  const handleDirectionsToClick = (evt) => {
+  const handleDirectionsToClick = (evt: MouseEvent) => {
     if (contextMenuAt)
       dispatch(
         locationSelectedOnMap('end', [contextMenuAt[2], contextMenuAt[3]]),
       );
   };
 
-  const handleStartMarkerDrag = (evt) => {
+  const handleStartMarkerDrag = (evt: MarkerDragEvent) => {
     resetLongPressTimer();
     dispatch(locationDragged('start', lngLatToCoords(evt.lngLat)));
   };
 
-  const handleEndMarkerDrag = (evt) => {
+  const handleEndMarkerDrag = (evt: MarkerDragEvent) => {
     resetLongPressTimer();
     dispatch(locationDragged('end', lngLatToCoords(evt.lngLat)));
   };
 
-  const handleGeolocate = (geolocateResultEvent) => {
+  const handleGeolocate = (geolocateResultEvent: GeolocateResultEvent) => {
     dispatch(
       geolocated(geolocateResultEvent.coords, geolocateResultEvent.timestamp),
     );
@@ -199,7 +242,7 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
 
     // Make road labels larger
     mapRef.current
-      .getMap()
+      ?.getMap()
       // This expression is copied over from mapbox-streets-v11 style,
       // but with all the size values increated by 2
       .setLayoutProperty('road-label', 'text-size', [
@@ -247,7 +290,7 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
       ]);
 
     mapRef.current
-      .getMap()
+      ?.getMap()
       .setPaintProperty('road-label', 'text-halo-width', 3);
   };
 
@@ -264,20 +307,17 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
   useLayoutEffect(() => {
     const map = mapRef.current?.getMap();
     const overlayEl = props.overlayRef.current;
-    if (!map || !overlayEl) return;
+    if (!map || !overlayEl || !startCoords || !endCoords) return;
 
     // We only want to center in specific situations
     const haveNewRoutes =
       routes && routeStatus === 'succeeded' && prevRouteStatus !== 'succeeded';
     const newlyFetching =
-      startCoords &&
-      endCoords &&
-      routeStatus === 'fetching' &&
-      prevRouteStatus !== 'fetching';
+      routeStatus === 'fetching' && prevRouteStatus !== 'fetching';
     if (!(haveNewRoutes || newlyFetching)) return;
 
     // Start with the points themselves
-    let bbox = [
+    let bbox: Bbox = [
       Math.min(startCoords[0], endCoords[0]),
       Math.min(startCoords[1], endCoords[1]),
       Math.max(startCoords[0], endCoords[0]),
@@ -285,9 +325,11 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
     ];
 
     // If we have routes, merge all route bounding boxes
-    const routeBboxes = (routes || []).map((path) => path.bbox);
+    const routeBboxes = (routes || []).map(
+      (path: RouteResponsePath) => path.bbox,
+    );
     bbox = routeBboxes.reduce(
-      (acc, cur) => [
+      (acc: Bbox, cur: Bbox) => [
         Math.min(acc[0], cur[0]), // minx
         Math.min(acc[1], cur[1]), // miny
         Math.max(acc[2], cur[2]), // maxx
@@ -316,8 +358,10 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
     // If we only have points, no route yet, then don't zoom if the current
     // view already reasonably shows those points.
     if (!routes) {
-      const { x: startX, y: startY } = map.project(startCoords);
-      const { x: endX, y: endY } = map.project(endCoords);
+      const { x: startX, y: startY } = map.project(
+        startCoords as [number, number],
+      );
+      const { x: endX, y: endY } = map.project(endCoords as [number, number]);
       const w = window.innerWidth;
       const h = window.innerHeight;
 
@@ -342,9 +386,15 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
       if (startVisible && endVisible && reasonablyFarApart) return;
     }
 
-    map.fitBounds([bbox.slice(0, 2), bbox.slice(2)], {
-      padding,
-    });
+    map.fitBounds(
+      [
+        [bbox[0], bbox[1]],
+        [bbox[2], bbox[3]],
+      ],
+      {
+        padding,
+      },
+    );
   }, [
     routes,
     mapRef,
@@ -391,12 +441,11 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
     return routes ? routesToGeoJSON(routes, intl) : EMPTY_GEOJSON;
   }, [routes, intl]);
 
-  const navigationControlStyle = {
-    visibility: mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden',
-  };
+  const navigationControlVisibility =
+    mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden';
 
   const viewState = useSelector(
-    (state) => ({ ...state.viewport }),
+    (state: RootState) => ({ ...state.viewport }),
     shallowEqual,
   );
   const viewStateOnFirstRender = useRef(viewState);
@@ -404,7 +453,6 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
   return (
     <div className="BikehopperMap" ref={resizeRef}>
       <MapGL
-        mapLib={maplibregl}
         initialViewState={viewStateOnFirstRender.current}
         ref={mapRef}
         style={{
@@ -429,11 +477,11 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
         onClick={handleMapClick}
         onContextMenu={handleMapRightClick}
         onMoveEnd={handleMoveEnd}
-        onMoveStart={_isTouch ? handleMoveStart : null}
-        onTouchStart={_isTouch ? handleTouchStart : null}
-        onTouchMove={_isTouch ? handleTouchMove : null}
-        onTouchEnd={_isTouch ? resetLongPressTimer : null}
-        onTouchCancel={_isTouch ? resetLongPressTimer : null}
+        onMoveStart={_isTouch ? handleMoveStart : undefined}
+        onTouchStart={_isTouch ? handleTouchStart : undefined}
+        onTouchMove={_isTouch ? handleTouchMove : undefined}
+        onTouchEnd={_isTouch ? resetLongPressTimer : undefined}
+        onTouchCancel={_isTouch ? resetLongPressTimer : undefined}
       >
         <GeolocateControl
           trackUserLocation={true}
@@ -441,7 +489,7 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
         />
         <NavigationControl
           showZoom={false}
-          style={{ ...navigationControlStyle }}
+          style={{ visibility: navigationControlVisibility }}
         />
 
         <Source id="routeSource" type="geojson" data={features}>
@@ -478,29 +526,26 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
         </Source>
         {startCoords && (
           <Marker
-            id="startMarker"
             longitude={startCoords[0]}
             latitude={startCoords[1]}
             draggable={true}
-            onDragStart={_isTouch ? resetLongPressTimer : null}
+            onDragStart={_isTouch ? resetLongPressTimer : undefined}
             onDragEnd={handleStartMarkerDrag}
             color="#2fa7cc"
           />
         )}
         {endCoords && (
           <Marker
-            id="endMarker"
             longitude={endCoords[0]}
             latitude={endCoords[1]}
             draggable={true}
-            onDragStart={_isTouch ? resetLongPressTimer : null}
+            onDragStart={_isTouch ? resetLongPressTimer : undefined}
             onDragEnd={handleEndMarkerDrag}
             color="#ea526f"
           />
         )}
         {contextMenuAt && (
           <Marker
-            id="contextMenuMarker"
             longitude={contextMenuAt[2]}
             latitude={contextMenuAt[3]}
             color={'#fcd34d' /* tailwind amber-300 */}
@@ -516,10 +561,12 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
           <div
             className="pointer-events-none fixed"
             style={
-              contextMenuAt && {
-                left: contextMenuAt[0],
-                top: contextMenuAt[1],
-              }
+              contextMenuAt
+                ? {
+                    left: contextMenuAt[0],
+                    top: contextMenuAt[1],
+                  }
+                : undefined
             }
           >
             {/* not used, real trigger is the map itself */}
@@ -574,7 +621,9 @@ const BikehopperMap = forwardRef(function _BikehopperMap(props, mapRef) {
   );
 });
 
-function getInactiveStyle(activePath) {
+function getInactiveStyle(
+  activePath: number | null,
+): Omit<LineLayerSpecification, 'source'> {
   return {
     id: 'inactiveLayer',
     type: 'line',
@@ -589,7 +638,9 @@ function getInactiveStyle(activePath) {
   };
 }
 
-function getTransitionStyle(activePath) {
+function getTransitionStyle(
+  activePath: number | null,
+): Omit<LineLayerSpecification, 'source'> {
   return {
     id: 'transitionLayer',
     type: 'line',
@@ -607,7 +658,9 @@ function getTransitionStyle(activePath) {
   };
 }
 
-function getTransitStyle(activePath) {
+function getTransitStyle(
+  activePath: number | null,
+): Omit<LineLayerSpecification, 'source'> {
   return {
     id: 'transitLayer',
     type: 'line',
@@ -622,7 +675,9 @@ function getTransitStyle(activePath) {
   };
 }
 
-function getStandardBikeStyle(activePath) {
+function getStandardBikeStyle(
+  activePath: number | null,
+): Omit<LineLayerSpecification, 'source'> {
   return {
     id: 'standardBikeLayer',
     type: 'line',
@@ -646,7 +701,9 @@ function getStandardBikeStyle(activePath) {
   };
 }
 
-function getSharedLaneStyle(activePath) {
+function getSharedLaneStyle(
+  activePath: number | null,
+): Omit<LineLayerSpecification, 'source'> {
   return {
     id: 'sharedLaneLayer',
     type: 'line',
@@ -670,7 +727,9 @@ function getSharedLaneStyle(activePath) {
   };
 }
 
-function getTransitLabelStyle(activePath) {
+function getTransitLabelStyle(
+  activePath: number | null,
+): Omit<SymbolLayerSpecification, 'source'> {
   return {
     id: 'transitLabelLayer',
     type: 'symbol',
@@ -689,7 +748,9 @@ function getTransitLabelStyle(activePath) {
   };
 }
 
-function getBikeLabelStyle(activePath) {
+function getBikeLabelStyle(
+  activePath: number | null,
+): Omit<SymbolLayerSpecification, 'source'> {
   return {
     id: 'bikeLabelLayer',
     type: 'symbol',
@@ -708,13 +769,13 @@ function getBikeLabelStyle(activePath) {
 }
 
 function getLegOutlineStyle(
-  layerId,
-  activePath,
-  lineColor,
-  lineWidth,
-  blur,
-  opacity,
-) {
+  layerId: string,
+  activePath: number | null,
+  lineColor: string,
+  lineWidth: number,
+  blur: boolean,
+  opacity: number,
+): Omit<LineLayerSpecification, 'source'> {
   return {
     id: layerId,
     type: 'line',
@@ -731,11 +792,13 @@ function getLegOutlineStyle(
   };
 }
 
-function getTransitColorStyle(colorKey = 'route_color') {
+function getTransitColorStyle(
+  colorKey = 'route_color',
+): ExpressionSpecification {
   return ['to-color', ['get', colorKey]];
 }
 
-const bikeColorStyle = [
+const bikeColorStyle: ExpressionSpecification = [
   'to-color',
   [
     'case',
@@ -751,8 +814,8 @@ const bikeColorStyle = [
   ],
 ];
 
-function getLabelTextField() {
-  const text = [
+function getLabelTextField(): ExpressionSpecification {
+  const text: ExpressionSpecification = [
     'case',
     // If bike infra info, display it!
     hasProp('bike_infra', ''),
@@ -763,20 +826,29 @@ function getLabelTextField() {
   return ['format', text];
 }
 
-function hasProp(key, ...negativeValues) {
+function hasProp(
+  key: string,
+  ...negativeValues: string[]
+): ExpressionSpecification {
   return ['all', ['has', key], ['!', propIs(key, ...negativeValues)]];
 }
 
-function propIs(key, ...values) {
+function propIs(key: string, ...values: string[]): ExpressionSpecification {
   if (values?.length === 1) {
     return ['==', ['get', key], values[0]];
   }
 
-  return ['any', ...values.map((v) => ['==', ['get', key], v])];
+  const matchers: ExpressionSpecification[] = values.map((v) => [
+    '==',
+    ['get', key],
+    v,
+  ]);
+
+  return ['any', ...matchers];
 }
 
-function pathIndexIs(index) {
-  return ['==', ['get', 'path_index'], index];
+function pathIndexIs(index: number | null): ExpressionFilterSpecification {
+  return index == null ? false : ['==', ['get', 'path_index'], index];
 }
 
 export default BikehopperMap;

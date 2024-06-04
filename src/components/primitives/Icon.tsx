@@ -1,4 +1,5 @@
 import classnames from 'classnames';
+import type { ReactNode } from 'react';
 
 // Usage:
 // import Blah from 'iconoir/icons/blah.svg?react';
@@ -13,14 +14,21 @@ import classnames from 'classnames';
 //      equivalent text next to it, do nothing.
 //     <p><Icon><Bicycle /></Icon>Ride a bike for 2 minutes</p>
 
-export default function Icon(props) {
+type Props = {
+  className?: string;
+  children?: ReactNode;
+  flipHorizontally?: boolean;
+  label?: string;
+};
+
+export default function Icon(props: Props) {
   return (
     <span
       aria-hidden={!props.label}
       aria-label={props.label}
       className={classnames({
         '-scale-x-100': props.flipHorizontally,
-        [props.className]: !!props.className,
+        [props.className || '']: !!props.className,
       })}
     >
       {props.children}

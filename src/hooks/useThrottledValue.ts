@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
-export default function useThrottledValue(value, wait) {
+export default function useThrottledValue<T>(value: T, wait: number) {
   const [throttledValue, setThrottledValue] = useState(value);
   const lastSetRef = useRef(0);
 

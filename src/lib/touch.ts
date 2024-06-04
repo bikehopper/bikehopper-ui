@@ -1,9 +1,9 @@
 export function isTouchMoveSignificant(
-  firstClientX,
-  firstClientY,
-  secondClientX,
-  secondClientY,
-) {
+  firstClientX: number,
+  firstClientY: number,
+  secondClientX: number,
+  secondClientY: number,
+): boolean {
   // This is almost trivial, but we needed it in two places, so why not extract it and
   // make sure the threshold is consistent?
   const dx = secondClientX - firstClientX;

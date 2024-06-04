@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import type { FocusEvent } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { IntlProvider } from 'react-intl';
+import type { MessageFormatElement } from 'react-intl';
+import type { OnErrorFn } from '@formatjs/intl';
 import { Transition } from '@headlessui/react';
 import AlertBar from './AlertBar';
 import DirectionsNullState from './DirectionsNullState';
@@ -12,13 +15,19 @@ import {
   LocationSourceType,
   enterDestinationFocused,
 } from '../features/routeParams';
+import { RootState } from '../store';
 
 import './App.css';
 
-function App(props) {
+type Props = {
+  locale: string;
+  messages: Record<string, MessageFormatElement[]>;
+};
+
+function App(props: Props) {
   const { hasRoutes, hasLocations, isEditingLocations, viewingDetails } =
     useSelector(
-      (state) => ({
+      (state: RootState) => ({
         hasLocations: !!(
           state.routeParams.end ||
           (state.routeParams.start &&
@@ -34,7 +43,7 @@ function App(props) {
 
   const dispatch = useDispatch();
 
-  const handleBottomInputFocus = (evt) => {
+  const handleBottomInputFocus = (evt: FocusEvent) => {
     // Scroll up to counteract iOS Safari scrolling down towards the input.
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
@@ -99,7 +108,7 @@ function App(props) {
   );
 }
 
-function handleDebugIntlError(err) {
+const handleDebugIntlError: OnErrorFn = (err) => {
   // By default, react-intl spams the console with "Missing message" errors when you're
   // developing. Suppress these.
   if (err.code === 'MISSING_TRANSLATION') {
@@ -107,6 +116,6 @@ function handleDebugIntlError(err) {
   }
   // Print other errors.
   console.error(err);
-}
+};
 
 export default App;

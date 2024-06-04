@@ -5,7 +5,7 @@ import useThrottledValue from './useThrottledValue';
 //
 // Usage:
 //
-// const doStuffWithSize = useCallback((width, height) =>
+// const doStuffWithSize = useCallback(([width, height]) =>
 //   { /* use width and height */ }
 // );
 // const resizeRef = useResizeObserver(doStuffWithSize);
@@ -15,12 +15,15 @@ import useThrottledValue from './useThrottledValue';
 // Caution: this hook does not call the callback with the initial size when
 // first attaching to a node.
 
-export default function useResizeObserver(callback, throttleWait = 200) {
-  const [dimensionString, setDimensionString] = useState(null);
-  const observerRef = useRef(null);
-  const nodeRef = useRef(null);
+export default function useResizeObserver(
+  callback: (dimensions: [number, number]) => void,
+  throttleWait = 200,
+) {
+  const [dimensionString, setDimensionString] = useState<string | null>(null);
+  const observerRef = useRef<ResizeObserver | null>(null);
+  const nodeRef = useRef<Element | null>(null);
 
-  const nodeCallbackRef = useCallback((newNode) => {
+  const nodeCallbackRef = useCallback((newNode: Element | null) => {
     if (observerRef.current) {
       if (nodeRef.current) observerRef.current.unobserve(nodeRef.current);
       if (newNode) observerRef.current.observe(newNode);
@@ -46,8 +49,10 @@ export default function useResizeObserver(callback, throttleWait = 200) {
     }
 
     return () => {
-      observerRef.current.disconnect();
-      observerRef.current = null;
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
     };
   }, [nodeRef]);
 
@@ -60,7 +65,7 @@ export default function useResizeObserver(callback, throttleWait = 200) {
     if (observerRef.current)
       callback(
         throttledDimensionString
-          ? throttledDimensionString.split('x')
+          ? (throttledDimensionString.split('x') as any)
           : [null, null],
       );
   }, [callback, throttledDimensionString]);

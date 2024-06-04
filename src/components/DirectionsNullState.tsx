@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import type { FocusEvent, ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import MagnifyingGlass from 'iconoir/icons/search.svg?react';
 import Icon from './primitives/Icon';
@@ -6,13 +7,17 @@ import { SupportedRegionText } from '../lib/region';
 
 import './DirectionsNullState.css';
 
-export default function DirectionsNullState(props) {
+type Props = {
+  onInputFocus?: (evt: FocusEvent) => void;
+};
+
+export default function DirectionsNullState(props: Props) {
   const intl = useIntl();
 
   // The <input> rendered here is fake: its only function is to get focused and then
   // switch to a different UI that has the real input box.
 
-  const strong = useCallback((jsx) => <strong>{jsx}</strong>, []);
+  const strong = useCallback((jsx: ReactNode) => <strong>{jsx}</strong>, []);
 
   return (
     <article className="prose prose-sm md:prose-base lg:prose-lg max-w-none m-6">
