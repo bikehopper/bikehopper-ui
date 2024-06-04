@@ -1,4 +1,9 @@
-import maplibregl from 'maplibre-gl';
+import type {
+  ExpressionFilterSpecification,
+  ExpressionSpecification,
+  LineLayerSpecification,
+  SymbolLayerSpecification,
+} from '@maplibre/maplibre-gl-style-spec';
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import type { MouseEvent, Ref, RefObject } from 'react';
 import { useCallback, useLayoutEffect, useMemo } from 'react';
@@ -13,7 +18,6 @@ import MapGL, {
 } from 'react-map-gl/maplibre';
 import type {
   GeolocateResultEvent,
-  MapEvent,
   MapLayerMouseEvent,
   MapLayerTouchEvent,
   MapRef,
@@ -51,6 +55,7 @@ import {
   DEFAULT_BIKE_COLOR,
   DEFAULT_INACTIVE_COLOR,
 } from '../lib/colors';
+import { RouteResponsePath } from '../lib/BikehopperClient';
 
 const _isTouch = 'ontouchstart' in window;
 
@@ -59,17 +64,15 @@ type Props = {
   overlayRef: RefObject<HTMLElement>;
 };
 
+type Bbox = [number, number, number, number];
+
 const BikehopperMap = forwardRef(function _BikehopperMap(
   props: Props,
-  mapRef: Ref<MapRef>,
+  mapRef_: Ref<MapRef>,
 ) {
-  if (!mapRef || !('current' in mapRef) || !mapRef.current) {
-    // TODO: handle nulls
-    return;
-  }
-
   const dispatch: Dispatch = useDispatch();
   const intl = useIntl();
+  const mapRef: RefObject<MapRef> = mapRef_ as RefObject<MapRef>;
   const {
     routeStatus,
     startCoords,
@@ -304,20 +307,17 @@ const BikehopperMap = forwardRef(function _BikehopperMap(
   useLayoutEffect(() => {
     const map = mapRef.current?.getMap();
     const overlayEl = props.overlayRef.current;
-    if (!map || !overlayEl) return;
+    if (!map || !overlayEl || !startCoords || !endCoords) return;
 
     // We only want to center in specific situations
     const haveNewRoutes =
       routes && routeStatus === 'succeeded' && prevRouteStatus !== 'succeeded';
     const newlyFetching =
-      startCoords &&
-      endCoords &&
-      routeStatus === 'fetching' &&
-      prevRouteStatus !== 'fetching';
+      routeStatus === 'fetching' && prevRouteStatus !== 'fetching';
     if (!(haveNewRoutes || newlyFetching)) return;
 
     // Start with the points themselves
-    let bbox = [
+    let bbox: Bbox = [
       Math.min(startCoords[0], endCoords[0]),
       Math.min(startCoords[1], endCoords[1]),
       Math.max(startCoords[0], endCoords[0]),
@@ -325,9 +325,11 @@ const BikehopperMap = forwardRef(function _BikehopperMap(
     ];
 
     // If we have routes, merge all route bounding boxes
-    const routeBboxes = (routes || []).map((path) => path.bbox);
+    const routeBboxes = (routes || []).map(
+      (path: RouteResponsePath) => path.bbox,
+    );
     bbox = routeBboxes.reduce(
-      (acc, cur) => [
+      (acc: Bbox, cur: Bbox) => [
         Math.min(acc[0], cur[0]), // minx
         Math.min(acc[1], cur[1]), // miny
         Math.max(acc[2], cur[2]), // maxx
@@ -356,8 +358,10 @@ const BikehopperMap = forwardRef(function _BikehopperMap(
     // If we only have points, no route yet, then don't zoom if the current
     // view already reasonably shows those points.
     if (!routes) {
-      const { x: startX, y: startY } = map.project(startCoords);
-      const { x: endX, y: endY } = map.project(endCoords);
+      const { x: startX, y: startY } = map.project(
+        startCoords as [number, number],
+      );
+      const { x: endX, y: endY } = map.project(endCoords as [number, number]);
       const w = window.innerWidth;
       const h = window.innerHeight;
 
@@ -382,9 +386,15 @@ const BikehopperMap = forwardRef(function _BikehopperMap(
       if (startVisible && endVisible && reasonablyFarApart) return;
     }
 
-    map.fitBounds([bbox.slice(0, 2), bbox.slice(2)], {
-      padding,
-    });
+    map.fitBounds(
+      [
+        [bbox[0], bbox[1]],
+        [bbox[2], bbox[3]],
+      ],
+      {
+        padding,
+      },
+    );
   }, [
     routes,
     mapRef,
@@ -431,12 +441,11 @@ const BikehopperMap = forwardRef(function _BikehopperMap(
     return routes ? routesToGeoJSON(routes, intl) : EMPTY_GEOJSON;
   }, [routes, intl]);
 
-  const navigationControlStyle = {
-    visibility: mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden',
-  };
+  const navigationControlVisibility =
+    mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden';
 
-  const viewState = useSelector<RootState, RootState['viewport']>(
-    (state) => ({ ...state.viewport }),
+  const viewState = useSelector(
+    (state: RootState) => ({ ...state.viewport }),
     shallowEqual,
   );
   const viewStateOnFirstRender = useRef(viewState);
@@ -444,7 +453,6 @@ const BikehopperMap = forwardRef(function _BikehopperMap(
   return (
     <div className="BikehopperMap" ref={resizeRef}>
       <MapGL
-        mapLib={maplibregl}
         initialViewState={viewStateOnFirstRender.current}
         ref={mapRef}
         style={{
@@ -481,7 +489,7 @@ const BikehopperMap = forwardRef(function _BikehopperMap(
         />
         <NavigationControl
           showZoom={false}
-          style={{ ...navigationControlStyle }}
+          style={{ visibility: navigationControlVisibility }}
         />
 
         <Source id="routeSource" type="geojson" data={features}>
@@ -518,29 +526,26 @@ const BikehopperMap = forwardRef(function _BikehopperMap(
         </Source>
         {startCoords && (
           <Marker
-            id="startMarker"
             longitude={startCoords[0]}
             latitude={startCoords[1]}
             draggable={true}
-            onDragStart={_isTouch ? resetLongPressTimer : null}
+            onDragStart={_isTouch ? resetLongPressTimer : undefined}
             onDragEnd={handleStartMarkerDrag}
             color="#2fa7cc"
           />
         )}
         {endCoords && (
           <Marker
-            id="endMarker"
             longitude={endCoords[0]}
             latitude={endCoords[1]}
             draggable={true}
-            onDragStart={_isTouch ? resetLongPressTimer : null}
+            onDragStart={_isTouch ? resetLongPressTimer : undefined}
             onDragEnd={handleEndMarkerDrag}
             color="#ea526f"
           />
         )}
         {contextMenuAt && (
           <Marker
-            id="contextMenuMarker"
             longitude={contextMenuAt[2]}
             latitude={contextMenuAt[3]}
             color={'#fcd34d' /* tailwind amber-300 */}
@@ -556,10 +561,12 @@ const BikehopperMap = forwardRef(function _BikehopperMap(
           <div
             className="pointer-events-none fixed"
             style={
-              contextMenuAt && {
-                left: contextMenuAt[0],
-                top: contextMenuAt[1],
-              }
+              contextMenuAt
+                ? {
+                    left: contextMenuAt[0],
+                    top: contextMenuAt[1],
+                  }
+                : undefined
             }
           >
             {/* not used, real trigger is the map itself */}
@@ -614,7 +621,9 @@ const BikehopperMap = forwardRef(function _BikehopperMap(
   );
 });
 
-function getInactiveStyle(activePath) {
+function getInactiveStyle(
+  activePath: number | null,
+): Omit<LineLayerSpecification, 'source'> {
   return {
     id: 'inactiveLayer',
     type: 'line',
@@ -629,7 +638,9 @@ function getInactiveStyle(activePath) {
   };
 }
 
-function getTransitionStyle(activePath) {
+function getTransitionStyle(
+  activePath: number | null,
+): Omit<LineLayerSpecification, 'source'> {
   return {
     id: 'transitionLayer',
     type: 'line',
@@ -647,7 +658,9 @@ function getTransitionStyle(activePath) {
   };
 }
 
-function getTransitStyle(activePath) {
+function getTransitStyle(
+  activePath: number | null,
+): Omit<LineLayerSpecification, 'source'> {
   return {
     id: 'transitLayer',
     type: 'line',
@@ -662,7 +675,9 @@ function getTransitStyle(activePath) {
   };
 }
 
-function getStandardBikeStyle(activePath) {
+function getStandardBikeStyle(
+  activePath: number | null,
+): Omit<LineLayerSpecification, 'source'> {
   return {
     id: 'standardBikeLayer',
     type: 'line',
@@ -686,7 +701,9 @@ function getStandardBikeStyle(activePath) {
   };
 }
 
-function getSharedLaneStyle(activePath) {
+function getSharedLaneStyle(
+  activePath: number | null,
+): Omit<LineLayerSpecification, 'source'> {
   return {
     id: 'sharedLaneLayer',
     type: 'line',
@@ -710,7 +727,9 @@ function getSharedLaneStyle(activePath) {
   };
 }
 
-function getTransitLabelStyle(activePath) {
+function getTransitLabelStyle(
+  activePath: number | null,
+): Omit<SymbolLayerSpecification, 'source'> {
   return {
     id: 'transitLabelLayer',
     type: 'symbol',
@@ -729,7 +748,9 @@ function getTransitLabelStyle(activePath) {
   };
 }
 
-function getBikeLabelStyle(activePath) {
+function getBikeLabelStyle(
+  activePath: number | null,
+): Omit<SymbolLayerSpecification, 'source'> {
   return {
     id: 'bikeLabelLayer',
     type: 'symbol',
@@ -748,13 +769,13 @@ function getBikeLabelStyle(activePath) {
 }
 
 function getLegOutlineStyle(
-  layerId,
-  activePath,
-  lineColor,
-  lineWidth,
-  blur,
-  opacity,
-) {
+  layerId: string,
+  activePath: number | null,
+  lineColor: string,
+  lineWidth: number,
+  blur: boolean,
+  opacity: number,
+): Omit<LineLayerSpecification, 'source'> {
   return {
     id: layerId,
     type: 'line',
@@ -771,11 +792,13 @@ function getLegOutlineStyle(
   };
 }
 
-function getTransitColorStyle(colorKey = 'route_color') {
+function getTransitColorStyle(
+  colorKey = 'route_color',
+): ExpressionSpecification {
   return ['to-color', ['get', colorKey]];
 }
 
-const bikeColorStyle = [
+const bikeColorStyle: ExpressionSpecification = [
   'to-color',
   [
     'case',
@@ -791,8 +814,8 @@ const bikeColorStyle = [
   ],
 ];
 
-function getLabelTextField() {
-  const text = [
+function getLabelTextField(): ExpressionSpecification {
+  const text: ExpressionSpecification = [
     'case',
     // If bike infra info, display it!
     hasProp('bike_infra', ''),
@@ -803,20 +826,29 @@ function getLabelTextField() {
   return ['format', text];
 }
 
-function hasProp(key, ...negativeValues) {
+function hasProp(
+  key: string,
+  ...negativeValues: string[]
+): ExpressionSpecification {
   return ['all', ['has', key], ['!', propIs(key, ...negativeValues)]];
 }
 
-function propIs(key, ...values) {
+function propIs(key: string, ...values: string[]): ExpressionSpecification {
   if (values?.length === 1) {
     return ['==', ['get', key], values[0]];
   }
 
-  return ['any', ...values.map((v) => ['==', ['get', key], v])];
+  const matchers: ExpressionSpecification[] = values.map((v) => [
+    '==',
+    ['get', key],
+    v,
+  ]);
+
+  return ['any', ...matchers];
 }
 
-function pathIndexIs(index) {
-  return ['==', ['get', 'path_index'], index];
+function pathIndexIs(index: number | null): ExpressionFilterSpecification {
+  return index == null ? false : ['==', ['get', 'path_index'], index];
 }
 
 export default BikehopperMap;
