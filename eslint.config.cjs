@@ -1,4 +1,8 @@
 module.exports = {
+  files: ['src/**/*.js', 'src/**/*.jsx', 'src/**/*.ts', 'src/**/*.tsx'],
+  linterOptions: {
+    reportUnusedDisableDirectives: 'error',
+  },
   env: { browser: true, es2020: true },
   extends: [
     'eslint:recommended',
