@@ -267,13 +267,14 @@ type PhotonProperties = {
   street?: string;
   housenumber?: string;
   postcode?: string;
+  city?: string;
   state?: string;
   country?: string;
   countrycode?: string;
   osm_key: string;
   osm_value: string;
   osm_type: string;
-  osm_id: string;
+  osm_id: number;
   type?: string /** can be street or house, etc */;
 };
 
