@@ -1,4 +1,5 @@
 import Icon from './primitives/Icon';
+import type { PhotonOsmHash } from '../lib/BikehopperClient';
 
 import Building from 'iconoir/icons/building.svg?react';
 import Chocolate from 'iconoir/icons/chocolate.svg?react';
@@ -25,7 +26,21 @@ import Trekking from 'iconoir/icons/trekking.svg?react';
  * An icon to represent a place (place prop = GeoJSON result hash from Photon).
  */
 
-export default function PlaceIcon({ place, width, height, className, label }) {
+type Props = {
+  place: GeoJSON.Feature<GeoJSON.Point> | PhotonOsmHash;
+  width?: number;
+  height?: number;
+  className?: string;
+  label?: string;
+};
+
+export default function PlaceIcon({
+  place,
+  width,
+  height,
+  className,
+  label,
+}: Props) {
   const IconSvg = _getSvgComponentForFeature(place);
 
   // It seems if we supply an undefined or null width and height prop, it gets
@@ -41,7 +56,9 @@ export default function PlaceIcon({ place, width, height, className, label }) {
   );
 }
 
-function _getSvgComponentForFeature(feature) {
+function _getSvgComponentForFeature(
+  feature?: GeoJSON.Feature<GeoJSON.Point> | PhotonOsmHash,
+) {
   const { osm_key: key, osm_value: value, type } = feature?.properties || {};
 
   let Klass = Pin;
