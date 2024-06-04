@@ -6,7 +6,12 @@ module.exports = {
     'plugin:react/jsx-runtime',
     'plugin:react-hooks/recommended',
   ],
-  parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+    tsConfigRootDir: __dirname,
+    project: true,
+  },
   settings: { react: { version: '18.2' } },
   plugins: ['formatjs', 'react-refresh'],
   rules: {
@@ -22,20 +27,25 @@ module.exports = {
     'formatjs/no-id': 'error',
     'formatjs/no-literal-string-in-jsx': 'warn',
     'react-refresh/only-export-components': 'warn',
-    'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': ['warn', { args: 'none' }],
+    'no-unused-vars': ['warn', { args: 'none' }],
     'react/prop-types': 'off',
     'react/jsx-key': 'warn',
     'no-empty': ['warn', { allowEmptyCatch: true }],
     'no-constant-condition': 'warn',
     'require-await': 'warn',
-    'no-undef': 'off', // handled by TypeScript
   },
   overrides: [
     {
       files: ['*.{ts,tsx}'],
       parser: '@typescript-eslint/parser',
       plugins: ['@typescript-eslint'],
+      // TODO: extend 'plugin:@typescript-eslint/recommended-type-checked'
+      //  (will add a bunch of errors to fix)
+      rules: {
+        'no-undef': 'off', // handled by TypeScript
+        'no-unused-vars': 'off',
+        '@typescript-eslint/no-unused-vars': ['warn', { args: 'none' }],
+      },
     },
   ],
 };

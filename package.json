@@ -51,7 +51,7 @@
     "start": "vite",
     "build": "npm run lint && vite build",
     "serve": "vite preview",
-    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0 && npx tsc",
+    "lint": "eslint src --ext js,jsx,ts,tsx --report-unused-disable-directives --max-warnings 0 && npx tsc",
     "extract": "formatjs extract 'src/**/*.{js,jsx}' --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
     "compile": "formatjs compile",
     "prepare": "husky"

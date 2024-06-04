@@ -8,6 +8,8 @@
     "jsx": "preserve",
     "moduleResolution": "Bundler",
     "noImplicitAny": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "strict": true,
     "skipLibCheck": true,
     "types": ["vite/client"]
