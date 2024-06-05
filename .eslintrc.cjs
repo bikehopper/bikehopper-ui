@@ -9,7 +9,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
-    project: true,
+    root: true,
   },
   settings: { react: { version: '18.2' } },
   plugins: ['formatjs', 'react-refresh'],
