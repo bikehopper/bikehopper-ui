@@ -10,7 +10,7 @@
 // around in (direct) response to the state in this reducer, only vice versa.
 
 import type { Action } from 'redux';
-import type { ViewState } from 'react-map-gl';
+import type { ViewState } from 'react-map-gl/maplibre';
 import * as geoViewport from '@placemarkio/geo-viewport';
 import { DEFAULT_VIEWPORT_BOUNDS } from '../lib/region';
 import type { BikeHopperAction } from '../store';

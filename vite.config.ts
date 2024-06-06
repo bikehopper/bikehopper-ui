@@ -12,19 +12,9 @@ export default defineConfig(() => {
         output: {
           manualChunks: {
             'maplibre-gl': ['maplibre-gl'],
-            '@nivo': ['@nivo/core', '@nivo/line'],
-            '@turf': [
-              '@turf/bezier-spline',
-              '@turf/boolean-point-in-polygon',
-              '@turf/buffer',
-              '@turf/convex',
-              '@turf/distance',
-              '@turf/helpers',
-              '@turf/length',
-              '@turf/line-slice-along',
-              '@turf/meta',
-              '@turf/transform-rotate',
-            ],
+            'react-map-gl': ['react-map-gl/maplibre'],
+            react: ['react', 'react-dom/client', 'react-redux', 'react-intl'],
+            '@nivo': ['@nivo/line'],
           },
         },
       },
