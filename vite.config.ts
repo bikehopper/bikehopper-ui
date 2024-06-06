@@ -12,7 +12,6 @@ export default defineConfig(() => {
         output: {
           manualChunks: {
             'maplibre-gl': ['maplibre-gl'],
-            gpx2fit: ['gpx2fit'],
             '@nivo': ['@nivo/core', '@nivo/line'],
             '@turf': [
               '@turf/bezier-spline',
