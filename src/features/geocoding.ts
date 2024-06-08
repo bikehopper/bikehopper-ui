@@ -1,7 +1,7 @@
 import produce from 'immer';
 import uniqBy from 'lodash/uniqBy';
 import type { Action } from 'redux';
-import * as BikehopperClient from '../lib/BikehopperClient';
+import * as BikeHopperClient from '../lib/BikeHopperClient';
 import delay from '../lib/delay';
 import type { BikeHopperAction, BikeHopperThunkAction } from '../store';
 
@@ -40,7 +40,7 @@ export type GeocodingState = {
   // attributes. If status is 'fetching', osmIds may still be present but
   // stale, from an older fetch.
   typeaheadCache: Record<string, OsmCacheItem>;
-  osmCache: Record<OsmId, BikehopperClient.PhotonOsmHash>;
+  osmCache: Record<OsmId, BikeHopperClient.PhotonOsmHash>;
   recentlyUsed: RecentlyUsedItem[];
 };
 
@@ -159,7 +159,7 @@ type GeocodeAttemptedAction = Action<'geocode_attempted'> & {
 type GeocodeSucceededAction = Action<'geocode_succeeded'> & {
   text: string;
   time: number;
-  features: BikehopperClient.PhotonOsmHash[];
+  features: BikeHopperClient.PhotonOsmHash[];
 };
 
 type GeocodeFailedAction = Action<'geocode_failed'> & {
@@ -210,7 +210,7 @@ export function geocodeTypedLocation(
 
     let result;
     try {
-      result = await BikehopperClient.geocode(text, {
+      result = await BikeHopperClient.geocode(text, {
         latitude,
         longitude,
         zoom,
@@ -218,7 +218,7 @@ export function geocodeTypedLocation(
       });
     } catch (e) {
       let failureType, alertMsg;
-      if (e instanceof BikehopperClient.BikehopperClientError) {
+      if (e instanceof BikeHopperClient.BikeHopperClientError) {
         failureType = 'server error';
         alertMsg = 'Server error';
       } else {

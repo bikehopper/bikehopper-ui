@@ -13,7 +13,7 @@ function getApiPath(): string {
 
 const POINT_PRECISION = 5;
 
-export class BikehopperClientError extends Error {
+export class BikeHopperClientError extends Error {
   code: number;
   json: any;
 
@@ -24,7 +24,7 @@ export class BikehopperClientError extends Error {
       json = response.json();
     } catch (e) {}
     this.code = response.status;
-    this.name = 'BikehopperClientError';
+    this.name = 'BikeHopperClientError';
     this.json = json;
   }
 }
@@ -89,7 +89,7 @@ export async function fetchRoute({
     signal,
   });
 
-  if (!route.ok) throw new BikehopperClientError(route);
+  if (!route.ok) throw new BikeHopperClientError(route);
 
   return parse(await route.json());
 }
@@ -339,7 +339,7 @@ export async function geocode(
     signal,
   });
 
-  if (!geocoding.ok) throw new BikehopperClientError(geocoding);
+  if (!geocoding.ok) throw new BikeHopperClientError(geocoding);
 
   return geocoding.json();
 }

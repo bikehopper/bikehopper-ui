@@ -1,5 +1,5 @@
 import Icon from './primitives/Icon';
-import type { PhotonOsmHash } from '../lib/BikehopperClient';
+import type { PhotonOsmHash } from '../lib/BikeHopperClient';
 
 import Building from 'iconoir/icons/building.svg?react';
 import Chocolate from 'iconoir/icons/chocolate.svg?react';

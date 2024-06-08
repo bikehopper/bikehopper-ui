@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import Icon from './primitives/Icon';
-import type { RouteResponsePath } from '../lib/BikehopperClient';
+import type { RouteResponsePath } from '../lib/BikeHopperClient';
 import { fitFileGenerationFailed } from '../features/misc.js';
 import ModalDialog from './primitives/ModalDialog';
 
