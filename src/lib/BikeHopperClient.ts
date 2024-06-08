@@ -95,7 +95,7 @@ export async function fetchRoute({
   return parse(await route.json());
 }
 
-type RouteInstruction = {
+export type RouteInstruction = {
   text: string;
   street_name?: string;
   distance: number;
@@ -125,7 +125,7 @@ type BikeLegRaw = BikeLegBase & {
   departure_time?: string; // ISO-8601
   arrival_time?: string; // ISO-8601
 };
-type BikeLeg = BikeLegBase & {
+export type BikeLeg = BikeLegBase & {
   departure_time?: Date;
   arrival_time?: Date;
   has_steps?: boolean;
@@ -156,7 +156,7 @@ type TransitLegRaw = TransitLegBase & {
   departure_time?: string; // ISO-8601
   arrival_time?: string; // ISO-8601
 };
-type TransitLeg = TransitLegBase & {
+export type TransitLeg = TransitLegBase & {
   departure_time?: Date;
   arrival_time?: Date;
 };
