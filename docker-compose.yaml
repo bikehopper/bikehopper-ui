@@ -5,7 +5,7 @@ services:
     env_file:
       - path: .env.development.local
         required: true
-    image: node
+    image: node:20
     labels:
       - 'app=bikehopper-ui-setup'
     volumes:
@@ -17,7 +17,11 @@ services:
     env_file:
       - path: .env.development.local
         required: true
-    image: node
+    environment:
+      OPEN_BROWSER: false
+    image: node:20
+    stdin_open: true
+    tty: true
     labels:
       - 'app=bikehopper-ui-dev'
     volumes:
