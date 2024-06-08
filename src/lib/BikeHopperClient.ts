@@ -6,8 +6,9 @@ import { Mode } from './TransitModes';
 
 function getApiPath(): string {
   const apiDomain = import.meta.env.VITE_API_DOMAIN;
-  // If not running on one of the above domains, default to making API requests
-  // to same domain, which is what we generally want for development.
+  // If the env var is not defined, default to making API requests
+  // to same domain, which is what we generally want for development
+  // (Vite will proxy to staging).
   return apiDomain || '';
 }
 
