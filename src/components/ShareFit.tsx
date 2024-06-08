@@ -3,17 +3,17 @@ import { useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import Icon from './primitives/Icon';
-import type { RouteResponsePath } from '../lib/BikeHopperClient';
+import type { BikeLeg } from '../lib/BikeHopperClient';
 import { fitFileGenerationFailed } from '../features/misc.js';
 import ModalDialog from './primitives/ModalDialog';
 
 import DownloadIcon from 'iconoir/icons/download.svg?react';
 
 type Props = {
-  route: RouteResponsePath;
+  leg: BikeLeg;
 };
 
-export default function ShareFit({ route }: Props) {
+export default function ShareFit({ leg }: Props) {
   const intl = useIntl();
   const dispatch = useDispatch();
 
@@ -21,8 +21,6 @@ export default function ShareFit({ route }: Props) {
   const [fitURL, setFitURL] = useState<string | null>(null);
 
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
-
-  const leg = route.legs[0];
 
   // Download the fit file.
   const downloadFit = useCallback(() => {
