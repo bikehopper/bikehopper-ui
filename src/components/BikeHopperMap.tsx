@@ -48,14 +48,14 @@ import {
 } from '../lib/layout';
 import type { Dispatch, RootState } from '../store';
 
-import './BikehopperMap.css';
+import './BikeHopperMap.css';
 import {
   BIKE_LANE_COLOR,
   CYCLE_TRACK_COLOR,
   DEFAULT_BIKE_COLOR,
   DEFAULT_INACTIVE_COLOR,
 } from '../lib/colors';
-import { RouteResponsePath } from '../lib/BikehopperClient';
+import { RouteResponsePath } from '../lib/BikeHopperClient';
 
 const _isTouch = 'ontouchstart' in window;
 
@@ -66,7 +66,7 @@ type Props = {
 
 type Bbox = [number, number, number, number];
 
-const BikehopperMap = forwardRef(function _BikehopperMap(
+const BikeHopperMap = forwardRef(function _BikeHopperMap(
   props: Props,
   mapRef_: Ref<MapRef>,
 ) {
@@ -451,7 +451,7 @@ const BikehopperMap = forwardRef(function _BikehopperMap(
   const viewStateOnFirstRender = useRef(viewState);
 
   return (
-    <div className="BikehopperMap" ref={resizeRef}>
+    <div className="BikeHopperMap" ref={resizeRef}>
       <MapGL
         initialViewState={viewStateOnFirstRender.current}
         ref={mapRef}
@@ -851,4 +851,4 @@ function pathIndexIs(index: number | null): ExpressionFilterSpecification {
   return index == null ? false : ['==', ['get', 'path_index'], index];
 }
 
-export default BikehopperMap;
+export default BikeHopperMap;

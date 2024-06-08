@@ -6,7 +6,7 @@ import describePlace from '../lib/describePlace';
 import * as TransitModes from '../lib/TransitModes';
 import type { ModeCategory } from '../lib/TransitModes';
 import { geocodeTypedLocation } from './geocoding';
-import type { PhotonOsmHash } from '../lib/BikehopperClient';
+import type { PhotonOsmHash } from '../lib/BikeHopperClient';
 import { geolocate } from './geolocation';
 import { fetchRoute } from './routes';
 import type { BikeHopperAction, BikeHopperThunkAction } from '../store';

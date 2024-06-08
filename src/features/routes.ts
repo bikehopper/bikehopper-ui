@@ -1,6 +1,6 @@
 import produce from 'immer';
 import type { Action } from 'redux';
-import * as BikehopperClient from '../lib/BikehopperClient';
+import * as BikeHopperClient from '../lib/BikeHopperClient';
 import type { BikeHopperAction, BikeHopperThunkAction } from '../store';
 import type { Mode } from '../lib/TransitModes';
 
@@ -185,7 +185,7 @@ type RouteFetchFailedAction = Action<'route_fetch_failed'> & {
 type RouteFetchSucceededAction = Action<'route_fetch_succeeded'> & {
   startCoords: GeoJSON.Position;
   endCoords: GeoJSON.Position;
-  routes: BikehopperClient.RouteResponsePath[];
+  routes: BikeHopperClient.RouteResponsePath[];
 };
 
 export function fetchRoute(
@@ -213,7 +213,7 @@ export function fetchRoute(
 
     let fetchedRoute;
     try {
-      fetchedRoute = await BikehopperClient.fetchRoute({
+      fetchedRoute = await BikeHopperClient.fetchRoute({
         // Flip the points into LAT-LNG order for GraphHopper (yes it's weird)
         points: [
           [startCoords[1], startCoords[0]],
@@ -228,7 +228,7 @@ export function fetchRoute(
       console.error('route fetch failed:', e);
       let alertMessage = "Can't connect to server";
       let failureType = 'network error';
-      if (e instanceof BikehopperClient.BikehopperClientError) {
+      if (e instanceof BikeHopperClient.BikeHopperClientError) {
         // GraphHopper sometimes 400s if it doesn't like the coordinates
         if (e.message === 'Bad Request') {
           alertMessage = "Can't find a route";

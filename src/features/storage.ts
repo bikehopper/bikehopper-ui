@@ -2,7 +2,7 @@ import type { Action, Middleware } from 'redux';
 
 import type { RootState } from '../store';
 import type { OsmId, RecentlyUsedItem } from './geocoding';
-import type { PhotonOsmHash } from '../lib/BikehopperClient';
+import type { PhotonOsmHash } from '../lib/BikeHopperClient';
 
 /*
  * Middleware for syncing stuff to LocalStorage to persist across sessions, and

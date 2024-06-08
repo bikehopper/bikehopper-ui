@@ -1,4 +1,4 @@
-import type { PhotonOsmHash } from './BikehopperClient';
+import type { PhotonOsmHash } from './BikeHopperClient';
 
 // Describe a place from its Photon GeoJSON result hash.
 // (If we were to switch back to Nominatim, parts of this would change)

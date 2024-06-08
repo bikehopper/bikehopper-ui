@@ -12,7 +12,7 @@ import MoonLoader from 'react-spinners/MoonLoader';
 import useResizeObserver from '../hooks/useResizeObserver';
 import { BOTTOM_DRAWER_DEFAULT_SCROLL } from '../lib/layout';
 import { isTouchMoveSignificant } from '../lib/touch';
-import BikehopperMap from './BikehopperMap';
+import BikeHopperMap from './BikeHopperMap';
 import * as VisualViewportTracker from '../lib/VisualViewportTracker';
 
 import './MapPlusOverlay.css';
@@ -280,7 +280,7 @@ function MapPlusOverlay(props) {
 
   return (
     <div className="MapPlusOverlay">
-      <BikehopperMap
+      <BikeHopperMap
         ref={mapRef}
         onMapLoad={handleMapLoad}
         overlayRef={mapOverlayRef}

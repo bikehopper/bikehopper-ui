@@ -39,8 +39,8 @@ Mapbox token you create (free plan is fine), run `npm install`, then run `npm st
 Requests to `localhost` are proxied to
 `https://api-staging.bikehopper.org`. This is configured by a "proxy"
 property within `vite.config.json`. Presently there is a thin client
-library at `src/lib/BikehopperClient.js`. More methods should be added
-as needed. This library calls the Bikehopper
+library at `src/lib/BikeHopperClient.ts`. More methods should be added
+as needed. This library calls the BikeHopper
 [backend](https://github.com/bikehopper/bikehopper-web-app).
 
 To expose your dev server to your local network (so you can access it
