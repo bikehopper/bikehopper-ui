@@ -39,7 +39,7 @@ export default defineConfig(() => {
       basicSsl(),
     ],
     server: {
-      open: true,
+      host: true,
       port: 3000,
       proxy: {
         '/api/v1': 'https://api-staging.bikehopper.org',

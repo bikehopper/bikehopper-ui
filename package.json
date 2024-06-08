@@ -48,6 +48,7 @@
   },
   "scripts": {
     "start": "vite",
+    "start:docker": "docker compose up",
     "build": "vite build",
     "serve": "vite preview",
     "lint": "eslint --max-warnings 0 --report-unused-disable-directives src/**/*.{js,jsx,ts,tsx} && npx tsc",
