@@ -1,0 +1,31 @@
+services:
+  bikehopper-ui-setup:
+    container_name: bikehopper-ui-setup
+    working_dir: /home/node/app
+    env_file:
+      - path: .env.development.local
+        required: true
+    image: node
+    labels:
+      - 'app=bikehopper-ui-setup'
+    volumes:
+      - '.:/home/node/app'
+    command: ['npm', 'install']
+  bikehopper-ui-dev:
+    container_name: bikehopper-ui-dev
+    working_dir: /home/node/app
+    env_file:
+      - path: .env.development.local
+        required: true
+    image: node
+    labels:
+      - 'app=bikehopper-ui-dev'
+    volumes:
+      - '.:/home/node/app'
+    ports:
+      - 9229:9229
+      - 3000:3000
+    command: ['npm', 'start']
+    depends_on:
+      bikehopper-ui-setup:
+        condition: service_completed_successfully
