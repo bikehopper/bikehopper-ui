@@ -41,7 +41,6 @@ export default defineConfig(({ mode }) => {
       basicSsl(),
     ],
     server: {
-      host: true,
       port: 3000,
       open,
       proxy: {
