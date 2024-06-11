@@ -27,8 +27,8 @@ services:
     volumes:
       - '.:/home/node/app'
     ports:
-      - 9229:9229
-      - 3000:3000
+      - 127.0.0.1:9229:9229
+      - 127.0.0.1:3000:3000
     command: ['npm', 'start', '--', '--host']
     depends_on:
       bikehopper-ui-setup:
