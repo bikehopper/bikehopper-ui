@@ -108,9 +108,10 @@ export default function Itinerary({
   // Clear out icon's SVG width/height attributes so it can be scaled with CSS
   const arriveIcon = <ArriveIcon width={null} height={null} />;
 
-  // Lets us know if this route is a cycling only route.
-  const isCyclingRoute =
-    route.legs.length === 1 && route.legs[0].type === 'bike2';
+  const soleBikeLeg =
+    route.legs.length === 1 && route.legs[0].type === 'bike2'
+      ? route.legs[0]
+      : null;
 
   return (
     <div className="Itinerary">
@@ -153,7 +154,7 @@ export default function Itinerary({
             />
           </h3>
         </div>
-        {isCyclingRoute && <ShareFit route={route} />}
+        {soleBikeLeg && <ShareFit leg={soleBikeLeg} />}
       </div>
       <div className="Itinerary_elevation">
         <ItineraryElevationProfile route={route} />
