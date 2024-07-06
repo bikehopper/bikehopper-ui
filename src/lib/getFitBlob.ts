@@ -39,7 +39,7 @@ function createRecordMessages(leg: BikeLeg, startDate: number) {
   let distance = 0;
 
   return leg.geometry.coordinates.map((m, i) => {
-    lastTimeStamp += 10;
+    lastTimeStamp += 1000;
     distance +=
       i > 0
         ? distanceBetween2Points(
