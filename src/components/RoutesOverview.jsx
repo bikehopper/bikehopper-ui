@@ -12,6 +12,7 @@ import SelectionListItem from './SelectionListItem';
 import ArrowDown from 'iconoir/icons/arrow-down.svg?react';
 import ArrowUp from 'iconoir/icons/arrow-up.svg?react';
 import NavArrowRight from 'iconoir/icons/nav-arrow-right.svg?react';
+import ListIcon from 'iconoir/icons/list.svg?react';
 
 import './RoutesOverview.css';
 
@@ -88,7 +89,17 @@ export default function RoutesOverview({
                 )}
               </p>
             </div>
-            <p className="RoutesOverview_departArriveTime">
+            <p
+              className={classnames({
+                RoutesOverview_departArriveTime: true,
+                nothing: activeRoute === index,
+              })}
+            >
+              {activeRoute === index && (
+                <Icon className="relative top-0.5 pr-0.5">
+                  <ListIcon height="16" width="16" />
+                </Icon>
+              )}
               <FormattedMessage
                 defaultMessage="{depart}–{arrive}"
                 description="compact departure and arrival time"

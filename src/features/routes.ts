@@ -132,13 +132,10 @@ export function routesReducer(
       return produce(state, (draft) => {
         draft.activeRoute = action.index;
 
-        if (action.source === 'list') {
-          // If the route clicked was already active, toggle viewing details.
-          // Otherwise, always view the details.
-          draft.viewingDetails =
-            state.activeRoute !== action.index || !state.viewingDetails;
+        if (action.source === 'list' && state.activeRoute === action.index) {
+          // If the route clicked was already active, show details.
+          draft.viewingDetails = true;
         } else if (action.source === 'map') {
-          draft.viewingDetails = false;
           draft.viewingStep = null;
         }
       });
