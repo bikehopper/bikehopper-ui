@@ -106,7 +106,12 @@ export default function ItineraryHeader({
               </Icon>
               {alertHeader && (
                 <>
-                  <span className="ItineraryHeader_alertHeader">
+                  <span
+                    className={classnames({
+                      ItineraryHeader_alertHeader: true,
+                      ItineraryHeader_alertHeader__hasBody: !!alertBody,
+                    })}
+                  >
                     {alertHeader}
                   </span>
                   <div />
