@@ -78,7 +78,7 @@
   font-weight: bold;
 }
 
-.ItineraryHeader_alertHeader::after {
+.ItineraryHeader_alertHeader__hasBody::after {
   content: ': ';
 }
 
