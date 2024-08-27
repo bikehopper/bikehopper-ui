@@ -219,13 +219,21 @@ const BikeHopperMap = forwardRef(function _BikeHopperMap(
       );
   };
 
-  const handleStartMarkerDrag = (evt: MarkerDragEvent) => {
+  const [isDragging, setIsDragging] = useState(false);
+  const handleMarkerDragStart = (evt: MarkerDragEvent) => {
     resetLongPressTimer();
+    setIsDragging(true);
+  };
+
+  const handleStartMarkerDragEnd = (evt: MarkerDragEvent) => {
+    resetLongPressTimer();
+    setIsDragging(false);
     dispatch(locationDragged('start', lngLatToCoords(evt.lngLat)));
   };
 
-  const handleEndMarkerDrag = (evt: MarkerDragEvent) => {
+  const handleEndMarkerDragEnd = (evt: MarkerDragEvent) => {
     resetLongPressTimer();
+    setIsDragging(false);
     dispatch(locationDragged('end', lngLatToCoords(evt.lngLat)));
   };
 
@@ -308,6 +316,7 @@ const BikeHopperMap = forwardRef(function _BikeHopperMap(
     const map = mapRef.current?.getMap();
     const overlayEl = props.overlayRef.current;
     if (!map || !overlayEl || !startCoords || !endCoords) return;
+    if (isDragging) return;
 
     // We only want to center in specific situations
     const haveNewRoutes =
@@ -403,6 +412,7 @@ const BikeHopperMap = forwardRef(function _BikeHopperMap(
     endCoords,
     routeStatus,
     prevRouteStatus,
+    isDragging,
   ]);
 
   // When viewing a specific step of a route, zoom to where it starts.
@@ -529,8 +539,8 @@ const BikeHopperMap = forwardRef(function _BikeHopperMap(
             longitude={startCoords[0]}
             latitude={startCoords[1]}
             draggable={true}
-            onDragStart={_isTouch ? resetLongPressTimer : undefined}
-            onDragEnd={handleStartMarkerDrag}
+            onDragStart={handleMarkerDragStart}
+            onDragEnd={handleStartMarkerDragEnd}
             color="#2fa7cc"
           />
         )}
@@ -539,8 +549,8 @@ const BikeHopperMap = forwardRef(function _BikeHopperMap(
             longitude={endCoords[0]}
             latitude={endCoords[1]}
             draggable={true}
-            onDragStart={_isTouch ? resetLongPressTimer : undefined}
-            onDragEnd={handleEndMarkerDrag}
+            onDragStart={handleMarkerDragStart}
+            onDragEnd={handleEndMarkerDragEnd}
             color="#ea526f"
           />
         )}
