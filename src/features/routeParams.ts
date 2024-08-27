@@ -97,6 +97,20 @@ export function routeParamsReducer(
         draft.start = action.start;
         draft.end = action.end;
         if (action.start && action.end) draft.editingLocation = null;
+
+        // Update text to reflect a geocoded location
+        if (
+          action.start?.source === LocationSourceType.Geocoded &&
+          action.start.fromInputText === state.startInputText
+        ) {
+          draft.startInputText = describePlace(action.start.point);
+        }
+        if (
+          action.end?.source === LocationSourceType.Geocoded &&
+          action.end.fromInputText === state.endInputText
+        ) {
+          draft.endInputText = describePlace(action.end.point);
+        }
       });
     case 'locations_swapped':
       return produce(state, (draft) => {
