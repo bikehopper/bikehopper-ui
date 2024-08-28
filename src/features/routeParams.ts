@@ -5,6 +5,7 @@ import describePlace from '../lib/describePlace';
 import * as TransitModes from '../lib/TransitModes';
 import type { ModeCategory } from '../lib/TransitModes';
 import { geocodeTypedLocation } from './geocoding';
+import { parsePossibleCoordsString } from '../lib/geometry';
 import type { PhotonOsmHash } from '../lib/BikeHopperClient';
 import { geolocate } from './geolocation';
 import { fetchRoute } from './routes';
@@ -338,6 +339,13 @@ export function locationsSubmitted(): BikeHopperThunkAction {
       if (!useLocation) {
         text = text.trim();
 
+        const parsedCoords = parsePossibleCoordsString(text);
+        if (parsedCoords)
+          return {
+            point: turfPoint(parsedCoords),
+            source: LocationSourceType.FromCoords,
+          };
+
         let geocodingState = getState().geocoding;
         let cacheEntry = geocodingState.typeaheadCache['@' + text];
         if (cacheEntry && cacheEntry.status === 'succeeded') {
@@ -531,6 +539,15 @@ export function locationSelectedOnMap(
       }
     }
   };
+}
+
+export function selectLocationFromTypedCoords(
+  startOrEnd: StartOrEnd,
+  coords: [number, number],
+): BikeHopperThunkAction {
+  // For now, typing in coordinates is not distinguished from selecting that
+  // location visually on the map.
+  return locationSelectedOnMap(startOrEnd, coords);
 }
 
 type ParamsHydratedFromUrlAction = Action<'params_hydrated_from_url'> & {

@@ -5,6 +5,7 @@ import bezierSpline from '@turf/bezier-spline';
 import distance from '@turf/distance';
 import turfLength from '@turf/length';
 import lineSliceAlong from '@turf/line-slice-along';
+import parseCoords from 'parse-coords';
 import {
   darkenLegColor,
   DEFAULT_PT_COLOR,
@@ -386,4 +387,33 @@ function _elevationChangeInKm(lineSegment) {
       lineSegment.geometry.coordinates[0][2]) /
     1000
   );
+}
+
+/* Parse a lat-lng string, such as "37.835889, -122.289222".
+ *
+ * This is for UI-facing use. Note that this is LAT-LNG order, for consistency
+ * with the user interfaces of other commonly used mapping apps, and NOT in the
+ * LNG-LAT order that BikeHopper uses in URLs and in most places internally.
+ *
+ * In fact, the return value is in [lng, lat] format, or null if not parseable
+ * as a lat-lng string.
+ */
+export function parsePossibleCoordsString(str) {
+  // In the parse coords lib, commas are optional.
+  // This means something like "33 19" gets parsed as coords when in SF that
+  // should return 33 19th Avenue. So as a pre-filter, require at least one of
+  // comma, degree, minute or second symbol.
+  if (!str.match(/[,'"°]/)) return null;
+
+  const result = parseCoords(str);
+  return result ? [result.lng, result.lat] : null;
+}
+
+/* Stringify coordinates for display in the UI.
+ * As with the corresponding parse function, it is assumed that in the UI we
+ * will have LAT-LNG order rather than the LNG-LAT order we use internally in
+ * the code.
+ */
+export function stringifyCoords([lng, lat]) {
+  return `${lat}, ${lng}`;
 }
