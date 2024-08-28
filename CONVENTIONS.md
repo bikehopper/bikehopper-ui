@@ -2,7 +2,7 @@
 
 ## React
 
-- Components should be in a file ComponentName.jsx that exports only the
+- Components should be in a file ComponentName.tsx that exports only the
   component
 - Keep props semantic. Don't unnecessarily refer to how the child component
   renders something
@@ -26,11 +26,20 @@
   (export multiple functions or constants), initial lowercase letter if they
   export a single function
 
+## TypeScript
+
+- Use it for new or substantially rewritten code
+
 ## Styling
 
-- For new code, use Tailwind CSS
-- Lots of existing code uses BEM style classes and ComponentName.css files.
-  Gradually migrating off this
+- For new code, use [Tailwind CSS](https://tailwindcss.com/docs)
+- Lots of existing code uses BEM-style classes and ComponentName.css files.
+  You may continue using this convention when making small changes to
+  such components. Alternatively, it's good to incrementally migrate
+  away from this
+- Avoid violating the conventions of the BEM-style classes by, for
+  example, having ComponentA.css contain a rule that references a
+  `.ComponentB_foo` class
 
 ## State
 
@@ -43,7 +52,7 @@
   don't have a straightforward parent-child relationship, or if state needs to
   persist when switching between different screens in the app
 
-## Misc
+## Meta
 
 - These might not all be consistently followed
 - These might not be all the coding conventions we have implicitly been
