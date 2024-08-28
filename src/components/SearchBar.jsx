@@ -15,6 +15,7 @@ import {
   LocationSourceType,
   swapLocations,
 } from '../features/routeParams';
+import { stringifyCoords } from '../lib/geometry';
 import RouteOptionsDialog from './RouteOptionsDialog';
 import usePrevious from '../hooks/usePrevious';
 
@@ -335,13 +336,7 @@ function _getDisplayedText(intl, text, loc, isFocused) {
       return text;
     case LocationSourceType.FromCoords:
       if (text !== '') return text;
-      return isFocused
-        ? ''
-        : intl.formatMessage({
-            defaultMessage: 'Custom',
-            description:
-              'description of a route start/end point that was selected on the map',
-          });
+      return stringifyCoords(loc.point.geometry.coordinates);
     case LocationSourceType.UserGeolocation:
       if (text !== '') return text;
       return CURRENT_LOCATION_STRING;

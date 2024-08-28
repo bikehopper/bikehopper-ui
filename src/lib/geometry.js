@@ -13,6 +13,8 @@ import {
   getTextColor,
 } from './colors';
 
+export const POINT_PRECISION = 5;
+
 export const EMPTY_GEOJSON = {
   type: 'FeatureCollection',
   features: [],
@@ -415,5 +417,5 @@ export function parsePossibleCoordsString(str) {
  * the code.
  */
 export function stringifyCoords([lng, lat]) {
-  return `${lat}, ${lng}`;
+  return `${lat.toFixed(POINT_PRECISION)}, ${lng.toFixed(POINT_PRECISION)}`;
 }

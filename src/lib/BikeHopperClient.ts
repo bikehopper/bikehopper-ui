@@ -3,6 +3,7 @@ import delay from './delay';
 import { DEFAULT_VIEWPORT_BOUNDS } from './region';
 import { InstructionSign } from './InstructionSigns';
 import { Mode } from './TransitModes';
+import { POINT_PRECISION } from './geometry';
 
 function getApiPath(): string {
   const apiDomain = import.meta.env.VITE_API_DOMAIN;
@@ -11,8 +12,6 @@ function getApiPath(): string {
   // (Vite will proxy to staging).
   return apiDomain || '';
 }
-
-const POINT_PRECISION = 5;
 
 export class BikeHopperClientError extends Error {
   code: number;
