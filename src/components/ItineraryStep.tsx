@@ -6,10 +6,18 @@ import './ItineraryStep.css';
 
 export default function ItineraryStep({
   IconSVGComponent,
-  iconSize = null,
+  iconSize,
   highMargin = false,
   rootRef,
   children,
+}: {
+  IconSVGComponent: React.FunctionComponent<
+    React.ComponentProps<'svg'> & { title?: string }
+  >;
+  iconSize?: string | undefined;
+  highMargin?: boolean | undefined;
+  rootRef: React.Ref<HTMLElement> | undefined;
+  children: React.ReactNode;
 }) {
   const iconSizePx = iconSize === 'tiny' ? 12 : iconSize === 'small' ? 15 : 22;
   return (
