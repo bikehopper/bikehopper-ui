@@ -1,7 +1,9 @@
+import type { ScrollToRef } from '../hooks/useScrollToRef';
+
 import './ItineraryRow.css';
 
 export default function ItineraryRow(props: {
-  rootRef?: React.Ref<HTMLDivElement> | undefined;
+  rootRef?: ScrollToRef<HTMLDivElement> | undefined;
   children: React.ReactNode[];
 }) {
   return (

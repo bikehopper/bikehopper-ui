@@ -66,7 +66,7 @@ export default function Itinerary({
           legDestination={legDestination}
           onStepClick={onStepClick.bind(null, idx)}
           onToggleLegExpand={
-            expandable ? toggleExpandedLeg.bind(null, idx) : null
+            expandable ? toggleExpandedLeg.bind(null, idx) : undefined
           }
           expanded={expandedLegs[idx]}
           scrollToStep={scrollToLegIdx === idx ? scrollToStepIdx : null}

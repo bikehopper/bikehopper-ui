@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import type { BikeLeg, RouteInstruction } from '../lib/BikeHopperClient';
 import { BIKEHOPPER_THEME_COLOR } from '../lib/colors';
 import formatDistance from '../lib/formatDistance';
 import formatMajorStreets from '../lib/formatMajorStreets';
-import { describeBikeInfra } from '../lib/geometry';
+import { describeBikeInfra, STEP_ANNOTATIONS } from '../lib/geometry';
 import { formatDurationBetween } from '../lib/time';
 import InstructionSigns from '../lib/InstructionSigns';
 import useScrollToRef from '../hooks/useScrollToRef';
@@ -13,6 +14,11 @@ import ItinerarySpacer from './ItinerarySpacer';
 
 import BikeIcon from 'iconoir/icons/bicycle.svg?react';
 
+type StepAnnotation = (typeof STEP_ANNOTATIONS)[keyof typeof STEP_ANNOTATIONS];
+type StepWithInfra = RouteInstruction & {
+  bikeInfra: StepAnnotation[];
+};
+
 export default function ItineraryBikeLeg({
   leg,
   legDestination,
@@ -20,9 +26,19 @@ export default function ItineraryBikeLeg({
   onStepClick,
   onToggleLegExpand,
   scrollToStep,
+}: {
+  leg: BikeLeg;
+  legDestination: string;
+  expanded: boolean;
+  onStepClick: (
+    step: number,
+    evt: Parameters<React.MouseEventHandler>[0],
+  ) => void;
+  onToggleLegExpand?: React.MouseEventHandler;
+  scrollToStep: number | undefined;
 }) {
   const intl = useIntl();
-  const instructionsWithBikeInfra = useMemo(() => {
+  const instructionsWithBikeInfra: StepWithInfra[] = useMemo(() => {
     return leg.instructions.map((step) => {
       return {
         ...step,
@@ -38,13 +54,15 @@ export default function ItineraryBikeLeg({
   }, [leg]);
   const majorStreets = useMemo(() => formatMajorStreets(leg), [leg]);
 
-  const scrollToRef = useScrollToRef();
+  const scrollToRef = useScrollToRef<HTMLDivElement>();
   const spacer = ' \u00B7 ';
 
   // Clear out icon's SVG width/height attributes so it can be scaled with CSS
-  const bikeIcon = <BikeIcon width={null} height={null} />;
+  // (TS thinks width and height can't be set to null. It is wrong.)
+  const BikeIconShutUpTypeScript: any = BikeIcon;
+  const bikeIcon = <BikeIconShutUpTypeScript width={null} height={null} />;
 
-  const alerts = leg.has_steps
+  const alerts: [string, string][] = leg.has_steps
     ? [
         [
           '', // no header
@@ -112,7 +130,7 @@ export default function ItineraryBikeLeg({
                     infra={step.bikeInfra}
                     isFirstStep={stepIdx === 0}
                     onClick={onStepClick.bind(null, stepIdx)}
-                    rootRef={stepIdx === scrollToStep ? scrollToRef : null}
+                    rootRef={stepIdx === scrollToStep ? scrollToRef : undefined}
                   />,
                 ],
           )}
@@ -126,6 +144,6 @@ export default function ItineraryBikeLeg({
 
 // GraphHopper inserts a final step, "Arrive at destination," with zero distance, into each
 // bike/walk leg. We display this information in other ways so want to skip this instruction.
-function isArriveStep(step) {
+function isArriveStep(step: StepWithInfra) {
   return step.sign === InstructionSigns.FINISH;
 }

@@ -9,6 +9,7 @@ import { STEP_ANNOTATIONS, describeStepAnnotation } from '../lib/geometry';
 import InstructionSigns from '../lib/InstructionSigns';
 import ItineraryStep from './ItineraryStep';
 import type { RouteInstruction } from '../lib/BikeHopperClient';
+import type { ScrollToRef } from '../hooks/useScrollToRef';
 
 import './ItineraryBikeStep.css';
 
@@ -38,7 +39,7 @@ export default function ItineraryBikeStep({
   infra: StepAnnotation[];
   isFirstStep: boolean;
   onClick: React.MouseEventHandler;
-  rootRef: React.Ref<HTMLDivElement> | undefined;
+  rootRef: ScrollToRef<HTMLDivElement> | undefined;
 }) {
   const intl = useIntl();
 
