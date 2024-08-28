@@ -1,6 +1,5 @@
 import produce from 'immer';
 import type { Action } from 'redux';
-// @ts-ignore
 import { point as turfPoint } from '@turf/helpers';
 import describePlace from '../lib/describePlace';
 import * as TransitModes from '../lib/TransitModes';
