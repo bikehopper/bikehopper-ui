@@ -46,16 +46,17 @@ export default function SearchAutocompleteDropdown(props) {
     noResults, // we explicitly searched and found no results
     parsedCoords,
   } = useSelector((state) => {
-    // TODO: parse coords up front and don't try to geocode if parsed as coords
-
     const startOrEnd = state.routeParams.editingLocation;
     const inputText = state.routeParams[startOrEnd + 'InputText'].trim();
+
+    const parsedCoords = parsePossibleCoordsString(inputText);
+
     let autocompletedText = inputText; // May get changed below
     let cache = inputText && state.geocoding.typeaheadCache['@' + inputText];
     let fallbackToGeocodedLocationSourceText = false;
     let loading = false;
     let noResults = false;
-    if (!cache || cache.status !== 'succeeded') {
+    if (!parsedCoords && (!cache || cache.status !== 'succeeded')) {
       if (inputText !== '' && (!cache || cache?.status === 'fetching')) {
         loading = true;
       }
@@ -158,7 +159,7 @@ export default function SearchAutocompleteDropdown(props) {
       showCurrentLocationOption,
       loading,
       noResults,
-      parsedCoords: parsePossibleCoordsString(inputText),
+      parsedCoords,
     };
   }, shallowEqual);
 

@@ -621,9 +621,12 @@ export function changeLocationTextInput(
       value,
     });
 
-    await dispatch(
-      geocodeTypedLocation(value, startOrEnd, { fromTextAutocomplete: true }),
-    );
+    const valueParsesAsCoords = Boolean(parsePossibleCoordsString(value));
+    if (!valueParsesAsCoords) {
+      await dispatch(
+        geocodeTypedLocation(value, startOrEnd, { fromTextAutocomplete: true }),
+      );
+    }
   };
 }
 
