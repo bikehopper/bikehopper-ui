@@ -6,7 +6,7 @@ import './ItineraryStep.css';
 
 export default function ItineraryStep({
   IconSVGComponent,
-  iconSize,
+  iconSize = null,
   highMargin = false,
   rootRef,
   children,
