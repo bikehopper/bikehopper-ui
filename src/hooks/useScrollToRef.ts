@@ -3,8 +3,8 @@ import { useRef, useEffect } from 'react';
 // A ref that will be scrolled to when the component mounts, if populated.
 // The offsetParent must be the container in which to scroll.
 
-export default function useScrollToRef() {
-  const scrollToRef = useRef<HTMLElement>();
+export default function useScrollToRef<T extends HTMLElement>() {
+  const scrollToRef = useRef<T>();
 
   useEffect(() => {
     const el = scrollToRef.current;
