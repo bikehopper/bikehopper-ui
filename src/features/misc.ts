@@ -21,4 +21,32 @@ export function fitFileGenerationFailed(
   };
 }
 
-export type MiscAction = MapLoadedAction | FitFileGenerationFailedAction;
+export type UrlCopyFailedAction = Action<'url_copy_failed'>;
+export function urlCopyFailed(
+  message: string,
+): UrlCopyFailedAction & ActionAlertMixin {
+  return {
+    type: 'url_copy_failed',
+    alert: {
+      message,
+      severity: AlertSeverity.ERROR,
+    },
+  };
+}
+
+export type UrlCopiedAction = Action<'url_copied'>;
+export function urlCopied(message: string): UrlCopiedAction & ActionAlertMixin {
+  return {
+    type: 'url_copied',
+    alert: {
+      message,
+      severity: AlertSeverity.SUCCESS,
+    },
+  };
+}
+
+export type MiscAction =
+  | MapLoadedAction
+  | FitFileGenerationFailedAction
+  | UrlCopyFailedAction
+  | UrlCopiedAction;

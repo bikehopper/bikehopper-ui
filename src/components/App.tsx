@@ -5,11 +5,13 @@ import { IntlProvider } from 'react-intl';
 import type { MessageFormatElement } from 'react-intl';
 import type { OnErrorFn } from '@formatjs/intl';
 import { Transition } from '@headlessui/react';
-import AlertBar from './AlertBar';
+import { Provider as ToastProvider } from '@radix-ui/react-toast';
+
 import DirectionsNullState from './DirectionsNullState';
 import MapPlusOverlay from './MapPlusOverlay';
 import Routes from './Routes';
 import SearchDropdown from './SearchDropdown';
+import Toasts from './Toasts';
 import TopBar from './TopBar';
 import {
   LocationSourceType,
@@ -93,18 +95,20 @@ function App(props: Props) {
       defaultLocale="en"
       onError={import.meta.env.DEV ? handleDebugIntlError : () => {}}
     >
-      <div className="App">
-        <AlertBar />
-        <MapPlusOverlay
-          topContent={topBar}
-          topBarEmpty={
-            /* prop change forces controls to move */
-            !haveTopBarIncludingFade
-          }
-          hideMap={isEditingLocations}
-          bottomContent={bottomContent}
-        />
-      </div>
+      <ToastProvider>
+        <div className="App">
+          <MapPlusOverlay
+            topContent={topBar}
+            topBarEmpty={
+              /* prop change forces controls to move */
+              !haveTopBarIncludingFade
+            }
+            hideMap={isEditingLocations}
+            bottomContent={bottomContent}
+          />
+          <Toasts />
+        </div>
+      </ToastProvider>
     </IntlProvider>
   );
 }

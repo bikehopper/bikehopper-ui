@@ -9,13 +9,16 @@ import './BorderlessButton.css';
 type Props = { flex?: boolean } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export default function BorderlessButton(props: Props) {
-  const { flex, ...rest } = props;
+  const { flex, className, ...rest } = props;
   return (
     <button
-      className={classnames({
-        BorderlessButton: true,
-        BorderlessButton_flex: flex,
-      })}
+      className={classnames(
+        {
+          BorderlessButton: true,
+          BorderlessButton_flex: flex,
+        },
+        className,
+      )}
       {...rest}
     />
   );
