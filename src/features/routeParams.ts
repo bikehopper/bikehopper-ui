@@ -12,10 +12,14 @@ import type { BikeHopperAction, BikeHopperThunkAction } from '../store';
 
 export enum LocationSourceType {
   Geocoded = 'geocoded',
-  SelectedOnMap = 'selected_on_map', // marker drag or long-press/right-click
+
+  /* Just a pair of coordinates. This could result from a marker drag, a
+   * long-press/right-click, or from a past user geolocation and then the
+   * page was reloaded, hydrating the location from the URL: */
+  FromCoords = 'coordinates',
+
   UserGeolocation = 'user_geolocation',
   UrlWithString = 'url_with_string',
-  UrlWithoutString = 'url_without_string',
 }
 
 type Location =
@@ -34,9 +38,7 @@ type Location =
       fromInputText: string;
     }
   | {
-      source:
-        | LocationSourceType.SelectedOnMap
-        | LocationSourceType.UrlWithoutString;
+      source: LocationSourceType.FromCoords;
       point: GeoJSON.Feature<GeoJSON.Point>;
     };
 
@@ -107,7 +109,7 @@ export function routeParamsReducer(
       return produce(state, (draft) => {
         draft[action.startOrEnd] = {
           point: turfPoint(action.coords),
-          source: LocationSourceType.SelectedOnMap,
+          source: LocationSourceType.FromCoords,
         };
         draft[startOrEndInputText(action.startOrEnd)] = '';
         if (
@@ -134,7 +136,7 @@ export function routeParamsReducer(
         } else {
           draft.start = {
             point: turfPoint(action.startCoords),
-            source: LocationSourceType.UrlWithoutString,
+            source: LocationSourceType.FromCoords,
           };
         }
 
@@ -147,7 +149,7 @@ export function routeParamsReducer(
         } else {
           draft.end = {
             point: turfPoint(action.endCoords),
-            source: LocationSourceType.UrlWithoutString,
+            source: LocationSourceType.FromCoords,
           };
         }
         draft.startInputText = action.startText || '';
