@@ -5,7 +5,7 @@ import describePlace from '../lib/describePlace';
 import * as TransitModes from '../lib/TransitModes';
 import type { ModeCategory } from '../lib/TransitModes';
 import { geocodeTypedLocation } from './geocoding';
-import { parsePossibleCoordsString } from '../lib/geometry';
+import { parsePossibleCoordsString, stringifyCoords } from '../lib/geometry';
 import type { PhotonOsmHash } from '../lib/BikeHopperClient';
 import { geolocate } from './geolocation';
 import { fetchRoute } from './routes';
@@ -112,7 +112,9 @@ export function routeParamsReducer(
           point: turfPoint(action.coords),
           source: LocationSourceType.FromCoords,
         };
-        draft[startOrEndInputText(action.startOrEnd)] = '';
+        draft[startOrEndInputText(action.startOrEnd)] = stringifyCoords(
+          action.coords,
+        );
         if (
           action.startOrEnd === 'end' &&
           state.start == null &&
@@ -134,11 +136,13 @@ export function routeParamsReducer(
             source: LocationSourceType.UrlWithString,
             fromInputText: action.startText,
           };
+          draft.startInputText = action.startText;
         } else {
           draft.start = {
             point: turfPoint(action.startCoords),
             source: LocationSourceType.FromCoords,
           };
+          draft.startInputText = stringifyCoords(action.startCoords);
         }
 
         if (action.endText) {
@@ -147,14 +151,14 @@ export function routeParamsReducer(
             source: LocationSourceType.UrlWithString,
             fromInputText: action.endText,
           };
+          draft.endInputText = action.endText;
         } else {
           draft.end = {
             point: turfPoint(action.endCoords),
             source: LocationSourceType.FromCoords,
           };
+          draft.endInputText = stringifyCoords(action.endCoords);
         }
-        draft.startInputText = action.startText || '';
-        draft.endInputText = action.endText || '';
         draft.arriveBy = action.arriveBy;
         draft.initialTime = action.initialTime;
       });
