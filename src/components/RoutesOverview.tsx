@@ -1,7 +1,10 @@
-import { Fragment } from 'react';
+import Bowser from 'bowser';
+import { Fragment, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import type { IntlShape } from 'react-intl';
+import { useDispatch } from 'react-redux';
 import classnames from 'classnames';
+import { urlCopied, urlCopyFailed } from '../features/misc';
 import type {
   BikeLeg,
   RouteResponsePath,
@@ -10,6 +13,7 @@ import type {
 import formatDistance from '../lib/formatDistance';
 import { TRANSIT_DATA_ACKNOWLEDGEMENT } from '../lib/region';
 import { formatInterval } from '../lib/time';
+import BorderlessButton from './BorderlessButton';
 import Icon from './primitives/Icon';
 import RouteLeg from './RouteLeg';
 import SelectionList from './SelectionList';
@@ -19,6 +23,8 @@ import ArrowDown from 'iconoir/icons/arrow-down.svg?react';
 import ArrowUp from 'iconoir/icons/arrow-up.svg?react';
 import NavArrowRight from 'iconoir/icons/nav-arrow-right.svg?react';
 import ListIcon from 'iconoir/icons/list.svg?react';
+import ShareAndroidIcon from 'iconoir/icons/share-android.svg?react';
+import ShareIosIcon from 'iconoir/icons/share-ios.svg?react';
 
 import './RoutesOverview.css';
 
@@ -36,11 +42,43 @@ export default function RoutesOverview({
   onRouteClick: (routeIndex: number, evt: React.MouseEvent) => void;
 }) {
   const intl = useIntl();
+  const dispatch = useDispatch();
   const SPACE = ' ';
+  const os = useMemo(() => Bowser.parse(navigator.userAgent).os.name, []);
+
+  const shareText = intl.formatMessage({
+    defaultMessage: 'Share',
+    description:
+      'Button. When clicked, lets you share a set of directions, ' +
+      'such as by copying a URL to the clipboard.',
+  });
 
   let containsTransitLeg = false;
 
   const outOfAreaMsg = _outOfAreaMsg(intl, outOfAreaStart, outOfAreaEnd);
+
+  const handleShareClick = async (evt: React.MouseEvent) => {
+    try {
+      await navigator.clipboard.writeText(String(document.location));
+      dispatch(
+        urlCopied(
+          intl.formatMessage({
+            defaultMessage: 'Copied URL to clipboard!',
+            description: 'toast displayed when copying a URL to clipboard.',
+          }),
+        ),
+      );
+    } catch (error) {
+      dispatch(
+        urlCopyFailed(
+          intl.formatMessage({
+            defaultMessage: 'Unable to copy URL to clipboard',
+            description: 'error alert when copying a URL to clipboard fails.',
+          }),
+        ),
+      );
+    }
+  };
 
   return (
     <div className="RoutesOverview">
@@ -184,8 +222,17 @@ export default function RoutesOverview({
           </SelectionListItem>
         ))}
       </SelectionList>
-      {containsTransitLeg && TRANSIT_DATA_ACKNOWLEDGEMENT?.text && (
-        <p className="RoutesOverview_acknowledgement">
+      <footer className="text-sm mx-6 my-4 flex flex-row">
+        <BorderlessButton
+          title={shareText}
+          className="mr-3"
+          onClick={handleShareClick}
+        >
+          <Icon label={shareText}>
+            {os === 'iOS' ? <ShareIosIcon /> : <ShareAndroidIcon />}
+          </Icon>
+        </BorderlessButton>
+        {containsTransitLeg && TRANSIT_DATA_ACKNOWLEDGEMENT?.text && (
           <a
             target="_blank"
             href={TRANSIT_DATA_ACKNOWLEDGEMENT.url}
@@ -193,8 +240,8 @@ export default function RoutesOverview({
           >
             {TRANSIT_DATA_ACKNOWLEDGEMENT.text}
           </a>
-        </p>
-      )}
+        )}
+      </footer>
     </div>
   );
 }

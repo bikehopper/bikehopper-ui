@@ -4,6 +4,7 @@ import type { BikeHopperAction } from '../store';
 export enum AlertSeverity {
   WARNING = 'warning',
   ERROR = 'error',
+  SUCCESS = 'success',
 }
 
 type Alert = {
