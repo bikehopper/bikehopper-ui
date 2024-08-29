@@ -5,6 +5,7 @@ import bezierSpline from '@turf/bezier-spline';
 import distance from '@turf/distance';
 import turfLength from '@turf/length';
 import lineSliceAlong from '@turf/line-slice-along';
+/// <reference path="../typings/parse-coords.d.ts" />
 import parseCoords from 'parse-coords';
 import {
   darkenLegColor,
@@ -12,10 +13,12 @@ import {
   TRANSITION_COLOR,
   getTextColor,
 } from './colors';
+import type { BikeLeg, InstructionDetails, RouteResponsePath } from './BikeHopperClient';
+import type { IntlShape } from 'react-intl';
 
 export const POINT_PRECISION = 5;
 
-export const EMPTY_GEOJSON = {
+export const EMPTY_GEOJSON: GeoJSON.FeatureCollection = {
   type: 'FeatureCollection',
   features: [],
 };
@@ -32,7 +35,7 @@ export const MAIN_ROADS = [
   'trunk_link',
 ];
 
-export function routesToGeoJSON(paths, intl) {
+export function routesToGeoJSON(paths: RouteResponsePath[], intl: IntlShape) {
   const features = [];
 
   // For-each path
@@ -77,15 +80,17 @@ export function routesToGeoJSON(paths, intl) {
         if (transitionFeature) features.push(transitionFeature);
       }
 
-      // Add detail features
-      const detailFeatures = detailsToLines(
-        leg.details,
-        leg.geometry.coordinates,
-        leg.type,
-        pathIdx,
-        intl,
-      );
-      if (detailFeatures) features.push(...detailFeatures);
+      if (leg.type === 'bike2') {
+        // Add detail features
+        const detailFeatures = detailsToLines(
+          leg.details,
+          leg.geometry.coordinates,
+          leg.type,
+          pathIdx,
+          intl,
+        );
+        if (detailFeatures) features.push(...detailFeatures);
+      }
     }
   }
 
@@ -93,11 +98,16 @@ export function routesToGeoJSON(paths, intl) {
 }
 
 /**
- * From a details object, generates a coherent set of lines such that no lines overlap.
- *
- * @param {object} details
+ * From a details object, generates a coherent set of lines such that no lines
+ * overlap.
  */
-function detailsToLines(details, coordinates, type, pathIdx, intl) {
+function detailsToLines(
+  details: InstructionDetails,
+  coordinates: GeoJSON.LineString['coordinates'],
+  type: BikeLeg['type'],
+  pathIdx: number,
+  intl: IntlShape,
+) {
   if (!details || !Object.keys(details).length) return;
   const lines = [];
   let currentStart = 0;
@@ -140,13 +150,15 @@ function detailsToLines(details, coordinates, type, pathIdx, intl) {
 }
 
 /**
- * Generates a curve feature between `start` and `end`., with a specified launch angle `angle`.
- * @param {*} start
- * @param {*} end
- * @param {*} options
- * @param {*} angle  In degrees, defaults to 30
+ * Generates a curve feature between `start` and `end`., with a specified
+ * launch angle `angle`.
  */
-export function curveBetween(start, end, options, angle = 30) {
+export function curveBetween(
+  start: GeoJSON.Position,
+  end: GeoJSON.Position,
+  options: Parameters<typeof bezierSpline>[1],
+  angle = 30, // In degrees
+) {
   const D = distance(start, end) / 2;
   if (D < 1e-10) return null;
 
@@ -180,8 +192,9 @@ export const STEP_ANNOTATIONS = {
   steepHill: 11,
   verySteepHill: 12,
 };
+type StepAnnotation = (typeof STEP_ANNOTATIONS)[keyof typeof STEP_ANNOTATIONS];
 
-export function describeStepAnnotation(sa, intl) {
+export function describeStepAnnotation(sa: StepAnnotation, intl: IntlShape) {
   switch (sa) {
     case STEP_ANNOTATIONS.path:
       return intl.formatMessage({
@@ -259,7 +272,10 @@ export function describeStepAnnotation(sa, intl) {
   }
 }
 
-function _describeBikeInfraFromCyclewayAndRoadClass(cycleway, roadClass) {
+function _describeBikeInfraFromCyclewayAndRoadClass(
+  cycleway: string,
+  roadClass: string,
+) {
   if (roadClass === 'path') return STEP_ANNOTATIONS.path;
   if (roadClass === 'cycleway') return STEP_ANNOTATIONS.bikePath;
   if (roadClass === 'footway') return STEP_ANNOTATIONS.footPath;
@@ -282,11 +298,11 @@ function _describeBikeInfraFromCyclewayAndRoadClass(cycleway, roadClass) {
 //
 // Return: array of STEP_ANNOTATIONS values.
 export function describeBikeInfra(
-  lineString,
-  cyclewayValues,
-  roadClasses,
-  start,
-  end,
+  lineString: GeoJSON.LineString,
+  cyclewayValues: [number, number, string][],
+  roadClasses: [number, number, string][],
+  start: number,
+  end: number,
 ) {
   if (end <= start) return []; // Ignore instruction steps that travel zero distance.
 
@@ -400,7 +416,7 @@ function _elevationChangeInKm(lineSegment) {
  * In fact, the return value is in [lng, lat] format, or null if not parseable
  * as a lat-lng string.
  */
-export function parsePossibleCoordsString(str) {
+export function parsePossibleCoordsString(str: string) {
   // In the parse coords lib, commas are optional.
   // This means something like "33 19" gets parsed as coords when in SF that
   // should return 33 19th Avenue. So as a pre-filter, require at least one of
@@ -416,6 +432,6 @@ export function parsePossibleCoordsString(str) {
  * will have LAT-LNG order rather than the LNG-LAT order we use internally in
  * the code.
  */
-export function stringifyCoords([lng, lat]) {
+export function stringifyCoords([lng, lat]: [number, number]) {
   return `${lat.toFixed(POINT_PRECISION)}, ${lng.toFixed(POINT_PRECISION)}`;
 }

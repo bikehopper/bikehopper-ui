@@ -106,7 +106,7 @@ export type RouteInstruction = {
   turn_angle?: number;
 };
 
-type InstructionDetails = Record<string, [number, number, string][]>;
+export type InstructionDetails = Record<string, [number, number, string][]>;
 
 type BikeLegBase = {
   type: 'bike2';
