@@ -1,11 +1,11 @@
 import produce from 'immer';
 import type { Action } from 'redux';
-// @ts-ignore
 import { point as turfPoint } from '@turf/helpers';
 import describePlace from '../lib/describePlace';
 import * as TransitModes from '../lib/TransitModes';
 import type { ModeCategory } from '../lib/TransitModes';
 import { geocodeTypedLocation } from './geocoding';
+import { parsePossibleCoordsString, stringifyCoords } from '../lib/geometry';
 import type { PhotonOsmHash } from '../lib/BikeHopperClient';
 import { geolocate } from './geolocation';
 import { fetchRoute } from './routes';
@@ -13,10 +13,14 @@ import type { BikeHopperAction, BikeHopperThunkAction } from '../store';
 
 export enum LocationSourceType {
   Geocoded = 'geocoded',
-  SelectedOnMap = 'selected_on_map', // marker drag or long-press/right-click
+
+  /* Just a pair of coordinates. This could result from a marker drag, a
+   * long-press/right-click, or from a past user geolocation and then the
+   * page was reloaded, hydrating the location from the URL: */
+  FromCoords = 'coordinates',
+
   UserGeolocation = 'user_geolocation',
   UrlWithString = 'url_with_string',
-  UrlWithoutString = 'url_without_string',
 }
 
 type Location =
@@ -35,9 +39,7 @@ type Location =
       fromInputText: string;
     }
   | {
-      source:
-        | LocationSourceType.SelectedOnMap
-        | LocationSourceType.UrlWithoutString;
+      source: LocationSourceType.FromCoords;
       point: GeoJSON.Feature<GeoJSON.Point>;
     };
 
@@ -108,9 +110,11 @@ export function routeParamsReducer(
       return produce(state, (draft) => {
         draft[action.startOrEnd] = {
           point: turfPoint(action.coords),
-          source: LocationSourceType.SelectedOnMap,
+          source: LocationSourceType.FromCoords,
         };
-        draft[startOrEndInputText(action.startOrEnd)] = '';
+        draft[startOrEndInputText(action.startOrEnd)] = stringifyCoords(
+          action.coords,
+        );
         if (
           action.startOrEnd === 'end' &&
           state.start == null &&
@@ -132,11 +136,13 @@ export function routeParamsReducer(
             source: LocationSourceType.UrlWithString,
             fromInputText: action.startText,
           };
+          draft.startInputText = action.startText;
         } else {
           draft.start = {
             point: turfPoint(action.startCoords),
-            source: LocationSourceType.UrlWithoutString,
+            source: LocationSourceType.FromCoords,
           };
+          draft.startInputText = stringifyCoords(action.startCoords);
         }
 
         if (action.endText) {
@@ -145,14 +151,14 @@ export function routeParamsReducer(
             source: LocationSourceType.UrlWithString,
             fromInputText: action.endText,
           };
+          draft.endInputText = action.endText;
         } else {
           draft.end = {
             point: turfPoint(action.endCoords),
-            source: LocationSourceType.UrlWithoutString,
+            source: LocationSourceType.FromCoords,
           };
+          draft.endInputText = stringifyCoords(action.endCoords);
         }
-        draft.startInputText = action.startText || '';
-        draft.endInputText = action.endText || '';
         draft.arriveBy = action.arriveBy;
         draft.initialTime = action.initialTime;
       });
@@ -336,6 +342,13 @@ export function locationsSubmitted(): BikeHopperThunkAction {
 
       if (!useLocation) {
         text = text.trim();
+
+        const parsedCoords = parsePossibleCoordsString(text);
+        if (parsedCoords)
+          return {
+            point: turfPoint(parsedCoords),
+            source: LocationSourceType.FromCoords,
+          };
 
         let geocodingState = getState().geocoding;
         let cacheEntry = geocodingState.typeaheadCache['@' + text];
@@ -532,6 +545,15 @@ export function locationSelectedOnMap(
   };
 }
 
+export function selectLocationFromTypedCoords(
+  startOrEnd: StartOrEnd,
+  coords: [number, number],
+): BikeHopperThunkAction {
+  // For now, typing in coordinates is not distinguished from selecting that
+  // location visually on the map.
+  return locationSelectedOnMap(startOrEnd, coords);
+}
+
 type ParamsHydratedFromUrlAction = Action<'params_hydrated_from_url'> & {
   startCoords: [number, number];
   endCoords: [number, number];
@@ -603,9 +625,12 @@ export function changeLocationTextInput(
       value,
     });
 
-    await dispatch(
-      geocodeTypedLocation(value, startOrEnd, { fromTextAutocomplete: true }),
-    );
+    const valueParsesAsCoords = Boolean(parsePossibleCoordsString(value));
+    if (!valueParsesAsCoords) {
+      await dispatch(
+        geocodeTypedLocation(value, startOrEnd, { fromTextAutocomplete: true }),
+      );
+    }
   };
 }
 

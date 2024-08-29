@@ -8,13 +8,16 @@ import {
   LocationSourceType,
   selectCurrentLocation,
   selectGeocodedLocation,
+  selectLocationFromTypedCoords,
 } from '../features/routeParams';
 import describePlace from '../lib/describePlace';
+import { parsePossibleCoordsString, stringifyCoords } from '../lib/geometry';
 import Icon from './primitives/Icon';
 import PlaceIcon from './PlaceIcon';
 import SelectionList from './SelectionList';
 import SelectionListItem from './SelectionListItem';
 
+import Pin from 'iconoir/icons/map-pin.svg?react';
 import Position from 'iconoir/icons/position.svg?react';
 
 const LIST_ITEM_CLASSNAME = 'SearchAutocompleteDropdown_place';
@@ -41,15 +44,19 @@ export default function SearchAutocompleteDropdown(props) {
     showCurrentLocationOption,
     loading,
     noResults, // we explicitly searched and found no results
+    parsedCoords,
   } = useSelector((state) => {
     const startOrEnd = state.routeParams.editingLocation;
     const inputText = state.routeParams[startOrEnd + 'InputText'].trim();
+
+    const parsedCoords = parsePossibleCoordsString(inputText);
+
     let autocompletedText = inputText; // May get changed below
     let cache = inputText && state.geocoding.typeaheadCache['@' + inputText];
     let fallbackToGeocodedLocationSourceText = false;
     let loading = false;
     let noResults = false;
-    if (!cache || cache.status !== 'succeeded') {
+    if (!parsedCoords && (!cache || cache.status !== 'succeeded')) {
       if (inputText !== '' && (!cache || cache?.status === 'fetching')) {
         loading = true;
       }
@@ -152,6 +159,7 @@ export default function SearchAutocompleteDropdown(props) {
       showCurrentLocationOption,
       loading,
       noResults,
+      parsedCoords,
     };
   }, shallowEqual);
 
@@ -169,6 +177,10 @@ export default function SearchAutocompleteDropdown(props) {
     );
   };
 
+  const handleCoordsClick = () => {
+    dispatch(selectLocationFromTypedCoords(startOrEnd, parsedCoords));
+  };
+
   const handleCurrentLocationClick = () => {
     dispatch(selectCurrentLocation(startOrEnd));
   };
@@ -180,6 +192,18 @@ export default function SearchAutocompleteDropdown(props) {
   return (
     <div className="flex flex-col m-0">
       <SelectionList className="flex-grow pointer-events-auto">
+        {parsedCoords && (
+          <AutocompleteItem
+            onClick={handleCoordsClick}
+            onMouseDown={handleResultMousedown}
+            icon={
+              <Icon>
+                <Pin />
+              </Icon>
+            }
+            text={stringifyCoords(parsedCoords)}
+          />
+        )}
         {showCurrentLocationOption && (
           <AutocompleteItem
             onClick={handleCurrentLocationClick}
@@ -210,7 +234,7 @@ export default function SearchAutocompleteDropdown(props) {
       {(loading || noResults) && (
         <div className="relative inset-x-0 pt-4 pl-12 pointer-events-none">
           <MoonLoader size={30} loading={loading} />
-          {noResults && (
+          {noResults && !parsedCoords && (
             <span className="text-sm">
               <FormattedMessage
                 defaultMessage="Nothing found for ''{inputText}''"
