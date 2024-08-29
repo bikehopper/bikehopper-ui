@@ -1,4 +1,5 @@
 import { FormattedMessage, useIntl } from 'react-intl';
+import type { TransitLeg } from '../lib/BikeHopperClient';
 import { DEFAULT_PT_COLOR } from '../lib/colors';
 import { getModeLabel } from '../lib/TransitModes';
 import { formatTime, formatDurationBetween } from '../lib/time';
@@ -23,6 +24,15 @@ export default function ItineraryTransitLeg({
   onToggleLegExpand,
   scrollTo,
   expanded,
+}: {
+  leg: TransitLeg;
+  expanded: boolean;
+  onStopClick: (
+    stop: number,
+    evt: Parameters<React.MouseEventHandler>[0],
+  ) => void;
+  onToggleLegExpand?: React.MouseEventHandler;
+  scrollTo: number | undefined;
 }) {
   const intl = useIntl();
 
@@ -44,7 +54,7 @@ export default function ItineraryTransitLeg({
 
   const spacerWithMiddot = ' \u00B7 ';
 
-  const scrollToRef = useScrollToRef();
+  const scrollToRef = useScrollToRef<HTMLDivElement>();
 
   // TODO: Select the alert translation based on locale, instead of always
   // using the first one.
@@ -52,10 +62,12 @@ export default function ItineraryTransitLeg({
   // Unfortunately, for the Bay Area, no agency seems to actually translate
   // its alerts so it has no impact which is why I've (Scott, April 2023)
   // de-prioritized doing this.
-  const alertsForHeader = leg.alerts?.map((rawAlert) => [
-    rawAlert.header_text?.translation[0]?.text,
-    rawAlert.description_text?.translation[0]?.text,
-  ]);
+  const alertsForHeader: [string, string][] | undefined = leg.alerts?.map(
+    (rawAlert) => [
+      rawAlert.header_text?.translation[0]?.text,
+      rawAlert.description_text?.translation[0]?.text,
+    ],
+  );
 
   return (
     <div className="ItineraryTransitLeg" ref={scrollTo ? scrollToRef : null}>
@@ -65,7 +77,7 @@ export default function ItineraryTransitLeg({
         iconLabel={getModeLabel(leg.route_type, intl)}
         expanded={expanded}
         alertsExpanded={alertsExpanded}
-        onToggleLegExpand={expandable ? onToggleLegExpand : null}
+        onToggleLegExpand={expandable ? onToggleLegExpand : undefined}
         onAlertClick={toggleAlertsExpanded}
         alerts={alertsForHeader}
       >

@@ -17,7 +17,7 @@ export default function ItineraryStep({
   >;
   iconSize?: string | undefined;
   highMargin?: boolean | undefined;
-  rootRef: ScrollToRef<HTMLDivElement> | undefined;
+  rootRef?: ScrollToRef<HTMLDivElement> | undefined;
   children: React.ReactNode;
 }) {
   const iconSizePx = iconSize === 'tiny' ? 12 : iconSize === 'small' ? 15 : 22;
