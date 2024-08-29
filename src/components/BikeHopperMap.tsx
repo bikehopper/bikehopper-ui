@@ -18,6 +18,7 @@ import MapGL, {
 } from 'react-map-gl/maplibre';
 import type {
   GeolocateResultEvent,
+  LngLatLike,
   MapLayerMouseEvent,
   MapLayerTouchEvent,
   MapRef,
@@ -442,7 +443,7 @@ const BikeHopperMap = forwardRef(function _BikeHopperMap(
 
     const map = mapRef.current.getMap();
     map.easeTo({
-      center: stepLngLat,
+      center: stepLngLat as LngLatLike,
       zoom: 18,
     });
   }, [routes, activePath, viewingDetails, viewingStep, mapRef]);

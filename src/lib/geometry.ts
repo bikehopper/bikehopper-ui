@@ -13,7 +13,11 @@ import {
   TRANSITION_COLOR,
   getTextColor,
 } from './colors';
-import type { BikeLeg, InstructionDetails, RouteResponsePath } from './BikeHopperClient';
+import type {
+  BikeLeg,
+  InstructionDetails,
+  RouteResponsePath,
+} from './BikeHopperClient';
 import type { IntlShape } from 'react-intl';
 
 export const POINT_PRECISION = 5;
@@ -109,18 +113,18 @@ function detailsToLines(
   intl: IntlShape,
 ) {
   if (!details || !Object.keys(details).length) return;
-  const lines = [];
+  const lines: GeoJSON.Feature<GeoJSON.LineString>[] = [];
   let currentStart = 0;
   const keys = Object.keys(details);
-  let indexes = {};
+  let indexes: { [key: string]: number } = {};
   for (const k of keys) indexes[k] = 0;
 
   while (currentStart < coordinates.length - 1) {
-    let ends = {};
+    let ends: { [key: string]: number } = {};
     for (const k of keys) ends[k] = details[k][indexes[k]][1];
     const currentEnd = Math.min(...Object.values(ends));
 
-    let lineDetails = {};
+    let lineDetails: { [key: string]: string } = {};
     for (const k of keys) lineDetails[k] = details[k][indexes[k]][2];
 
     const line = coordinates?.slice(currentStart, currentEnd + 1);
@@ -194,7 +198,10 @@ export const STEP_ANNOTATIONS = {
 };
 type StepAnnotation = (typeof STEP_ANNOTATIONS)[keyof typeof STEP_ANNOTATIONS];
 
-export function describeStepAnnotation(sa: StepAnnotation, intl: IntlShape) {
+export function describeStepAnnotation(
+  sa: StepAnnotation | null,
+  intl: IntlShape,
+) {
   switch (sa) {
     case STEP_ANNOTATIONS.path:
       return intl.formatMessage({
@@ -325,6 +332,10 @@ export function describeBikeInfra(
   let maxGrade = 0;
 
   segmentEach(stepLineString, (cur, _f, _mf, _g, segmentIndex) => {
+    // This cannot ever happen but the types are wrongly given as nullable:
+    // https://github.com/Turfjs/turf/issues/2706
+    if (cur == null || segmentIndex == null) return false;
+
     const segmentStartIndexInWhole = segmentIndex + start;
 
     while (cyclewayValues[cyclewayIndex][1] <= segmentStartIndexInWhole)
@@ -399,7 +410,9 @@ export function describeBikeInfra(
   return descriptors;
 }
 
-function _elevationChangeInKm(lineSegment) {
+function _elevationChangeInKm(
+  lineSegment: GeoJSON.Feature<GeoJSON.LineString>,
+) {
   return (
     (lineSegment.geometry.coordinates[1][2] -
       lineSegment.geometry.coordinates[0][2]) /
