@@ -4,7 +4,8 @@ import type { BikeLeg, RouteInstruction } from '../lib/BikeHopperClient';
 import { BIKEHOPPER_THEME_COLOR } from '../lib/colors';
 import formatDistance from '../lib/formatDistance';
 import formatMajorStreets from '../lib/formatMajorStreets';
-import { describeBikeInfra, STEP_ANNOTATIONS } from '../lib/geometry';
+import { describeBikeInfra } from '../lib/geometry';
+import type { StepAnnotation } from '../lib/geometry';
 import { formatDurationBetween } from '../lib/time';
 import InstructionSigns from '../lib/InstructionSigns';
 import useScrollToRef from '../hooks/useScrollToRef';
@@ -14,7 +15,6 @@ import ItinerarySpacer from './ItinerarySpacer';
 
 import BikeIcon from 'iconoir/icons/bicycle.svg?react';
 
-type StepAnnotation = (typeof STEP_ANNOTATIONS)[keyof typeof STEP_ANNOTATIONS];
 type StepWithInfra = RouteInstruction & {
   bikeInfra: StepAnnotation[];
 };

@@ -196,7 +196,8 @@ export const STEP_ANNOTATIONS = {
   steepHill: 11,
   verySteepHill: 12,
 };
-type StepAnnotation = (typeof STEP_ANNOTATIONS)[keyof typeof STEP_ANNOTATIONS];
+export type StepAnnotation =
+  (typeof STEP_ANNOTATIONS)[keyof typeof STEP_ANNOTATIONS];
 
 export function describeStepAnnotation(
   sa: StepAnnotation | null,

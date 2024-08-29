@@ -6,6 +6,7 @@ import classnames from 'classnames';
 
 import BorderlessButton from './BorderlessButton';
 import { STEP_ANNOTATIONS, describeStepAnnotation } from '../lib/geometry';
+import type { StepAnnotation } from '../lib/geometry';
 import InstructionSigns from '../lib/InstructionSigns';
 import ItineraryStep from './ItineraryStep';
 import type { RouteInstruction } from '../lib/BikeHopperClient';
@@ -20,8 +21,6 @@ import ArrowUp from 'iconoir/icons/arrow-up.svg?react';
 import TriangleFlag from 'iconoir/icons/triangle-flag.svg?react';
 import QuestionMarkCircle from 'iconoir/icons/help-circle.svg?react';
 import ArrowTrCircle from 'iconoir/icons/arrow-up-right-circle.svg?react';
-
-type StepAnnotation = (typeof STEP_ANNOTATIONS)[keyof typeof STEP_ANNOTATIONS];
 
 let _warnedOfFallback = false;
 const spacerWithMiddot = ' \u00B7 ';
