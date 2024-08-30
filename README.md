@@ -64,8 +64,17 @@ If you're actively making changes to [our fork of GraphHopper](https://github.co
 
 3. Edit the relevant variable in your `.env.development.local` to point to local GraphHopper.
 
-## Internationalization (WIP)
+## Internationalization
 
-This is not entirely working yet, but currently, when you add a new message into the code, run `npm run extract` to extract the default message and its description to the English-language file.
+All user-facing strings should be wrapped in either `<FormattedMessage>`
+instances or calls to `intl.formatMessage`, so that they can be translated. As
+of August 2024 we translate to Spanish and most but not all of the app is
+translated.
 
-And after syncing translations from Weblate, run the script `compile-langs.sh`. The lack of symmetry is just because this command was too complex to be put into package.json.
+This is not yet automated, so currently, when you add a new string into the
+code, or modify one, you should run `npm run extract` to extract the default
+message and its description to the English-language file.
+
+And after syncing translations from Weblate, run the script `compile-langs.sh`.
+(The lack of symmetry is because this command was too complex to be put into
+package.json.)
