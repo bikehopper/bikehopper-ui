@@ -9,14 +9,23 @@ import { formatInterval } from '../lib/time';
 
 import './RouteLeg.css';
 
-export default function RouteLeg(props: {
-  duration: number;
+type BaseProps = {
+  duration: number | null;
   hasAlerts: boolean;
-  type: 'bike2' | 'pt';
-  routeColor: string | null;
+};
+
+type PropsTransit = BaseProps & {
+  type: 'pt';
+  routeColor: string | undefined;
   routeName: string;
   routeType: Mode;
-}) {
+};
+
+type PropsBike = BaseProps & {
+  type: 'bike2';
+};
+
+export default function RouteLeg(props: PropsTransit | PropsBike) {
   const intl = useIntl();
 
   let mode: React.ReactNode = '?';

@@ -127,7 +127,7 @@ type BikeLegRaw = BikeLegBase & {
 export type BikeLeg = BikeLegBase & {
   departure_time: Date;
   arrival_time: Date;
-  has_steps?: boolean;
+  has_steps: boolean;
 };
 type TransitLegBase = {
   type: 'pt';
@@ -244,7 +244,7 @@ function parse(route: { paths: RouteResponsePathRaw[] }): {
                 ? leg.details?.road_class?.some(
                     ([_start, _end, roadClass]) => roadClass === 'steps',
                   ) || false
-                : undefined,
+                : false,
           };
         }),
       };
