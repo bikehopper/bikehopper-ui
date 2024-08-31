@@ -27,7 +27,7 @@ import Trekking from 'iconoir/icons/trekking.svg?react';
  */
 
 type Props = {
-  place: GeoJSON.Feature<GeoJSON.Point> | PhotonOsmHash;
+  place: GeoJSON.Feature<GeoJSON.Point> | PhotonOsmHash | null;
   width?: number;
   height?: number;
   className?: string;
@@ -57,7 +57,7 @@ export default function PlaceIcon({
 }
 
 function _getSvgComponentForFeature(
-  feature?: GeoJSON.Feature<GeoJSON.Point> | PhotonOsmHash,
+  feature: GeoJSON.Feature<GeoJSON.Point> | PhotonOsmHash | null,
 ) {
   const { osm_key: key, osm_value: value, type } = feature?.properties || {};
 
