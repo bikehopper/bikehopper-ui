@@ -274,7 +274,12 @@ export default function SearchBar(props: {
         </Icon>
       </button>
       <div className="grow">
-        <form onSubmit={handleSubmit}>
+        <form
+          role="search"
+          onSubmit={handleSubmit}
+          aria-autocomplete="list"
+          aria-owns="SearchAutocompleteDropdown"
+        >
           <span className="relative">
             <PlaceIcon
               className="absolute left-2 top-[-1px]"
@@ -287,7 +292,7 @@ export default function SearchBar(props: {
               className="w-full py-2.5 pr-2.5 pl-8 rounded-xl text-[13px]
                 bg-bikehoppergreenlight border-2 border-solid border-transparent
                 focus:outline-none focus:bg-white focus:border-bikehopperyellow"
-              type="text"
+              type="search"
               placeholder={startPointMsg}
               value={displayedStart}
               onChange={handleStartChange}
@@ -312,7 +317,7 @@ export default function SearchBar(props: {
               className="w-full py-2.5 pr-2.5 pl-8 rounded-xl text-[13px]
                 bg-bikehoppergreenlight border-2 border-solid border-transparent
                 focus:outline-none focus:bg-white focus:border-bikehopperyellow"
-              type="text"
+              type="search"
               placeholder={endPointMsg}
               value={displayedEnd}
               onChange={handleEndChange}

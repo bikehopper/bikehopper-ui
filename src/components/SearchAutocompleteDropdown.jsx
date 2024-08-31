@@ -193,7 +193,10 @@ export default function SearchAutocompleteDropdown(props) {
 
   return (
     <div className="flex flex-col m-0">
-      <SelectionList className="flex-grow pointer-events-auto">
+      <SelectionList
+        className="flex-grow pointer-events-auto"
+        id="SearchAutocompleteDropdown"
+      >
         {parsedCoords && (
           <AutocompleteItem
             onClick={handleCoordsClick}
