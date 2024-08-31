@@ -49,7 +49,6 @@ export default function RoutesOverview({
       )}
       <SelectionList className="RoutesOverview_list">
         {routes.map((route, index) => (
-          // @ts-ignore: SelectionListItem is not yet typed
           <SelectionListItem
             active={activeRoute === index}
             onClick={onRouteClick.bind(null, index)}

@@ -10,13 +10,21 @@ import './SelectionListItem.css';
 // Optionally it can have an onRemoveClick in which case there will be an X-out.
 
 export default function SelectionListItem({
-  active,
-  className,
-  buttonClassName,
+  active = false,
+  className = '',
+  buttonClassName = '',
   onClick,
   onMouseDown,
   children,
   onRemoveClick,
+}: {
+  active?: boolean;
+  className?: string;
+  buttonClassName?: string;
+  onClick: React.MouseEventHandler;
+  onMouseDown?: React.MouseEventHandler;
+  children: React.ReactNode;
+  onRemoveClick?: React.MouseEventHandler;
 }) {
   const intl = useIntl();
 
