@@ -11,13 +11,19 @@ export default function ModalDialog({
   onCancel,
   title,
   children,
-  clickOutsideCancels,
+  clickOutsideCancels = false,
+}: {
+  isOpen: boolean;
+  onCancel?: React.MouseEventHandler;
+  title?: React.ReactNode;
+  children: React.ReactNode;
+  clickOutsideCancels?: boolean;
 }) {
   const intl = useIntl();
   // If you want the modal to have a cancel X in the corner, pass an onCancel.
 
   return (
-    <Dialog.Root isOpen={isOpen}>
+    <Dialog.Root open={isOpen}>
       <Dialog.Portal forceMount>
         <Transition show={isOpen}>
           <Transition.Child
