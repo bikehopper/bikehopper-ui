@@ -106,7 +106,7 @@ export type RouteInstruction = {
   turn_angle?: number;
 };
 
-type InstructionDetails = Record<string, [number, number, string][]>;
+export type InstructionDetails = Record<string, [number, number, string][]>;
 
 type BikeLegBase = {
   type: 'bike2';
@@ -161,7 +161,7 @@ export type TransitLeg = TransitLegBase & {
 };
 type LegRaw = TransitLegRaw | BikeLegRaw;
 type Leg = TransitLeg | BikeLeg;
-type TransitStop = {
+export type TransitStop = {
   stop_id: string;
   stop_name: string;
   geometry: GeoJSON.Point;

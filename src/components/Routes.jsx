@@ -145,7 +145,13 @@ export default function Routes(props) {
       content = (
         <ItinerarySingleTransitStop
           stop={leg.stops[stepIdx]}
-          relationship={stepIdx === 0 ? 'board' : 'alight'}
+          relationship={
+            stepIdx === 0
+              ? 'board'
+              : stepIdx === leg.stops.length - 1
+                ? 'alight'
+                : 'intermediate'
+          }
           onBackClick={handleStepBackClick}
         />
       );

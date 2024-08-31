@@ -1,4 +1,5 @@
 import { MODES } from '../lib/TransitModes';
+import type { Mode } from '../lib/TransitModes';
 
 import BusIcon from 'iconoir/icons/bus.svg?react';
 import TrainIcon from 'iconoir/icons/train.svg?react';
@@ -17,7 +18,17 @@ import FerryIcon from 'iconoir/icons/sea-waves.svg?react';
  * <Icon> for you.
  */
 
-export default function ModeIcon({ mode, width, height, fallback = BusIcon }) {
+export default function ModeIcon({
+  mode,
+  width,
+  height,
+  fallback = BusIcon,
+}: {
+  mode: Mode;
+  width?: number | undefined;
+  height?: number | undefined;
+  fallback?: React.FunctionComponent;
+}) {
   let IconSvg;
 
   switch (mode) {

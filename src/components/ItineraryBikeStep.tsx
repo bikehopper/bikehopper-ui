@@ -1,11 +1,16 @@
 import { useCallback } from 'react';
+import type { ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import type { IntlShape } from 'react-intl';
 import classnames from 'classnames';
 
 import BorderlessButton from './BorderlessButton';
 import { STEP_ANNOTATIONS, describeStepAnnotation } from '../lib/geometry';
+import type { StepAnnotation } from '../lib/geometry';
 import InstructionSigns from '../lib/InstructionSigns';
 import ItineraryStep from './ItineraryStep';
+import type { RouteInstruction } from '../lib/BikeHopperClient';
+import type { ScrollToRef } from '../hooks/useScrollToRef';
 
 import './ItineraryBikeStep.css';
 
@@ -27,6 +32,13 @@ export default function ItineraryBikeStep({
   isFirstStep,
   onClick,
   rootRef,
+}: {
+  step: RouteInstruction;
+  distance: number;
+  infra: StepAnnotation[];
+  isFirstStep: boolean;
+  onClick: React.MouseEventHandler;
+  rootRef: ScrollToRef<HTMLDivElement> | undefined;
 }) {
   const intl = useIntl();
 
@@ -36,7 +48,7 @@ export default function ItineraryBikeStep({
 
   const street = step.street_name;
   const haveStreet = street ? 'name' : 'none';
-  const strong = useCallback((txt) => <strong>{txt}</strong>, []);
+  const strong = useCallback((txt: ReactNode) => <strong>{txt}</strong>, []);
 
   // TODO: Get better icons for u-turn, sharp left/right, slight left/right, etc.
   switch (step.sign) {
@@ -362,7 +374,7 @@ export default function ItineraryBikeStep({
   );
 }
 
-function _describeCardinalDirection(heading, intl) {
+function _describeCardinalDirection(heading: number, intl: IntlShape) {
   switch (_describeCardinalDirectionUntranslated(heading)) {
     case 'north':
       return intl.formatMessage({
@@ -412,7 +424,7 @@ function _describeCardinalDirection(heading, intl) {
 }
 
 // Convert a heading in degrees (0-360) into a description like "northwest"
-function _describeCardinalDirectionUntranslated(heading) {
+function _describeCardinalDirectionUntranslated(heading: number) {
   if (heading > 337.5 || heading <= 22.5) return 'north';
   else if (heading <= 67.5) return 'northeast';
   else if (heading <= 112.5) return 'east';

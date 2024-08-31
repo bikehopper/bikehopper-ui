@@ -1,6 +1,7 @@
 import classnames from 'classnames';
 import Icon from './primitives/Icon';
 import ItineraryRow from './ItineraryRow';
+import type { ScrollToRef } from '../hooks/useScrollToRef';
 
 import './ItineraryStep.css';
 
@@ -10,6 +11,14 @@ export default function ItineraryStep({
   highMargin = false,
   rootRef,
   children,
+}: {
+  IconSVGComponent: React.FunctionComponent<
+    React.ComponentProps<'svg'> & { title?: string }
+  >;
+  iconSize?: string | undefined;
+  highMargin?: boolean | undefined;
+  rootRef?: ScrollToRef<HTMLDivElement> | undefined;
+  children: React.ReactNode;
 }) {
   const iconSizePx = iconSize === 'tiny' ? 12 : iconSize === 'small' ? 15 : 22;
   return (

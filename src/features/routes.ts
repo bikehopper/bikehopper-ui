@@ -5,7 +5,7 @@ import type { BikeHopperAction, BikeHopperThunkAction } from '../store';
 import type { Mode } from '../lib/TransitModes';
 
 type RoutesState = {
-  routes: any; // FIXME
+  routes: BikeHopperClient.RouteResponsePath[] | null;
   routeStatus: 'none' | 'fetching' | 'failed' | 'succeeded';
   // If we have routes, then the start and end coords they're for, as [lng, lat]:
   routeStartCoords: GeoJSON.Position | null;

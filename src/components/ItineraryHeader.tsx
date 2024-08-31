@@ -17,7 +17,7 @@ function alertSummary(alertBody: string) {
 }
 
 type Props = {
-  alerts: [string, string][];
+  alerts?: [string, string][];
   children: React.ReactNode | React.ReactNode[];
   icon: React.ReactNode;
   iconColor: string;
@@ -90,7 +90,7 @@ export default function ItineraryHeader({
           )}
         </div>
       </span>
-      {alerts?.length > 0 && (
+      {alerts && alerts.length > 0 && (
         <ul className="ItineraryHeader_alerts" onClick={onAlertClick}>
           {alerts.map(([alertHeader, alertBody], idx) => (
             <li className="ItineraryHeader_alert" key={idx}>

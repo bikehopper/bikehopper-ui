@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { formatDurationBetween } from '../lib/time';
 import { getAgencyDisplayName } from '../lib/region';
@@ -12,6 +12,7 @@ import ShareFit from './ShareFit';
 import NavLeftArrow from 'iconoir/icons/nav-arrow-left.svg?react';
 import ArriveIcon from 'iconoir/icons/triangle-flag.svg?react';
 import './Itinerary.css';
+import type { RouteResponsePath } from '../lib/BikeHopperClient';
 
 export default function Itinerary({
   route,
@@ -19,22 +20,33 @@ export default function Itinerary({
   onBackClick,
   onStepClick,
   scrollToStep,
+}: {
+  route: RouteResponsePath;
+  destinationDescription: string;
+  onBackClick: React.MouseEventHandler;
+  onStepClick: (
+    leg: number,
+    step: number,
+    evt: Parameters<React.MouseEventHandler>[0],
+  ) => void;
+  scrollToStep: [number, number] | null;
 }) {
   const intl = useIntl();
   const [scrollToLegIdx, scrollToStepIdx] = scrollToStep || [];
 
   // array of booleans: whether the leg at that index is expanded.
-  const [expandedLegs, setExpandedLegs] = useState([]);
+  let initialExpandedLegs: boolean[];
+  if (route.legs.length === 1) {
+    initialExpandedLegs = [true];
+  } else {
+    initialExpandedLegs = Array(route.legs.length).fill(false);
+    // Expand a leg we're scrolling to:
+    if (scrollToStep) initialExpandedLegs[scrollToStep[0]] = true;
+  }
+  const [expandedLegs, setExpandedLegs] =
+    useState<boolean[]>(initialExpandedLegs);
 
-  useEffect(() => {
-    if (route.legs.length === 1) {
-      setExpandedLegs([true]);
-    } else {
-      setExpandedLegs(Array(route.legs.length).fill(false));
-    }
-  }, [route]);
-
-  const toggleExpandedLeg = (idx) => {
+  const toggleExpandedLeg = (idx: number) => {
     const newValue = [...expandedLegs];
     newValue[idx] = !newValue[idx];
     setExpandedLegs(newValue);
@@ -53,11 +65,13 @@ export default function Itinerary({
         />
       );
     } else {
-      // Where are we biking to? (Either final destination, or name of transit stop to board)
+      // Where are we biking to? (Either name of transit stop to board for next
+      // leg, or final destination)
+      const nextLeg = legs[idx + 1];
       const legDestination =
-        idx === legs.length - 1
-          ? destinationDescription
-          : legs[idx + 1].stops[0].stop_name;
+        nextLeg?.type === 'pt'
+          ? nextLeg.stops[0].stop_name
+          : destinationDescription;
       const expandable = legs.length > 1;
       return (
         <ItineraryBikeLeg
@@ -66,10 +80,10 @@ export default function Itinerary({
           legDestination={legDestination}
           onStepClick={onStepClick.bind(null, idx)}
           onToggleLegExpand={
-            expandable ? toggleExpandedLeg.bind(null, idx) : null
+            expandable ? toggleExpandedLeg.bind(null, idx) : undefined
           }
           expanded={expandedLegs[idx]}
-          scrollToStep={scrollToLegIdx === idx ? scrollToStepIdx : null}
+          scrollToStep={scrollToLegIdx === idx ? scrollToStepIdx : undefined}
         />
       );
     }
@@ -79,7 +93,7 @@ export default function Itinerary({
   const endTime = route.legs[route.legs.length - 1].arrival_time;
   const durationText = formatDurationBetween(startTime, endTime, intl);
   const modeDescriptions = route.legs
-    .reduce((modesArray, leg) => {
+    .reduce((modesArray: string[], leg) => {
       let modeForLeg = 'unknown';
       if (leg.type === 'bike2') {
         modeForLeg = intl.formatMessage({
@@ -106,6 +120,7 @@ export default function Itinerary({
   });
 
   // Clear out icon's SVG width/height attributes so it can be scaled with CSS
+  // @ts-ignore: TS wrongly thinks SVG components' width, height can't be null.
   const arriveIcon = <ArriveIcon width={null} height={null} />;
 
   const soleBikeLeg =

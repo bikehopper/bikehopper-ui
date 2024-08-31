@@ -1,4 +1,5 @@
 import { FormattedMessage, useIntl } from 'react-intl';
+import type { TransitLeg } from '../lib/BikeHopperClient';
 import { DEFAULT_PT_COLOR } from '../lib/colors';
 import { getModeLabel } from '../lib/TransitModes';
 import { formatTime, formatDurationBetween } from '../lib/time';
@@ -23,6 +24,15 @@ export default function ItineraryTransitLeg({
   onToggleLegExpand,
   scrollTo,
   expanded,
+}: {
+  leg: TransitLeg;
+  expanded: boolean;
+  onStopClick: (
+    stop: number,
+    evt: Parameters<React.MouseEventHandler>[0],
+  ) => void;
+  onToggleLegExpand?: React.MouseEventHandler;
+  scrollTo: boolean;
 }) {
   const intl = useIntl();
 
@@ -44,7 +54,7 @@ export default function ItineraryTransitLeg({
 
   const spacerWithMiddot = ' \u00B7 ';
 
-  const scrollToRef = useScrollToRef();
+  const scrollToRef = useScrollToRef<HTMLDivElement>();
 
   // TODO: Select the alert translation based on locale, instead of always
   // using the first one.
@@ -52,10 +62,12 @@ export default function ItineraryTransitLeg({
   // Unfortunately, for the Bay Area, no agency seems to actually translate
   // its alerts so it has no impact which is why I've (Scott, April 2023)
   // de-prioritized doing this.
-  const alertsForHeader = leg.alerts?.map((rawAlert) => [
-    rawAlert.header_text?.translation[0]?.text,
-    rawAlert.description_text?.translation[0]?.text,
-  ]);
+  const alertsForHeader: [string, string][] | undefined = leg.alerts?.map(
+    (rawAlert) => [
+      rawAlert.header_text?.translation[0]?.text,
+      rawAlert.description_text?.translation[0]?.text,
+    ],
+  );
 
   return (
     <div className="ItineraryTransitLeg" ref={scrollTo ? scrollToRef : null}>
@@ -65,7 +77,7 @@ export default function ItineraryTransitLeg({
         iconLabel={getModeLabel(leg.route_type, intl)}
         expanded={expanded}
         alertsExpanded={alertsExpanded}
-        onToggleLegExpand={expandable ? onToggleLegExpand : null}
+        onToggleLegExpand={expandable ? onToggleLegExpand : undefined}
         onAlertClick={toggleAlertsExpanded}
         alerts={alertsForHeader}
       >
@@ -105,33 +117,35 @@ export default function ItineraryTransitLeg({
         iconSize="small"
         highMargin={true}
       >
-        <FormattedMessage
-          defaultMessage="Board at {stop}"
-          description="instruction to board (a public transit vehicle) at the named stop"
-          values={{
-            stop: <strong>{stops[0].stop_name}</strong>,
-          }}
-        />
-        {spacerWithMiddot}
-        {departure}
-        <div
-          className={classnames({
-            ItineraryDivider_headsign: true,
-          })}
-        >
+        <BorderlessButton onClick={onStopClick.bind(null, 0)}>
           <FormattedMessage
-            defaultMessage="Towards {headsign}"
-            description={
-              'describes where a transit trip is headed.' +
-              ' Often, the headsign is the name of the final stop.' +
-              ' This appears in an itinerary, along with other details about the' +
-              ' transit vehicle to board.'
-            }
+            defaultMessage="Board at {stop}"
+            description="instruction to board (a public transit vehicle) at the named stop"
             values={{
-              headsign: leg.trip_headsign,
+              stop: <strong>{stops[0].stop_name}</strong>,
             }}
           />
-        </div>
+          {spacerWithMiddot}
+          {departure}
+          <div
+            className={classnames({
+              ItineraryDivider_headsign: true,
+            })}
+          >
+            <FormattedMessage
+              defaultMessage="Towards {headsign}"
+              description={
+                'describes where a transit trip is headed.' +
+                ' Often, the headsign is the name of the final stop.' +
+                ' This appears in an itinerary, along with other details about the' +
+                ' transit vehicle to board.'
+              }
+              values={{
+                headsign: leg.trip_headsign,
+              }}
+            />
+          </div>
+        </BorderlessButton>
       </ItineraryStep>
 
       {expanded ? (
@@ -172,15 +186,17 @@ export default function ItineraryTransitLeg({
         iconSize="small"
         highMargin={true}
       >
-        <FormattedMessage
-          defaultMessage="Get off at {stop}"
-          description="instruction to exit (a public transit vehicle) at the named stop"
-          values={{
-            stop: <strong>{stops[stops.length - 1].stop_name}</strong>,
-          }}
-        />
-        {spacerWithMiddot}
-        {arrival}
+        <BorderlessButton onClick={onStopClick.bind(null, stops.length - 1)}>
+          <FormattedMessage
+            defaultMessage="Get off at {stop}"
+            description="instruction to exit (a public transit vehicle) at the named stop"
+            values={{
+              stop: <strong>{stops[stops.length - 1].stop_name}</strong>,
+            }}
+          />
+          {spacerWithMiddot}
+          {arrival}
+        </BorderlessButton>
       </ItineraryStep>
       <ItinerarySpacer />
     </div>
