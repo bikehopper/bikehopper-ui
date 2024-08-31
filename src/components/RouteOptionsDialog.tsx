@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
 import ModalDialog from './primitives/ModalDialog';
@@ -6,6 +6,7 @@ import DialogSubmitButton from './primitives/DialogSubmitButton';
 import Icon from './primitives/Icon';
 import usePrevious from '../hooks/usePrevious';
 import { CATEGORIES } from '../lib/TransitModes';
+import type { ModeCategory } from '../lib/TransitModes';
 
 import BusIcon from 'iconoir/icons/bus.svg?react';
 import TrainIcon from 'iconoir/icons/train.svg?react';
@@ -16,6 +17,11 @@ export default function RouteOptionsDialog({
   onCancel,
   onApply,
   globalConnectingModes,
+}: {
+  isOpen: boolean;
+  onCancel: () => void;
+  onApply: (values: { connectingModes: ModeCategory[] }) => void;
+  globalConnectingModes: ModeCategory[];
 }) {
   const intl = useIntl();
 
@@ -30,10 +36,13 @@ export default function RouteOptionsDialog({
     }
   }, [isOpen, wasOpen, globalConnectingModes]);
 
-  const handleApply = (evt) => {
-    evt.preventDefault(); // don't submit a form
-    onApply({ connectingModes });
-  };
+  const handleApply = useCallback(
+    (evt: React.MouseEvent) => {
+      evt.preventDefault(); // don't submit a form
+      onApply({ connectingModes });
+    },
+    [onApply, connectingModes],
+  );
 
   return (
     <ModalDialog
@@ -97,7 +106,15 @@ export default function RouteOptionsDialog({
   );
 }
 
-function ModeToggleGroupItem({ value, label, icon }) {
+function ModeToggleGroupItem({
+  value,
+  label,
+  icon,
+}: {
+  value: ModeCategory;
+  label: string;
+  icon: React.ReactNode;
+}) {
   return (
     <ToggleGroup.Item
       key={`group-item-${label}`}
