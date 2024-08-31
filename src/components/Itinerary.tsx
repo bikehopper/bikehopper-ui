@@ -35,7 +35,7 @@ export default function Itinerary({
   const [scrollToLegIdx, scrollToStepIdx] = scrollToStep || [];
 
   // array of booleans: whether the leg at that index is expanded.
-  let initialExpandedLegs;
+  let initialExpandedLegs: boolean[];
   if (route.legs.length === 1) {
     initialExpandedLegs = [true];
   } else {
@@ -120,9 +120,8 @@ export default function Itinerary({
   });
 
   // Clear out icon's SVG width/height attributes so it can be scaled with CSS
-  // (TS thinks width and height can't be set to null. It is wrong.)
-  const ArriveIconShutUpTypeScript: any = ArriveIcon;
-  const arriveIcon = <ArriveIconShutUpTypeScript width={null} height={null} />;
+  // @ts-ignore: TS wrongly thinks SVG components' width, height can't be null.
+  const arriveIcon = <ArriveIcon width={null} height={null} />;
 
   const soleBikeLeg =
     route.legs.length === 1 && route.legs[0].type === 'bike2'

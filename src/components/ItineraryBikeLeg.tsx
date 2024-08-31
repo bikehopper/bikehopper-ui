@@ -58,9 +58,8 @@ export default function ItineraryBikeLeg({
   const spacer = ' \u00B7 ';
 
   // Clear out icon's SVG width/height attributes so it can be scaled with CSS
-  // (TS thinks width and height can't be set to null. It is wrong.)
-  const BikeIconShutUpTypeScript: any = BikeIcon;
-  const bikeIcon = <BikeIconShutUpTypeScript width={null} height={null} />;
+  // @ts-ignore: TS wrongly thinks SVG components' width, height can't be null.
+  const bikeIcon = <BikeIcon width={null} height={null} />;
 
   const alerts: [string, string][] = leg.has_steps
     ? [
