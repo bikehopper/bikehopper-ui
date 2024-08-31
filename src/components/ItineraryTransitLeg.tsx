@@ -32,7 +32,7 @@ export default function ItineraryTransitLeg({
     evt: Parameters<React.MouseEventHandler>[0],
   ) => void;
   onToggleLegExpand?: React.MouseEventHandler;
-  scrollTo: number | undefined;
+  scrollTo: boolean;
 }) {
   const intl = useIntl();
 

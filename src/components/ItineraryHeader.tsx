@@ -17,7 +17,7 @@ function alertSummary(alertBody: string) {
 }
 
 type Props = {
-  alerts: [string, string][] | undefined;
+  alerts?: [string, string][];
   children: React.ReactNode | React.ReactNode[];
   icon: React.ReactNode;
   iconColor: string;
