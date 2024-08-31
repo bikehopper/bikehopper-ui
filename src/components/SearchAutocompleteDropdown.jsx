@@ -189,6 +189,8 @@ export default function SearchAutocompleteDropdown(props) {
     _resultMousedownTime = Date.now();
   };
 
+  let tabIndex = 4;
+
   return (
     <div className="flex flex-col m-0">
       <SelectionList className="flex-grow pointer-events-auto">
@@ -202,6 +204,7 @@ export default function SearchAutocompleteDropdown(props) {
               </Icon>
             }
             text={stringifyCoords(parsedCoords)}
+            tabIndex={tabIndex++}
           />
         )}
         {showCurrentLocationOption && (
@@ -214,6 +217,7 @@ export default function SearchAutocompleteDropdown(props) {
               </Icon>
             }
             text={currentLocationString}
+            tabIndex={tabIndex++}
           />
         )}
         {features.map((feature, index) => (
@@ -228,6 +232,7 @@ export default function SearchAutocompleteDropdown(props) {
             }
             icon={<PlaceIcon place={feature} />}
             text={describePlace(feature)}
+            tabIndex={tabIndex++}
           />
         ))}
       </SelectionList>
@@ -261,7 +266,14 @@ SearchAutocompleteDropdown.getLastAutocompleteResultMousedownTime = () => {
   return _resultMousedownTime;
 };
 
-function AutocompleteItem({ onClick, onMouseDown, onRemoveClick, icon, text }) {
+function AutocompleteItem({
+  onClick,
+  onMouseDown,
+  onRemoveClick,
+  icon,
+  tabIndex,
+  text,
+}) {
   return (
     <SelectionListItem
       buttonClassName={classnames(
@@ -271,6 +283,7 @@ function AutocompleteItem({ onClick, onMouseDown, onRemoveClick, icon, text }) {
       onClick={onClick}
       onMouseDown={onMouseDown}
       onRemoveClick={onRemoveClick}
+      tabIndex={tabIndex != null ? tabIndex : undefined}
     >
       {cloneElement(icon, {
         className: 'relative top-0.5 my-0 -ml-2 md:ml-6 mr-2',

@@ -262,6 +262,7 @@ export default function SearchBar(props: {
         className="text-bikehopperyellow h-12 w-12 -ml-3 text-center
           flex items-center justify-center
           bg-transparent border-0"
+        tabIndex={1}
       >
         <Icon
           label={intl.formatMessage({
@@ -294,6 +295,7 @@ export default function SearchBar(props: {
               onBlur={handleBlur.bind(null, 'start')}
               onKeyPress={handleKeyPress}
               ref={startRef}
+              tabIndex={2}
             />
           </span>
           <span
@@ -319,6 +321,11 @@ export default function SearchBar(props: {
               onKeyPress={handleKeyPress}
               ref={endRef}
               autoFocus={props.initiallyFocusDestination}
+              tabIndex={
+                // if editing start, tab past this so autocomplete results can be
+                // focused with keyboard
+                editingLocation === 'start' ? 25 : 3
+              }
             />
           </span>
         </form>

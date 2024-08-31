@@ -17,6 +17,7 @@ export default function SelectionListItem({
   onMouseDown,
   children,
   onRemoveClick,
+  tabIndex,
 }: {
   active?: boolean;
   className?: string;
@@ -25,6 +26,7 @@ export default function SelectionListItem({
   onMouseDown?: React.MouseEventHandler;
   children: React.ReactNode;
   onRemoveClick?: React.MouseEventHandler;
+  tabIndex?: number | null;
 }) {
   const intl = useIntl();
 
@@ -44,6 +46,7 @@ export default function SelectionListItem({
           SelectionListItem_button__removable: !!onRemoveClick,
           [buttonClassName]: !!buttonClassName,
         })}
+        tabIndex={tabIndex != null ? tabIndex : undefined}
       >
         {children}
       </button>
