@@ -34,7 +34,7 @@ export default function ItineraryBikeStep({
   rootRef,
 }: {
   step: RouteInstruction;
-  distance: number;
+  distance: string;
   infra: StepAnnotation[];
   isFirstStep: boolean;
   onClick: React.MouseEventHandler;
