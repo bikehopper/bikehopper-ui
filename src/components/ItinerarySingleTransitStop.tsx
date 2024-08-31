@@ -13,7 +13,7 @@ export default function ItinerarySingleTransitStop({
   onBackClick,
 }: {
   stop: TransitStop;
-  relationship: 'board' | 'alight';
+  relationship: 'board' | 'alight' | 'intermediate';
   onBackClick: React.MouseEventHandler;
 }) {
   // TODO Make this look better -- maybe more information about the
@@ -30,12 +30,14 @@ export default function ItinerarySingleTransitStop({
           description="instruction to board a transit vehicle at the named stop"
           values={{ stop: stopName }}
         />
-      ) : (
+      ) : relationship === 'alight' ? (
         <FormattedMessage
           defaultMessage="Get off at {stop}"
           description="instruction to exit a transit vehicle at the named stop"
           values={{ stop: stopName }}
         />
+      ) : (
+        stopName
       )}
       {space}
       <button onClick={onBackClick}>

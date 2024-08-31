@@ -117,33 +117,35 @@ export default function ItineraryTransitLeg({
         iconSize="small"
         highMargin={true}
       >
-        <FormattedMessage
-          defaultMessage="Board at {stop}"
-          description="instruction to board (a public transit vehicle) at the named stop"
-          values={{
-            stop: <strong>{stops[0].stop_name}</strong>,
-          }}
-        />
-        {spacerWithMiddot}
-        {departure}
-        <div
-          className={classnames({
-            ItineraryDivider_headsign: true,
-          })}
-        >
+        <BorderlessButton onClick={onStopClick.bind(null, 0)}>
           <FormattedMessage
-            defaultMessage="Towards {headsign}"
-            description={
-              'describes where a transit trip is headed.' +
-              ' Often, the headsign is the name of the final stop.' +
-              ' This appears in an itinerary, along with other details about the' +
-              ' transit vehicle to board.'
-            }
+            defaultMessage="Board at {stop}"
+            description="instruction to board (a public transit vehicle) at the named stop"
             values={{
-              headsign: leg.trip_headsign,
+              stop: <strong>{stops[0].stop_name}</strong>,
             }}
           />
-        </div>
+          {spacerWithMiddot}
+          {departure}
+          <div
+            className={classnames({
+              ItineraryDivider_headsign: true,
+            })}
+          >
+            <FormattedMessage
+              defaultMessage="Towards {headsign}"
+              description={
+                'describes where a transit trip is headed.' +
+                ' Often, the headsign is the name of the final stop.' +
+                ' This appears in an itinerary, along with other details about the' +
+                ' transit vehicle to board.'
+              }
+              values={{
+                headsign: leg.trip_headsign,
+              }}
+            />
+          </div>
+        </BorderlessButton>
       </ItineraryStep>
 
       {expanded ? (
@@ -184,15 +186,17 @@ export default function ItineraryTransitLeg({
         iconSize="small"
         highMargin={true}
       >
-        <FormattedMessage
-          defaultMessage="Get off at {stop}"
-          description="instruction to exit (a public transit vehicle) at the named stop"
-          values={{
-            stop: <strong>{stops[stops.length - 1].stop_name}</strong>,
-          }}
-        />
-        {spacerWithMiddot}
-        {arrival}
+        <BorderlessButton onClick={onStopClick.bind(null, stops.length - 1)}>
+          <FormattedMessage
+            defaultMessage="Get off at {stop}"
+            description="instruction to exit (a public transit vehicle) at the named stop"
+            values={{
+              stop: <strong>{stops[stops.length - 1].stop_name}</strong>,
+            }}
+          />
+          {spacerWithMiddot}
+          {arrival}
+        </BorderlessButton>
       </ItineraryStep>
       <ItinerarySpacer />
     </div>
