@@ -121,12 +121,12 @@ type BikeLegBase = {
   descend: number;
 };
 type BikeLegRaw = BikeLegBase & {
-  departure_time?: string; // ISO-8601
-  arrival_time?: string; // ISO-8601
+  departure_time: string; // ISO-8601
+  arrival_time: string; // ISO-8601
 };
 export type BikeLeg = BikeLegBase & {
-  departure_time?: Date;
-  arrival_time?: Date;
+  departure_time: Date;
+  arrival_time: Date;
   has_steps?: boolean;
 };
 type TransitLegBase = {
@@ -152,12 +152,12 @@ type TransitLegBase = {
   alerts?: TransitAlert[];
 };
 type TransitLegRaw = TransitLegBase & {
-  departure_time?: string; // ISO-8601
-  arrival_time?: string; // ISO-8601
+  departure_time: string; // ISO-8601
+  arrival_time: string; // ISO-8601
 };
 export type TransitLeg = TransitLegBase & {
-  departure_time?: Date;
-  arrival_time?: Date;
+  departure_time: Date;
+  arrival_time: Date;
 };
 type LegRaw = TransitLegRaw | BikeLegRaw;
 type Leg = TransitLeg | BikeLeg;
@@ -236,12 +236,8 @@ function parse(route: { paths: RouteResponsePathRaw[] }): {
               leg.type === 'pt' && leg.route_color
                 ? '#' + leg.route_color
                 : undefined,
-            departure_time: leg.departure_time
-              ? DateTime.fromISO(leg.departure_time).toJSDate()
-              : undefined,
-            arrival_time: leg.arrival_time
-              ? DateTime.fromISO(leg.arrival_time).toJSDate()
-              : undefined,
+            departure_time: DateTime.fromISO(leg.departure_time).toJSDate(),
+            arrival_time: DateTime.fromISO(leg.arrival_time).toJSDate(),
             // mark bike legs that have steps
             has_steps:
               leg.type === 'bike2'
