@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import pointInPolygon from '@turf/boolean-point-in-polygon';
 import usePrevious from '../hooks/usePrevious';
@@ -15,19 +15,19 @@ import RoutesOverview from './RoutesOverview';
 import Itinerary from './Itinerary';
 import ItinerarySingleStep from './ItinerarySingleStep';
 import ItinerarySingleTransitStop from './ItinerarySingleTransitStop';
+import type { Dispatch, RootState } from '../store';
 
-export default function Routes(props) {
-  const dispatch = useDispatch();
+export default function Routes(props: {}) {
+  const dispatch: Dispatch = useDispatch();
   const {
     routes,
     activeRoute,
     details,
     viewingStep,
-    viewingLeg,
     destinationDescription,
     outOfAreaStart,
     outOfAreaEnd,
-  } = useSelector(({ routes, routeParams }) => {
+  } = useSelector(({ routes, routeParams }: RootState) => {
     let destinationDescription = 'destination';
     if (routeParams.end && routeParams.end.point) {
       destinationDescription = describePlace(routeParams.end.point, {
@@ -51,7 +51,6 @@ export default function Routes(props) {
       routes: routes.routes,
       activeRoute: routes.activeRoute,
       details: routes.viewingDetails,
-      viewingLeg: routes.viewingLeg,
       viewingStep: routes.viewingStep,
       destinationDescription,
       outOfAreaStart,
@@ -61,25 +60,31 @@ export default function Routes(props) {
 
   const prevViewingStep = usePrevious(viewingStep);
 
-  const handleRouteClick = (index) => {
-    dispatch(routeClicked(index, 'list'));
-  };
+  const handleRouteClick = useCallback(
+    (index: number) => {
+      dispatch(routeClicked(index, 'list'));
+    },
+    [dispatch],
+  );
 
-  const handleStepClick = (legClicked, stepClicked) => {
-    dispatch(itineraryStepClicked(legClicked, stepClicked));
-  };
+  const handleStepClick = useCallback(
+    (legClicked: number, stepClicked: number) => {
+      dispatch(itineraryStepClicked(legClicked, stepClicked));
+    },
+    [dispatch],
+  );
 
-  const handleBackClick = () => {
+  const handleBackClick = useCallback<React.MouseEventHandler>(() => {
     dispatch(itineraryBackClicked());
-  };
+  }, [dispatch]);
 
-  const handleStepBackClick = () => {
+  const handleStepBackClick = useCallback<React.MouseEventHandler>(() => {
     dispatch(itineraryStepBackClicked());
-  };
+  }, [dispatch]);
 
   const wasViewingDetails = usePrevious(details);
-  const rootRef = useRef();
-  const scrollTopBeforeItineraryOpen = useRef();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const scrollTopBeforeItineraryOpen = useRef<number | null>(null);
 
   useEffect(() => {
     const el = rootRef.current;
@@ -108,30 +113,34 @@ export default function Routes(props) {
 
   let content;
 
-  if (!details) {
+  if (!routes) {
+    // This component normally shouldn't render at all when we have no routes,
+    // but it can momentarily happen when app state is in the process of
+    // updating.
+    content = null;
+  } else if (!details) {
     content = (
       <RoutesOverview
         routes={routes}
-        activeRoute={activeRoute}
+        activeRoute={activeRoute as number}
         onRouteClick={handleRouteClick}
-        outOfAreaStart={outOfAreaStart}
-        outOfAreaEnd={outOfAreaEnd}
+        outOfAreaStart={!!outOfAreaStart}
+        outOfAreaEnd={!!outOfAreaEnd}
       />
     );
   } else if (viewingStep == null) {
     content = (
       <Itinerary
-        route={routes[activeRoute]}
+        route={routes[activeRoute as number]}
         onBackClick={handleBackClick}
         onStepClick={handleStepClick}
-        viewingLeg={viewingLeg}
         destinationDescription={destinationDescription}
-        scrollToStep={prevViewingStep}
+        scrollToStep={prevViewingStep || null}
       />
     );
   } else {
     const [legIdx, stepIdx] = viewingStep;
-    const leg = routes[activeRoute].legs[legIdx];
+    const leg = routes[activeRoute as number].legs[legIdx];
 
     if (leg.type !== 'pt') {
       content = (

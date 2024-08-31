@@ -30,7 +30,7 @@ export const AGENCY_COMMON_NAMES: Record<string, string> = {
 
 // Generated; see scripts/gtfs/
 // Last generated based on 2022/11/29 regional 511 GTFS dump
-export const TRANSIT_SERVICE_AREA = {
+export const TRANSIT_SERVICE_AREA: GeoJSON.Feature<GeoJSON.Polygon> = {
   geometry: {
     coordinates: [
       [
