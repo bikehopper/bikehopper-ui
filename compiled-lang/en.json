@@ -467,6 +467,12 @@
       "value": "Current Location"
     }
   ],
+  "Fle6qD": [
+    {
+      "type": 0,
+      "value": "Unable to generate FIT file"
+    }
+  ],
   "Gm6D00": [
     {
       "type": 0,
@@ -1149,12 +1155,6 @@
     {
       "type": 0,
       "value": "west"
-    }
-  ],
-  "pFBkix": [
-    {
-      "type": 0,
-      "value": "Custom"
     }
   ],
   "qyWb6X": [

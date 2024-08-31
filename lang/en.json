@@ -135,6 +135,10 @@
     "defaultMessage": "Current Location",
     "description": "option that can be selected (or typed in) to get directions from or to the current location of the user, as determined by GPS"
   },
+  "Fle6qD": {
+    "defaultMessage": "Unable to generate FIT file",
+    "description": "error when we can't generate a FIT file (a file format used in a cycling computer)."
+  },
   "Gm6D00": {
     "defaultMessage": "Turn <dir>right</dir>{haveStreet, select, name { onto <name>{street}</name>} other {}}",
     "description": "instruction"
@@ -358,10 +362,6 @@
   "p04B0A": {
     "defaultMessage": "west",
     "description": "cardinal direction, used in a sentence like \"Head west\""
-  },
-  "pFBkix": {
-    "defaultMessage": "Custom",
-    "description": "description of a route start/end point that was selected on the map"
   },
   "qyWb6X": {
     "defaultMessage": "Connecting modes",
