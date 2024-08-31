@@ -1,12 +1,13 @@
 import { DateTime, Duration } from 'luxon';
+import type { IntlShape } from 'react-intl';
 
 // TODO localize all of these
 
-export function formatTime(jsDate) {
+export function formatTime(jsDate: Date) {
   return DateTime.fromJSDate(jsDate).toLocaleString(DateTime.TIME_SIMPLE);
 }
 
-export function formatInterval(milliseconds) {
+export function formatInterval(milliseconds: number) {
   let minutes = Math.ceil(milliseconds / 1000 / 60);
   if (minutes < 60) {
     return `${minutes} min`;
@@ -27,7 +28,11 @@ export function formatInterval(milliseconds) {
 
 // Long description of the interval between two JS Dates.
 // TODO: Reconcile this with the above somehow.
-export function formatDurationBetween(startTime, endTime, intl) {
+export function formatDurationBetween(
+  startTime: Date,
+  endTime: Date,
+  intl: IntlShape,
+) {
   const duration = DateTime.fromJSDate(endTime)
     .setLocale(intl.locale)
     .diff(DateTime.fromJSDate(startTime), ['days', 'hours', 'minutes'])
