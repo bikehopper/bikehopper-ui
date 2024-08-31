@@ -1,4 +1,5 @@
 import { FormattedMessage } from 'react-intl';
+import type { BikeLeg } from '../lib/BikeHopperClient';
 
 /**
  * When you tap on an instruction (e.g. "Turn left on Valencia
@@ -7,7 +8,15 @@ import { FormattedMessage } from 'react-intl';
  * bottom of the screen at that time, showing a single instruction.
  */
 
-export default function ItinerarySingleStep({ leg, stepIdx, onBackClick }) {
+export default function ItinerarySingleStep({
+  leg,
+  stepIdx,
+  onBackClick,
+}: {
+  leg: BikeLeg;
+  stepIdx: number;
+  onBackClick: React.MouseEventHandler;
+}) {
   // TODO Make this nice and give the same localized description (with image) as
   // the step in the full itinerary.
   const space = ' ';

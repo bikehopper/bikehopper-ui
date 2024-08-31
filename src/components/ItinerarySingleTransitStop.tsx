@@ -1,17 +1,20 @@
 import { FormattedMessage } from 'react-intl';
+import type { TransitStop } from '../lib/BikeHopperClient';
 
 /**
  * When you tap on a transit stop name in the detailed itinerary, we
  * zoom in on that transit stop. This is the view that is displayed at
  * the bottom of the screen at that time.
- *
- * The relationship prop should be 'board' or 'alight'
  */
 
 export default function ItinerarySingleTransitStop({
   stop,
   relationship,
   onBackClick,
+}: {
+  stop: TransitStop;
+  relationship: 'board' | 'alight';
+  onBackClick: React.MouseEventHandler;
 }) {
   // TODO Make this look better -- maybe more information about the
   // transit operator?

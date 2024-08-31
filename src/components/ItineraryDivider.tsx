@@ -2,7 +2,11 @@ import ItineraryRow from './ItineraryRow';
 
 import './ItineraryDivider.css';
 
-export default function ItineraryDivider(props) {
+type Props = {
+  detail: React.ReactNode;
+};
+
+export default function ItineraryDivider(props: Props) {
   const { detail } = props;
 
   return (

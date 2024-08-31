@@ -161,7 +161,7 @@ export type TransitLeg = TransitLegBase & {
 };
 type LegRaw = TransitLegRaw | BikeLegRaw;
 type Leg = TransitLeg | BikeLeg;
-type TransitStop = {
+export type TransitStop = {
   stop_id: string;
   stop_name: string;
   geometry: GeoJSON.Point;
