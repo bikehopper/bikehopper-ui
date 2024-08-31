@@ -52,7 +52,7 @@
     "build": "vite build",
     "serve": "vite preview",
     "lint": "eslint --max-warnings 0 --report-unused-disable-directives src/**/*.{js,jsx,ts,tsx} && npx tsc",
-    "extract": "formatjs extract 'src/**/*.{js,jsx}' --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
+    "extract": "formatjs extract 'src/**/*.{ts,tsx,js,jsx}' --ignore 'src/**/*.d.ts' --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
     "compile": "formatjs compile",
     "prepare": "husky"
   },
