@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { formatDurationBetween } from '../lib/time';
 import { getAgencyDisplayName } from '../lib/region';
@@ -35,15 +35,16 @@ export default function Itinerary({
   const [scrollToLegIdx, scrollToStepIdx] = scrollToStep || [];
 
   // array of booleans: whether the leg at that index is expanded.
-  const [expandedLegs, setExpandedLegs] = useState<boolean[]>([]);
-
-  useEffect(() => {
-    if (route.legs.length === 1) {
-      setExpandedLegs([true]);
-    } else {
-      setExpandedLegs(Array(route.legs.length).fill(false));
-    }
-  }, [route]);
+  let initialExpandedLegs;
+  if (route.legs.length === 1) {
+    initialExpandedLegs = [true];
+  } else {
+    initialExpandedLegs = Array(route.legs.length).fill(false);
+    // Expand a leg we're scrolling to:
+    if (scrollToStep) initialExpandedLegs[scrollToStep[0]] = true;
+  }
+  const [expandedLegs, setExpandedLegs] =
+    useState<boolean[]>(initialExpandedLegs);
 
   const toggleExpandedLeg = (idx: number) => {
     const newValue = [...expandedLegs];
