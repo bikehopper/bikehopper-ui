@@ -1,8 +1,9 @@
+import classnames from 'classnames';
 import { cloneElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import classnames from 'classnames';
 import MoonLoader from 'react-spinners/MoonLoader';
+import { createSelector } from 'reselect';
 import { removeRecentlyUsedLocation } from '../features/geocoding';
 import {
   LocationSourceType,
@@ -24,7 +25,7 @@ const LIST_ITEM_CLASSNAME = 'SearchAutocompleteDropdown_place';
 
 let _resultMousedownTime = 0;
 
-export default function SearchAutocompleteDropdown(props) {
+export default function SearchAutocompleteDropdown({ startOrEnd }) {
   const dispatch = useDispatch();
   const intl = useIntl();
 
@@ -37,7 +38,6 @@ export default function SearchAutocompleteDropdown(props) {
   const strong = useCallback((txt) => <strong>{txt}</strong>, []);
 
   const {
-    startOrEnd,
     inputText,
     autocompletedText,
     features,
@@ -45,123 +45,11 @@ export default function SearchAutocompleteDropdown(props) {
     loading,
     noResults, // we explicitly searched and found no results
     parsedCoords,
-  } = useSelector((state) => {
-    const startOrEnd = state.routeParams.editingLocation;
-    const inputText = state.routeParams[startOrEnd + 'InputText'].trim();
-
-    const parsedCoords = parsePossibleCoordsString(inputText);
-
-    let autocompletedText = inputText; // May get changed below
-    let cache = inputText && state.geocoding.typeaheadCache['@' + inputText];
-    let fallbackToGeocodedLocationSourceText = false;
-    let loading = false;
-    let noResults = false;
-    if (!parsedCoords && (!cache || cache.status !== 'succeeded')) {
-      if (inputText !== '' && (!cache || cache?.status === 'fetching')) {
-        loading = true;
-      }
-      // TODO: should we distinguish b/t server error & no match?
-      if (cache?.status === 'failed') noResults = true;
-
-      // If the location we're editing has a geocoded location already selected, display the
-      // other options from the input text that was used to pick that.
-      const relevantLocation = state.routeParams[startOrEnd];
-      if (
-        relevantLocation &&
-        relevantLocation.source === LocationSourceType.Geocoded &&
-        relevantLocation.fromInputText &&
-        (inputText === '' ||
-          inputText === describePlace(relevantLocation.point))
-      ) {
-        autocompletedText = relevantLocation.fromInputText;
-        cache = state.geocoding.typeaheadCache['@' + autocompletedText.trim()];
-        fallbackToGeocodedLocationSourceText = true;
-        loading = false;
-      } else if (
-        relevantLocation?.source === LocationSourceType.UrlWithString &&
-        inputText === relevantLocation.fromInputText
-      ) {
-        // in this case we don't fetch autocompletes
-        loading = false;
-      } else if (loading && !cache?.osmIds) {
-        // Still nothing? Try prefixes of the input text. Example: current input text is
-        // "123 Main St" which hasn't been looked up yet but we have results for "123 Mai",
-        // which came back while you were typing.
-        let strippedChars = 0;
-        while (
-          autocompletedText &&
-          (!cache || cache.status !== 'succeeded') &&
-          strippedChars++ < 8
-        ) {
-          autocompletedText = autocompletedText.substr(
-            0,
-            autocompletedText.length - 1,
-          );
-          cache =
-            state.geocoding.typeaheadCache['@' + autocompletedText.trim()];
-        }
-      }
-    }
-
-    const other = startOrEnd === 'start' ? 'end' : 'start';
-    const canUseCurrentLocation =
-      'geolocation' in navigator &&
-      (!state.routeParams[other] ||
-        state.routeParams[other].source !== LocationSourceType.UserGeolocation);
-
-    // Only show the current location option if typed text is 1) blank, or 2)
-    // a prefix of "Current Location", case-insensitive
-    const showCurrentLocationOption =
-      canUseCurrentLocation &&
-      (fallbackToGeocodedLocationSourceText ||
-        currentLocationString
-          .toLocaleLowerCase(intl.locale)
-          .startsWith(inputText.toLocaleLowerCase(intl.locale)));
-
-    let recentlyUsedFeatureIds = [];
-    let autocompleteFeatureIds = [];
-
-    if (inputText === '') {
-      // Suggest recently used locations
-      // NOTE: This is currently only done if input text is empty, but we
-      // could switch to always showing recently used locations that match
-      // the text typed, alongside Photon results.
-      recentlyUsedFeatureIds = state.geocoding.recentlyUsed.map((r) => r.id);
-    } else if (cache?.osmIds?.length > 0) {
-      autocompleteFeatureIds = cache.osmIds;
-    }
-
-    // Limit result size, don't show the location already selected as start
-    // point as a candidate for end point (or vice versa), and hydrate.
-    const otherId =
-      state.routeParams[other]?.point?.properties?.osm_id &&
-      state.routeParams[other].point.properties.osm_type +
-        state.routeParams[other].point.properties.osm_id;
-    const shownFeatures = [
-      ...autocompleteFeatureIds.map((id) => state.geocoding.osmCache[id]),
-      ...recentlyUsedFeatureIds.map((id) => ({
-        ...state.geocoding.osmCache[id],
-        fromRecentlyUsed: true,
-      })),
-    ]
-      .filter(
-        (feat) =>
-          feat?.properties?.osm_type &&
-          feat.properties.osm_type + feat.properties.osm_id !== otherId,
-      )
-      .slice(0, 8);
-
-    return {
-      startOrEnd,
-      inputText,
-      autocompletedText,
-      features: shownFeatures,
-      showCurrentLocationOption,
-      loading,
-      noResults,
-      parsedCoords,
-    };
-  }, shallowEqual);
+  } = useSelector(
+    (state) =>
+      _searchDropdownSelector(state, startOrEnd, intl, currentLocationString),
+    shallowEqual,
+  );
 
   const handleClick = (index) => {
     dispatch(
@@ -256,6 +144,163 @@ export default function SearchAutocompleteDropdown(props) {
     </div>
   );
 }
+
+const _searchDropdownSelector = createSelector(
+  [
+    // pass-thru: is there a better way to do this??
+    function selectIntl(_state, _startOrEnd, intl) {
+      return intl;
+    },
+    // pass-thru
+    function selectCurrentLocationString(
+      _state,
+      _startOrEnd,
+      _intl,
+      currentLocationString,
+    ) {
+      return currentLocationString;
+    },
+    function selectThisLocation(state, startOrEnd) {
+      return state.routeParams[startOrEnd];
+    },
+    function selectThisLocationText(state, startOrEnd) {
+      return state.routeParams[startOrEnd + 'InputText'];
+    },
+    function selectOtherLocation(state, startOrEnd) {
+      const other = startOrEnd === 'start' ? 'end' : 'start';
+      return state.routeParams[other];
+    },
+    function selectTypeaheadCache(state) {
+      return state.geocoding.typeaheadCache;
+    },
+    function selectOsmCache(state) {
+      return state.geocoding.osmCache;
+    },
+    function selectRecentlyUsed(state) {
+      return state.geocoding.recentlyUsed;
+    },
+  ],
+  (
+    intl,
+    currentLocationString,
+    thisLocation,
+    thisLocationText,
+    otherLocation,
+    typeaheadCache,
+    osmCache,
+    recentlyUsed,
+  ) => {
+    const inputText = thisLocationText.trim();
+
+    const parsedCoords = parsePossibleCoordsString(inputText);
+
+    let autocompletedText = inputText; // May get changed below
+    let cache = inputText && typeaheadCache['@' + inputText];
+    let fallbackToGeocodedLocationSourceText = false;
+    let loading = false;
+    let noResults = false;
+    if (!parsedCoords && (!cache || cache.status !== 'succeeded')) {
+      if (inputText !== '' && (!cache || cache?.status === 'fetching')) {
+        loading = true;
+      }
+      // TODO: should we distinguish b/t server error & no match?
+      if (cache?.status === 'failed') noResults = true;
+
+      // If the location we're editing has a geocoded location already selected, display the
+      // other options from the input text that was used to pick that.
+      if (
+        thisLocation &&
+        thisLocation.source === LocationSourceType.Geocoded &&
+        thisLocation.fromInputText &&
+        (inputText === '' || inputText === describePlace(thisLocation.point))
+      ) {
+        autocompletedText = thisLocation.fromInputText;
+        cache = typeaheadCache['@' + autocompletedText.trim()];
+        fallbackToGeocodedLocationSourceText = true;
+        loading = false;
+      } else if (
+        thisLocation?.source === LocationSourceType.UrlWithString &&
+        inputText === thisLocation.fromInputText
+      ) {
+        // in this case we don't fetch autocompletes
+        loading = false;
+      } else if (loading && !cache?.osmIds) {
+        // Still nothing? Try prefixes of the input text. Example: current input text is
+        // "123 Main St" which hasn't been looked up yet but we have results for "123 Mai",
+        // which came back while you were typing.
+        let strippedChars = 0;
+        while (
+          autocompletedText &&
+          (!cache || cache.status !== 'succeeded') &&
+          strippedChars++ < 8
+        ) {
+          autocompletedText = autocompletedText.substr(
+            0,
+            autocompletedText.length - 1,
+          );
+          cache = typeaheadCache['@' + autocompletedText.trim()];
+        }
+      }
+    }
+
+    const canUseCurrentLocation =
+      'geolocation' in navigator &&
+      (!otherLocation ||
+        otherLocation.source !== LocationSourceType.UserGeolocation);
+
+    // Only show the current location option if typed text is 1) blank, or 2)
+    // a prefix of "Current Location", case-insensitive
+    const showCurrentLocationOption =
+      canUseCurrentLocation &&
+      (fallbackToGeocodedLocationSourceText ||
+        currentLocationString
+          .toLocaleLowerCase(intl.locale)
+          .startsWith(inputText.toLocaleLowerCase(intl.locale)));
+
+    let recentlyUsedFeatureIds = [];
+    let autocompleteFeatureIds = [];
+
+    if (inputText === '') {
+      // Suggest recently used locations
+      // NOTE: This is currently only done if input text is empty, but we
+      // could switch to always showing recently used locations that match
+      // the text typed, alongside Photon results.
+      recentlyUsedFeatureIds = recentlyUsed.map((r) => r.id);
+    } else if (cache?.osmIds?.length > 0) {
+      autocompleteFeatureIds = cache.osmIds;
+    }
+
+    // Limit result size, don't show the location already selected as start
+    // point as a candidate for end point (or vice versa), and hydrate.
+    const otherId =
+      otherLocation?.point?.properties?.osm_id &&
+      otherLocation.point.properties.osm_type +
+        otherLocation.point.properties.osm_id;
+    const shownFeatures = [
+      ...autocompleteFeatureIds.map((id) => osmCache[id]),
+      ...recentlyUsedFeatureIds.map((id) => ({
+        ...osmCache[id],
+        fromRecentlyUsed: true,
+      })),
+    ]
+      .filter(
+        (feat) =>
+          feat?.properties?.osm_type &&
+          feat.properties.osm_type + feat.properties.osm_id !== otherId,
+      )
+      .slice(0, 8);
+
+    return {
+      inputText,
+      autocompletedText,
+      features: shownFeatures,
+      showCurrentLocationOption,
+      loading,
+      noResults,
+      parsedCoords,
+    };
+  },
+);
 
 // Hack for letting search bar see if an autocomplete result was focused
 SearchAutocompleteDropdown.isAutocompleteResultElement = (domElement) => {
