@@ -34,6 +34,10 @@ const LIST_ITEM_CLASSNAME = 'SearchDropdown_place';
 
 let _resultMousedownTime = 0;
 
+type DropdownFeature = PhotonOsmHash & {
+  fromRecentlyUsed?: boolean;
+};
+
 export default function SearchDropdown({
   startOrEnd,
 }: {
@@ -61,6 +65,14 @@ export default function SearchDropdown({
     loading,
     noResults, // we explicitly searched and found no results
     parsedCoords,
+  }: {
+    inputText: string;
+    autocompletedText: string;
+    features: DropdownFeature[];
+    showCurrentLocationOption: boolean;
+    loading: boolean;
+    noResults: boolean;
+    parsedCoords: [number, number] | null;
   } = useSelector(
     (state) =>
       _searchDropdownSelector(state, startOrEnd, intl, currentLocationString),
@@ -288,13 +300,13 @@ const _searchDropdownSelector = createSelector(
     // XXX This is meant to catch a location selected from the recently-used
     // list. It would be cleaner to just have a diff source type for that.
     const unmodifiedSelectionFromRecentlyUsed =
-      thisLocation &&
+      !!thisLocation &&
       thisLocation.source === LocationSourceType.Geocoded &&
       thisLocation.fromInputText === '' &&
       inputText === describePlace(thisLocation.point);
 
     const unmodifiedUrlWithString =
-      thisLocation &&
+      !!thisLocation &&
       thisLocation.source === LocationSourceType.UrlWithString &&
       inputText === thisLocation.fromInputText;
 
@@ -344,7 +356,7 @@ const _searchDropdownSelector = createSelector(
       thisLocation?.point?.properties?.osm_id &&
       thisLocation.point.properties.osm_type +
         thisLocation.point.properties.osm_id;
-    const shownFeatures: (PhotonOsmHash & { fromRecentlyUsed?: boolean })[] = [
+    const shownFeatures: DropdownFeature[] = [
       ...autocompleteFeatureIds.map((id: string) => osmCache[id]),
       ...recentlyUsedFeatureIds.map((id: string) => ({
         ...osmCache[id],
