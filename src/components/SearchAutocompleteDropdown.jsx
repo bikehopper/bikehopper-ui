@@ -248,34 +248,48 @@ const _searchDropdownSelector = createSelector(
       (!otherLocation ||
         otherLocation.source !== LocationSourceType.UserGeolocation);
 
-    // Only show the current location option if typed text is 1) blank, or 2)
-    // a prefix of "Current Location", case-insensitive
+    // XXX This is meant to catch a location selected from the recently-used
+    // list. It would be cleaner to just have a diff source type for that.
+    const unmodifiedSelectionFromRecentlyUsed =
+      thisLocation.source === LocationSourceType.Geocoded &&
+      thisLocation.fromInputText === '' &&
+      inputText === describePlace(thisLocation.point);
+
+    // Only show the current location option if typed text is 1. blank, or 2.
+    // a prefix of "Current Location", case-insensitive, or 3. matches a
+    // location selected from the recently-used list
     const showCurrentLocationOption =
       canUseCurrentLocation &&
       (fallbackToGeocodedLocationSourceText ||
         currentLocationString
           .toLocaleLowerCase(intl.locale)
-          .startsWith(inputText.toLocaleLowerCase(intl.locale)));
+          .startsWith(inputText.toLocaleLowerCase(intl.locale)) ||
+        unmodifiedSelectionFromRecentlyUsed);
 
     let recentlyUsedFeatureIds = [];
     let autocompleteFeatureIds = [];
 
-    if (inputText === '') {
+    if (inputText === '' || unmodifiedSelectionFromRecentlyUsed) {
       // Suggest recently used locations
       // NOTE: This is currently only done if input text is empty, but we
       // could switch to always showing recently used locations that match
       // the text typed, alongside Photon results.
       recentlyUsedFeatureIds = recentlyUsed.map((r) => r.id);
+      loading = false;
     } else if (cache?.osmIds?.length > 0) {
       autocompleteFeatureIds = cache.osmIds;
     }
 
-    // Limit result size, don't show the location already selected as start
-    // point as a candidate for end point (or vice versa), and hydrate.
+    // Limit result size, don't show a location already selected (for either
+    // point) as a candidate, and hydrate.
     const otherId =
       otherLocation?.point?.properties?.osm_id &&
       otherLocation.point.properties.osm_type +
         otherLocation.point.properties.osm_id;
+    const thisId =
+      thisLocation?.point?.properties?.osm_id &&
+      thisLocation.point.properties.osm_type +
+        thisLocation.point.properties.osm_id;
     const shownFeatures = [
       ...autocompleteFeatureIds.map((id) => osmCache[id]),
       ...recentlyUsedFeatureIds.map((id) => ({
@@ -286,7 +300,8 @@ const _searchDropdownSelector = createSelector(
       .filter(
         (feat) =>
           feat?.properties?.osm_type &&
-          feat.properties.osm_type + feat.properties.osm_id !== otherId,
+          feat.properties.osm_type + feat.properties.osm_id !== otherId &&
+          feat.properties.osm_type + feat.properties.osm_id !== thisId,
       )
       .slice(0, 8);
 
