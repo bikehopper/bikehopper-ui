@@ -81,7 +81,11 @@ export default function SearchDropdown({
 
   const handleClick = (index: number) => {
     dispatch(
-      selectGeocodedLocation(startOrEnd, features[index], autocompletedText),
+      selectGeocodedLocation(
+        startOrEnd,
+        features[index],
+        features[index].fromRecentlyUsed ? '' : autocompletedText,
+      ),
     );
   };
 
