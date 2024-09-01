@@ -6,9 +6,11 @@ import './SelectionList.css';
 export default function SelectionList({
   className = '',
   children,
+  id = '',
 }: {
   className?: string;
   children: React.ReactNode;
+  id?: string;
 }) {
   return (
     <ul
@@ -16,6 +18,7 @@ export default function SelectionList({
         SelectionList: true,
         [className]: !!className,
       })}
+      id={id}
     >
       {children}
     </ul>

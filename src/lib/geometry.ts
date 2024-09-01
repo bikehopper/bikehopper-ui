@@ -430,7 +430,9 @@ function _elevationChangeInKm(
  * In fact, the return value is in [lng, lat] format, or null if not parseable
  * as a lat-lng string.
  */
-export function parsePossibleCoordsString(str: string) {
+export function parsePossibleCoordsString(
+  str: string,
+): [number, number] | null {
   // In the parse coords lib, commas are optional.
   // This means something like "33 19" gets parsed as coords when in SF that
   // should return 33 19th Avenue. So as a pre-filter, require at least one of

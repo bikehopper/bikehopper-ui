@@ -16,7 +16,8 @@ import {
   LocationSourceType,
   swapLocations,
 } from '../features/routeParams';
-import SearchAutocompleteDropdown from './SearchAutocompleteDropdown';
+import type { Location } from '../features/routeParams';
+import SearchDropdown from './SearchDropdown';
 import type { ModeCategory } from '../lib/TransitModes';
 import type { Dispatch, RootState } from '../store';
 import usePrevious from '../hooks/usePrevious';
@@ -163,11 +164,8 @@ export default function SearchBar(props: {
       // an autocomplete result. However, the mousedown on the button does happen before
       // the blur, so that's what we use here.
       const isAutocompleteResultTapped =
-        SearchAutocompleteDropdown.isAutocompleteResultElement(
-          event.relatedTarget,
-        ) ||
-        Date.now() -
-          SearchAutocompleteDropdown.getLastAutocompleteResultMousedownTime() <
+        SearchDropdown.isAutocompleteResultElement(event.relatedTarget) ||
+        Date.now() - SearchDropdown.getLastAutocompleteResultMousedownTime() <
           1000;
 
       const haveLocations = !!(startLocation && endLocation);
@@ -278,7 +276,7 @@ export default function SearchBar(props: {
           role="search"
           onSubmit={handleSubmit}
           aria-autocomplete="list"
-          aria-owns="SearchAutocompleteDropdown"
+          aria-owns="SearchDropdown"
         >
           <span className="relative">
             <PlaceIcon
@@ -383,7 +381,7 @@ export default function SearchBar(props: {
 function _getDisplayedText(
   intl: IntlShape,
   text: string,
-  loc: RootState['routeParams']['start'] | null,
+  loc: Location | null,
   isFocused: boolean,
 ): string {
   if (!loc) return text;

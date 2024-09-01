@@ -9,7 +9,7 @@ import AlertBar from './AlertBar';
 import DirectionsNullState from './DirectionsNullState';
 import MapPlusOverlay from './MapPlusOverlay';
 import Routes from './Routes';
-import SearchAutocompleteDropdown from './SearchAutocompleteDropdown';
+import SearchDropdown from './SearchDropdown';
 import TopBar from './TopBar';
 import {
   LocationSourceType,
@@ -54,7 +54,7 @@ function App(props: Props) {
 
   let bottomContent;
   if (isEditingLocations) {
-    bottomContent = <SearchAutocompleteDropdown startOrEnd={editingLocation} />;
+    bottomContent = <SearchDropdown startOrEnd={editingLocation} />;
   } else if (hasRoutes) {
     bottomContent = <Routes />;
   } else if (!hasLocations) {

@@ -1,32 +1,45 @@
 import classnames from 'classnames';
 import { cloneElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import type { IntlShape } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import MoonLoader from 'react-spinners/MoonLoader';
 import { createSelector } from 'reselect';
+import type { PhotonOsmHash } from '../lib/BikeHopperClient';
 import { removeRecentlyUsedLocation } from '../features/geocoding';
+import type {
+  OsmCacheItem,
+  OsmId,
+  RecentlyUsedItem,
+} from '../features/geocoding';
 import {
   LocationSourceType,
   selectCurrentLocation,
   selectGeocodedLocation,
   selectLocationFromTypedCoords,
 } from '../features/routeParams';
+import type { Location } from '../features/routeParams';
 import describePlace from '../lib/describePlace';
 import { parsePossibleCoordsString, stringifyCoords } from '../lib/geometry';
 import Icon from './primitives/Icon';
 import PlaceIcon from './PlaceIcon';
 import SelectionList from './SelectionList';
 import SelectionListItem from './SelectionListItem';
+import type { Dispatch, RootState } from '../store';
 
 import Pin from 'iconoir/icons/map-pin.svg?react';
 import Position from 'iconoir/icons/position.svg?react';
 
-const LIST_ITEM_CLASSNAME = 'SearchAutocompleteDropdown_place';
+const LIST_ITEM_CLASSNAME = 'SearchDropdown_place';
 
 let _resultMousedownTime = 0;
 
-export default function SearchAutocompleteDropdown({ startOrEnd }) {
-  const dispatch = useDispatch();
+export default function SearchDropdown({
+  startOrEnd,
+}: {
+  startOrEnd: 'start' | 'end';
+}) {
+  const dispatch: Dispatch = useDispatch();
   const intl = useIntl();
 
   const currentLocationString = intl.formatMessage({
@@ -35,7 +48,10 @@ export default function SearchAutocompleteDropdown({ startOrEnd }) {
       'option that can be selected (or typed in) to get directions from or ' +
       'to the current location of the user, as determined by GPS',
   });
-  const strong = useCallback((txt) => <strong>{txt}</strong>, []);
+  const strong = useCallback(
+    (txt: React.ReactNode) => <strong>{txt}</strong>,
+    [],
+  );
 
   const {
     inputText,
@@ -51,13 +67,13 @@ export default function SearchAutocompleteDropdown({ startOrEnd }) {
     shallowEqual,
   );
 
-  const handleClick = (index) => {
+  const handleClick = (index: number) => {
     dispatch(
       selectGeocodedLocation(startOrEnd, features[index], autocompletedText),
     );
   };
 
-  const handleRemoveClick = (index) => {
+  const handleRemoveClick = (index: number) => {
     dispatch(
       removeRecentlyUsedLocation(
         features[index].properties.osm_type + features[index].properties.osm_id,
@@ -66,7 +82,8 @@ export default function SearchAutocompleteDropdown({ startOrEnd }) {
   };
 
   const handleCoordsClick = () => {
-    dispatch(selectLocationFromTypedCoords(startOrEnd, parsedCoords));
+    if (parsedCoords)
+      dispatch(selectLocationFromTypedCoords(startOrEnd, parsedCoords));
   };
 
   const handleCurrentLocationClick = () => {
@@ -83,7 +100,7 @@ export default function SearchAutocompleteDropdown({ startOrEnd }) {
     <div className="flex flex-col m-0">
       <SelectionList
         className="flex-grow pointer-events-auto"
-        id="SearchAutocompleteDropdown"
+        id="SearchDropdown"
       >
         {parsedCoords && (
           <AutocompleteItem
@@ -119,7 +136,7 @@ export default function SearchAutocompleteDropdown({ startOrEnd }) {
             onRemoveClick={
               feature.fromRecentlyUsed
                 ? handleRemoveClick.bind(null, index)
-                : null
+                : undefined
             }
             icon={<PlaceIcon place={feature} />}
             text={describePlace(feature)}
@@ -148,7 +165,7 @@ export default function SearchAutocompleteDropdown({ startOrEnd }) {
 const _searchDropdownSelector = createSelector(
   [
     // pass-thru: is there a better way to do this??
-    function selectIntl(_state, _startOrEnd, intl) {
+    function selectIntl(_state, _startOrEnd, intl): IntlShape {
       return intl;
     },
     // pass-thru
@@ -156,39 +173,47 @@ const _searchDropdownSelector = createSelector(
       _state,
       _startOrEnd,
       _intl,
-      currentLocationString,
+      currentLocationString: string,
     ) {
       return currentLocationString;
     },
-    function selectThisLocation(state, startOrEnd) {
+    function selectThisLocation(state: RootState, startOrEnd: 'start' | 'end') {
       return state.routeParams[startOrEnd];
     },
-    function selectThisLocationText(state, startOrEnd) {
-      return state.routeParams[startOrEnd + 'InputText'];
+    function selectThisLocationText(
+      state: RootState,
+      startOrEnd: 'start' | 'end',
+    ) {
+      return state.routeParams[
+        startOrEnd === 'start' ? 'startInputText' : 'endInputText'
+      ];
     },
-    function selectOtherLocation(state, startOrEnd) {
+    function selectOtherLocation(
+      state: RootState,
+      startOrEnd: 'start' | 'end',
+    ) {
       const other = startOrEnd === 'start' ? 'end' : 'start';
       return state.routeParams[other];
     },
-    function selectTypeaheadCache(state) {
+    function selectTypeaheadCache(state: RootState) {
       return state.geocoding.typeaheadCache;
     },
-    function selectOsmCache(state) {
+    function selectOsmCache(state: RootState) {
       return state.geocoding.osmCache;
     },
-    function selectRecentlyUsed(state) {
+    function selectRecentlyUsed(state: RootState) {
       return state.geocoding.recentlyUsed;
     },
   ],
   (
-    intl,
-    currentLocationString,
-    thisLocation,
-    thisLocationText,
-    otherLocation,
-    typeaheadCache,
-    osmCache,
-    recentlyUsed,
+    intl: IntlShape,
+    currentLocationString: string,
+    thisLocation: Location | null,
+    thisLocationText: string,
+    otherLocation: Location | null,
+    typeaheadCache: Record<string, OsmCacheItem>,
+    osmCache: Record<OsmId, PhotonOsmHash>,
+    recentlyUsed: RecentlyUsedItem[],
   ) => {
     const inputText = thisLocationText.trim();
 
@@ -204,7 +229,7 @@ const _searchDropdownSelector = createSelector(
         loading = true;
       }
       // TODO: should we distinguish b/t server error & no match?
-      if (cache?.status === 'failed') noResults = true;
+      if (cache && cache.status === 'failed') noResults = true;
 
       // If the location we're editing has a geocoded location already selected, display the
       // other options from the input text that was used to pick that.
@@ -224,7 +249,10 @@ const _searchDropdownSelector = createSelector(
       ) {
         // in this case we don't fetch autocompletes
         loading = false;
-      } else if (loading && !cache?.osmIds) {
+      } else if (
+        loading &&
+        (!cache || cache.status === 'failed' || !cache.osmIds)
+      ) {
         // Still nothing? Try prefixes of the input text. Example: current input text is
         // "123 Main St" which hasn't been looked up yet but we have results for "123 Mai",
         // which came back while you were typing.
@@ -251,6 +279,7 @@ const _searchDropdownSelector = createSelector(
     // XXX This is meant to catch a location selected from the recently-used
     // list. It would be cleaner to just have a diff source type for that.
     const unmodifiedSelectionFromRecentlyUsed =
+      thisLocation &&
       thisLocation.source === LocationSourceType.Geocoded &&
       thisLocation.fromInputText === '' &&
       inputText === describePlace(thisLocation.point);
@@ -266,17 +295,22 @@ const _searchDropdownSelector = createSelector(
           .startsWith(inputText.toLocaleLowerCase(intl.locale)) ||
         unmodifiedSelectionFromRecentlyUsed);
 
-    let recentlyUsedFeatureIds = [];
-    let autocompleteFeatureIds = [];
+    let recentlyUsedFeatureIds: string[] = [];
+    let autocompleteFeatureIds: string[] = [];
 
     if (inputText === '' || unmodifiedSelectionFromRecentlyUsed) {
       // Suggest recently used locations
       // NOTE: This is currently only done if input text is empty, but we
       // could switch to always showing recently used locations that match
       // the text typed, alongside Photon results.
-      recentlyUsedFeatureIds = recentlyUsed.map((r) => r.id);
+      recentlyUsedFeatureIds = recentlyUsed.map((r: RecentlyUsedItem) => r.id);
       loading = false;
-    } else if (cache?.osmIds?.length > 0) {
+    } else if (
+      cache &&
+      cache.status !== 'failed' &&
+      cache.osmIds &&
+      cache.osmIds.length > 0
+    ) {
       autocompleteFeatureIds = cache.osmIds;
     }
 
@@ -290,9 +324,9 @@ const _searchDropdownSelector = createSelector(
       thisLocation?.point?.properties?.osm_id &&
       thisLocation.point.properties.osm_type +
         thisLocation.point.properties.osm_id;
-    const shownFeatures = [
-      ...autocompleteFeatureIds.map((id) => osmCache[id]),
-      ...recentlyUsedFeatureIds.map((id) => ({
+    const shownFeatures: (PhotonOsmHash & { fromRecentlyUsed?: boolean })[] = [
+      ...autocompleteFeatureIds.map((id: string) => osmCache[id]),
+      ...recentlyUsedFeatureIds.map((id: string) => ({
         ...osmCache[id],
         fromRecentlyUsed: true,
       })),
@@ -318,14 +352,14 @@ const _searchDropdownSelector = createSelector(
 );
 
 // Hack for letting search bar see if an autocomplete result was focused
-SearchAutocompleteDropdown.isAutocompleteResultElement = (domElement) => {
+SearchDropdown.isAutocompleteResultElement = (domElement: Element | null) => {
   if (!domElement) return false;
   return Array.from(domElement.classList).includes(LIST_ITEM_CLASSNAME);
 };
 
 // Hack for letting search bar see if an autocomplete result was just tapped on
 // but the browser in question does not focus it
-SearchAutocompleteDropdown.getLastAutocompleteResultMousedownTime = () => {
+SearchDropdown.getLastAutocompleteResultMousedownTime = () => {
   return _resultMousedownTime;
 };
 
@@ -336,6 +370,13 @@ function AutocompleteItem({
   icon,
   tabIndex,
   text,
+}: {
+  onClick: React.MouseEventHandler;
+  onMouseDown: React.MouseEventHandler;
+  onRemoveClick?: React.MouseEventHandler;
+  icon: React.ReactElement;
+  tabIndex: number | null;
+  text: React.ReactNode;
 }) {
   return (
     <SelectionListItem
