@@ -144,6 +144,8 @@ export default function SearchBar(props: {
         (relevantLocation.source === LocationSourceType.UserGeolocation ||
           (relevantLocation.source === LocationSourceType.Geocoded &&
             !textModified) ||
+          (relevantLocation.source === LocationSourceType.UrlWithString &&
+            !textModified) ||
           (relevantLocation.source === LocationSourceType.FromCoords &&
             !textModified))
       ) {

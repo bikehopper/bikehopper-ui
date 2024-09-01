@@ -195,6 +195,14 @@ const _searchDropdownSelector = createSelector(
       const other = startOrEnd === 'start' ? 'end' : 'start';
       return state.routeParams[other];
     },
+    function selectOtherLocationText(
+      state: RootState,
+      startOrEnd: 'start' | 'end',
+    ) {
+      return state.routeParams[
+        startOrEnd === 'start' ? 'endInputText' : 'startInputText'
+      ];
+    },
     function selectTypeaheadCache(state: RootState) {
       return state.geocoding.typeaheadCache;
     },
@@ -211,6 +219,7 @@ const _searchDropdownSelector = createSelector(
     thisLocation: Location | null,
     thisLocationText: string,
     otherLocation: Location | null,
+    otherLocationText: string,
     typeaheadCache: Record<string, OsmCacheItem>,
     osmCache: Record<OsmId, PhotonOsmHash>,
     recentlyUsed: RecentlyUsedItem[],
@@ -284,6 +293,11 @@ const _searchDropdownSelector = createSelector(
       thisLocation.fromInputText === '' &&
       inputText === describePlace(thisLocation.point);
 
+    const unmodifiedUrlWithString =
+      thisLocation &&
+      thisLocation.source === LocationSourceType.UrlWithString &&
+      inputText === thisLocation.fromInputText;
+
     // Only show the current location option if typed text is 1. blank, or 2.
     // a prefix of "Current Location", case-insensitive, or 3. matches a
     // location selected from the recently-used list
@@ -293,16 +307,22 @@ const _searchDropdownSelector = createSelector(
         currentLocationString
           .toLocaleLowerCase(intl.locale)
           .startsWith(inputText.toLocaleLowerCase(intl.locale)) ||
-        unmodifiedSelectionFromRecentlyUsed);
+        unmodifiedSelectionFromRecentlyUsed ||
+        unmodifiedUrlWithString);
 
     let recentlyUsedFeatureIds: string[] = [];
     let autocompleteFeatureIds: string[] = [];
 
-    if (inputText === '' || unmodifiedSelectionFromRecentlyUsed) {
-      // Suggest recently used locations
-      // NOTE: This is currently only done if input text is empty, but we
-      // could switch to always showing recently used locations that match
-      // the text typed, alongside Photon results.
+    if (
+      inputText === '' ||
+      unmodifiedSelectionFromRecentlyUsed ||
+      unmodifiedUrlWithString
+    ) {
+      // Suggest recently used locations.
+      // NOTE: This is currently only done if input text is empty, or
+      // unmodified from a URL/recently used. But we could switch to always
+      // showing recently used locations that match the text typed, alongside
+      // Photon results.
       recentlyUsedFeatureIds = recentlyUsed.map((r: RecentlyUsedItem) => r.id);
       loading = false;
     } else if (
@@ -334,8 +354,10 @@ const _searchDropdownSelector = createSelector(
       .filter(
         (feat) =>
           feat?.properties?.osm_type &&
-          feat.properties.osm_type + feat.properties.osm_id !== otherId &&
-          feat.properties.osm_type + feat.properties.osm_id !== thisId,
+          ![thisId, otherId].includes(
+            feat.properties.osm_type + feat.properties.osm_id,
+          ) &&
+          ![thisLocationText, otherLocationText].includes(describePlace(feat)),
       )
       .slice(0, 8);
 
