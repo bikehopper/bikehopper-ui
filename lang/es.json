@@ -478,5 +478,8 @@
     "DWlYrF": {
         "defaultMessage": "Descargar el archivo fit",
         "description": "dialog header. In this dialog you can downloadFIT file which you can import into your cyclingcomputer."
+    },
+    "Fle6qD": {
+        "defaultMessage": "No se puede generar el archivo FIT"
     }
 }
