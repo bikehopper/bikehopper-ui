@@ -38,14 +38,14 @@ export default function Routes(props: {}) {
     }
 
     const outOfAreaStart =
-      TRANSIT_SERVICE_AREA &&
-      routeParams?.start?.point &&
-      !pointInPolygon(routeParams.start.point, TRANSIT_SERVICE_AREA);
+      TRANSIT_SERVICE_AREA && routeParams?.start?.point
+        ? !pointInPolygon(routeParams.start.point, TRANSIT_SERVICE_AREA)
+        : false;
 
     const outOfAreaEnd =
-      TRANSIT_SERVICE_AREA &&
-      routeParams?.end?.point &&
-      !pointInPolygon(routeParams.end.point, TRANSIT_SERVICE_AREA);
+      TRANSIT_SERVICE_AREA && routeParams?.end?.point
+        ? !pointInPolygon(routeParams.end.point, TRANSIT_SERVICE_AREA)
+        : false;
 
     return {
       routes: routes.routes,
@@ -124,8 +124,8 @@ export default function Routes(props: {}) {
         routes={routes}
         activeRoute={activeRoute as number}
         onRouteClick={handleRouteClick}
-        outOfAreaStart={!!outOfAreaStart}
-        outOfAreaEnd={!!outOfAreaEnd}
+        outOfAreaStart={outOfAreaStart}
+        outOfAreaEnd={outOfAreaEnd}
       />
     );
   } else if (viewingStep == null) {
