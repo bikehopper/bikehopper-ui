@@ -27,7 +27,7 @@ export default function ModeIcon({
   mode: Mode;
   width?: number | undefined;
   height?: number | undefined;
-  fallback?: React.FunctionComponent;
+  fallback?: React.FunctionComponent | null;
 }) {
   let IconSvg;
 

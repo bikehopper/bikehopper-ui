@@ -1,7 +1,15 @@
 // TODO: option to use km, and maybe default to that based on locale?
 // note: FormatJS doesn't have anything built in for distance, unlike time.
 
-export default function formatDistance(meters, intl, options) {
+import type { IntlShape } from 'react-intl';
+
+export default function formatDistance(
+  meters: number,
+  intl: IntlShape,
+  options?: {
+    forceFeet: boolean;
+  },
+) {
   const feet = meters / 0.3048;
   const miles = feet / 5280;
 

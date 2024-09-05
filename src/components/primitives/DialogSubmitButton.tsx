@@ -1,4 +1,10 @@
-export default function DialogSubmitButton({ children, onClick }) {
+export default function DialogSubmitButton({
+  children,
+  onClick,
+}: {
+  children: React.ReactNode;
+  onClick: React.MouseEventHandler;
+}) {
   return (
     <button
       type="submit"

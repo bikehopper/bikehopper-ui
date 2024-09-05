@@ -9,7 +9,7 @@ import AlertBar from './AlertBar';
 import DirectionsNullState from './DirectionsNullState';
 import MapPlusOverlay from './MapPlusOverlay';
 import Routes from './Routes';
-import SearchAutocompleteDropdown from './SearchAutocompleteDropdown';
+import SearchDropdown from './SearchDropdown';
 import TopBar from './TopBar';
 import {
   LocationSourceType,
@@ -25,7 +25,7 @@ type Props = {
 };
 
 function App(props: Props) {
-  const { hasRoutes, hasLocations, isEditingLocations, viewingDetails } =
+  const { hasRoutes, hasLocations, editingLocation, viewingDetails } =
     useSelector(
       (state: RootState) => ({
         hasLocations: !!(
@@ -35,11 +35,12 @@ function App(props: Props) {
               LocationSourceType.UserGeolocation)
         ),
         hasRoutes: !!state.routes.routes,
-        isEditingLocations: state.routeParams.editingLocation != null,
+        editingLocation: state.routeParams.editingLocation,
         viewingDetails: state.routes.viewingDetails,
       }),
       shallowEqual,
     );
+  const isEditingLocations = editingLocation != null;
 
   const dispatch = useDispatch();
 
@@ -53,7 +54,7 @@ function App(props: Props) {
 
   let bottomContent;
   if (isEditingLocations) {
-    bottomContent = <SearchAutocompleteDropdown />;
+    bottomContent = <SearchDropdown startOrEnd={editingLocation} />;
   } else if (hasRoutes) {
     bottomContent = <Routes />;
   } else if (!hasLocations) {

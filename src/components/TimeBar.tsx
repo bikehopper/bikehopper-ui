@@ -3,11 +3,12 @@ import { useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import ModalDialog from './primitives/ModalDialog';
 import DialogSubmitButton from './primitives/DialogSubmitButton';
+import Icon from './primitives/Icon';
 import * as RadioGroup from '@radix-ui/react-radio-group';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import Icon from './primitives/Icon';
-
+import type { RootState, Dispatch } from '../store';
 import { departureChanged } from '../features/routeParams';
+import type { DepartureType } from '../features/routeParams';
 
 import ClockOutline from 'iconoir/icons/clock.svg?react';
 
@@ -15,10 +16,10 @@ import ClockOutline from 'iconoir/icons/clock.svg?react';
 // receive departureType and initialTime from routeParams store
 // modify by firing departureChanged actions
 
-export default function TimeBar(props) {
+export default function TimeBar(props: {}) {
   const { globalDepartureType, globalInitialTime } = useSelector(
-    ({ routeParams }) => {
-      let departureType = 'departAt';
+    ({ routeParams }: RootState) => {
+      let departureType: DepartureType = 'departAt';
       if (routeParams.arriveBy) departureType = 'arriveBy';
       else if (routeParams.initialTime == null) departureType = 'now';
       return {
@@ -29,7 +30,7 @@ export default function TimeBar(props) {
     shallowEqual,
   );
 
-  const dispatch = useDispatch();
+  const dispatch: Dispatch = useDispatch();
   const intl = useIntl();
 
   // From the time in global state, generate strings for the date & time <input>s
@@ -41,7 +42,7 @@ export default function TimeBar(props) {
   // Local state for the departure type, date and time, as it is being actively edited
   // in the dialog, and has not yet been committed to global state.
   const [pendingDepartureType, setPendingDepartureType] =
-    useState(globalDepartureType);
+    useState<DepartureType>(globalDepartureType);
   const [pendingDate, setPendingDate] = useState(globalDate);
   const [pendingTime, setPendingTime] = useState(globalTime);
 
@@ -57,19 +58,22 @@ export default function TimeBar(props) {
     setIsDialogOpen(false);
   };
 
-  const handleUpdateClick = (evt) => {
-    // Since this is an explicit "Update" click, always dispatch the action, even if
-    // the pending state is the same as the global state. The user might want to refetch
-    // routes, which could be different from the cached routes if "Now" is selected.
-    dispatch(
-      departureChanged(
-        pendingDepartureType,
-        parseDateAndTimeInputStrings(pendingDate, pendingTime).toMillis(),
-      ),
-    );
-    setIsDialogOpen(false);
-    evt.preventDefault();
-  };
+  const handleUpdateClick = useCallback(
+    (evt: React.MouseEvent) => {
+      // Since this is an explicit "Update" click, always dispatch the action, even if
+      // the pending state is the same as the global state. The user might want to refetch
+      // routes, which could be different from the cached routes if "Now" is selected.
+      dispatch(
+        departureChanged(
+          pendingDepartureType,
+          parseDateAndTimeInputStrings(pendingDate, pendingTime).toMillis(),
+        ),
+      );
+      setIsDialogOpen(false);
+      evt.preventDefault();
+    },
+    [dispatch, pendingDepartureType, pendingDate, pendingTime],
+  );
 
   const formattedInitialTime = globalDateTime.toLocaleString(
     DateTime.DATETIME_MED,
@@ -143,7 +147,7 @@ export default function TimeBar(props) {
         <form>
           <RadioGroup.Root
             value={pendingDepartureType}
-            onValueChange={setPendingDepartureType}
+            onValueChange={setPendingDepartureType as (value: string) => void}
             className="my-3"
           >
             <TimeBarRadioGroupItem value="now" id="rgi_now">
@@ -201,7 +205,15 @@ export default function TimeBar(props) {
   );
 }
 
-function TimeBarRadioGroupItem({ value, id, children }) {
+function TimeBarRadioGroupItem({
+  value,
+  id,
+  children,
+}: {
+  value: DepartureType;
+  id: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex items-center leading-6">
       <RadioGroup.Item
@@ -231,15 +243,23 @@ function TimeBarRadioGroupItem({ value, id, children }) {
   );
 }
 
-function TimeBarDateTimePicker({ date, time, onDateChange, onTimeChange }) {
-  const handleDateChange = useCallback(
-    (evt) => onDateChange(evt.target.value),
-    [onDateChange],
-  );
-  const handleTimeChange = useCallback(
-    (evt) => onTimeChange(evt.target.value),
-    [onTimeChange],
-  );
+function TimeBarDateTimePicker({
+  date,
+  time,
+  onDateChange,
+  onTimeChange,
+}: {
+  date: string;
+  time: string;
+  onDateChange: (date: string) => void;
+  onTimeChange: (time: string) => void;
+}) {
+  const handleDateChange = useCallback<
+    React.ChangeEventHandler<HTMLInputElement>
+  >((evt) => onDateChange(evt.target.value), [onDateChange]);
+  const handleTimeChange = useCallback<
+    React.ChangeEventHandler<HTMLInputElement>
+  >((evt) => onTimeChange(evt.target.value), [onTimeChange]);
   return (
     <fieldset className="border-0 m-0 p-1.5 flex flex-wrap flex-row">
       <input
@@ -274,9 +294,12 @@ function TimeBarDateTimePicker({ date, time, onDateChange, onTimeChange }) {
 
 // Helper functions for converting between Luxon DateTime instances and the
 // string formats used for HTML input type=date and =time.
-function formatForDateAndTimeInputs(dt) {
+function formatForDateAndTimeInputs(dt: DateTime): [string, string] {
   return [dt.toFormat('yyyy-MM-dd'), dt.toFormat('HH:mm')];
 }
-function parseDateAndTimeInputStrings(dateString, timeString) {
+function parseDateAndTimeInputStrings(
+  dateString: string,
+  timeString: string,
+): DateTime {
   return DateTime.fromFormat(dateString + ' ' + timeString, 'yyyy-MM-dd HH:mm');
 }

@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
+import type { IntlShape } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import Icon from './primitives/Icon';
 import PlaceIcon from './PlaceIcon';
 import TimeBar from './TimeBar';
-import SearchAutocompleteDropdown from './SearchAutocompleteDropdown';
+import RouteOptionsDialog from './RouteOptionsDialog';
 import {
   blurSearchWithUnchangedLocations,
   changeConnectingModes,
@@ -15,15 +16,20 @@ import {
   LocationSourceType,
   swapLocations,
 } from '../features/routeParams';
-import RouteOptionsDialog from './RouteOptionsDialog';
+import type { Location } from '../features/routeParams';
+import SearchDropdown from './SearchDropdown';
+import type { ModeCategory } from '../lib/TransitModes';
+import type { Dispatch, RootState } from '../store';
 import usePrevious from '../hooks/usePrevious';
 
 import NavLeftArrow from 'iconoir/icons/nav-arrow-left.svg?react';
 import SwapArrows from 'iconoir/icons/data-transfer-both.svg?react';
 import SettingsIcon from 'iconoir/icons/settings.svg?react';
 
-export default function SearchBar(props) {
-  const dispatch = useDispatch();
+export default function SearchBar(props: {
+  initiallyFocusDestination: boolean;
+}) {
+  const dispatch: Dispatch = useDispatch();
   const intl = useIntl();
 
   const {
@@ -34,7 +40,7 @@ export default function SearchBar(props) {
     editingLocation,
     connectingModes,
   } = useSelector(
-    (state) => ({
+    (state: RootState) => ({
       startLocation: state.routeParams.start,
       endLocation: state.routeParams.end,
       startText: state.routeParams.startInputText,
@@ -45,8 +51,8 @@ export default function SearchBar(props) {
     shallowEqual,
   );
 
-  const startRef = useRef();
-  const endRef = useRef();
+  const startRef = useRef<HTMLInputElement>(null);
+  const endRef = useRef<HTMLInputElement>(null);
 
   // Has the text of start/end been modified, since something that aborted or
   // completed the edit?
@@ -66,90 +72,119 @@ export default function SearchBar(props) {
     editingLocation === 'end',
   );
 
-  const handleStartChange = (evt) => {
-    setStartTextModified(true);
-    dispatch(changeLocationTextInput('start', evt.target.value));
-  };
+  const handleStartChange = useCallback<
+    React.ChangeEventHandler<HTMLInputElement>
+  >(
+    (evt) => {
+      setStartTextModified(true);
+      dispatch(changeLocationTextInput('start', evt.target.value));
+    },
+    [dispatch],
+  );
 
-  const handleEndChange = (evt) => {
-    setEndTextModified(true);
-    dispatch(changeLocationTextInput('end', evt.target.value));
-  };
+  const handleEndChange = useCallback<
+    React.ChangeEventHandler<HTMLInputElement>
+  >(
+    (evt) => {
+      setEndTextModified(true);
+      dispatch(changeLocationTextInput('end', evt.target.value));
+    },
+    [dispatch],
+  );
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setStartTextModified(false);
-    setEndTextModified(false);
-    event.target.blur();
+  const handleSubmit = useCallback(
+    (
+      event:
+        | React.KeyboardEvent<HTMLInputElement>
+        | React.FormEvent<HTMLFormElement>,
+    ) => {
+      event.preventDefault();
+      setStartTextModified(false);
+      setEndTextModified(false);
+      // @ts-ignore: XXX should this be currentTarget?
+      event.target.blur();
 
-    dispatch(locationsSubmitted());
-  };
+      dispatch(locationsSubmitted());
+    },
+    [dispatch],
+  );
 
-  const handleBackClick = (event) => {
-    setStartTextModified(false);
-    setEndTextModified(false);
-    dispatch(clearRouteParams());
-  };
+  const handleBackClick = useCallback<React.MouseEventHandler>(
+    (event) => {
+      setStartTextModified(false);
+      setEndTextModified(false);
+      dispatch(clearRouteParams());
+    },
+    [dispatch],
+  );
 
-  const handleSwapClick = (event) => {
-    event.preventDefault();
-    setStartTextModified(false);
-    setEndTextModified(false);
+  const handleSwapClick = useCallback<React.MouseEventHandler>(
+    (event) => {
+      event.preventDefault();
+      setStartTextModified(false);
+      setEndTextModified(false);
 
-    dispatch(swapLocations());
-  };
+      dispatch(swapLocations());
+    },
+    [dispatch],
+  );
 
-  const handleFocus = (which, event) => {
-    dispatch(locationInputFocused(which));
+  const handleFocus = useCallback(
+    (which: 'start' | 'end', event: React.FocusEvent<HTMLInputElement>) => {
+      dispatch(locationInputFocused(which));
 
-    const relevantLocation = which === 'start' ? startLocation : endLocation;
-    const textModified =
-      which === 'start' ? startTextModified : endTextModified;
-    // If the input contains unmodified text from the geocoder (often a very
-    // long address), or any placeholder or autogenerated value, select all to
-    // make it easier to delete.
-    if (
-      relevantLocation &&
-      (relevantLocation.source === LocationSourceType.UserGeolocation ||
-        (relevantLocation.source === LocationSourceType.Geocoded &&
-          !textModified) ||
-        (relevantLocation.source === LocationSourceType.FromCoords &&
-          !textModified))
-    ) {
-      event.target.select();
-    }
-  };
+      const relevantLocation = which === 'start' ? startLocation : endLocation;
+      const textModified =
+        which === 'start' ? startTextModified : endTextModified;
+      // If the input contains unmodified text from the geocoder (often a very
+      // long address), or any placeholder or autogenerated value, select all to
+      // make it easier to delete.
+      if (
+        relevantLocation &&
+        (relevantLocation.source === LocationSourceType.UserGeolocation ||
+          (relevantLocation.source === LocationSourceType.Geocoded &&
+            !textModified) ||
+          (relevantLocation.source === LocationSourceType.UrlWithString &&
+            !textModified) ||
+          (relevantLocation.source === LocationSourceType.FromCoords &&
+            !textModified))
+      ) {
+        event.target.select();
+      }
+    },
+    [dispatch, startLocation, endLocation, startTextModified, endTextModified],
+  );
 
-  const handleBlur = (which, event) => {
-    const isOtherSearchInputFocused =
-      event.relatedTarget === startRef.current ||
-      event.relatedTarget === endRef.current;
+  const handleBlur = useCallback(
+    (which: 'start' | 'end', event: React.FocusEvent<HTMLInputElement>) => {
+      const isOtherSearchInputFocused =
+        event.relatedTarget === startRef.current ||
+        event.relatedTarget === endRef.current;
 
-    // This is a huge hack. Mobile Safari does not focus a <button> when it's tapped,
-    // so we cannot rely on focus alone to see if the blur was the result of tapping
-    // an autocomplete result. However, the mousedown on the button does happen before
-    // the blur, so that's what we use here.
-    const isAutocompleteResultTapped =
-      SearchAutocompleteDropdown.isAutocompleteResultElement(
-        event.relatedTarget,
-      ) ||
-      Date.now() -
-        SearchAutocompleteDropdown.getLastAutocompleteResultMousedownTime() <
-        1000;
+      // This is a huge hack. Mobile Safari does not focus a <button> when it's tapped,
+      // so we cannot rely on focus alone to see if the blur was the result of tapping
+      // an autocomplete result. However, the mousedown on the button does happen before
+      // the blur, so that's what we use here.
+      const isAutocompleteResultTapped =
+        SearchDropdown.isAutocompleteResultElement(event.relatedTarget) ||
+        Date.now() - SearchDropdown.getLastAutocompleteResultMousedownTime() <
+          1000;
 
-    const haveLocations = !!(startLocation && endLocation);
+      const haveLocations = !!(startLocation && endLocation);
 
-    // If you focused a search input but then blurred it without editing anything, then
-    // we may want to cancel the edit so you can go back to existing routes.
-    if (
-      !isAutocompleteResultTapped &&
-      !isOtherSearchInputFocused &&
-      !(startTextModified || endTextModified) &&
-      haveLocations
-    ) {
-      dispatch(blurSearchWithUnchangedLocations());
-    }
-  };
+      // If you focused a search input but then blurred it without editing anything, then
+      // we may want to cancel the edit so you can go back to existing routes.
+      if (
+        !isAutocompleteResultTapped &&
+        !isOtherSearchInputFocused &&
+        !(startTextModified || endTextModified) &&
+        haveLocations
+      ) {
+        dispatch(blurSearchWithUnchangedLocations());
+      }
+    },
+    [dispatch, startLocation, endLocation, startTextModified, endTextModified],
+  );
 
   const prevStartLocation = usePrevious(startLocation);
   const prevEndLocation = usePrevious(endLocation);
@@ -166,19 +201,19 @@ export default function SearchBar(props) {
     // If both locations are filled, make sure the one just filled is blurred.
     if (editingLocation === 'start' && justFilledStart) {
       if (!endLocation) {
-        endRef.current.focus();
+        endRef.current?.focus();
       } else {
         setStartTextModified(false);
         setEndTextModified(false);
-        startRef.current.blur();
+        startRef.current?.blur();
       }
     } else if (editingLocation === 'end' && justFilledEnd) {
       if (!startLocation) {
-        startRef.current.focus();
+        startRef.current?.focus();
       } else {
         setStartTextModified(false);
         setEndTextModified(false);
-        endRef.current.blur();
+        endRef.current?.blur();
       }
     }
   }, [
@@ -189,19 +224,27 @@ export default function SearchBar(props) {
     editingLocation,
   ]);
 
-  const handleKeyPress = (evt) => {
-    if (evt.key === 'Enter') handleSubmit(evt);
-  };
+  const handleKeyPress = useCallback<
+    React.KeyboardEventHandler<HTMLInputElement>
+  >(
+    (evt) => {
+      if (evt.key === 'Enter') handleSubmit(evt);
+    },
+    [handleSubmit],
+  );
 
   const [isOptionsDialogOpen, setIsOptionsDialogOpen] = useState(false);
   const handleOptionsDialogTrigger = () => setIsOptionsDialogOpen(true);
   const handleOptionsDialogCancel = () => setIsOptionsDialogOpen(false);
-  const handleOptionsDialogApply = (values) => {
-    if (!shallowEqual(connectingModes, values.connectingModes)) {
-      dispatch(changeConnectingModes(values.connectingModes));
-    }
-    setIsOptionsDialogOpen(false);
-  };
+  const handleOptionsDialogApply = useCallback(
+    (values: { connectingModes: ModeCategory[] }) => {
+      if (!shallowEqual(connectingModes, values.connectingModes)) {
+        dispatch(changeConnectingModes(values.connectingModes));
+      }
+      setIsOptionsDialogOpen(false);
+    },
+    [dispatch, connectingModes],
+  );
 
   const startPointMsg = intl.formatMessage({
     defaultMessage: 'Starting point',
@@ -219,6 +262,7 @@ export default function SearchBar(props) {
         className="text-bikehopperyellow h-12 w-12 -ml-3 text-center
           flex items-center justify-center
           bg-transparent border-0"
+        tabIndex={1}
       >
         <Icon
           label={intl.formatMessage({
@@ -230,7 +274,12 @@ export default function SearchBar(props) {
         </Icon>
       </button>
       <div className="grow">
-        <form onSubmit={handleSubmit}>
+        <form
+          role="search"
+          onSubmit={handleSubmit}
+          aria-autocomplete="list"
+          aria-owns="SearchDropdown"
+        >
           <span className="relative">
             <PlaceIcon
               className="absolute left-2 top-[-1px]"
@@ -243,7 +292,7 @@ export default function SearchBar(props) {
               className="w-full py-2.5 pr-2.5 pl-8 rounded-xl text-[13px]
                 bg-bikehoppergreenlight border-2 border-solid border-transparent
                 focus:outline-none focus:bg-white focus:border-bikehopperyellow"
-              type="text"
+              type="search"
               placeholder={startPointMsg}
               value={displayedStart}
               onChange={handleStartChange}
@@ -251,6 +300,7 @@ export default function SearchBar(props) {
               onBlur={handleBlur.bind(null, 'start')}
               onKeyPress={handleKeyPress}
               ref={startRef}
+              tabIndex={2}
             />
           </span>
           <span
@@ -267,7 +317,7 @@ export default function SearchBar(props) {
               className="w-full py-2.5 pr-2.5 pl-8 rounded-xl text-[13px]
                 bg-bikehoppergreenlight border-2 border-solid border-transparent
                 focus:outline-none focus:bg-white focus:border-bikehopperyellow"
-              type="text"
+              type="search"
               placeholder={endPointMsg}
               value={displayedEnd}
               onChange={handleEndChange}
@@ -276,6 +326,11 @@ export default function SearchBar(props) {
               onKeyPress={handleKeyPress}
               ref={endRef}
               autoFocus={props.initiallyFocusDestination}
+              tabIndex={
+                // if editing start, tab past this so autocomplete results can be
+                // focused with keyboard
+                editingLocation === 'start' ? 25 : 3
+              }
             />
           </span>
         </form>
@@ -325,7 +380,12 @@ export default function SearchBar(props) {
   );
 }
 
-function _getDisplayedText(intl, text, loc, isFocused) {
+function _getDisplayedText(
+  intl: IntlShape,
+  text: string,
+  loc: Location | null,
+  isFocused: boolean,
+): string {
   if (!loc) return text;
 
   switch (loc.source) {
@@ -343,15 +403,5 @@ function _getDisplayedText(intl, text, loc, isFocused) {
           'option that can be selected (or typed in) to get directions from or ' +
           'to the current location of the user, as determined by GPS',
       });
-    default:
-      console.error('unexpected location type', loc.source);
-      if (text !== '') return text;
-      return isFocused
-        ? ''
-        : intl.formatMessage({
-            defaultMessage: 'Point',
-            description:
-              'generic description of a location we don’t have more info about',
-          });
   }
 }

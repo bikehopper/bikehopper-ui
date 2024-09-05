@@ -63,6 +63,7 @@ const _isTouch = 'ontouchstart' in window;
 type Props = {
   onMapLoad: () => void;
   overlayRef: RefObject<HTMLElement>;
+  hidden: boolean;
 };
 
 type Bbox = [number, number, number, number];
@@ -462,7 +463,7 @@ const BikeHopperMap = forwardRef(function _BikeHopperMap(
   const viewStateOnFirstRender = useRef(viewState);
 
   return (
-    <div className="BikeHopperMap" ref={resizeRef}>
+    <div className="BikeHopperMap" ref={resizeRef} aria-hidden={props.hidden}>
       <MapGL
         initialViewState={viewStateOnFirstRender.current}
         ref={mapRef}

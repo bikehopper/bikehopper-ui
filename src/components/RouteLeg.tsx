@@ -1,7 +1,7 @@
 import { useIntl } from 'react-intl';
 import { DEFAULT_PT_COLOR, getTextColor } from '../lib/colors';
 import ModeIcon from './ModeIcon';
-import { getModeLabel } from '../lib/TransitModes';
+import { Mode, getModeLabel } from '../lib/TransitModes';
 import Icon from './primitives/Icon';
 import Bicycle from 'iconoir/icons/bicycle.svg?react';
 import WarningTriangle from 'iconoir/icons/warning-triangle.svg?react';
@@ -9,10 +9,26 @@ import { formatInterval } from '../lib/time';
 
 import './RouteLeg.css';
 
-export default function RouteLeg(props) {
+type BaseProps = {
+  duration: number | null;
+  hasAlerts: boolean;
+};
+
+type PropsTransit = BaseProps & {
+  type: 'pt';
+  routeColor: string | undefined;
+  routeName: string;
+  routeType: Mode;
+};
+
+type PropsBike = BaseProps & {
+  type: 'bike2';
+};
+
+export default function RouteLeg(props: PropsTransit | PropsBike) {
   const intl = useIntl();
 
-  let mode = '?';
+  let mode: React.ReactNode = '?';
 
   const maybeAlertIcon = props.hasAlerts ? (
     <Icon
@@ -55,8 +71,8 @@ export default function RouteLeg(props) {
           label={getModeLabel(props.routeType, intl)}
         >
           <ModeIcon
-            width="20"
-            height="20"
+            width={20}
+            height={20}
             mode={props.routeType}
             fallback={null}
           />

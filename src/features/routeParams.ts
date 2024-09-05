@@ -23,7 +23,7 @@ export enum LocationSourceType {
   UrlWithString = 'url_with_string',
 }
 
-type Location =
+export type Location =
   | {
       source: LocationSourceType.UserGeolocation;
       point: GeoJSON.Feature<GeoJSON.Point> | null;

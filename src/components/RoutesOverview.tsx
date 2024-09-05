@@ -1,6 +1,12 @@
 import { Fragment } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import type { IntlShape } from 'react-intl';
 import classnames from 'classnames';
+import type {
+  BikeLeg,
+  RouteResponsePath,
+  TransitLeg,
+} from '../lib/BikeHopperClient';
 import formatDistance from '../lib/formatDistance';
 import { TRANSIT_DATA_ACKNOWLEDGEMENT } from '../lib/region';
 import { formatInterval } from '../lib/time';
@@ -22,6 +28,12 @@ export default function RoutesOverview({
   outOfAreaStart,
   outOfAreaEnd,
   onRouteClick,
+}: {
+  routes: RouteResponsePath[];
+  activeRoute: number;
+  outOfAreaStart: boolean;
+  outOfAreaEnd: boolean;
+  onRouteClick: (routeIndex: number, evt: React.MouseEvent) => void;
 }) {
   const intl = useIntl();
   const SPACE = ' ';
@@ -61,31 +73,41 @@ export default function RoutesOverview({
                         (leg.type === 'pt' ? (containsTransitLeg = true) : null,
                         null)
                       }
-                      <RouteLeg
-                        type={leg.type}
-                        routeName={leg.route_name || leg.route_id}
-                        routeColor={leg.route_color}
-                        routeType={leg.route_type}
-                        agencyName={leg.agency_name}
-                        duration={
-                          /* hide duration if route has only one leg */
-                          route.legs.length > 1 &&
-                          new Date(leg.arrival_time) -
-                            new Date(leg.departure_time)
-                        }
-                        hasAlerts={
-                          leg.alerts?.length > 0 ||
-                          (leg.type === 'bike2' && leg.has_steps)
-                        }
-                      />
+                      {leg.type === 'pt' ? (
+                        <RouteLeg
+                          type={leg.type}
+                          routeName={leg.route_name || leg.route_id}
+                          routeColor={leg.route_color}
+                          routeType={leg.route_type}
+                          duration={
+                            leg.arrival_time.getTime() -
+                            leg.departure_time.getTime()
+                          }
+                          hasAlerts={Boolean(
+                            leg.alerts && leg.alerts.length > 0,
+                          )}
+                        />
+                      ) : (
+                        <RouteLeg
+                          type={leg.type}
+                          duration={
+                            /* hide duration if route has only one leg */
+                            route.legs.length > 1
+                              ? leg.arrival_time.getTime() -
+                                leg.departure_time.getTime()
+                              : null
+                          }
+                          hasAlerts={leg.type === 'bike2' && leg.has_steps}
+                        />
+                      )}
                     </li>
                   </Fragment>
                 ))}
               </ul>
               <p className="RoutesOverview_timeEstimate">
                 {formatInterval(
-                  new Date(route.legs[route.legs.length - 1].arrival_time) -
-                    new Date(route.legs[0].departure_time),
+                  route.legs[route.legs.length - 1].arrival_time.getTime() -
+                    route.legs[0].departure_time.getTime(),
                 )}
               </p>
             </div>
@@ -177,7 +199,7 @@ export default function RoutesOverview({
   );
 }
 
-function _outOfAreaMsg(intl, start, end) {
+function _outOfAreaMsg(intl: IntlShape, start: boolean, end: boolean) {
   const which = start ? (end ? 'both' : 'start') : end ? 'end' : 'neither';
   if (which === 'neither') return null;
 
@@ -195,7 +217,7 @@ function _outOfAreaMsg(intl, start, end) {
   );
 }
 
-function _isSignificantLeg(leg) {
+function _isSignificantLeg(leg: BikeLeg | TransitLeg): boolean {
   // For filtering out short, interpolated legs
   const THRESHOLD_IN_METERS = 120;
   return !(

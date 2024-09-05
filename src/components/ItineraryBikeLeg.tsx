@@ -123,9 +123,7 @@ export default function ItineraryBikeLeg({
                   <ItineraryBikeStep
                     key={stepIdx}
                     step={step}
-                    distance={
-                      step.distance ? formatDistance(step.distance, intl) : null
-                    }
+                    distance={formatDistance(step.distance, intl)}
                     infra={step.bikeInfra}
                     isFirstStep={stepIdx === 0}
                     onClick={onStepClick.bind(null, stepIdx)}

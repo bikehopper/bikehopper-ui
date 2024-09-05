@@ -284,6 +284,7 @@ function MapPlusOverlay(props) {
         ref={mapRef}
         onMapLoad={handleMapLoad}
         overlayRef={mapOverlayRef}
+        hidden={hideMap}
       />
       <div
         className={classnames({
