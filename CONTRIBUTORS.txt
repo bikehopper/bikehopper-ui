@@ -8,9 +8,9 @@ Hazel Court
 Nellie Nelson
 Scott Feeney
 Shabnam Shomail
+Vincent Martin
 
 Translations by:
-(names beginning with @ are GitHub usernames)
 @gallegonovato
 @JnBenites
 @ywarnier
