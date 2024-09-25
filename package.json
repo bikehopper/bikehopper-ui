@@ -78,7 +78,7 @@
     "babel-plugin-formatjs": "^10.3.35",
     "csv": "^6.2.5",
     "eslint": "^8.57.0",
-    "eslint-plugin-formatjs": "^4.5.0",
+    "eslint-plugin-formatjs": "~4.13.3",
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.6",
