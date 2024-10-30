@@ -19,29 +19,35 @@ import { viewportReducer } from './features/viewport';
 import type { ViewportAction } from './features/viewport';
 import urlMiddleware from './lib/urlMiddleware';
 
-const rootReducer = combineReducers({
-  alerts: alertsReducer,
-  geocoding: geocodingReducer,
-  geolocation: geolocationReducer,
-  routeParams: routeParamsReducer,
-  routes: routesReducer,
-  viewport: viewportReducer,
-});
-
 declare global {
   interface Window {
     __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
   }
 }
 
-const enhancedCompose = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+export function init() {
+  const rootReducer = combineReducers({
+    alerts: alertsReducer,
+    geocoding: geocodingReducer,
+    geolocation: geolocationReducer,
+    routeParams: routeParamsReducer,
+    routes: routesReducer,
+    viewport: viewportReducer,
+  });
 
-const store = createStore(
-  rootReducer,
-  enhancedCompose(
-    applyMiddleware(thunkMiddleware, urlMiddleware, storageMiddleware),
-  ),
-);
+  const enhancedCompose =
+    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+  const store = createStore(
+    rootReducer,
+    enhancedCompose(
+      applyMiddleware(thunkMiddleware, urlMiddleware, storageMiddleware),
+    ),
+  );
+
+  store.dispatch(initFromStorage());
+  return store;
+}
 
 export type GetState = typeof store.getState;
 export type RootState = ReturnType<typeof rootReducer>;
@@ -52,8 +58,6 @@ export type BikeHopperThunkAction = ThunkAction<
   void,
   AnyAction
 >;
-
-store.dispatch(initFromStorage());
 
 export type BikeHopperAction = (
   | AlertAction
@@ -66,5 +70,3 @@ export type BikeHopperAction = (
   | ViewportAction
 ) &
   ActionAlertMixin;
-
-export default store;

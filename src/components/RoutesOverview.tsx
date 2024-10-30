@@ -11,7 +11,7 @@ import type {
   TransitLeg,
 } from '../lib/BikeHopperClient';
 import formatDistance from '../lib/formatDistance';
-import { TRANSIT_DATA_ACKNOWLEDGEMENT } from '../lib/region';
+import { getTransitDataAcknowledgement } from '../lib/region';
 import { formatInterval } from '../lib/time';
 import BorderlessButton from './BorderlessButton';
 import Icon from './primitives/Icon';
@@ -57,6 +57,7 @@ export default function RoutesOverview({
   let containsTransitLeg = false;
 
   const outOfAreaMsg = _outOfAreaMsg(intl, outOfAreaStart, outOfAreaEnd);
+  const transitDataAck = getTransitDataAcknowledgement();
 
   const handleShareClick = (evt: React.MouseEvent) => {
     dispatch(shareRoutes(intl));
@@ -214,13 +215,13 @@ export default function RoutesOverview({
             {os === 'iOS' ? <ShareIosIcon /> : <ShareAndroidIcon />}
           </Icon>
         </BorderlessButton>
-        {containsTransitLeg && TRANSIT_DATA_ACKNOWLEDGEMENT?.text && (
+        {containsTransitLeg && transitDataAck?.text && (
           <a
             target="_blank"
-            href={TRANSIT_DATA_ACKNOWLEDGEMENT.url}
+            href={transitDataAck.url}
             className="RoutesOverview_acknowledgementLink"
           >
-            {TRANSIT_DATA_ACKNOWLEDGEMENT.text}
+            {transitDataAck.text}
           </a>
         )}
       </footer>

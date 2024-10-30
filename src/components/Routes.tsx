@@ -3,7 +3,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import pointInPolygon from '@turf/boolean-point-in-polygon';
 import usePrevious from '../hooks/usePrevious';
 import { BOTTOM_DRAWER_MIN_HEIGHT } from '../lib/layout';
-import { TRANSIT_SERVICE_AREA } from '../lib/region';
+import { getTransitServiceArea } from '../lib/region';
 import {
   routeClicked,
   itineraryBackClicked,
@@ -37,14 +37,16 @@ export default function Routes(props: {}) {
       console.error('rendering routes: expected end location');
     }
 
+    const transitServiceArea = getTransitServiceArea();
+
     const outOfAreaStart =
-      TRANSIT_SERVICE_AREA && routeParams?.start?.point
-        ? !pointInPolygon(routeParams.start.point, TRANSIT_SERVICE_AREA)
+      transitServiceArea && routeParams?.start?.point
+        ? !pointInPolygon(routeParams.start.point, transitServiceArea)
         : false;
 
     const outOfAreaEnd =
-      TRANSIT_SERVICE_AREA && routeParams?.end?.point
-        ? !pointInPolygon(routeParams.end.point, TRANSIT_SERVICE_AREA)
+      transitServiceArea && routeParams?.end?.point
+        ? !pointInPolygon(routeParams.end.point, transitServiceArea)
         : false;
 
     return {

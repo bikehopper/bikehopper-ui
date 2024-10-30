@@ -3,8 +3,11 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { shouldPolyfill as listFormatShouldPolyfill } from '@formatjs/intl-listformat/should-polyfill';
+
 import App from './components/App';
-import store from './store';
+import { init as initStore } from './store';
+import { fetchRegionConfig } from './lib/BikeHopperClient';
+import { init as initRegion } from './lib/region';
 
 import './index.css';
 
@@ -67,7 +70,12 @@ async function bootstrapApp(): Promise<void> {
 
   const root = createRoot(document.getElementById('root')!);
   const locale = selectLocale();
-  const messages = await loadMessages(locale);
+  const [regionConfig, messages] = await Promise.all([
+    fetchRegionConfig(),
+    loadMessages(locale),
+  ]);
+  initRegion(regionConfig);
+  const store = initStore();
 
   root.render(
     <StrictMode>
