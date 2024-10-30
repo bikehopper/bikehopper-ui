@@ -25,8 +25,8 @@ declare global {
   }
 }
 
-export function init() {
-  const rootReducer = combineReducers({
+function createRootReducer() {
+  return combineReducers({
     alerts: alertsReducer,
     geocoding: geocodingReducer,
     geolocation: geolocationReducer,
@@ -34,6 +34,10 @@ export function init() {
     routes: routesReducer,
     viewport: viewportReducer,
   });
+}
+
+export function init() {
+  const rootReducer = createRootReducer();
 
   const enhancedCompose =
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -49,8 +53,8 @@ export function init() {
   return store;
 }
 
-export type GetState = typeof store.getState;
-export type RootState = ReturnType<typeof rootReducer>;
+export type GetState = ReturnType<typeof init>['getState'];
+export type RootState = ReturnType<ReturnType<typeof createRootReducer>>;
 export type Dispatch = ThunkDispatch<RootState, any, AnyAction>;
 export type BikeHopperThunkAction = ThunkAction<
   void,
