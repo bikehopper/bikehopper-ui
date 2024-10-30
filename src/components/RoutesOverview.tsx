@@ -8,7 +8,7 @@ import type {
   TransitLeg,
 } from '../lib/BikeHopperClient';
 import formatDistance from '../lib/formatDistance';
-import { TRANSIT_DATA_ACKNOWLEDGEMENT } from '../lib/region';
+import { getTransitDataAcknowledgement } from '../lib/region';
 import { formatInterval } from '../lib/time';
 import Icon from './primitives/Icon';
 import RouteLeg from './RouteLeg';
@@ -41,6 +41,7 @@ export default function RoutesOverview({
   let containsTransitLeg = false;
 
   const outOfAreaMsg = _outOfAreaMsg(intl, outOfAreaStart, outOfAreaEnd);
+  const transitDataAck = getTransitDataAcknowledgement();
 
   return (
     <div className="RoutesOverview">
@@ -184,14 +185,14 @@ export default function RoutesOverview({
           </SelectionListItem>
         ))}
       </SelectionList>
-      {containsTransitLeg && TRANSIT_DATA_ACKNOWLEDGEMENT?.text && (
+      {containsTransitLeg && transitDataAck?.text && (
         <p className="RoutesOverview_acknowledgement">
           <a
             target="_blank"
-            href={TRANSIT_DATA_ACKNOWLEDGEMENT.url}
+            href={transitDataAck.url}
             className="RoutesOverview_acknowledgementLink"
           >
-            {TRANSIT_DATA_ACKNOWLEDGEMENT.text}
+            {transitDataAck.text}
           </a>
         </p>
       )}

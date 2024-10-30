@@ -1,6 +1,10 @@
 import { DateTime } from 'luxon';
 import delay from './delay';
-import { DEFAULT_VIEWPORT_BOUNDS } from './region';
+import {
+  getDefaultViewportBounds,
+  RegionConfig,
+  RegionConfigSchema,
+} from './region';
 import { InstructionSign } from './InstructionSigns';
 import { Mode } from './TransitModes';
 import { POINT_PRECISION } from './geometry';
@@ -27,6 +31,12 @@ export class BikeHopperClientError extends Error {
     this.name = 'BikeHopperClientError';
     this.json = json;
   }
+}
+
+export async function fetchRegionConfig(): Promise<RegionConfig> {
+  const result = await fetch(`${getApiPath()}/api/v1/config`);
+  if (!result.ok) throw new BikeHopperClientError(result);
+  return RegionConfigSchema.parse(await result.json());
 }
 
 type GtfsRouteType = number;
@@ -309,7 +319,7 @@ export async function geocode(
     if (now < dontHitBefore) await delay(dontHitBefore - now);
     url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
       placeString,
-    )}&limit=1&viewbox=${DEFAULT_VIEWPORT_BOUNDS.join(',')}&format=geojson`;
+    )}&limit=1&viewbox=${getDefaultViewportBounds().join(',')}&format=geojson`;
     // TODO figure out why bounded=1 messes up results
     // Things come up without it but disappear with it...?
     _lastNominatimReqTime = Date.now();
