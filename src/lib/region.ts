@@ -1,9 +1,5 @@
 import { z } from 'zod';
-import {
-  GeoJSONFeatureSchema,
-  GeoJSONPointSchema,
-  GeoJSONPolygonSchema,
-} from 'zod-geojson';
+import { GeoJSONPointSchema, GeoJSONPolygonSchema } from 'zod-geojson';
 
 export function getAgencyDisplayName(gtfsAgencyName: string): string {
   const { agencyNames } = _getConfig();
