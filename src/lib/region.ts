@@ -14,11 +14,16 @@ export function getSupportedRegionText(): string | undefined {
   return _getConfig().supportedRegion;
 }
 
-// TODO: Manual override as this starts BikeHopper too zoomed out.
 export function getDefaultViewportBounds(): [number, number, number, number] {
   const config = _getConfig();
-  const hull = config.geoConfig['buffered-hull'];
-  if (hull) {
+  let defaultViewport, hull;
+  if ((defaultViewport = config.geoConfig['default-viewport'])) {
+    return defaultViewport;
+  } else if (config.supportedRegion === 'San Francisco Bay Area') {
+    // TODO: Remove this hardcoding once the above default viewport is instead
+    // configured on our server.
+    return [-122.597652, 37.330751, -121.669687, 37.85847];
+  } else if ((hull = config.geoConfig['buffered-hull'])) {
     // generate bounding box for hull
     let bbox: [number, number, number, number] = [180, 90, -180, -90];
     for (const coord of hull.geometry.coordinates[0]) {
@@ -28,8 +33,9 @@ export function getDefaultViewportBounds(): [number, number, number, number] {
       bbox[3] = Math.max(bbox[3], coord[1]);
     }
     return bbox;
+  } else {
+    return config.geoConfig['bounding-box'];
   }
-  return config.geoConfig['bounding-box'];
 }
 
 export function getTransitServiceArea():
@@ -78,6 +84,10 @@ export const RegionConfigSchema = z.object({
     'bounding-box': z.tuple([Longitude, Latitude, Longitude, Latitude]),
     'buffered-hull': FeatureOfSchema(GeoJSONPolygonSchema).optional(),
     'center-area': FeatureOfSchema(GeoJSONPointSchema).optional(),
+    // TODO: implement as configurable on server
+    'default-viewport': z
+      .tuple([Longitude, Latitude, Longitude, Latitude])
+      .optional(),
   }),
   supportedRegion: z.string().optional(),
 });
