@@ -4,6 +4,7 @@ import type {
   LineLayerSpecification,
   SymbolLayerSpecification,
 } from '@maplibre/maplibre-gl-style-spec';
+import { Point as MapLibrePoint } from 'maplibre-gl';
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import type { MouseEvent, Ref, RefObject } from 'react';
 import { useCallback, useLayoutEffect, useMemo } from 'react';
@@ -68,6 +69,21 @@ type Props = {
 
 type Bbox = [number, number, number, number];
 
+const INTERACTIVE_LAYER_IDS = [
+  'inactiveLayer',
+  'transitLayer',
+  'standardBikeLayer',
+  'sharedLaneLayer',
+  'transitionLayer',
+  'transitLabelLayer',
+  'bikeLabelLayer',
+];
+const MAP_CLICK_FUDGE_PX = 2; // Clickable padding around a route line.
+const MAP_CLICK_FUDGE_VEC = new MapLibrePoint(
+  MAP_CLICK_FUDGE_PX,
+  MAP_CLICK_FUDGE_PX,
+);
+
 const BikeHopperMap = forwardRef(function _BikeHopperMap(
   props: Props,
   mapRef_: Ref<MapRef>,
@@ -75,6 +91,7 @@ const BikeHopperMap = forwardRef(function _BikeHopperMap(
   const dispatch: Dispatch = useDispatch();
   const intl = useIntl();
   const mapRef = mapRef_ as RefObject<MapRef>;
+  const mouseOverClickableLayerRef = useRef(false);
   const {
     routeStatus,
     startCoords,
@@ -126,12 +143,28 @@ const BikeHopperMap = forwardRef(function _BikeHopperMap(
     }
   };
 
+  const findFeaturesNear = useCallback(
+    (point: MapLibrePoint) => {
+      const map = mapRef.current;
+      if (!map) return [];
+      const southwest = point.sub(MAP_CLICK_FUDGE_VEC);
+      const northeast = point.add(MAP_CLICK_FUDGE_VEC);
+      return map.queryRenderedFeatures([southwest, northeast], {
+        layers: INTERACTIVE_LAYER_IDS,
+      });
+    },
+    [mapRef],
+  );
+
   const handleMapClick = (evt: MapLayerMouseEvent) => {
     resetLongPressTimer();
-    if (evt.features?.length) {
-      const featureProperties = evt.features[0].properties;
-      if (featureProperties) {
-        dispatch(routeClicked(featureProperties.path_index, 'map'));
+    const features = evt.features?.length
+      ? evt.features
+      : findFeaturesNear(evt.point);
+    if (features?.length) {
+      const pathIndex = features[0].properties?.path_index;
+      if (pathIndex != null) {
+        dispatch(routeClicked(pathIndex, 'map'));
       }
     }
   };
@@ -144,6 +177,22 @@ const BikeHopperMap = forwardRef(function _BikeHopperMap(
       evt.lngLat.lng,
       evt.lngLat.lat,
     ]);
+  };
+
+  const handleMapMouseMove = (evt: MapLayerMouseEvent) => {
+    const map = mapRef.current;
+    if (!map) return;
+    const features = evt.features?.length
+      ? evt.features
+      : findFeaturesNear(evt.point);
+    const wasOverClickable = mouseOverClickableLayerRef.current;
+    const isOverClickable = (mouseOverClickableLayerRef.current =
+      features.length > 0);
+    if (isOverClickable && !wasOverClickable) {
+      map.getCanvas().style.cursor = 'pointer';
+    } else if (wasOverClickable && !isOverClickable) {
+      map.getCanvas().style.cursor = '';
+    }
   };
 
   const handleMapLongPress = (
@@ -476,15 +525,8 @@ const BikeHopperMap = forwardRef(function _BikeHopperMap(
         onLoad={handleMapLoad}
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
-        interactiveLayerIds={[
-          'inactiveLayer',
-          'transitLayer',
-          'standardBikeLayer',
-          'sharedLaneLayer',
-          'transitionLayer',
-          'transitLabelLayer',
-          'bikeLabelLayer',
-        ]}
+        interactiveLayerIds={INTERACTIVE_LAYER_IDS}
+        onMouseMove={!_isTouch ? handleMapMouseMove : undefined}
         onMouseDown={handleMouseDown}
         onClick={handleMapClick}
         onContextMenu={handleMapRightClick}
