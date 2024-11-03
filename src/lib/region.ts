@@ -37,9 +37,7 @@ export function getDefaultViewportBounds(): [number, number, number, number] {
 export function getTransitServiceArea():
   | GeoJSON.Feature<GeoJSON.Polygon>
   | undefined {
-  const hull = _getConfig().geoConfig['buffered-hull'];
-  // work around https://github.com/reilem/zod-geojson/issues/4
-  return hull as GeoJSON.Feature<GeoJSON.Polygon> | undefined;
+  return _getConfig().geoConfig['buffered-hull'];
 }
 
 export function getTransitDataAcknowledgement():
