@@ -12,7 +12,7 @@
 import type { Action } from 'redux';
 import type { ViewState } from 'react-map-gl/maplibre';
 import * as geoViewport from '@placemarkio/geo-viewport';
-import { DEFAULT_VIEWPORT_BOUNDS } from '../lib/region';
+import { getDefaultViewportBounds } from '../lib/region';
 import type { BikeHopperAction } from '../store';
 
 const MAPBOX_VT_SIZE = 512;
@@ -26,11 +26,15 @@ type ViewportInfo = {
 };
 
 function viewportForScreen(screenDims: [number, number]): ViewportInfo {
-  const viewport = geoViewport.viewport(DEFAULT_VIEWPORT_BOUNDS, screenDims, {
-    minzoom: 0,
-    maxzoom: 14,
-    tileSize: MAPBOX_VT_SIZE,
-  });
+  const viewport = geoViewport.viewport(
+    getDefaultViewportBounds(),
+    screenDims,
+    {
+      minzoom: 0,
+      maxzoom: 14,
+      tileSize: MAPBOX_VT_SIZE,
+    },
+  );
   return {
     latitude: viewport.center[1],
     longitude: viewport.center[0],
@@ -40,17 +44,19 @@ function viewportForScreen(screenDims: [number, number]): ViewportInfo {
   };
 }
 
-export const DEFAULT_VIEWPORT = viewportForScreen([
-  window.innerWidth,
-  window.innerHeight,
-]);
-
-const DEFAULT_STATE: ViewportInfo = { ...DEFAULT_VIEWPORT };
+function genDefaultState(): ViewportInfo {
+  return viewportForScreen([window.innerWidth, window.innerHeight]);
+}
 
 export function viewportReducer(
-  state = DEFAULT_STATE,
+  state: ViewportInfo | undefined,
   action: BikeHopperAction,
 ): ViewportInfo {
+  if (!state) {
+    // Must be generated after geoconfig has loaded, so not at import time.
+    state = genDefaultState();
+  }
+
   switch (action.type) {
     case 'map_moved':
       return {
