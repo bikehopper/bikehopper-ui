@@ -68,6 +68,7 @@
 .RoutesOverview_acknowledgementLink {
   color: #0a72aa;
   text-decoration: underline;
+  margin-left: auto;
 }
 
 .RoutesOverview_acknowledgementLink:active {
