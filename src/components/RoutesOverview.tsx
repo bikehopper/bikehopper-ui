@@ -4,7 +4,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import type { IntlShape } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import classnames from 'classnames';
-import { urlCopied, urlCopyFailed } from '../features/misc';
+import { shareRoutes } from '../features/misc';
 import type {
   BikeLeg,
   RouteResponsePath,
@@ -18,6 +18,7 @@ import Icon from './primitives/Icon';
 import RouteLeg from './RouteLeg';
 import SelectionList from './SelectionList';
 import SelectionListItem from './SelectionListItem';
+import type { Dispatch } from '../store';
 
 import ArrowDown from 'iconoir/icons/arrow-down.svg?react';
 import ArrowUp from 'iconoir/icons/arrow-up.svg?react';
@@ -42,7 +43,7 @@ export default function RoutesOverview({
   onRouteClick: (routeIndex: number, evt: React.MouseEvent) => void;
 }) {
   const intl = useIntl();
-  const dispatch = useDispatch();
+  const dispatch: Dispatch = useDispatch();
   const SPACE = ' ';
   const os = useMemo(() => Bowser.parse(navigator.userAgent).os.name, []);
 
@@ -57,27 +58,8 @@ export default function RoutesOverview({
 
   const outOfAreaMsg = _outOfAreaMsg(intl, outOfAreaStart, outOfAreaEnd);
 
-  const handleShareClick = async (evt: React.MouseEvent) => {
-    try {
-      await navigator.clipboard.writeText(String(document.location));
-      dispatch(
-        urlCopied(
-          intl.formatMessage({
-            defaultMessage: 'Copied URL to clipboard!',
-            description: 'toast displayed when copying a URL to clipboard.',
-          }),
-        ),
-      );
-    } catch (error) {
-      dispatch(
-        urlCopyFailed(
-          intl.formatMessage({
-            defaultMessage: 'Unable to copy URL to clipboard',
-            description: 'error alert when copying a URL to clipboard fails.',
-          }),
-        ),
-      );
-    }
+  const handleShareClick = (evt: React.MouseEvent) => {
+    dispatch(shareRoutes(intl));
   };
 
   return (
