@@ -1,28 +1,23 @@
 import { z } from 'zod';
-import { GeoJSONPointSchema, GeoJSONPolygonSchema } from 'zod-geojson';
+import { GeoJSONPolygonSchema } from 'zod-geojson';
 
 export function getAgencyDisplayName(gtfsAgencyName: string): string {
-  const { agencyNames } = _getConfig();
-  return (agencyNames && agencyNames[gtfsAgencyName]) || gtfsAgencyName;
+  const { agencyAliases } = _getConfig();
+  return (agencyAliases && agencyAliases[gtfsAgencyName]) || gtfsAgencyName;
 }
 
 export function getSupportedRegionText(): string | undefined {
-  return _getConfig().supportedRegion;
+  return _getConfig().supportedRegionDescription;
 }
 
 export function getDefaultViewportBounds(): [number, number, number, number] {
-  const config = _getConfig();
-  let defaultViewport, hull;
-  if ((defaultViewport = config.geoConfig['default-viewport'])) {
+  const { defaultViewport, transitServiceArea } = _getConfig();
+  if (defaultViewport) {
     return defaultViewport;
-  } else if (config.supportedRegion === 'San Francisco Bay Area') {
-    // TODO: Remove this hardcoding once the above default viewport is instead
-    // configured on our server.
-    return [-122.597652, 37.330751, -121.669687, 37.85847];
-  } else if ((hull = config.geoConfig['buffered-hull'])) {
-    // generate bounding box for hull
+  } else if (transitServiceArea) {
+    // generate bounding box
     let bbox: [number, number, number, number] = [180, 90, -180, -90];
-    for (const coord of hull.geometry.coordinates[0]) {
+    for (const coord of transitServiceArea.geometry.coordinates[0]) {
       bbox[0] = Math.min(bbox[0], coord[0]);
       bbox[1] = Math.min(bbox[1], coord[1]);
       bbox[2] = Math.max(bbox[2], coord[0]);
@@ -30,14 +25,16 @@ export function getDefaultViewportBounds(): [number, number, number, number] {
     }
     return bbox;
   } else {
-    return config.geoConfig['bounding-box'];
+    throw new Error(
+      'one of default viewport or transit service area must be defined',
+    );
   }
 }
 
 export function getTransitServiceArea():
   | GeoJSON.Feature<GeoJSON.Polygon>
   | undefined {
-  return _getConfig().geoConfig['buffered-hull'];
+  return _getConfig().transitServiceArea;
 }
 
 export function getTransitDataAcknowledgement():
@@ -46,9 +43,7 @@ export function getTransitDataAcknowledgement():
       url: string;
     }
   | undefined {
-  const acks = _getConfig().dataAcknowledgements;
-  if (acks && acks.items && acks.items.length >= 1) return acks.items[0];
-  return undefined;
+  return _getConfig().transitDataAcknowledgement;
 }
 
 const Latitude = z.number().lte(90).gte(-90);
@@ -62,28 +57,18 @@ const FeatureOfSchema = <GeomType>(geometryType: z.ZodSchema<GeomType>) =>
   });
 
 export const RegionConfigSchema = z.object({
-  agencyNames: z.record(z.string(), z.string()).optional(),
-  dataAcknowledgements: z
+  agencyAliases: z.record(z.string(), z.string()).optional(),
+  transitDataAcknowledgement: z
     .object({
-      items: z.array(
-        z.object({
-          // TODO: remove this unnecessary layer of nesting
-          text: z.string(),
-          url: z.string(),
-        }),
-      ),
+      text: z.string(),
+      url: z.string(),
     })
     .optional(),
-  geoConfig: z.object({
-    'bounding-box': z.tuple([Longitude, Latitude, Longitude, Latitude]),
-    'buffered-hull': FeatureOfSchema(GeoJSONPolygonSchema).optional(),
-    'center-area': FeatureOfSchema(GeoJSONPointSchema).optional(),
-    // TODO: implement as configurable on server
-    'default-viewport': z
-      .tuple([Longitude, Latitude, Longitude, Latitude])
-      .optional(),
-  }),
-  supportedRegion: z.string().optional(),
+  transitServiceArea: FeatureOfSchema(GeoJSONPolygonSchema).optional(),
+  defaultViewport: z
+    .tuple([Longitude, Latitude, Longitude, Latitude])
+    .optional(),
+  supportedRegionDescription: z.string().optional(),
 });
 export type RegionConfig = z.infer<typeof RegionConfigSchema>;
 
