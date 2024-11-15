@@ -3,7 +3,7 @@ import type { FocusEvent, ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import MagnifyingGlass from 'iconoir/icons/search.svg?react';
 import Icon from './primitives/Icon';
-import { SupportedRegionText } from '../lib/region';
+import { getSupportedRegionText } from '../lib/region';
 
 import './DirectionsNullState.css';
 
@@ -13,6 +13,7 @@ type Props = {
 
 export default function DirectionsNullState(props: Props) {
   const intl = useIntl();
+  const supportedRegion = getSupportedRegionText();
 
   // The <input> rendered here is fake: its only function is to get focused and then
   // switch to a different UI that has the real input box.
@@ -48,7 +49,7 @@ export default function DirectionsNullState(props: Props) {
       <p>
         <FormattedMessage
           defaultMessage={
-            '<strong>Welcome to BikeHopper!</strong> This is a new bike navigation' +
+            '<strong>Welcome to BikeHopper!</strong> This is a bike navigation' +
             ' app that suggests ways to combine biking and transit, expanding your' +
             ' options for getting around without a car.'
           }
@@ -56,13 +57,21 @@ export default function DirectionsNullState(props: Props) {
           values={{ strong }}
         />
       </p>
-      <p>
-        {SupportedRegionText && [<SupportedRegionText key="text" />, ' ']}
-        <FormattedMessage
-          defaultMessage="Get started by entering a destination above."
-          description="text in welcome screen. appears below an input box for destination"
-        />
-      </p>
+      {supportedRegion && (
+        <p>
+          <FormattedMessage
+            defaultMessage={
+              'Supported region: <strong>{region}</strong>. Get started' +
+              ' by entering a destination above.'
+            }
+            description={
+              'paragraph in welcome screen. region is a city or region name.' +
+              ' Appears below an input box for destination'
+            }
+            values={{ strong, region: supportedRegion }}
+          />
+        </p>
+      )}
       <p className="hidden lg:block">
         <FormattedMessage
           defaultMessage={
