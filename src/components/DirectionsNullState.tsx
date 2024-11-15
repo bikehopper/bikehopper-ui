@@ -49,7 +49,7 @@ export default function DirectionsNullState(props: Props) {
       <p>
         <FormattedMessage
           defaultMessage={
-            '<strong>Welcome to BikeHopper!</strong> This is a new bike navigation' +
+            '<strong>Welcome to BikeHopper!</strong> This is a bike navigation' +
             ' app that suggests ways to combine biking and transit, expanding your' +
             ' options for getting around without a car.'
           }
@@ -60,18 +60,18 @@ export default function DirectionsNullState(props: Props) {
       {supportedRegion && (
         <p>
           <FormattedMessage
-            defaultMessage="Supported region: <strong>{region}</strong>"
-            description="paragraph in welcome screen. region is a city or region name"
+            defaultMessage={
+              'Supported region: <strong>{region}</strong>. Get started' +
+              ' by entering a destination above.'
+            }
+            description={
+              'paragraph in welcome screen. region is a city or region name.' +
+              ' Appears below an input box for destination'
+            }
             values={{ strong, region: supportedRegion }}
           />
         </p>
       )}
-      <p>
-        <FormattedMessage
-          defaultMessage="Get started by entering a destination above."
-          description="text in welcome screen. appears below an input box for destination"
-        />
-      </p>
       <p className="hidden lg:block">
         <FormattedMessage
           defaultMessage={
