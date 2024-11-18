@@ -145,6 +145,7 @@ const BikeHopperMap = forwardRef(function _BikeHopperMap(
 
   const findFeaturesNear = useCallback(
     (point: MapLibrePoint) => {
+      if (!routes || routes.length === 0) return [];
       const map = mapRef.current;
       if (!map) return [];
       const southwest = point.sub(MAP_CLICK_FUDGE_VEC);
@@ -153,7 +154,7 @@ const BikeHopperMap = forwardRef(function _BikeHopperMap(
         layers: INTERACTIVE_LAYER_IDS,
       });
     },
-    [mapRef],
+    [mapRef, routes],
   );
 
   const handleMapClick = (evt: MapLayerMouseEvent) => {
