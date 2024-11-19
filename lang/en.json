@@ -83,10 +83,6 @@
     "defaultMessage": "Arriving {datetime}",
     "description": "description of trip arriving by the given date and time. The datetime is localized but an example for an American English locale would be \"May 21, 2023, 2:30PM\"."
   },
-  "BAVfiY": {
-    "defaultMessage": "We support the <strong>San Francisco Bay Area</strong>, California.",
-    "description": "describes supported region for Bay Area instance of BikeHopper"
-  },
   "BGcgDw": {
     "defaultMessage": "Head <dir>{direction}</dir>{haveStreet, select, name { on <name>{street}</name>} other {}}",
     "description": "instruction. direction is a cardinal direction like north"
@@ -154,6 +150,10 @@
   "HQldX2": {
     "defaultMessage": "shoulder",
     "description": "annotation for a step in a series of biking directions. A road where bikes are recommended to ride on the shoulder."
+  },
+  "HTC5b/": {
+    "defaultMessage": "Bike routes to custom point",
+    "description": "description of shared link to routing info. The routes are to a destination for which no address or name is known."
   },
   "HV9VrT": {
     "defaultMessage": "Go back",
@@ -223,6 +223,10 @@
     "defaultMessage": "bike path",
     "description": "annotation for a step in a series of biking directions."
   },
+  "PUyqpU": {
+    "defaultMessage": "<strong>Welcome to BikeHopper!</strong> This is a bike navigation app that suggests ways to combine biking and transit, expanding your options for getting around without a car.",
+    "description": "paragraph in welcome screen"
+  },
   "QiY1oM": {
     "defaultMessage": "Elevation loss",
     "description": "Accessible alt text for a down-arrow icon that appears next to a measurement of the elevation loss on a route, such as (in English) 200 ft or 50 m."
@@ -235,9 +239,9 @@
     "defaultMessage": "Download",
     "description": "Button used to download FIT file."
   },
-  "RRZB26": {
-    "defaultMessage": "<strong>Welcome to BikeHopper!</strong> This is a new bike navigation app that suggests ways to combine biking and transit, expanding your options for getting around without a car.",
-    "description": "paragraph in welcome screen"
+  "S5dhxM": {
+    "defaultMessage": "Bike routes to {to}",
+    "description": "description of shared link to routing info"
   },
   "SyUGCG": {
     "defaultMessage": "Turn <dir>left</dir>{haveStreet, select, name { onto <name>{street}</name>} other {}}",
@@ -279,6 +283,10 @@
     "defaultMessage": "bike",
     "description": "Description of bike as a travel mode. Appears in a list of travel modes along with transit agency names, such as \"via bike, BART, AC Transit\" or just \"via bike\""
   },
+  "adchz/": {
+    "defaultMessage": "Unable to copy URL to clipboard",
+    "description": "error alert when copying a URL to clipboard fails."
+  },
   "b+OvtM": {
     "defaultMessage": "northwest",
     "description": "cardinal direction, used in a sentence like \"Head northwest\""
@@ -303,10 +311,6 @@
     "defaultMessage": "{numStops} {numStops, plural, one {stop} other {stops}}",
     "description": "the number of stops for which you should stay on a transit vehicle"
   },
-  "dkJRew": {
-    "defaultMessage": "Get started by entering a destination above.",
-    "description": "text in welcome screen. appears below an input box for destination"
-  },
   "eXZGQC": {
     "defaultMessage": "via {streets}",
     "description": "list of major streets taken on bike leg"
@@ -322,6 +326,10 @@
   "get++U": {
     "defaultMessage": "At roundabout, take exit {num}{haveStreet, select, name { onto <name>{street}</name>} other {}}",
     "description": "instruction"
+  },
+  "hFkXoB": {
+    "defaultMessage": "Bike routes from {from} to {to}",
+    "description": "description of shared link to routing info"
   },
   "hmv35M": {
     "defaultMessage": "Trains",
@@ -355,9 +363,9 @@
     "defaultMessage": "Press here to download the FIT file.",
     "description": "Link to download the FIT file."
   },
-  "oLvgp2": {
-    "defaultMessage": "Point",
-    "description": "generic description of a location we don’t have more info about"
+  "nqHJOp": {
+    "defaultMessage": "Share",
+    "description": "Button. When clicked, lets you share a set of directions, such as by copying a URL to the clipboard."
   },
   "p04B0A": {
     "defaultMessage": "west",
@@ -374,6 +382,10 @@
   "t2BmWO": {
     "defaultMessage": "Train",
     "description": "labels a transit line as being operated by a tram, streetcar or light rail. Appears next to the name or number of the line. For American English, we match common usage by saying \"train\", but \"tram\" might be appropriate for other dialects of English."
+  },
+  "tEH6rL": {
+    "defaultMessage": "Copied URL to clipboard!",
+    "description": "toast displayed when copying a URL to clipboard."
   },
   "uCLsXP": {
     "defaultMessage": "Arrive by",
@@ -414,6 +426,10 @@
   "xPFWok": {
     "defaultMessage": "Turn <dir>sharp left</dir>{haveStreet, select, name { onto <name>{street}</name>} other {}}",
     "description": "instruction"
+  },
+  "y5QXGG": {
+    "defaultMessage": "Supported region: <strong>{region}</strong>. Get started by entering a destination above.",
+    "description": "paragraph in welcome screen. region is a city or region name. Appears below an input box for destination"
   },
   "y7pFDT": {
     "defaultMessage": "Elevation gain",

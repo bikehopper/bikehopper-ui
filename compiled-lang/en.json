@@ -243,26 +243,6 @@
       "value": "datetime"
     }
   ],
-  "BAVfiY": [
-    {
-      "type": 0,
-      "value": "We support the "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "San Francisco Bay Area"
-        }
-      ],
-      "type": 8,
-      "value": "strong"
-    },
-    {
-      "type": 0,
-      "value": ", California."
-    }
-  ],
   "BGcgDw": [
     {
       "type": 0,
@@ -549,6 +529,12 @@
       "value": "shoulder"
     }
   ],
+  "HTC5b/": [
+    {
+      "type": 0,
+      "value": "Bike routes to custom point"
+    }
+  ],
   "HV9VrT": [
     {
       "type": 0,
@@ -717,6 +703,22 @@
       "value": "bike path"
     }
   ],
+  "PUyqpU": [
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "Welcome to BikeHopper!"
+        }
+      ],
+      "type": 8,
+      "value": "strong"
+    },
+    {
+      "type": 0,
+      "value": " This is a bike navigation app that suggests ways to combine biking and transit, expanding your options for getting around without a car."
+    }
+  ],
   "QiY1oM": [
     {
       "type": 0,
@@ -773,20 +775,14 @@
       "value": "Download"
     }
   ],
-  "RRZB26": [
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "Welcome to BikeHopper!"
-        }
-      ],
-      "type": 8,
-      "value": "strong"
-    },
+  "S5dhxM": [
     {
       "type": 0,
-      "value": " This is a new bike navigation app that suggests ways to combine biking and transit, expanding your options for getting around without a car."
+      "value": "Bike routes to "
+    },
+    {
+      "type": 1,
+      "value": "to"
     }
   ],
   "SyUGCG": [
@@ -963,6 +959,12 @@
       "value": "bike"
     }
   ],
+  "adchz/": [
+    {
+      "type": 0,
+      "value": "Unable to copy URL to clipboard"
+    }
+  ],
   "b+OvtM": [
     {
       "type": 0,
@@ -1027,12 +1029,6 @@
       "value": "numStops"
     }
   ],
-  "dkJRew": [
-    {
-      "type": 0,
-      "value": "Get started by entering a destination above."
-    }
-  ],
   "eXZGQC": [
     {
       "type": 0,
@@ -1093,6 +1089,24 @@
       "value": "haveStreet"
     }
   ],
+  "hFkXoB": [
+    {
+      "type": 0,
+      "value": "Bike routes from "
+    },
+    {
+      "type": 1,
+      "value": "from"
+    },
+    {
+      "type": 0,
+      "value": " to "
+    },
+    {
+      "type": 1,
+      "value": "to"
+    }
+  ],
   "hmv35M": [
     {
       "type": 0,
@@ -1145,10 +1159,10 @@
       "value": "Press here to download the FIT file."
     }
   ],
-  "oLvgp2": [
+  "nqHJOp": [
     {
       "type": 0,
-      "value": "Point"
+      "value": "Share"
     }
   ],
   "p04B0A": [
@@ -1173,6 +1187,12 @@
     {
       "type": 0,
       "value": "Train"
+    }
+  ],
+  "tEH6rL": [
+    {
+      "type": 0,
+      "value": "Copied URL to clipboard!"
     }
   ],
   "uCLsXP": [
@@ -1309,6 +1329,26 @@
       },
       "type": 5,
       "value": "haveStreet"
+    }
+  ],
+  "y5QXGG": [
+    {
+      "type": 0,
+      "value": "Supported region: "
+    },
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "region"
+        }
+      ],
+      "type": 8,
+      "value": "strong"
+    },
+    {
+      "type": 0,
+      "value": ". Get started by entering a destination above."
     }
   ],
   "y7pFDT": [
