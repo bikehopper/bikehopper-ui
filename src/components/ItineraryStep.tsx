@@ -8,7 +8,6 @@ import './ItineraryStep.css';
 export default function ItineraryStep({
   IconSVGComponent,
   iconSize,
-  highMargin = false,
   rootRef,
   children,
 }: {
@@ -16,23 +15,14 @@ export default function ItineraryStep({
     React.ComponentProps<'svg'> & { title?: string }
   >;
   iconSize?: string | undefined;
-  highMargin?: boolean | undefined;
   rootRef?: ScrollToRef<HTMLDivElement> | undefined;
   children: React.ReactNode;
 }) {
   const iconSizePx = iconSize === 'tiny' ? 12 : iconSize === 'small' ? 15 : 22;
   return (
-    <div
-      className={classnames({
-        ItineraryStep: true,
-      })}
-    >
+    <div className="ItineraryStep">
       <ItineraryRow rootRef={rootRef}>
-        <span
-          className={classnames({
-            ItineraryStep_iconContainer: true,
-          })}
-        >
+        <span className="ItineraryStep_iconContainer">
           <Icon
             className={classnames({
               ItineraryStep_icon: true,
@@ -48,15 +38,7 @@ export default function ItineraryStep({
             />
           </Icon>
         </span>
-        <div
-          className={classnames({
-            ItineraryStep_content: true,
-            ItineraryStep_contentLowMargin: !highMargin,
-            ItineraryStep_contentHighMargin: highMargin,
-          })}
-        >
-          {children}
-        </div>
+        <div className="ItineraryStep_content">{children}</div>
       </ItineraryRow>
     </div>
   );

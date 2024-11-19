@@ -112,12 +112,11 @@ export default function ItineraryTransitLeg({
           {formatDurationBetween(leg.departure_time, leg.arrival_time, intl)}
         </span>
       </ItineraryHeader>
-      <ItineraryStep
-        IconSVGComponent={Circle}
-        iconSize="small"
-        highMargin={true}
-      >
-        <BorderlessButton onClick={onStopClick.bind(null, 0)}>
+      <ItineraryStep IconSVGComponent={Circle} iconSize="small">
+        <BorderlessButton
+          className="pt-[5px]"
+          onClick={onStopClick.bind(null, 0)}
+        >
           <FormattedMessage
             defaultMessage="Board at {stop}"
             description="instruction to board (a public transit vehicle) at the named stop"
@@ -154,10 +153,12 @@ export default function ItineraryTransitLeg({
             <ItineraryStep
               IconSVGComponent={Circle}
               iconSize="tiny"
-              highMargin={true}
               key={stopIdx}
             >
-              <BorderlessButton onClick={onStopClick.bind(null, stopIdx + 1)}>
+              <BorderlessButton
+                className="pt-[5px]"
+                onClick={onStopClick.bind(null, stopIdx + 1)}
+              >
                 {stop.stop_name}
               </BorderlessButton>
             </ItineraryStep>
@@ -181,12 +182,11 @@ export default function ItineraryTransitLeg({
           />
         </div>
       ) : null}
-      <ItineraryStep
-        IconSVGComponent={Circle}
-        iconSize="small"
-        highMargin={true}
-      >
-        <BorderlessButton onClick={onStopClick.bind(null, stops.length - 1)}>
+      <ItineraryStep IconSVGComponent={Circle} iconSize="small">
+        <BorderlessButton
+          onClick={onStopClick.bind(null, stops.length - 1)}
+          className="pt-[5px]"
+        >
           <FormattedMessage
             defaultMessage="Get off at {stop}"
             description="instruction to exit (a public transit vehicle) at the named stop"
