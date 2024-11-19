@@ -84,7 +84,7 @@ const MAP_CLICK_FUDGE_VEC = new MapLibrePoint(
   MAP_CLICK_FUDGE_PX,
 );
 
-const BikeHopperMap = forwardRef(function _BikeHopperMap(
+const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
   props: Props,
   mapRef_: Ref<MapRef>,
 ) {

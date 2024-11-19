@@ -55,7 +55,7 @@
     "start:docker": "docker compose up",
     "build": "vite build",
     "serve": "vite preview",
-    "lint": "eslint --max-warnings 0 --report-unused-disable-directives src/**/*.{js,jsx,ts,tsx} && npx tsc",
+    "lint": "eslint --max-warnings 0 src/**/*.{js,jsx,ts,tsx} && npx tsc",
     "extract": "formatjs extract 'src/**/*.{ts,tsx,js,jsx}' --ignore 'src/**/*.d.ts' --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
     "compile": "formatjs compile",
     "prepare": "husky"
@@ -66,6 +66,8 @@
     ]
   },
   "devDependencies": {
+    "@eslint/compat": "^1.2.3",
+    "@eslint/js": "^9.15.0",
     "@formatjs/cli": "^6.2.9",
     "@tailwindcss/typography": "^0.5.9",
     "@types/color": "^4.2.0",
@@ -73,26 +75,32 @@
     "@types/luxon": "^3.4.2",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
-    "@typescript-eslint/eslint-plugin": "^7.8.0",
-    "@typescript-eslint/parser": "^7.8.0",
+    "@typescript-eslint/eslint-plugin": "^8.15.0",
+    "@typescript-eslint/parser": "^8.15.0",
     "@vitejs/plugin-basic-ssl": "^1.0.1",
     "@vitejs/plugin-react": "^4.0.0",
     "autoprefixer": "^10.4.14",
     "babel-plugin-formatjs": "^10.3.35",
     "csv": "^6.2.5",
-    "eslint": "^8.57.0",
-    "eslint-plugin-formatjs": "~4.13.3",
+    "eslint": "^9.15.0",
+    "eslint-plugin-formatjs": "^5.2.5",
     "eslint-plugin-react": "^7.34.1",
-    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.6",
+    "globals": "^15.12.0",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
     "prettier": "^3.2.5",
     "tailwindcss": "^3.3.2",
     "typescript": "^5.5.4",
     "vite": "^5.2.9",
-    "vite-plugin-eslint2": "^4.4.0",
+    "vite-plugin-eslint2": "^5.0.2",
     "vite-plugin-svgr": "^4.2.0"
+  },
+  "overrides": {
+    "eslint-plugin-react-hooks": {
+      "eslint": "$eslint"
+    }
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
