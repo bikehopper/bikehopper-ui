@@ -3,8 +3,10 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { formatDurationBetween } from '../lib/time';
 import { getAgencyDisplayName } from '../lib/region';
 import Icon from './primitives/Icon';
+import ItineraryBase from './ItineraryBase';
 import ItineraryBikeLeg from './ItineraryBikeLeg';
 import ItineraryHeader from './ItineraryHeader';
+import ItineraryTimeline from './ItineraryTimeline';
 import ItineraryTransitLeg from './ItineraryTransitLeg';
 import ItineraryElevationProfile from './ItineraryElevationProfile';
 import ShareFit from './ShareFit';
@@ -129,7 +131,7 @@ export default function Itinerary({
       : null;
 
   return (
-    <div className="Itinerary">
+    <ItineraryBase>
       <div className="Itinerary_backBtnAndHeadings">
         <button onClick={onBackClick} className="Itinerary_backButton">
           <Icon label={backToRoutesText} className="Itinerary_backIcon">
@@ -171,10 +173,8 @@ export default function Itinerary({
         </div>
         {soleBikeLeg && <ShareFit leg={soleBikeLeg} />}
       </div>
-      <div className="Itinerary_elevation">
-        <ItineraryElevationProfile route={route} />
-      </div>
-      <div className="Itinerary_timeline">
+      <ItineraryElevationProfile route={route} />
+      <ItineraryTimeline>
         {renderedLegs}
         <ItineraryHeader icon={arriveIcon} iconColor="#ea526f">
           <FormattedMessage
@@ -182,7 +182,7 @@ export default function Itinerary({
             description="header text at end of step by step travel instructions"
           />
         </ItineraryHeader>
-      </div>
+      </ItineraryTimeline>
       <div className="Itinerary_bottomBackBtnContainer">
         <button onClick={onBackClick} className="Itinerary_bottomBackBtn">
           <Icon className="Itinerary_backIcon">
@@ -193,6 +193,6 @@ export default function Itinerary({
           </span>
         </button>
       </div>
-    </div>
+    </ItineraryBase>
   );
 }

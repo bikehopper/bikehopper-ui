@@ -114,7 +114,7 @@ export default function ItineraryBikeLeg({
       </ItineraryHeader>
 
       {expanded ? (
-        <div>
+        <>
           <ItinerarySpacer />
           {instructionsWithBikeInfra.map((step, stepIdx) =>
             isArriveStep(step)
@@ -131,7 +131,7 @@ export default function ItineraryBikeLeg({
                   />,
                 ],
           )}
-        </div>
+        </>
       ) : (
         <ItinerarySpacer />
       )}

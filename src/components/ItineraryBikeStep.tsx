@@ -38,7 +38,7 @@ export default function ItineraryBikeStep({
   infra: StepAnnotation[];
   isFirstStep: boolean;
   onClick: React.MouseEventHandler;
-  rootRef: ScrollToRef<HTMLDivElement> | undefined;
+  rootRef?: ScrollToRef<HTMLDivElement> | undefined;
 }) {
   const intl = useIntl();
 
