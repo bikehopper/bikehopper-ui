@@ -25,7 +25,7 @@ export default function ModalDialog({
   return (
     <Dialog.Root open={isOpen}>
       <Dialog.Portal forceMount>
-        <Transition show={isOpen}>
+        <Transition as="div" show={isOpen}>
           <Transition.Child
             as={Fragment}
             enter="transition-opacity ease-out duration-300"
