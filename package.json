@@ -8,7 +8,7 @@
   "type": "module",
   "dependencies": {
     "@formatjs/intl-listformat": "^7.1.7",
-    "@headlessui/react": "^1.7.14",
+    "@headlessui/react": "^2.2.0",
     "@nivo/line": "^0.88.0",
     "@placemarkio/geo-viewport": "^1.0.0",
     "@radix-ui/react-dialog": "^1.0.3",

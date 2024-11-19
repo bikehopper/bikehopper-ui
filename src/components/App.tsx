@@ -71,6 +71,7 @@ function App(props: Props) {
 
   const topBar = (
     <Transition
+      as="div"
       show={shouldDisplayTopBar}
       enter="transition-opacity ease-out duration-300"
       enterFrom="opacity-0"
