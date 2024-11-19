@@ -9,6 +9,8 @@ import {
   itineraryBackClicked,
   itineraryStepClicked,
   itineraryStepBackClicked,
+  itineraryPrevStepClicked,
+  itineraryNextStepClicked,
 } from '../features/routes';
 import describePlace from '../lib/describePlace';
 import RoutesOverview from './RoutesOverview';
@@ -84,6 +86,14 @@ export default function Routes(props: {}) {
     dispatch(itineraryStepBackClicked());
   }, [dispatch]);
 
+  const handlePrevStepClick = useCallback<React.MouseEventHandler>(() => {
+    dispatch(itineraryPrevStepClicked());
+  }, [dispatch]);
+
+  const handleNextStepClick = useCallback<React.MouseEventHandler>(() => {
+    dispatch(itineraryNextStepClicked());
+  }, [dispatch]);
+
   const wasViewingDetails = usePrevious(details);
   const rootRef = useRef<HTMLDivElement>(null);
   const scrollTopBeforeItineraryOpen = useRef<number | null>(null);
@@ -142,7 +152,8 @@ export default function Routes(props: {}) {
     );
   } else {
     const [legIdx, stepIdx] = viewingStep;
-    const leg = routes[activeRoute as number].legs[legIdx];
+    const routeIdx: number = activeRoute as number;
+    const leg = routes[routeIdx].legs[legIdx];
 
     if (leg.type !== 'pt') {
       content = (
@@ -150,6 +161,13 @@ export default function Routes(props: {}) {
           leg={leg}
           stepIdx={stepIdx}
           onBackClick={handleStepBackClick}
+          isFirstStep={stepIdx === 0 && routeIdx === 0}
+          isLastStep={
+            stepIdx + 1 === leg.instructions.length &&
+            routeIdx + 1 === routes[routeIdx].legs.length
+          }
+          onPrevStepClick={handlePrevStepClick}
+          onNextStepClick={handleNextStepClick}
         />
       );
     } else {

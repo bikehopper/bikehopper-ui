@@ -145,6 +145,38 @@ export function routesReducer(
       return { ...state, viewingStep: [action.leg, action.step] };
     case 'itinerary_step_back_clicked':
       return { ...state, viewingStep: null };
+    case 'itinerary_prev_step_clicked':
+      return produce(state, (draft) => {
+        if (!draft.viewingStep || !state.routes || state.activeRoute == null)
+          return;
+        if (draft.viewingStep[1] > 0) {
+          draft.viewingStep[1]--;
+        } else if (draft.viewingStep[0] > 0) {
+          const newViewingLeg =
+            state.routes[state.activeRoute].legs[--draft.viewingStep[0]];
+          draft.viewingStep[1] =
+            newViewingLeg.type === 'bike2'
+              ? newViewingLeg.instructions.length - 1
+              : newViewingLeg.stops.length - 1;
+        }
+      });
+    case 'itinerary_next_step_clicked':
+      return produce(state, (draft) => {
+        if (!draft.viewingStep || !state.routes || state.activeRoute == null)
+          return;
+        const viewingRoute = state.routes[state.activeRoute];
+        const viewingLeg = viewingRoute.legs[draft.viewingStep[0]];
+        const stepsInLeg =
+          viewingLeg.type === 'bike2'
+            ? viewingLeg.instructions.length
+            : viewingLeg.stops.length;
+        if (draft.viewingStep[1] + 1 < stepsInLeg) {
+          draft.viewingStep[1]++;
+        } else if (draft.viewingStep[0] + 1 < viewingRoute.legs.length) {
+          draft.viewingStep[0]++;
+          draft.viewingStep[1] = 0;
+        }
+      });
     default:
       return state;
   }
@@ -302,6 +334,16 @@ export function itineraryStepBackClicked() {
   return { type: 'itinerary_step_back_clicked' };
 }
 
+type ItineraryPrevStepClickedAction = Action<'itinerary_prev_step_clicked'>;
+export function itineraryPrevStepClicked() {
+  return { type: 'itinerary_prev_step_clicked' };
+}
+
+type ItineraryNextStepClickedAction = Action<'itinerary_next_step_clicked'>;
+export function itineraryNextStepClicked() {
+  return { type: 'itinerary_next_step_clicked' };
+}
+
 export type RoutesAction =
   | RouteClearedAction
   | RouteFetchAttemptedAction
@@ -310,4 +352,6 @@ export type RoutesAction =
   | RouteClickedAction
   | ItineraryBackClickedAction
   | ItineraryStepClickedAction
-  | ItineraryStepBackClickedAction;
+  | ItineraryStepBackClickedAction
+  | ItineraryPrevStepClickedAction
+  | ItineraryNextStepClickedAction;
