@@ -13,10 +13,11 @@ import {
   itineraryNextStepClicked,
 } from '../features/routes';
 import describePlace from '../lib/describePlace';
-import RoutesOverview from './RoutesOverview';
+import InstructionSigns from '../lib/InstructionSigns';
 import Itinerary from './Itinerary';
 import ItinerarySingleStep from './ItinerarySingleStep';
 import ItinerarySingleTransitStop from './ItinerarySingleTransitStop';
+import RoutesOverview from './RoutesOverview';
 import type { Dispatch, RootState } from '../store';
 
 export default function Routes(props: {}) {
@@ -161,10 +162,11 @@ export default function Routes(props: {}) {
           leg={leg}
           stepIdx={stepIdx}
           onBackClick={handleStepBackClick}
-          isFirstStep={stepIdx === 0 && routeIdx === 0}
+          isFirstStep={stepIdx === 0 && legIdx === 0}
           isLastStep={
-            stepIdx + 1 === leg.instructions.length &&
-            routeIdx + 1 === routes[routeIdx].legs.length
+            (stepIdx + 1 === leg.instructions.length ||
+              leg.instructions[stepIdx + 1].sign === InstructionSigns.FINISH) &&
+            legIdx + 1 === routes[routeIdx].legs.length
           }
           onPrevStepClick={handlePrevStepClick}
           onNextStepClick={handleNextStepClick}

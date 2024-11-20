@@ -1,6 +1,7 @@
 import produce from 'immer';
 import type { Action } from 'redux';
 import * as BikeHopperClient from '../lib/BikeHopperClient';
+import InstructionSigns from '../lib/InstructionSigns';
 import type { BikeHopperAction, BikeHopperThunkAction } from '../store';
 import type { Mode } from '../lib/TransitModes';
 
@@ -154,10 +155,20 @@ export function routesReducer(
         } else if (draft.viewingStep[0] > 0) {
           const newViewingLeg =
             state.routes[state.activeRoute].legs[--draft.viewingStep[0]];
-          draft.viewingStep[1] =
+          let newStep =
             newViewingLeg.type === 'bike2'
               ? newViewingLeg.instructions.length - 1
               : newViewingLeg.stops.length - 1;
+          if (
+            newViewingLeg.type === 'bike2' &&
+            newViewingLeg.instructions[newStep].sign ===
+              InstructionSigns.FINISH &&
+            newStep > 0
+          ) {
+            // Skip "arrive at destination"
+            newStep--;
+          }
+          draft.viewingStep[1] = newStep;
         }
       });
     case 'itinerary_next_step_clicked':
@@ -172,6 +183,20 @@ export function routesReducer(
             : viewingLeg.stops.length;
         if (draft.viewingStep[1] + 1 < stepsInLeg) {
           draft.viewingStep[1]++;
+          // Skip "arrive at destination"
+          if (
+            viewingLeg.type === 'bike2' &&
+            viewingLeg.instructions[draft.viewingStep[1]].sign ===
+              InstructionSigns.FINISH
+          ) {
+            if (draft.viewingStep[0] + 1 === viewingRoute.legs.length) {
+              console.error('next step: would go past end');
+              draft.viewingStep[1]--;
+            } else {
+              draft.viewingStep[0]++;
+              draft.viewingStep[1] = 0;
+            }
+          }
         } else if (draft.viewingStep[0] + 1 < viewingRoute.legs.length) {
           draft.viewingStep[0]++;
           draft.viewingStep[1] = 0;
