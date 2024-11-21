@@ -3,7 +3,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { formatDurationBetween } from '../lib/time';
 import { getAgencyDisplayName } from '../lib/region';
 import Icon from './primitives/Icon';
-import ItineraryBase from './ItineraryBase';
 import ItineraryBikeLeg from './ItineraryBikeLeg';
 import ItineraryHeader from './ItineraryHeader';
 import ItineraryTimeline from './ItineraryTimeline';
@@ -131,7 +130,7 @@ export default function Itinerary({
       : null;
 
   return (
-    <ItineraryBase>
+    <div className="py-8 px-5">
       <div className="Itinerary_backBtnAndHeadings">
         <button onClick={onBackClick} className="Itinerary_backButton">
           <Icon label={backToRoutesText} className="Itinerary_backIcon">
@@ -193,6 +192,6 @@ export default function Itinerary({
           </span>
         </button>
       </div>
-    </ItineraryBase>
+    </div>
   );
 }
