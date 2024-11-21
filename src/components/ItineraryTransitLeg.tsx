@@ -126,11 +126,7 @@ export default function ItineraryTransitLeg({
           />
           {spacerWithMiddot}
           {departure}
-          <div
-            className={classnames({
-              ItineraryDivider_headsign: true,
-            })}
-          >
+          <div className="ItineraryTransitLeg_headsign">
             <FormattedMessage
               defaultMessage="Towards {headsign}"
               description={

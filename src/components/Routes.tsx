@@ -183,7 +183,19 @@ export default function Routes(props: {}) {
                 ? 'alight'
                 : 'intermediate'
           }
+          time={
+            stepIdx === 0
+              ? leg.departure_time
+              : stepIdx === leg.stops.length - 1
+                ? leg.arrival_time
+                : null
+          }
+          headsign={leg.trip_headsign}
           onBackClick={handleStepBackClick}
+          isFirstLeg={legIdx === 0}
+          isLastLeg={legIdx + 1 === routes[routeIdx].legs.length}
+          onPrevStepClick={handlePrevStepClick}
+          onNextStepClick={handleNextStepClick}
         />
       );
     }
