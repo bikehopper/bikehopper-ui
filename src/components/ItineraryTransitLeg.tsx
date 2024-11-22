@@ -3,7 +3,6 @@ import type { TransitLeg } from '../lib/BikeHopperClient';
 import { DEFAULT_PT_COLOR } from '../lib/colors';
 import { getModeLabel } from '../lib/TransitModes';
 import { formatTime, formatDurationBetween } from '../lib/time';
-import classnames from 'classnames';
 import { getAgencyDisplayName } from '../lib/region';
 import useScrollToRef from '../hooks/useScrollToRef';
 import BorderlessButton from './BorderlessButton';

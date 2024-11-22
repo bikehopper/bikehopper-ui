@@ -41,7 +41,6 @@ export default function ItinerarySingleTransitStop({
   // TODO add route name, type, agency for board step, and split out stuff from
   // ItineraryTransitLeg to make it reusable so it doesn't all have to be
   // copy-pasted here.
-  const space = ' ';
   const stopName = stop.stop_name;
   const canGoToPrev = !(isFirstLeg && relationship === 'board');
   const canGoToNext = !(isLastLeg && relationship === 'alight');
