@@ -62,7 +62,7 @@ import { RouteResponsePath } from '../lib/BikeHopperClient';
 const _isTouch = 'ontouchstart' in window;
 
 type Props = {
-  onMapLoad: () => void;
+  onMapLoad?: () => void;
   overlayRef: RefObject<HTMLElement>;
   hidden: boolean;
 };
