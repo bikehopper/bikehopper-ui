@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import type { FocusEvent } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { IntlProvider } from 'react-intl';
@@ -6,10 +6,9 @@ import type { MessageFormatElement } from 'react-intl';
 import type { OnErrorFn } from '@formatjs/intl';
 import { Transition } from '@headlessui/react';
 import { Provider as ToastProvider } from '@radix-ui/react-toast';
+import { createHtmlPortalNode, InPortal } from 'react-reverse-portal';
 
 import DirectionsNullState from './DirectionsNullState';
-import MapPlusOverlay from './MapPlusOverlay';
-import DesktopMap from './DesktopMap';
 import Routes from './Routes';
 import SearchDropdown from './SearchDropdown';
 import Toasts from './Toasts';
@@ -21,6 +20,12 @@ import {
 import { RootState } from '../store';
 
 import './App.css';
+import BikeHopperMap from './BikeHopperMap';
+import useMapRefs from '../hooks/useMapRefs';
+import DesktopMapLayout from './DesktopMapLayout';
+import MobileMapLayout from './MobileMapLayout';
+
+const MAX_MOBILE_WIDTH_PX = 750;
 
 type Props = {
   locale: string;
@@ -55,7 +60,20 @@ function App(props: Props) {
     dispatch(enterDestinationFocused());
   };
 
-  const isMobile = window.innerWidth < 750;
+  const [width, setWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    function handleResize() {
+      setWidth(window.innerWidth);
+    }
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  });
+
+  const isMobile = width < MAX_MOBILE_WIDTH_PX;
 
   const bottomContent = isEditingLocations ? (
     <SearchDropdown startOrEnd={editingLocation} />
@@ -89,6 +107,10 @@ function App(props: Props) {
     </Transition>
   );
 
+  const mapRefs = useMapRefs();
+
+  const mapPortal = useMemo(() => createHtmlPortalNode(), []);
+
   return (
     <IntlProvider
       messages={props.messages}
@@ -96,20 +118,33 @@ function App(props: Props) {
       defaultLocale="en"
       onError={import.meta.env.DEV ? handleDebugIntlError : () => {}}
     >
+      <InPortal node={mapPortal}>
+        <BikeHopperMap
+          ref={mapRefs.mapRef}
+          onMapLoad={mapRefs.handleMapLoad}
+          overlayRef={mapRefs.mapOverlayRef}
+          hidden={isMobile && isEditingLocations}
+        />
+      </InPortal>
       <ToastProvider>
         <div className="App">
           {isMobile ? (
-            <MapPlusOverlay
+            <MobileMapLayout
+              mapPortal={mapPortal}
+              mapRefs={mapRefs}
               topContent={topBar}
               topBarEmpty={
                 /* prop change forces controls to move */
                 !haveTopBarIncludingFade
               }
-              hideMap={isEditingLocations}
               bottomContent={bottomContent}
             />
           ) : (
-            <DesktopMap sidebar={bottomContent} />
+            <DesktopMapLayout
+              mapPortal={mapPortal}
+              sidebar={bottomContent}
+              mapRefs={mapRefs}
+            />
           )}
 
           <Toasts />
