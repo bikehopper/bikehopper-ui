@@ -7,15 +7,16 @@ import {
   useState,
 } from 'react';
 import { useSelector } from 'react-redux';
+import { OutPortal } from 'react-reverse-portal';
 import classnames from 'classnames';
 import MoonLoader from 'react-spinners/MoonLoader';
+
 import useResizeObserver from '../hooks/useResizeObserver';
 import { BOTTOM_DRAWER_DEFAULT_SCROLL } from '../lib/layout';
 import { isTouchMoveSignificant } from '../lib/touch';
-import BikeHopperMap from './BikeHopperMap';
 import * as VisualViewportTracker from '../lib/VisualViewportTracker';
 
-import './MapPlusOverlay.css';
+import './MobileMapLayout.css';
 
 /*
  * This component renders the map, plus the top bar and bottom drawer.
@@ -31,37 +32,22 @@ import './MapPlusOverlay.css';
 
 const _isTouch = 'ontouchstart' in window;
 
-function MapPlusOverlay(props) {
-  const { bottomContent, topContent, hideMap } = props;
+function MobileMapLayout(props) {
+  const { mapPortal, bottomContent, topContent, hideMap, mapRefs } = props;
   const loading = useSelector(
     (state) =>
       state.routes.routeStatus === 'fetching' ||
       state.geolocation.geolocationInProgress,
   );
 
-  const mapRef = useRef();
-  const mapControlBottomLeftRef = useRef();
-  const mapControlBottomRightRef = useRef();
-  const mapControlTopLeftRef = useRef();
-  const mapControlTopRightRef = useRef();
-
-  const handleMapLoad = () => {
-    mapControlBottomLeftRef.current = document.getElementsByClassName(
-      'maplibregl-ctrl-bottom-left',
-    )[0];
-    mapControlBottomRightRef.current = document.getElementsByClassName(
-      'maplibregl-ctrl-bottom-right',
-    )[0];
-    mapControlTopLeftRef.current = document.getElementsByClassName(
-      'maplibregl-ctrl-top-left',
-    )[0];
-    mapControlTopRightRef.current = document.getElementsByClassName(
-      'maplibregl-ctrl-top-right',
-    )[0];
-
-    window.requestAnimationFrame(updateMapBottomControls);
-    updateMapTopControls();
-  };
+  const {
+    mapRef,
+    mapControlBottomLeftRef,
+    mapControlBottomRightRef,
+    mapControlTopLeftRef,
+    mapControlTopRightRef,
+    mapOverlayRef,
+  } = mapRefs;
 
   const updateMapTopControls = () => {
     if (
@@ -78,6 +64,12 @@ function MapPlusOverlay(props) {
     mapControlTopRightRef.current.style.transform =
       'translate3d(0,' + topContentHeight + 'px,0)';
   };
+
+  useEffect(() => {
+    console.log('here');
+    window.requestAnimationFrame(updateMapBottomControls);
+    updateMapTopControls();
+  });
 
   const columnRef = useRef();
 
@@ -242,8 +234,6 @@ function MapPlusOverlay(props) {
   const handleBottomPaneEnter = setIsMouseOverBottomPane.bind(null, true);
   const handleBottomPaneLeave = setIsMouseOverBottomPane.bind(null, false);
 
-  const mapOverlayRef = useRef();
-
   const hasBottomContentWithMap = Boolean(bottomContent) && !hideMap;
 
   // When the bottom drawer appears, start it somewhat taller than its minimum height.
@@ -279,30 +269,25 @@ function MapPlusOverlay(props) {
   }, [adjustHeightBasedOnVisualViewport]);
 
   return (
-    <div className="MapPlusOverlay">
-      <BikeHopperMap
-        ref={mapRef}
-        onMapLoad={handleMapLoad}
-        overlayRef={mapOverlayRef}
-        hidden={hideMap}
-      />
+    <div className="MobileMapLayout">
+      <OutPortal node={mapPortal} />
       <div
         className={classnames({
-          MapPlusOverlay_column: true,
-          MapPlusOverlay_column__nonTouchDevice: !_isTouch,
-          MapPlusOverlay_column__scrollable: isMouseOverBottomPane,
+          MobileMapLayout_column: true,
+          MobileMapLayout_column__nonTouchDevice: !_isTouch,
+          MobileMapLayout_column__scrollable: isMouseOverBottomPane,
         })}
         ref={columnRef}
       >
         <div ref={topContentRef}>{topContent}</div>
         <div
-          className="MapPlusOverlay_overlay"
+          className="MobileMapLayout_overlay"
           ref={mapOverlayRef}
           onScroll={handleMapOverlayScroll}
         >
           {!hideMap && (
             <div
-              className="MapPlusOverlay_window"
+              className="MobileMapLayout_window"
               ref={mapOverlayTransparentRefCallback}
               onMouseOver={_isTouch ? null : handleBottomPaneLeave}
             />
@@ -310,8 +295,8 @@ function MapPlusOverlay(props) {
           {bottomContent && (
             <div
               className={classnames({
-                MapPlusOverlay_bottomPane: true,
-                MapPlusOverlay_bottomPane__withMapHidden: hideMap,
+                MobileMapLayout_bottomPane: true,
+                MobileMapLayout_bottomPane__withMapHidden: hideMap,
               })}
               onMouseEnter={_isTouch ? null : handleBottomPaneEnter}
               onMouseLeave={_isTouch ? null : handleBottomPaneLeave}
@@ -320,7 +305,7 @@ function MapPlusOverlay(props) {
               {bottomContent}
             </div>
           )}
-          <div className="MapPlusOverlay_spinnerContainer">
+          <div className="MobileMapLayout_spinnerContainer">
             <MoonLoader loading={loading && !bottomContent} size={60} />
           </div>
         </div>
@@ -329,4 +314,4 @@ function MapPlusOverlay(props) {
   );
 }
 
-export default MapPlusOverlay;
+export default MobileMapLayout;
