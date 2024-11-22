@@ -112,7 +112,7 @@ export default function DirectionsNullState(props: Props) {
           values={{
             link: (chunks) => (
               <a
-                href="https://github.com/bikehopper/bikehopper-ui"
+                href="https://github.com/bikehopper/"
                 target="_blank"
                 rel="noreferrer"
               >

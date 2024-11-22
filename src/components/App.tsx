@@ -9,6 +9,7 @@ import { Provider as ToastProvider } from '@radix-ui/react-toast';
 
 import DirectionsNullState from './DirectionsNullState';
 import MapPlusOverlay from './MapPlusOverlay';
+import DesktopMap from './DesktopMap';
 import Routes from './Routes';
 import SearchDropdown from './SearchDropdown';
 import Toasts from './Toasts';
@@ -54,16 +55,15 @@ function App(props: Props) {
     dispatch(enterDestinationFocused());
   };
 
-  let bottomContent;
-  if (isEditingLocations) {
-    bottomContent = <SearchDropdown startOrEnd={editingLocation} />;
-  } else if (hasRoutes) {
-    bottomContent = <Routes />;
-  } else if (!hasLocations) {
-    bottomContent = (
-      <DirectionsNullState onInputFocus={handleBottomInputFocus} />
-    );
-  }
+  const isMobile = window.innerWidth < 750;
+
+  const bottomContent = isEditingLocations ? (
+    <SearchDropdown startOrEnd={editingLocation} />
+  ) : hasRoutes ? (
+    <Routes />
+  ) : hasLocations ? undefined : (
+    <DirectionsNullState onInputFocus={handleBottomInputFocus} />
+  );
 
   const shouldDisplayTopBar = !viewingDetails;
   const [haveTopBarIncludingFade, setHaveTopBarIncludingFade] =
@@ -98,15 +98,20 @@ function App(props: Props) {
     >
       <ToastProvider>
         <div className="App">
-          <MapPlusOverlay
-            topContent={topBar}
-            topBarEmpty={
-              /* prop change forces controls to move */
-              !haveTopBarIncludingFade
-            }
-            hideMap={isEditingLocations}
-            bottomContent={bottomContent}
-          />
+          {isMobile ? (
+            <MapPlusOverlay
+              topContent={topBar}
+              topBarEmpty={
+                /* prop change forces controls to move */
+                !haveTopBarIncludingFade
+              }
+              hideMap={isEditingLocations}
+              bottomContent={bottomContent}
+            />
+          ) : (
+            <DesktopMap sidebar={bottomContent} />
+          )}
+
           <Toasts />
         </div>
       </ToastProvider>
