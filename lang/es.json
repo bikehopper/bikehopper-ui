@@ -481,5 +481,29 @@
     },
     "Fle6qD": {
         "defaultMessage": "No se puede generar el archivo FIT"
+    },
+    "PUyqpU": {
+        "defaultMessage": "<strong>¡Bienvenido/-a a BikeHopper! </strong> Esta es una aplicación de navegación para bicicletas que sugiere formas de combinar la bicicleta y el transporte, ampliando sus opciones para moverse sin un coche."
+    },
+    "HTC5b/": {
+        "defaultMessage": "Rutas en bicicleta hasta el punto personalizado"
+    },
+    "S5dhxM": {
+        "defaultMessage": "Rutas en bicicleta hasta {to}"
+    },
+    "adchz/": {
+        "defaultMessage": "No se puede copiar la URL al portapapeles"
+    },
+    "hFkXoB": {
+        "defaultMessage": "Rutas en bicicleta desde {from} hasta {to}"
+    },
+    "nqHJOp": {
+        "defaultMessage": "Compartir"
+    },
+    "tEH6rL": {
+        "defaultMessage": "¡URL copiada al portapapeles!"
+    },
+    "y5QXGG": {
+        "defaultMessage": "Región soportada: <strong>{region}</strong>. Comienza introduciendo un destino."
     }
 }
