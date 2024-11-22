@@ -1,4 +1,6 @@
+import { useState, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { selectAlertsToDisplay } from '../lib/alerts';
 import type { TransitLeg } from '../lib/BikeHopperClient';
 import { DEFAULT_PT_COLOR } from '../lib/colors';
 import { getModeLabel } from '../lib/TransitModes';
@@ -15,7 +17,6 @@ import ModeIcon from './ModeIcon';
 import Circle from 'iconoir/icons/circle.svg?react';
 
 import './ItineraryTransitLeg.css';
-import { useState, useCallback } from 'react';
 
 export default function ItineraryTransitLeg({
   leg,
@@ -55,18 +56,7 @@ export default function ItineraryTransitLeg({
 
   const scrollToRef = useScrollToRef<HTMLDivElement>();
 
-  // TODO: Select the alert translation based on locale, instead of always
-  // using the first one.
-  //
-  // Unfortunately, for the Bay Area, no agency seems to actually translate
-  // its alerts so it has no impact which is why I've (Scott, April 2023)
-  // de-prioritized doing this.
-  const alertsForHeader: [string, string][] | undefined = leg.alerts?.map(
-    (rawAlert) => [
-      rawAlert.header_text?.translation[0]?.text,
-      rawAlert.description_text?.translation[0]?.text,
-    ],
-  );
+  const alertsForHeader = selectAlertsToDisplay(leg);
 
   return (
     <div className="ItineraryTransitLeg" ref={scrollTo ? scrollToRef : null}>

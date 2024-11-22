@@ -175,22 +175,8 @@ export default function Routes(props: {}) {
     } else {
       content = (
         <ItinerarySingleTransitStop
-          stop={leg.stops[stepIdx]}
-          relationship={
-            stepIdx === 0
-              ? 'board'
-              : stepIdx === leg.stops.length - 1
-                ? 'alight'
-                : 'intermediate'
-          }
-          time={
-            stepIdx === 0
-              ? leg.departure_time
-              : stepIdx === leg.stops.length - 1
-                ? leg.arrival_time
-                : null
-          }
-          headsign={leg.trip_headsign}
+          leg={leg}
+          stopIdx={stepIdx}
           onBackClick={handleStepBackClick}
           isFirstLeg={legIdx === 0}
           isLastLeg={legIdx + 1 === routes[routeIdx].legs.length}

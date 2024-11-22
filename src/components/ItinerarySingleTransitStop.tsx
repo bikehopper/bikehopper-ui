@@ -1,8 +1,14 @@
+import { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import type { TransitStop } from '../lib/BikeHopperClient';
-import { formatTime } from '../lib/time';
+import type { TransitLeg } from '../lib/BikeHopperClient';
+import { DEFAULT_PT_COLOR } from '../lib/colors';
+import { getAgencyDisplayName } from '../lib/region';
+import { formatDurationBetween, formatTime } from '../lib/time';
+import { getModeLabel } from '../lib/TransitModes';
 import BorderlessButton from './BorderlessButton';
+import ModeIcon from './ModeIcon';
 import Icon from './primitives/Icon';
+import ItineraryHeader from './ItineraryHeader';
 import ItinerarySpacer from './ItinerarySpacer';
 import ItineraryStep from './ItineraryStep';
 
@@ -10,6 +16,8 @@ import ArrowLeftCircle from 'iconoir/icons/arrow-left-circle.svg?react';
 import ArrowRightCircle from 'iconoir/icons/arrow-right-circle.svg?react';
 import Circle from 'iconoir/icons/circle.svg?react';
 import NavLeftArrow from 'iconoir/icons/nav-arrow-left.svg?react';
+import { selectAlertsToDisplay } from '../lib/alerts';
+import usePrevious from '../hooks/usePrevious';
 
 /**
  * When you tap on a transit stop name in the detailed itinerary, we
@@ -18,41 +26,96 @@ import NavLeftArrow from 'iconoir/icons/nav-arrow-left.svg?react';
  */
 
 export default function ItinerarySingleTransitStop({
-  stop,
-  relationship,
+  leg,
+  stopIdx,
   onBackClick,
   isFirstLeg,
   isLastLeg,
   onPrevStepClick,
   onNextStepClick,
-  time,
-  headsign,
 }: {
-  stop: TransitStop;
-  relationship: 'board' | 'alight' | 'intermediate';
+  leg: TransitLeg;
+  stopIdx: number;
   onBackClick: React.MouseEventHandler;
   isFirstLeg: boolean;
   isLastLeg: boolean;
   onPrevStepClick: React.MouseEventHandler;
   onNextStepClick: React.MouseEventHandler;
-  time: Date | null;
-  headsign: string;
 }) {
-  // TODO add route name, type, agency for board step, and split out stuff from
-  // ItineraryTransitLeg to make it reusable so it doesn't all have to be
-  // copy-pasted here.
-  const stopName = stop.stop_name;
-  const canGoToPrev = !(isFirstLeg && relationship === 'board');
-  const canGoToNext = !(isLastLeg && relationship === 'alight');
+  const stopName = leg.stops[stopIdx].stop_name;
+  const isBoardingStop = stopIdx === 0;
+  const isAlightingStop = stopIdx === leg.stops.length - 1;
+  const canGoToPrev = !(isFirstLeg && isBoardingStop);
+  const canGoToNext = !(isLastLeg && isAlightingStop);
   const spacerWithMiddot = ' \u00B7 ';
   const intl = useIntl();
+  const [alertsExpanded, setAlertsExpanded] = useState(false);
+
+  const prevLeg = usePrevious(leg);
+  useEffect(() => {
+    if (leg !== prevLeg) {
+      setAlertsExpanded(false);
+    }
+  }, [leg, prevLeg]);
+
+  const toggleAlertsExpanded = useCallback(() => {
+    setAlertsExpanded(!alertsExpanded);
+  }, [alertsExpanded]);
+
+  const alertsForHeader = selectAlertsToDisplay(leg);
+  const stopsTraveled = leg.stops.length - 1;
 
   return (
     <div className="py-8 px-5">
       <div className="flex flex-row">
         <div className="flex-grow">
           <ItinerarySpacer />
-          {relationship === 'board' ? (
+          {isBoardingStop && (
+            <ItineraryHeader
+              icon={<ModeIcon mode={leg.route_type} />}
+              iconColor={leg.route_color || DEFAULT_PT_COLOR}
+              iconLabel={getModeLabel(leg.route_type, intl)}
+              alertsExpanded={alertsExpanded}
+              onAlertClick={toggleAlertsExpanded}
+              alerts={alertsForHeader}
+            >
+              <span>
+                <FormattedMessage
+                  defaultMessage="Ride {agency} {routeName} to {lastStopName}"
+                  description={
+                    'instructions header text.' +
+                    ' Says to ride the named transit line to the named stop, operated by the named agency.'
+                  }
+                  values={{
+                    agency: getAgencyDisplayName(leg.agency_name),
+                    routeName: leg.route_name || leg.route_id,
+                    lastStopName: leg.stops[leg.stops.length - 1].stop_name,
+                  }}
+                />
+              </span>
+              <span>
+                <FormattedMessage
+                  defaultMessage={
+                    '{numStops} {numStops, plural,' +
+                    ' one {stop}' +
+                    ' other {stops}' +
+                    '}'
+                  }
+                  description="the number of stops for which you should stay on a transit vehicle"
+                  values={{
+                    numStops: stopsTraveled,
+                  }}
+                />
+                {spacerWithMiddot}
+                {formatDurationBetween(
+                  leg.departure_time,
+                  leg.arrival_time,
+                  intl,
+                )}
+              </span>
+            </ItineraryHeader>
+          )}
+          {isBoardingStop ? (
             <ItineraryStep IconSVGComponent={Circle} iconSize="small">
               <div className="pt-[5px]">
                 <FormattedMessage
@@ -62,26 +125,25 @@ export default function ItinerarySingleTransitStop({
                     stop: <strong>{stopName}</strong>,
                   }}
                 />
-                {time && spacerWithMiddot + formatTime(time)}
-                {headsign && (
-                  <div className="italic text-[#626262]">
-                    <FormattedMessage
-                      defaultMessage="Towards {headsign}"
-                      description={
-                        'describes where a transit trip is headed.' +
-                        ' Often, the headsign is the name of the final stop.' +
-                        ' This appears in an itinerary, along with other details about the' +
-                        ' transit vehicle to board.'
-                      }
-                      values={{
-                        headsign: headsign,
-                      }}
-                    />
-                  </div>
-                )}
+                {spacerWithMiddot}
+                {formatTime(leg.departure_time)}
+                <div className="italic text-[#626262]">
+                  <FormattedMessage
+                    defaultMessage="Towards {headsign}"
+                    description={
+                      'describes where a transit trip is headed.' +
+                      ' Often, the headsign is the name of the final stop.' +
+                      ' This appears in an itinerary, along with other details about the' +
+                      ' transit vehicle to board.'
+                    }
+                    values={{
+                      headsign: leg.trip_headsign,
+                    }}
+                  />
+                </div>
               </div>
             </ItineraryStep>
-          ) : relationship === 'alight' ? (
+          ) : isAlightingStop ? (
             <ItineraryStep IconSVGComponent={Circle} iconSize="small">
               <div className="pt-[5px]">
                 <FormattedMessage
@@ -91,12 +153,13 @@ export default function ItinerarySingleTransitStop({
                     stop: <strong>{stopName}</strong>,
                   }}
                 />
-                {time && spacerWithMiddot + formatTime(time)}
+                {spacerWithMiddot}
+                {formatTime(leg.departure_time)}
               </div>
             </ItineraryStep>
           ) : (
             <ItineraryStep IconSVGComponent={Circle} iconSize="tiny">
-              <div className="pt-[5px]">{stop.stop_name}</div>
+              <div className="pt-[5px]">{stopName}</div>
             </ItineraryStep>
           )}
         </div>
