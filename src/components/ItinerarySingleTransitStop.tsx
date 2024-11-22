@@ -67,7 +67,7 @@ export default function ItinerarySingleTransitStop({
 
   return (
     <div className="py-8 px-5">
-      <div className="flex flex-row">
+      <div className="flex flex-row items-start">
         <div className="flex-grow">
           <ItinerarySpacer />
           {isBoardingStop && (
@@ -164,7 +164,7 @@ export default function ItinerarySingleTransitStop({
           )}
         </div>
         {canGoToNext && (
-          <BorderlessButton onClick={onPrevStepClick} className="ml-2">
+          <BorderlessButton onClick={onPrevStepClick} className="ml-2 mt-3.5">
             <Icon
               label={intl.formatMessage({
                 defaultMessage: 'Previous step',
@@ -177,7 +177,7 @@ export default function ItinerarySingleTransitStop({
           </BorderlessButton>
         )}
         {canGoToPrev && (
-          <BorderlessButton onClick={onNextStepClick} className="ml-2">
+          <BorderlessButton onClick={onNextStepClick} className="ml-2 mt-3.5">
             <Icon
               label={intl.formatMessage({
                 defaultMessage: 'Next step',
