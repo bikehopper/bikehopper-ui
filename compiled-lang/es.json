@@ -615,6 +615,12 @@
       "value": "arcén"
     }
   ],
+  "HTC5b/": [
+    {
+      "type": 0,
+      "value": "Rutas en bicicleta hasta el punto personalizado"
+    }
+  ],
   "HV9VrT": [
     {
       "type": 0,
@@ -783,6 +789,22 @@
       "value": "Ruta ciclista"
     }
   ],
+  "PUyqpU": [
+    {
+      "children": [
+        {
+          "type": 0,
+          "value": "¡Bienvenido/-a a BikeHopper! "
+        }
+      ],
+      "type": 8,
+      "value": "strong"
+    },
+    {
+      "type": 0,
+      "value": " Esta es una aplicación de navegación para bicicletas que sugiere formas de combinar la bicicleta y el transporte, ampliando sus opciones para moverse sin un coche."
+    }
+  ],
   "QiY1oM": [
     {
       "type": 0,
@@ -853,6 +875,16 @@
     {
       "type": 0,
       "value": " Se trata de una nueva aplicación para la navegación en bicicleta que sugiere formas de combinar la bicicleta y el transporte público, ampliando tus opciones para desplazarte sin coche."
+    }
+  ],
+  "S5dhxM": [
+    {
+      "type": 0,
+      "value": "Rutas en bicicleta hasta "
+    },
+    {
+      "type": 1,
+      "value": "to"
     }
   ],
   "SFcnNL": [
@@ -1051,6 +1083,12 @@
       "value": "bicicleta"
     }
   ],
+  "adchz/": [
+    {
+      "type": 0,
+      "value": "No se puede copiar la URL al portapapeles"
+    }
+  ],
   "b+OvtM": [
     {
       "type": 0,
@@ -1187,6 +1225,24 @@
       "value": "haveStreet"
     }
   ],
+  "hFkXoB": [
+    {
+      "type": 0,
+      "value": "Rutas en bicicleta desde "
+    },
+    {
+      "type": 1,
+      "value": "from"
+    },
+    {
+      "type": 0,
+      "value": " hasta "
+    },
+    {
+      "type": 1,
+      "value": "to"
+    }
+  ],
   "hmv35M": [
     {
       "type": 0,
@@ -1281,6 +1337,12 @@
     {
       "type": 0,
       "value": ")"
+    }
+  ],
+  "nqHJOp": [
+    {
+      "type": 0,
+      "value": "Compartir"
     }
   ],
   "oLvgp2": [
@@ -1383,6 +1445,12 @@
     {
       "type": 0,
       "value": "Tren"
+    }
+  ],
+  "tEH6rL": [
+    {
+      "type": 0,
+      "value": "¡URL copiada al portapapeles!"
     }
   ],
   "uCLsXP": [
@@ -1519,6 +1587,26 @@
       },
       "type": 5,
       "value": "haveStreet"
+    }
+  ],
+  "y5QXGG": [
+    {
+      "type": 0,
+      "value": "Región soportada: "
+    },
+    {
+      "children": [
+        {
+          "type": 1,
+          "value": "region"
+        }
+      ],
+      "type": 8,
+      "value": "strong"
+    },
+    {
+      "type": 0,
+      "value": ". Comienza introduciendo un destino."
     }
   ],
   "y7pFDT": [
