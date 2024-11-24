@@ -5,26 +5,26 @@ export type MapRefs = ReturnType<typeof useMapRefs>;
 
 export default function useMapRefs() {
   const mapRef = useRef<MapRef>(null);
-  const mapOverlayRef = useRef<HTMLElement | null>(null);
-  const mapControlBottomLeftRef = useRef<Element>();
-  const mapControlBottomRightRef = useRef<Element>();
-  const mapControlTopLeftRef = useRef<Element>();
-  const mapControlTopRightRef = useRef<Element>();
+  const mapOverlayRef = useRef<HTMLDivElement | null>(null);
+  const mapControlBottomLeftRef = useRef<HTMLElement | null>(null);
+  const mapControlBottomRightRef = useRef<HTMLElement | null>(null);
+  const mapControlTopLeftRef = useRef<HTMLElement | null>(null);
+  const mapControlTopRightRef = useRef<HTMLElement | null>(null);
 
   const handleMapLoad = () => {
     console.log('map load');
     mapControlBottomLeftRef.current = document.getElementsByClassName(
       'maplibregl-ctrl-bottom-left',
-    )[0];
+    )[0] as HTMLElement;
     mapControlBottomRightRef.current = document.getElementsByClassName(
       'maplibregl-ctrl-bottom-right',
-    )[0];
+    )[0] as HTMLElement;
     mapControlTopLeftRef.current = document.getElementsByClassName(
       'maplibregl-ctrl-top-left',
-    )[0];
+    )[0] as HTMLElement;
     mapControlTopRightRef.current = document.getElementsByClassName(
       'maplibregl-ctrl-top-right',
-    )[0];
+    )[0] as HTMLElement;
   };
 
   return {

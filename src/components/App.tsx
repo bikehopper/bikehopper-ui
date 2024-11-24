@@ -24,8 +24,7 @@ import BikeHopperMap from './BikeHopperMap';
 import useMapRefs from '../hooks/useMapRefs';
 import DesktopMapLayout from './DesktopMapLayout';
 import MobileMapLayout from './MobileMapLayout';
-
-const MAX_MOBILE_WIDTH_PX = 750;
+import useIsMobile from '../hooks/useIsMobile';
 
 type Props = {
   locale: string;
@@ -60,20 +59,7 @@ function App(props: Props) {
     dispatch(enterDestinationFocused());
   };
 
-  const [width, setWidth] = useState(window.innerWidth);
-  useEffect(() => {
-    function handleResize() {
-      setWidth(window.innerWidth);
-    }
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  });
-
-  const isMobile = width < MAX_MOBILE_WIDTH_PX;
+  const isMobile = useIsMobile();
 
   const bottomContent = isEditingLocations ? (
     <SearchDropdown startOrEnd={editingLocation} />
@@ -124,6 +110,7 @@ function App(props: Props) {
           onMapLoad={mapRefs.handleMapLoad}
           overlayRef={mapRefs.mapOverlayRef}
           hidden={isMobile && isEditingLocations}
+          isMobile={isMobile}
         />
       </InPortal>
       <ToastProvider>
@@ -133,10 +120,7 @@ function App(props: Props) {
               mapPortal={mapPortal}
               mapRefs={mapRefs}
               topContent={topBar}
-              topBarEmpty={
-                /* prop change forces controls to move */
-                !haveTopBarIncludingFade
-              }
+              hideMap={isEditingLocations}
               bottomContent={bottomContent}
             />
           ) : (
