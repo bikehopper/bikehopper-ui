@@ -58,6 +58,8 @@ import {
   DEFAULT_INACTIVE_COLOR,
 } from '../lib/colors';
 import { RouteResponsePath } from '../lib/BikeHopperClient';
+import useIsMobile from '../hooks/useIsMobile';
+import classnames from 'classnames';
 
 const _isTouch = 'ontouchstart' in window;
 
@@ -65,6 +67,7 @@ type Props = {
   onMapLoad?: () => void;
   overlayRef: RefObject<HTMLElement>;
   hidden: boolean;
+  isMobile: boolean;
 };
 
 type Bbox = [number, number, number, number];
@@ -513,7 +516,15 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
   const viewStateOnFirstRender = useRef(viewState);
 
   return (
-    <div className="BikeHopperMap" ref={resizeRef} aria-hidden={props.hidden}>
+    <div
+      className={classnames({
+        BikeHopperMap: true,
+        BikeHopperMap__mobile: props.isMobile,
+        BikeHopperMap__desktop: !props.isMobile,
+      })}
+      ref={resizeRef}
+      aria-hidden={props.hidden}
+    >
       <MapGL
         initialViewState={viewStateOnFirstRender.current}
         ref={mapRef}
