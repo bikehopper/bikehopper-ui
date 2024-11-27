@@ -383,12 +383,9 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
   };
 
   const resizeRef = useResizeObserver(
-    useCallback(
-      ([width, height]) => {
-        if (mapRef.current) mapRef.current.resize();
-      },
-      [mapRef],
-    ),
+    useCallback(() => {
+      if (mapRef.current) mapRef.current.resize();
+    }, [mapRef]),
   );
 
   const prevViewingStep = usePrevious(viewingStep);

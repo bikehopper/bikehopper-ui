@@ -20,6 +20,8 @@ import ItinerarySingleTransitStop from './ItinerarySingleTransitStop';
 import RoutesOverview from './RoutesOverview';
 import type { Dispatch, RootState } from '../store';
 
+import './Routes.css';
+
 export default function Routes(props: {}) {
   const dispatch: Dispatch = useDispatch();
   const {
@@ -187,5 +189,9 @@ export default function Routes(props: {}) {
     }
   }
 
-  return <div ref={rootRef}>{content}</div>;
+  return (
+    <div className="Routes" ref={rootRef}>
+      {content}
+    </div>
+  );
 }
