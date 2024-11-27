@@ -2,7 +2,8 @@ import { MapRefs } from '../hooks/useMapRefs';
 import { HtmlPortalNode, OutPortal } from 'react-reverse-portal';
 
 type Props = {
-  sidebar?: JSX.Element;
+  header: JSX.Element;
+  infoBox?: JSX.Element;
   mapRefs: MapRefs;
   mapPortal: HtmlPortalNode;
 };
@@ -12,7 +13,8 @@ import useIsMobile from '../hooks/useIsMobile';
 import { useEffect } from 'react';
 
 export default function DesktopMapLayout({
-  sidebar,
+  header,
+  infoBox,
   mapRefs,
   mapPortal,
 }: Props) {
@@ -51,7 +53,10 @@ export default function DesktopMapLayout({
 
   return (
     <div className="DesktopMapLayout">
-      <div className="DesktopMapLayout_sidebar">{sidebar}</div>
+      <div className="DesktopMapLayout_sidebar">
+        {header}
+        {infoBox}
+      </div>
       <div className="DesktopMapLayout_map">
         <OutPortal node={mapPortal} isMobile={false} />
       </div>

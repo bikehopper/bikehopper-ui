@@ -58,8 +58,8 @@ type Props = {
   mapRefs: MapRefs;
   mapPortal: HtmlPortalNode;
   hideMap: boolean;
-  topContent: JSX.Element;
-  bottomContent?: JSX.Element;
+  header: JSX.Element;
+  infoBox?: JSX.Element;
 };
 
 type TouchEventOptions = {
@@ -68,7 +68,7 @@ type TouchEventOptions = {
 };
 
 function MobileMapLayout(props: Props) {
-  const { mapPortal, bottomContent, topContent, hideMap, mapRefs } = props;
+  const { mapPortal, infoBox, header, hideMap, mapRefs } = props;
   const loading = useSelector<RootState, boolean>(
     (state) =>
       state.routes.routeStatus === 'fetching' ||
@@ -297,7 +297,7 @@ function MobileMapLayout(props: Props) {
   const handleBottomPaneEnter = setIsMouseOverBottomPane.bind(null, true);
   const handleBottomPaneLeave = setIsMouseOverBottomPane.bind(null, false);
 
-  const hasBottomContentWithMap = Boolean(bottomContent) && !hideMap;
+  const hasBottomContentWithMap = Boolean(infoBox) && !hideMap;
 
   // When the bottom drawer appears, start it somewhat taller than its minimum height.
   useLayoutEffect(() => {
@@ -344,7 +344,7 @@ function MobileMapLayout(props: Props) {
         })}
         ref={columnRef}
       >
-        <div ref={topContentRef}>{topContent}</div>
+        <div ref={topContentRef}>{header}</div>
         <div
           className="MobileMapLayout_overlay"
           ref={mapOverlayRef}
@@ -357,7 +357,7 @@ function MobileMapLayout(props: Props) {
               onMouseOver={_isTouch ? undefined : handleBottomPaneLeave}
             />
           )}
-          {bottomContent && (
+          {infoBox && (
             <div
               className={classnames({
                 MobileMapLayout_bottomPane: true,
@@ -367,11 +367,11 @@ function MobileMapLayout(props: Props) {
               onMouseLeave={_isTouch ? undefined : handleBottomPaneLeave}
               ref={bottomPaneRef}
             >
-              {bottomContent}
+              {infoBox}
             </div>
           )}
           <div className="MobileMapLayout_spinnerContainer">
-            <MoonLoader loading={loading && !bottomContent} size={60} />
+            <MoonLoader loading={loading && !infoBox} size={60} />
           </div>
         </div>
       </div>

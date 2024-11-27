@@ -61,7 +61,7 @@ function App(props: Props) {
 
   const isMobile = useIsMobile();
 
-  const bottomContent = isEditingLocations ? (
+  const infoBox = isEditingLocations ? (
     <SearchDropdown startOrEnd={editingLocation} />
   ) : hasRoutes ? (
     <Routes />
@@ -70,10 +70,9 @@ function App(props: Props) {
   );
 
   const shouldDisplayTopBar = !viewingDetails;
-  const [haveTopBarIncludingFade, setHaveTopBarIncludingFade] =
-    useState(shouldDisplayTopBar);
+  const [_, setHaveTopBarIncludingFade] = useState(shouldDisplayTopBar);
 
-  const topBar = (
+  const header = (
     <Transition
       as="div"
       show={shouldDisplayTopBar}
@@ -95,7 +94,10 @@ function App(props: Props) {
 
   const mapRefs = useMapRefs();
 
-  const mapPortal = useMemo(() => createHtmlPortalNode(), []);
+  const mapPortal = useMemo(
+    () => createHtmlPortalNode({ attributes: { id: 'map-portal-node' } }),
+    [],
+  );
 
   return (
     <IntlProvider
@@ -119,14 +121,15 @@ function App(props: Props) {
             <MobileMapLayout
               mapPortal={mapPortal}
               mapRefs={mapRefs}
-              topContent={topBar}
+              header={header}
               hideMap={isEditingLocations}
-              bottomContent={bottomContent}
+              infoBox={infoBox}
             />
           ) : (
             <DesktopMapLayout
               mapPortal={mapPortal}
-              sidebar={bottomContent}
+              header={header}
+              infoBox={infoBox}
               mapRefs={mapRefs}
             />
           )}
