@@ -156,7 +156,7 @@ export default function ItinerarySingleTransitStop({
                   }}
                 />
                 {spacerWithMiddot}
-                {formatTime(leg.departure_time)}
+                {formatTime(leg.arrival_time)}
               </div>
             </ItineraryStep>
           ) : (
