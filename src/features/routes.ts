@@ -151,7 +151,14 @@ export function routesReducer(
         if (!draft.viewingStep || !state.routes || state.activeRoute == null)
           return;
         if (draft.viewingStep[1] > 0) {
-          draft.viewingStep[1]--;
+          const viewingLeg =
+            state.routes[state.activeRoute].legs[draft.viewingStep[0]];
+          if (viewingLeg.type === 'pt') {
+            // Skip intermediate transit stops
+            draft.viewingStep[1] = 0;
+          } else {
+            draft.viewingStep[1]--;
+          }
         } else if (draft.viewingStep[0] > 0) {
           const newViewingLeg =
             state.routes[state.activeRoute].legs[--draft.viewingStep[0]];
@@ -182,19 +189,24 @@ export function routesReducer(
             ? viewingLeg.instructions.length
             : viewingLeg.stops.length;
         if (draft.viewingStep[1] + 1 < stepsInLeg) {
-          draft.viewingStep[1]++;
-          // Skip "arrive at destination"
-          if (
-            viewingLeg.type === 'bike2' &&
-            viewingLeg.instructions[draft.viewingStep[1]].sign ===
-              InstructionSigns.FINISH
-          ) {
-            if (draft.viewingStep[0] + 1 === viewingRoute.legs.length) {
-              console.error('next step: would go past end');
-              draft.viewingStep[1]--;
-            } else {
-              draft.viewingStep[0]++;
-              draft.viewingStep[1] = 0;
+          if (viewingLeg.type === 'pt') {
+            // Skip intermediate transit stops
+            draft.viewingStep[1] = viewingLeg.stops.length - 1;
+          } else {
+            draft.viewingStep[1]++;
+            // Skip "arrive at destination"
+            if (
+              viewingLeg.type === 'bike2' &&
+              viewingLeg.instructions[draft.viewingStep[1]].sign ===
+                InstructionSigns.FINISH
+            ) {
+              if (draft.viewingStep[0] + 1 === viewingRoute.legs.length) {
+                console.error('next step: would go past end');
+                draft.viewingStep[1]--;
+              } else {
+                draft.viewingStep[0]++;
+                draft.viewingStep[1] = 0;
+              }
             }
           }
         } else if (draft.viewingStep[0] + 1 < viewingRoute.legs.length) {
