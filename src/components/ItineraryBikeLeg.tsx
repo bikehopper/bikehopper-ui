@@ -54,7 +54,7 @@ export default function ItineraryBikeLeg({
   }, [leg]);
   const majorStreets = useMemo(() => formatMajorStreets(leg), [leg]);
 
-  const scrollToRef = useScrollToRef<HTMLDivElement>();
+  const scrollToRef = useScrollToRef<HTMLDivElement, undefined>();
   const spacer = ' \u00B7 ';
 
   // Clear out icon's SVG width/height attributes so it can be scaled with CSS

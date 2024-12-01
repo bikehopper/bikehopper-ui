@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import useScrollToRef from '../hooks/useScrollToRef';
 import type { BikeLeg } from '../lib/BikeHopperClient';
 import BorderlessButton from './BorderlessButton';
 import Icon from './primitives/Icon';
@@ -47,6 +48,9 @@ export default function ItinerarySingleStep({
   );
 
   const doNothing = useCallback(() => {}, []);
+
+  const scrollKey = leg.departure_time + '_' + stepIdx;
+  const scrollToRef = useScrollToRef<HTMLDivElement, string>(scrollKey);
 
   return (
     <div className="py-8 px-5">
@@ -102,6 +106,10 @@ export default function ItinerarySingleStep({
           </span>
         </BorderlessButton>
       </div>
+      <div
+        className="absolute bottom-0 pointer-events-none"
+        ref={scrollToRef}
+      />
     </div>
   );
 }

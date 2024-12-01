@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import useScrollToRef from '../hooks/useScrollToRef';
 import type { TransitLeg } from '../lib/BikeHopperClient';
 import { DEFAULT_PT_COLOR } from '../lib/colors';
 import { getAgencyDisplayName } from '../lib/region';
@@ -63,6 +64,9 @@ export default function ItinerarySingleTransitStop({
 
   const alertsForHeader = selectAlertsToDisplay(leg);
   const stopsTraveled = leg.stops.length - 1;
+
+  const scrollKey = leg.departure_time + '_' + stopIdx;
+  const scrollToRef = useScrollToRef<HTMLDivElement, string>(scrollKey);
 
   return (
     <div className="py-8 px-5">
@@ -196,7 +200,7 @@ export default function ItinerarySingleTransitStop({
           </BorderlessButton>
         )}
       </div>
-      <div className="flex flex-row items-center">
+      <div className="flex flex-row items-center" ref={scrollToRef}>
         <BorderlessButton onClick={onBackClick} className="h-12 -ml-3 block">
           <Icon className="align-middle relative top-1">
             <NavLeftArrow />
@@ -209,6 +213,10 @@ export default function ItinerarySingleTransitStop({
           </span>
         </BorderlessButton>
       </div>
+      <div
+        className="absolute bottom-0 pointer-events-none"
+        ref={scrollToRef}
+      />
     </div>
   );
 }
