@@ -6,11 +6,13 @@ import type { ScrollToRef } from '../hooks/useScrollToRef';
 import './ItineraryStep.css';
 
 export default function ItineraryStep({
+  hideLine,
   IconSVGComponent,
   iconSize,
   rootRef,
   children,
 }: {
+  hideLine?: boolean;
   IconSVGComponent: React.FunctionComponent<
     React.ComponentProps<'svg'> & { title?: string }
   >;
@@ -21,7 +23,7 @@ export default function ItineraryStep({
   const iconSizePx = iconSize === 'tiny' ? 12 : iconSize === 'small' ? 15 : 22;
   return (
     <div className="ItineraryStep">
-      <ItineraryRow rootRef={rootRef}>
+      <ItineraryRow rootRef={rootRef} hideLine={hideLine}>
         <span className="ItineraryStep_iconContainer">
           <Icon
             className={classnames({

@@ -4,7 +4,6 @@ import type { BikeLeg } from '../lib/BikeHopperClient';
 import BorderlessButton from './BorderlessButton';
 import Icon from './primitives/Icon';
 import ItineraryBikeStep from './ItineraryBikeStep';
-import ItinerarySpacer from './ItinerarySpacer';
 import formatDistance from '../lib/formatDistance';
 import { describeBikeInfra } from '../lib/geometry';
 
@@ -53,11 +52,11 @@ export default function ItinerarySingleStep({
     <div className="py-8 px-5">
       <div className="flex flex-row items-start">
         <div className="flex-grow">
-          <ItinerarySpacer />
           <ItineraryBikeStep
             key={stepIdx}
             step={step}
             distance={formatDistance(step.distance, intl)}
+            hideLine={true}
             infra={stepBikeInfra}
             isFirstStep={stepIdx === 0}
             onClick={doNothing}

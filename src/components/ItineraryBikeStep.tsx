@@ -28,6 +28,7 @@ const spacerWithMiddot = ' \u00B7 ';
 export default function ItineraryBikeStep({
   step,
   distance,
+  hideLine,
   infra,
   isFirstStep,
   onClick,
@@ -35,6 +36,7 @@ export default function ItineraryBikeStep({
 }: {
   step: RouteInstruction;
   distance: string;
+  hideLine?: boolean;
   infra: StepAnnotation[];
   isFirstStep: boolean;
   onClick: React.MouseEventHandler;
@@ -332,7 +334,11 @@ export default function ItineraryBikeStep({
   }
 
   return (
-    <ItineraryStep IconSVGComponent={IconComponent} rootRef={rootRef}>
+    <ItineraryStep
+      IconSVGComponent={IconComponent}
+      rootRef={rootRef}
+      hideLine={hideLine}
+    >
       <div
         className={classnames({
           ItineraryBikeStep_content: true,

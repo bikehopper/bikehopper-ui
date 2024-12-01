@@ -9,7 +9,6 @@ import BorderlessButton from './BorderlessButton';
 import ModeIcon from './ModeIcon';
 import Icon from './primitives/Icon';
 import ItineraryHeader from './ItineraryHeader';
-import ItinerarySpacer from './ItinerarySpacer';
 import ItineraryStep from './ItineraryStep';
 
 import ArrowLeftCircle from 'iconoir/icons/arrow-left-circle.svg?react';
@@ -69,7 +68,6 @@ export default function ItinerarySingleTransitStop({
     <div className="py-8 px-5">
       <div className="flex flex-row items-start">
         <div className="flex-grow">
-          <ItinerarySpacer />
           {isBoardingStop && (
             <ItineraryHeader
               icon={<ModeIcon mode={leg.route_type} />}
@@ -144,7 +142,11 @@ export default function ItinerarySingleTransitStop({
               </div>
             </ItineraryStep>
           ) : isAlightingStop ? (
-            <ItineraryStep IconSVGComponent={Circle} iconSize="small">
+            <ItineraryStep
+              IconSVGComponent={Circle}
+              iconSize="small"
+              hideLine={true}
+            >
               <div className="pt-[5px]">
                 <FormattedMessage
                   defaultMessage="Get off at {stop}"
@@ -158,7 +160,11 @@ export default function ItinerarySingleTransitStop({
               </div>
             </ItineraryStep>
           ) : (
-            <ItineraryStep IconSVGComponent={Circle} iconSize="tiny">
+            <ItineraryStep
+              IconSVGComponent={Circle}
+              iconSize="tiny"
+              hideLine={true}
+            >
               <div className="pt-[5px]">{stopName}</div>
             </ItineraryStep>
           )}
