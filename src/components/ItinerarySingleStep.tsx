@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import useScrollToRef from '../hooks/useScrollToRef';
 import type { BikeLeg } from '../lib/BikeHopperClient';
 import BorderlessButton from './BorderlessButton';
@@ -8,7 +8,7 @@ import ItineraryBikeStep from './ItineraryBikeStep';
 import formatDistance from '../lib/formatDistance';
 import { describeBikeInfra } from '../lib/geometry';
 
-import NavLeftArrow from 'iconoir/icons/nav-arrow-left.svg?react';
+import XMark from 'iconoir/icons/xmark.svg?react';
 import ArrowLeftCircle from 'iconoir/icons/arrow-left-circle.svg?react';
 import ArrowRightCircle from 'iconoir/icons/arrow-right-circle.svg?react';
 
@@ -53,7 +53,7 @@ export default function ItinerarySingleStep({
   const scrollToRef = useScrollToRef<HTMLDivElement, string>(scrollKey);
 
   return (
-    <div className="py-8 px-5">
+    <div className="py-8 px-5 relative">
       <div className="flex flex-row items-start">
         <div className="flex-grow">
           <ItineraryBikeStep
@@ -80,7 +80,10 @@ export default function ItinerarySingleStep({
           </BorderlessButton>
         )}
         {!isLastStep && (
-          <BorderlessButton onClick={onNextStepClick} className="ml-2 mt-3.5">
+          <BorderlessButton
+            onClick={onNextStepClick}
+            className="ml-2 mt-3.5 mr-1.5"
+          >
             <Icon
               label={intl.formatMessage({
                 defaultMessage: 'Next step',
@@ -93,19 +96,20 @@ export default function ItinerarySingleStep({
           </BorderlessButton>
         )}
       </div>
-      <div className="flex flex-row items-center">
-        <BorderlessButton onClick={onBackClick} className="h-12 -ml-3 block">
-          <Icon className="align-middle relative top-1">
-            <NavLeftArrow />
-          </Icon>
-          <span className="text-base ml-2">
-            <FormattedMessage
-              defaultMessage="Go back"
-              description="button to return to a previous screen"
-            />
-          </span>
-        </BorderlessButton>
-      </div>
+      <button
+        onClick={onBackClick}
+        className="absolute top-1.5 right-1 border-0 bg-transparent
+          cursor-pointer text-gray-600"
+      >
+        <Icon
+          label={intl.formatMessage({
+            defaultMessage: 'Go back',
+            description: 'button to return to a previous screen',
+          })}
+        >
+          <XMark className="w-5 h-5" />
+        </Icon>
+      </button>
       <div
         className="absolute bottom-0 pointer-events-none"
         ref={scrollToRef}
