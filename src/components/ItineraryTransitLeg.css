@@ -5,10 +5,8 @@
   margin: 0;
 }
 
-.ItineraryDivider_headsign {
+.ItineraryTransitLeg_headsign {
   font-style: italic;
   font-size: 14px;
-  /* line-height: 14px; */
-  /* margin: 0 0 8px; */
   color: #626262;
 }

@@ -31,17 +31,8 @@
 }
 
 .ItineraryStep_content {
-  margin-left: 30px;
+  margin: 0 0 0 30px;
   font-size: 14px;
-  margin-bottom: 0px;
-}
-
-.ItineraryStep_contentLowMargin {
-  margin-top: 0px;
-}
-
-.ItineraryStep_contentHighMargin {
-  margin-top: 5px;
 }
 
 .ItineraryStep_iconSvg {
