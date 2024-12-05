@@ -16,7 +16,7 @@ import useThrottledValue from './useThrottledValue';
 // first attaching to a node.
 
 export default function useResizeObserver(
-  callback: (dimensions: [number, number]) => void,
+  callback: (dimensions: [number, number] | null) => void,
   throttleWait = 200,
 ) {
   const [dimensionString, setDimensionString] = useState<string | null>(null);
@@ -24,6 +24,7 @@ export default function useResizeObserver(
   const nodeRef = useRef<Element | null>(null);
 
   const nodeCallbackRef = useCallback((newNode: Element | null) => {
+    console.log(newNode);
     if (observerRef.current) {
       if (nodeRef.current) observerRef.current.unobserve(nodeRef.current);
       if (newNode) observerRef.current.observe(newNode);

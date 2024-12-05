@@ -7,15 +7,19 @@ import {
   useState,
 } from 'react';
 import { useSelector } from 'react-redux';
+import { OutPortal, HtmlPortalNode } from 'react-reverse-portal';
 import classnames from 'classnames';
 import MoonLoader from 'react-spinners/MoonLoader';
+
 import useResizeObserver from '../hooks/useResizeObserver';
 import { BOTTOM_DRAWER_DEFAULT_SCROLL } from '../lib/layout';
 import { isTouchMoveSignificant } from '../lib/touch';
-import BikeHopperMap from './BikeHopperMap';
 import * as VisualViewportTracker from '../lib/VisualViewportTracker';
 
-import './MapPlusOverlay.css';
+import './MobileMapLayout.css';
+import { MapRefs } from '../hooks/useMapRefs';
+import { RootState } from '../store';
+import useIsMobile from '../hooks/useIsMobile';
 
 /*
  * This component renders the map, plus the top bar and bottom drawer.
@@ -31,43 +35,61 @@ import './MapPlusOverlay.css';
 
 const _isTouch = 'ontouchstart' in window;
 
-function MapPlusOverlay(props) {
-  const { bottomContent, topContent, hideMap } = props;
-  const loading = useSelector(
+const TouchEventNames = [
+  'touchstart',
+  'touchmove',
+  'touchend',
+  'touchcancel',
+] as const;
+type TouchEventName = (typeof TouchEventNames)[number];
+
+type MapTouchState = {
+  startClientX: number;
+  startClientY: number;
+  lastScreenX: number;
+  lastScreenY: number;
+  lastClientX: number;
+  lastClientY: number;
+  numTouches: number;
+  target: HTMLElement;
+};
+
+type Props = {
+  mapRefs: MapRefs;
+  mapPortal: HtmlPortalNode;
+  hideMap: boolean;
+  header: JSX.Element;
+  infoBox?: JSX.Element;
+};
+
+type TouchEventOptions = {
+  bubbles: boolean;
+  touches?: Touch[];
+};
+
+function MobileMapLayout(props: Props) {
+  const { mapPortal, infoBox, header, hideMap, mapRefs } = props;
+  const loading = useSelector<RootState, boolean>(
     (state) =>
       state.routes.routeStatus === 'fetching' ||
       state.geolocation.geolocationInProgress,
   );
 
-  const mapRef = useRef();
-  const mapControlBottomLeftRef = useRef();
-  const mapControlBottomRightRef = useRef();
-  const mapControlTopLeftRef = useRef();
-  const mapControlTopRightRef = useRef();
-
-  const handleMapLoad = () => {
-    mapControlBottomLeftRef.current = document.getElementsByClassName(
-      'maplibregl-ctrl-bottom-left',
-    )[0];
-    mapControlBottomRightRef.current = document.getElementsByClassName(
-      'maplibregl-ctrl-bottom-right',
-    )[0];
-    mapControlTopLeftRef.current = document.getElementsByClassName(
-      'maplibregl-ctrl-top-left',
-    )[0];
-    mapControlTopRightRef.current = document.getElementsByClassName(
-      'maplibregl-ctrl-top-right',
-    )[0];
-
-    window.requestAnimationFrame(updateMapBottomControls);
-    updateMapTopControls();
-  };
+  const {
+    mapRef,
+    mapControlBottomLeftRef,
+    mapControlBottomRightRef,
+    mapControlTopLeftRef,
+    mapControlTopRightRef,
+    mapOverlayRef,
+  } = mapRefs;
 
   const updateMapTopControls = () => {
     if (
       !mapRef.current ||
       !mapControlTopLeftRef.current ||
-      !topContentRef.current
+      !topContentRef.current ||
+      !mapControlTopRightRef.current
     ) {
       return;
     }
@@ -79,13 +101,37 @@ function MapPlusOverlay(props) {
       'translate3d(0,' + topContentHeight + 'px,0)';
   };
 
-  const columnRef = useRef();
+  const isMobile = useIsMobile();
+
+  useEffect(() => {
+    if (isMobile) {
+      console.log('now Mobile');
+      window.requestAnimationFrame(updateMapBottomControls);
+      updateMapTopControls();
+    }
+    return () => {
+      if (mapControlTopLeftRef.current) {
+        mapControlTopLeftRef.current.style.transform = '';
+      }
+      if (mapControlTopLeftRef.current) {
+        mapControlTopLeftRef.current.style.transform = '';
+      }
+      if (mapControlBottomLeftRef.current) {
+        mapControlBottomLeftRef.current.style.transform = '';
+      }
+      if (mapControlBottomRightRef.current) {
+        mapControlBottomRightRef.current.style.transform = '';
+      }
+    };
+  }, [isMobile]);
+
+  const columnRef = useRef<HTMLDivElement | null>(null);
 
   // Holds state relating to a series of touch events (touchstart -> 0 to many
   // touchmove -> touchcancel or touchend).
-  const mapTouchStateRef = useRef();
+  const mapTouchStateRef = useRef<MapTouchState | null>(null);
 
-  const handleMapTouchEvent = (eventName, evt) => {
+  const handleMapTouchEvent = (eventName: TouchEventName, evt: TouchEvent) => {
     // On mobile, when you think you're touching the map, you are actually touching a
     // transparent <div/> placed in front of the map. This function creates synthetic
     // touch events (and in some cases, click events) and forwards them to the map, or
@@ -95,9 +141,18 @@ function MapPlusOverlay(props) {
     mapRef.current.getContainer().focus();
     evt.preventDefault();
 
-    const options = { bubbles: true };
+    const options: TouchEventOptions = { bubbles: true };
 
     if (eventName === 'touchstart') {
+      const mapCanvas = mapRef.current.getCanvas();
+
+      // You may not want to touch the map itself, but a marker or control on
+      // the map. Here, we figure out what element would have been touched, if
+      // there hadn't been a transparent <div/> in the way.
+      if (columnRef.current) {
+        columnRef.current.style.pointerEvents = 'none';
+      }
+
       mapTouchStateRef.current = {
         startClientX: evt.touches[0].clientX,
         startClientY: evt.touches[0].clientY,
@@ -106,19 +161,16 @@ function MapPlusOverlay(props) {
         lastClientX: evt.touches[0].clientX,
         lastClientY: evt.touches[0].clientY,
         numTouches: evt.touches.length,
+        target:
+          (document.elementFromPoint(
+            evt.touches[0].clientX,
+            evt.touches[0].clientY,
+          ) as HTMLElement) || mapCanvas,
       };
-      const mapCanvas = mapRef.current.getCanvas();
 
-      // You may not want to touch the map itself, but a marker or control on
-      // the map. Here, we figure out what element would have been touched, if
-      // there hadn't been a transparent <div/> in the way.
-      columnRef.current.style.pointerEvents = 'none';
-      mapTouchStateRef.current.target =
-        document.elementFromPoint(
-          evt.touches[0].clientX,
-          evt.touches[0].clientY,
-        ) || mapCanvas;
-      columnRef.current.style.pointerEvents = '';
+      if (columnRef.current) {
+        columnRef.current.style.pointerEvents = '';
+      }
     } else if (!mapTouchStateRef.current) {
       console.error('unexpected touch'); // XXX remove if not happening
       return;
@@ -149,7 +201,7 @@ function MapPlusOverlay(props) {
       }
     }
 
-    target.dispatchEvent(new TouchEvent(evt.type, options));
+    target?.dispatchEvent(new TouchEvent(evt.type, options));
 
     if (eventName === 'touchend') {
       // Also simulate a click event, because map controls and buttons and stuff might need
@@ -175,8 +227,8 @@ function MapPlusOverlay(props) {
         clientY: mapTouchState.lastClientY,
         // Treat as right click if 2 or more touches.
         // I don't know if this is correct or useful.
-        button: mapTouchState.numTouches.length > 1 ? 2 : 0,
-        buttons: mapTouchState.numTouches.length > 1 ? 2 : 1,
+        button: mapTouchState.numTouches > 1 ? 2 : 0,
+        buttons: mapTouchState.numTouches > 1 ? 2 : 1,
       });
       target.dispatchEvent(syntheticEvent);
     }
@@ -186,22 +238,23 @@ function MapPlusOverlay(props) {
     }
   };
 
-  const mapOverlayTransparentRef = useRef();
-  const mapOverlayTransparentRefCallback = useCallback((node) => {
-    if (node) {
-      ['touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach(
-        (eventName) => {
+  const mapOverlayTransparentRef = useRef<HTMLElement | null>(null);
+  const mapOverlayTransparentRefCallback = useCallback(
+    (node: HTMLElement | null) => {
+      if (node) {
+        TouchEventNames.forEach((eventName) => {
           node.addEventListener(
             eventName,
             handleMapTouchEvent.bind(null, eventName),
           );
-        },
-      );
-    }
-    mapOverlayTransparentRef.current = node;
-  }, []);
+        });
+      }
+      mapOverlayTransparentRef.current = node;
+    },
+    [],
+  );
 
-  const topContentRef = useRef();
+  const topContentRef = useRef<HTMLDivElement | null>(null);
   useLayoutEffect(() => {
     if (!mapRef.current) return;
     updateMapTopControls();
@@ -215,11 +268,13 @@ function MapPlusOverlay(props) {
     const mapBottomY = mapRef.current
       .getContainer()
       .getBoundingClientRect().bottom;
-    const bottomTranslate = (mapBottomY - paneTopY) * -1;
+    const bottomTranslate = paneTopY - mapBottomY;
 
     if (mapControlBottomLeftRef.current) {
       mapControlBottomLeftRef.current.style.transform =
         'translate3d(0,' + bottomTranslate + 'px,0)';
+    }
+    if (mapControlBottomRightRef.current) {
       mapControlBottomRightRef.current.style.transform =
         'translate3d(0,' + bottomTranslate + 'px,0)';
     }
@@ -229,7 +284,7 @@ function MapPlusOverlay(props) {
   // when the bottom pane resizes under them, scrolls, or when this component
   // rerenders.
   const bottomPaneRef = useResizeObserver(updateMapBottomControls);
-  const handleMapOverlayScroll = (evt) => {
+  const handleMapOverlayScroll = () => {
     window.requestAnimationFrame(updateMapBottomControls);
   };
   useLayoutEffect(updateMapBottomControls);
@@ -242,9 +297,7 @@ function MapPlusOverlay(props) {
   const handleBottomPaneEnter = setIsMouseOverBottomPane.bind(null, true);
   const handleBottomPaneLeave = setIsMouseOverBottomPane.bind(null, false);
 
-  const mapOverlayRef = useRef();
-
-  const hasBottomContentWithMap = Boolean(bottomContent) && !hideMap;
+  const hasBottomContentWithMap = Boolean(infoBox) && !hideMap;
 
   // When the bottom drawer appears, start it somewhat taller than its minimum height.
   useLayoutEffect(() => {
@@ -255,7 +308,7 @@ function MapPlusOverlay(props) {
 
   // iOS/Android hack: Shrink body when virtual keyboard is hiding content, so
   // you can't be scrolled down.
-  const adjustHeightBasedOnVisualViewport = useCallback((height) => {
+  const adjustHeightBasedOnVisualViewport = useCallback((height: number) => {
     const isIos = Bowser.parse(navigator.userAgent).os.name === 'iOS';
     if (isIos) {
       // Ignore small discrepancies between visual viewport height and
@@ -274,54 +327,51 @@ function MapPlusOverlay(props) {
       VisualViewportTracker.listen(adjustHeightBasedOnVisualViewport);
       // Make one initial call -- required on Android Chrome so you can scroll
       // to bottom on first load.
-      adjustHeightBasedOnVisualViewport(window.visualViewport.height);
+      if (window.visualViewport) {
+        adjustHeightBasedOnVisualViewport(window.visualViewport.height);
+      }
     }
   }, [adjustHeightBasedOnVisualViewport]);
 
   return (
-    <div className="MapPlusOverlay">
-      <BikeHopperMap
-        ref={mapRef}
-        onMapLoad={handleMapLoad}
-        overlayRef={mapOverlayRef}
-        hidden={hideMap}
-      />
+    <div className="MobileMapLayout">
+      <OutPortal node={mapPortal} isMobile={true} />
       <div
         className={classnames({
-          MapPlusOverlay_column: true,
-          MapPlusOverlay_column__nonTouchDevice: !_isTouch,
-          MapPlusOverlay_column__scrollable: isMouseOverBottomPane,
+          MobileMapLayout_column: true,
+          MobileMapLayout_column__nonTouchDevice: !_isTouch,
+          MobileMapLayout_column__scrollable: isMouseOverBottomPane,
         })}
         ref={columnRef}
       >
-        <div ref={topContentRef}>{topContent}</div>
+        <div ref={topContentRef}>{header}</div>
         <div
-          className="MapPlusOverlay_overlay"
+          className="MobileMapLayout_overlay"
           ref={mapOverlayRef}
           onScroll={handleMapOverlayScroll}
         >
           {!hideMap && (
             <div
-              className="MapPlusOverlay_window"
+              className="MobileMapLayout_window"
               ref={mapOverlayTransparentRefCallback}
-              onMouseOver={_isTouch ? null : handleBottomPaneLeave}
+              onMouseOver={_isTouch ? undefined : handleBottomPaneLeave}
             />
           )}
-          {bottomContent && (
+          {infoBox && (
             <div
               className={classnames({
-                MapPlusOverlay_bottomPane: true,
-                MapPlusOverlay_bottomPane__withMapHidden: hideMap,
+                MobileMapLayout_bottomPane: true,
+                MobileMapLayout_bottomPane__withMapHidden: hideMap,
               })}
-              onMouseEnter={_isTouch ? null : handleBottomPaneEnter}
-              onMouseLeave={_isTouch ? null : handleBottomPaneLeave}
+              onMouseEnter={_isTouch ? undefined : handleBottomPaneEnter}
+              onMouseLeave={_isTouch ? undefined : handleBottomPaneLeave}
               ref={bottomPaneRef}
             >
-              {bottomContent}
+              {infoBox}
             </div>
           )}
-          <div className="MapPlusOverlay_spinnerContainer">
-            <MoonLoader loading={loading && !bottomContent} size={60} />
+          <div className="MobileMapLayout_spinnerContainer">
+            <MoonLoader loading={loading && !infoBox} size={60} />
           </div>
         </div>
       </div>
@@ -329,4 +379,4 @@ function MapPlusOverlay(props) {
   );
 }
 
-export default MapPlusOverlay;
+export default MobileMapLayout;
