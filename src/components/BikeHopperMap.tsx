@@ -368,6 +368,8 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
     ),
   );
 
+  const prevViewingStep = usePrevious(viewingStep);
+
   // Center viewport on points or routes
   useLayoutEffect(
     function centerOnPointsOrRoutes() {
@@ -383,7 +385,8 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
         prevRouteStatus !== 'succeeded';
       const newlyFetching =
         routeStatus === 'fetching' && prevRouteStatus !== 'fetching';
-      if (!(haveNewRoutes || newlyFetching)) return;
+      const exitedSingleStep = Boolean(prevViewingStep && !viewingStep);
+      if (!(haveNewRoutes || newlyFetching || exitedSingleStep)) return;
 
       // Start with the points themselves
       let bbox: Bbox = [
@@ -394,7 +397,17 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
       ];
 
       // If we have routes, merge all route bounding boxes
-      const routeBboxes = (routes || []).map(
+      let routesToCenter: typeof routes = [];
+      if (routes) {
+        if (exitedSingleStep && activePath != null) {
+          // Center only the route you were just viewing in single-step mode.
+          routesToCenter = [routes[activePath]];
+        } else {
+          routesToCenter = routes;
+        }
+      }
+
+      const routeBboxes = routesToCenter.map(
         (path: RouteResponsePath) => path.bbox,
       );
       bbox = routeBboxes.reduce(
@@ -459,6 +472,9 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
       routeStatus,
       prevRouteStatus,
       isDragging,
+      activePath,
+      viewingStep,
+      prevViewingStep,
     ],
   );
 
