@@ -7,20 +7,13 @@ import classnames from 'classnames';
 import BorderlessButton from './BorderlessButton';
 import { STEP_ANNOTATIONS, describeStepAnnotation } from '../lib/geometry';
 import type { StepAnnotation } from '../lib/geometry';
+import InstructionIcon from './InstructionIcon';
 import InstructionSigns from '../lib/InstructionSigns';
 import ItineraryStep from './ItineraryStep';
 import type { RouteInstruction } from '../lib/BikeHopperClient';
 import type { ScrollToRef } from '../hooks/useScrollToRef';
 
 import './ItineraryBikeStep.css';
-
-import MapsTurnBack from 'iconoir/icons/maps-turn-back.svg?react';
-import LongArrowUpLeft from 'iconoir/icons/long-arrow-up-left.svg?react';
-import LongArrowUpRight from 'iconoir/icons/long-arrow-up-right.svg?react';
-import ArrowUp from 'iconoir/icons/arrow-up.svg?react';
-import TriangleFlag from 'iconoir/icons/triangle-flag.svg?react';
-import QuestionMarkCircle from 'iconoir/icons/help-circle.svg?react';
-import ArrowTrCircle from 'iconoir/icons/arrow-up-right-circle.svg?react';
 
 let _warnedOfFallback = false;
 const spacerWithMiddot = ' \u00B7 ';
@@ -44,7 +37,6 @@ export default function ItineraryBikeStep({
 }) {
   const intl = useIntl();
 
-  let IconComponent = QuestionMarkCircle;
   let msg;
   let fallbackToGraphHopperInstructionText = false;
 
@@ -57,7 +49,6 @@ export default function ItineraryBikeStep({
     case InstructionSigns.U_TURN_LEFT:
     case InstructionSigns.U_TURN_RIGHT:
     case InstructionSigns.U_TURN_UNKNOWN:
-      IconComponent = MapsTurnBack;
       msg = (
         <FormattedMessage
           defaultMessage={
@@ -78,7 +69,6 @@ export default function ItineraryBikeStep({
       );
       break;
     case InstructionSigns.KEEP_LEFT:
-      IconComponent = LongArrowUpLeft;
       msg = (
         <FormattedMessage
           defaultMessage={
@@ -99,7 +89,6 @@ export default function ItineraryBikeStep({
       );
       break;
     case InstructionSigns.TURN_SHARP_LEFT:
-      IconComponent = LongArrowUpLeft;
       msg = (
         <FormattedMessage
           defaultMessage={
@@ -120,7 +109,6 @@ export default function ItineraryBikeStep({
       );
       break;
     case InstructionSigns.TURN_LEFT:
-      IconComponent = LongArrowUpLeft;
       msg = (
         <FormattedMessage
           defaultMessage={
@@ -141,7 +129,6 @@ export default function ItineraryBikeStep({
       );
       break;
     case InstructionSigns.TURN_SLIGHT_LEFT:
-      IconComponent = LongArrowUpLeft;
       msg = (
         <FormattedMessage
           defaultMessage={
@@ -162,7 +149,6 @@ export default function ItineraryBikeStep({
       );
       break;
     case InstructionSigns.CONTINUE_ON_STREET:
-      IconComponent = ArrowUp;
       if (!isFirstStep || step.heading == null) {
         msg = (
           <FormattedMessage
@@ -206,13 +192,11 @@ export default function ItineraryBikeStep({
       break;
     case InstructionSigns.FINISH:
     case InstructionSigns.REACHED_VIA:
-      IconComponent = TriangleFlag;
       // Not seeing this one in practice (except for the arrival step we
       // filter) so not sure what to do with it.
       fallbackToGraphHopperInstructionText = true;
       break;
     case InstructionSigns.KEEP_RIGHT:
-      IconComponent = LongArrowUpRight;
       msg = (
         <FormattedMessage
           defaultMessage={
@@ -233,7 +217,6 @@ export default function ItineraryBikeStep({
       );
       break;
     case InstructionSigns.TURN_SHARP_RIGHT:
-      IconComponent = LongArrowUpRight;
       msg = (
         <FormattedMessage
           defaultMessage={
@@ -254,7 +237,6 @@ export default function ItineraryBikeStep({
       );
       break;
     case InstructionSigns.TURN_RIGHT:
-      IconComponent = LongArrowUpRight;
       msg = (
         <FormattedMessage
           defaultMessage={
@@ -275,7 +257,6 @@ export default function ItineraryBikeStep({
       );
       break;
     case InstructionSigns.TURN_SLIGHT_RIGHT:
-      IconComponent = LongArrowUpRight;
       msg = (
         <FormattedMessage
           defaultMessage={
@@ -296,7 +277,6 @@ export default function ItineraryBikeStep({
       );
       break;
     case InstructionSigns.USE_ROUNDABOUT:
-      IconComponent = ArrowTrCircle;
       msg = (
         <FormattedMessage
           defaultMessage={
@@ -332,6 +312,13 @@ export default function ItineraryBikeStep({
       _warnedOfFallback = true;
     }
   }
+
+  // Hack: ItineraryStep expects icon to be a component, not a component
+  // instance, so we have to make a component that will have the instruction
+  // sign built in.
+  const IconComponent = (
+    props: Omit<Parameters<typeof InstructionIcon>[0], 'sign'>,
+  ) => <InstructionIcon sign={step.sign} {...props} />;
 
   return (
     <ItineraryStep
