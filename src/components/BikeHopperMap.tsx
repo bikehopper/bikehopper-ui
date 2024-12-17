@@ -372,187 +372,186 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
   const prevViewingStep = usePrevious(viewingStep);
 
   // Center viewport on points or routes
-  useLayoutEffect(
-    function centerOnPointsOrRoutes() {
-      const map = mapRef.current?.getMap();
-      const overlayEl = props.overlayRef.current;
-      if (!map || !overlayEl || !startCoords || !endCoords) return;
-      if (isDragging) return;
+  useLayoutEffect(() => {
+    const map = mapRef.current?.getMap();
+    const overlayEl = props.overlayRef.current;
+    if (!map || !overlayEl || !startCoords || !endCoords) return;
+    if (isDragging) return;
 
-      // We only want to center in specific situations
-      const haveNewRoutes =
-        routes &&
-        routeStatus === 'succeeded' &&
-        prevRouteStatus !== 'succeeded';
-      const newlyFetching =
-        routeStatus === 'fetching' && prevRouteStatus !== 'fetching';
-      const exitedSingleStep = Boolean(prevViewingStep && !viewingStep);
-      if (!(haveNewRoutes || newlyFetching || exitedSingleStep)) return;
+    // We only want to center in specific situations
+    const haveNewRoutes =
+      routes && routeStatus === 'succeeded' && prevRouteStatus !== 'succeeded';
+    const newlyFetching =
+      routeStatus === 'fetching' && prevRouteStatus !== 'fetching';
+    const exitedSingleStep = Boolean(prevViewingStep && !viewingStep);
+    if (!(haveNewRoutes || newlyFetching || exitedSingleStep)) return;
 
-      // Start with the points themselves
-      let bbox: Bbox = [
-        Math.min(startCoords[0], endCoords[0]),
-        Math.min(startCoords[1], endCoords[1]),
-        Math.max(startCoords[0], endCoords[0]),
-        Math.max(startCoords[1], endCoords[1]),
-      ];
+    // Start with the points themselves
+    let bbox: Bbox = [
+      Math.min(startCoords[0], endCoords[0]),
+      Math.min(startCoords[1], endCoords[1]),
+      Math.max(startCoords[0], endCoords[0]),
+      Math.max(startCoords[1], endCoords[1]),
+    ];
 
-      // If we have routes, merge all route bounding boxes
-      let routesToCenter: typeof routes = [];
-      if (routes) {
-        if (exitedSingleStep && activePath != null) {
-          // Center only the route you were just viewing in single-step mode.
-          routesToCenter = [routes[activePath]];
-        } else {
-          routesToCenter = routes;
-        }
+    // If we have routes, merge all route bounding boxes
+    let routesToCenter: typeof routes = [];
+    if (routes) {
+      if (exitedSingleStep && activePath != null) {
+        // Center only the route you were just viewing in single-step mode.
+        routesToCenter = [routes[activePath]];
+      } else {
+        routesToCenter = routes;
       }
+    }
 
-      const routeBboxes = routesToCenter.map(
-        (path: RouteResponsePath) => path.bbox,
+    const routeBboxes = routesToCenter.map(
+      (path: RouteResponsePath) => path.bbox,
+    );
+    bbox = routeBboxes.reduce(
+      (acc: Bbox, cur: Bbox) => [
+        Math.min(acc[0], cur[0]), // minx
+        Math.min(acc[1], cur[1]), // miny
+        Math.max(acc[2], cur[2]), // maxx
+        Math.max(acc[3], cur[3]), // maxy
+      ],
+      bbox,
+    );
+
+    const padding = getPaddingForMap(overlayEl);
+
+    // If we only have points, no route yet, then don't zoom if the current
+    // view already reasonably shows those points.
+    if (!routes) {
+      const { x: startX, y: startY } = map.project(
+        startCoords as [number, number],
       );
-      bbox = routeBboxes.reduce(
-        (acc: Bbox, cur: Bbox) => [
-          Math.min(acc[0], cur[0]), // minx
-          Math.min(acc[1], cur[1]), // miny
-          Math.max(acc[2], cur[2]), // maxx
-          Math.max(acc[3], cur[3]), // maxy
-        ],
-        bbox,
+      const { x: endX, y: endY } = map.project(endCoords as [number, number]);
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      const startVisible =
+        startX > padding.left &&
+        startY > padding.top &&
+        startX < w - padding.right &&
+        startY < h - padding.bottom;
+
+      const endVisible =
+        endX > padding.left &&
+        endY > padding.top &&
+        endX < w - padding.right &&
+        endY < h - padding.bottom;
+
+      const pixelDistance = Math.sqrt(
+        (startX - endX) * (startX - endX) + (startY - endY) * (startY - endY),
       );
 
-      const padding = getPaddingForMap(overlayEl);
+      const reasonablyFarApart = pixelDistance > 45;
 
-      // If we only have points, no route yet, then don't zoom if the current
-      // view already reasonably shows those points.
-      if (!routes) {
-        const { x: startX, y: startY } = map.project(
-          startCoords as [number, number],
-        );
-        const { x: endX, y: endY } = map.project(endCoords as [number, number]);
-        const w = window.innerWidth;
-        const h = window.innerHeight;
+      if (startVisible && endVisible && reasonablyFarApart) return;
+    }
 
-        const startVisible =
-          startX > padding.left &&
-          startY > padding.top &&
-          startX < w - padding.right &&
-          startY < h - padding.bottom;
-
-        const endVisible =
-          endX > padding.left &&
-          endY > padding.top &&
-          endX < w - padding.right &&
-          endY < h - padding.bottom;
-
-        const pixelDistance = Math.sqrt(
-          (startX - endX) * (startX - endX) + (startY - endY) * (startY - endY),
-        );
-
-        const reasonablyFarApart = pixelDistance > 45;
-
-        if (startVisible && endVisible && reasonablyFarApart) return;
-      }
-
-      map.fitBounds(
-        [
-          [bbox[0], bbox[1]],
-          [bbox[2], bbox[3]],
-        ],
-        {
-          padding,
-        },
-      );
-    },
-    [
-      routes,
-      mapRef,
-      props.overlayRef,
-      startCoords,
-      endCoords,
-      routeStatus,
-      prevRouteStatus,
-      isDragging,
-      activePath,
-      viewingStep,
-      prevViewingStep,
-    ],
-  );
+    map.fitBounds(
+      [
+        [bbox[0], bbox[1]],
+        [bbox[2], bbox[3]],
+      ],
+      {
+        padding,
+      },
+    );
+  }, [
+    routes,
+    mapRef,
+    props.overlayRef,
+    startCoords,
+    endCoords,
+    routeStatus,
+    prevRouteStatus,
+    isDragging,
+    activePath,
+    viewingStep,
+    prevViewingStep,
+  ]);
 
   // When viewing a specific step of a route, zoom to where it starts.
-  useEffect(
-    function centerOnViewingStep() {
-      if (
-        !routes ||
-        activePath == null ||
-        !viewingDetails ||
-        !viewingStep ||
-        !mapRef.current ||
-        !props.overlayRef.current
-      )
-        return;
+  useEffect(() => {
+    if (
+      !routes ||
+      activePath == null ||
+      !viewingDetails ||
+      !viewingStep ||
+      !mapRef.current ||
+      !props.overlayRef.current
+    )
+      return;
 
-      const MAX_ZOOM = 18;
-      const map = mapRef.current.getMap();
-      const padding = getPaddingForMap(props.overlayRef.current);
+    const MAX_ZOOM = 18;
+    const map = mapRef.current.getMap();
+    const padding = getPaddingForMap(props.overlayRef.current);
 
-      const [legIdx, stepIdx] = viewingStep;
+    const [legIdx, stepIdx] = viewingStep;
 
-      const leg = routes[activePath].legs[legIdx];
-      if (leg.type === 'pt') {
-        // Leg is a transit leg; zoom to a transit stop
-        const stepLngLat = leg.stops[stepIdx].geometry.coordinates;
-        map.easeTo({
-          center: stepLngLat as LngLatLike,
-          zoom: MAX_ZOOM,
-        });
-      } else {
-        // Leg is a bike leg (maybe we'll support walk in the future?).
+    const leg = routes[activePath].legs[legIdx];
+    if (leg.type === 'pt') {
+      // Leg is a transit leg; zoom to a transit stop
+      const stepLngLat = leg.stops[stepIdx].geometry.coordinates;
+      map.easeTo({
+        center: stepLngLat as LngLatLike,
+        zoom: MAX_ZOOM,
+      });
+    } else {
+      // Leg is a bike leg (maybe we'll support walk in the future?).
 
-        // Zoom to fit the start of this instruction step, as well as the first
-        // bit of the step:
-        const DISTANCE_TO_FIT = 0.1; // show up to 100m of the step.
+      // Zoom to fit the start of this instruction step, as well as the first
+      // bit of the step:
+      const DISTANCE_TO_FIT = 0.1; // show up to 100m of the step.
 
-        const stepGeometry = lineString(
-          leg.geometry.coordinates.slice(
-            leg.instructions[stepIdx].interval[0],
-            leg.instructions[stepIdx].interval[1] + 1,
-          ),
-        );
+      const stepGeometry = lineString(
+        leg.geometry.coordinates.slice(
+          leg.instructions[stepIdx].interval[0],
+          leg.instructions[stepIdx].interval[1] + 1,
+        ),
+      );
 
-        let legSegment = stepGeometry;
-        if (turfLength(stepGeometry) > DISTANCE_TO_FIT) {
-          legSegment = lineSliceAlong(stepGeometry, 0, DISTANCE_TO_FIT);
-        }
-
-        // We still want to center the first point on the leg, so mirror the
-        // leg around the first point.
-        const firstPointOnLeg = stepGeometry.geometry.coordinates[0];
-        const mirroredLegSegment = lineString(
-          legSegment.geometry.coordinates.map((point) => {
-            const xDiff = point[0] - firstPointOnLeg[0];
-            const yDiff = point[1] - firstPointOnLeg[1];
-            return [firstPointOnLeg[0] - xDiff, firstPointOnLeg[1] - yDiff];
-          }),
-        );
-
-        const camera = map.cameraForBounds(
-          turfBbox({
-            type: 'FeatureCollection',
-            features: [legSegment, mirroredLegSegment],
-          }) as LngLatBoundsLike,
-          { padding },
-        );
-        if (!camera) return; // shouldn't happen in practice
-
-        map.easeTo({
-          center: camera.center,
-          zoom: Math.min(camera.zoom, MAX_ZOOM),
-        });
+      let legSegment = stepGeometry;
+      if (turfLength(stepGeometry) > DISTANCE_TO_FIT) {
+        legSegment = lineSliceAlong(stepGeometry, 0, DISTANCE_TO_FIT);
       }
-    },
-    [routes, activePath, viewingDetails, viewingStep, mapRef, props.overlayRef],
-  );
+
+      // We still want to center the first point on the leg, so mirror the
+      // leg around the first point.
+      const firstPointOnLeg = stepGeometry.geometry.coordinates[0];
+      const mirroredLegSegment = lineString(
+        legSegment.geometry.coordinates.map((point) => {
+          const xDiff = point[0] - firstPointOnLeg[0];
+          const yDiff = point[1] - firstPointOnLeg[1];
+          return [firstPointOnLeg[0] - xDiff, firstPointOnLeg[1] - yDiff];
+        }),
+      );
+
+      const camera = map.cameraForBounds(
+        turfBbox({
+          type: 'FeatureCollection',
+          features: [legSegment, mirroredLegSegment],
+        }) as LngLatBoundsLike,
+        { padding },
+      );
+      if (!camera) return; // shouldn't happen in practice
+
+      map.easeTo({
+        center: camera.center,
+        zoom: Math.min(camera.zoom, MAX_ZOOM),
+      });
+    }
+  }, [
+    routes,
+    activePath,
+    viewingDetails,
+    viewingStep,
+    mapRef,
+    props.overlayRef,
+  ]);
 
   let viewingStepCoords: GeoJSON.Position | undefined;
   let viewingStepIcon: React.ReactNode | undefined;
