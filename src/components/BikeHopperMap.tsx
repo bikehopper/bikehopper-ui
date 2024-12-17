@@ -32,6 +32,7 @@ import turfBbox from '@turf/bbox';
 import turfLength from '@turf/length';
 import lineSliceAlong from '@turf/line-slice-along';
 import { lineString } from '@turf/helpers';
+import InstructionIcon from './InstructionIcon';
 import {
   routesToGeoJSON,
   EMPTY_GEOJSON,
@@ -553,6 +554,28 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
     [routes, activePath, viewingDetails, viewingStep, mapRef, props.overlayRef],
   );
 
+  let viewingStepCoords: GeoJSON.Position | undefined;
+  let viewingStepIcon: React.ReactNode | undefined;
+  if (routes && activePath && viewingStep) {
+    const viewingLeg = routes[activePath].legs[viewingStep[0]];
+    if (viewingLeg.type === 'pt') {
+      viewingStepCoords = viewingLeg.stops[viewingStep[1]].geometry.coordinates;
+      // TODO: board/alight icon?
+    } else {
+      const instruction = viewingLeg.instructions[viewingStep[1]];
+      viewingStepCoords =
+        viewingLeg.geometry.coordinates[instruction.interval[0]];
+      viewingStepIcon = (
+        <InstructionIcon
+          sign={instruction.sign}
+          width="32px"
+          height="32px"
+          className="bg-slate-100 text-slate-900 rounded-md shadow-md"
+        />
+      );
+    }
+  }
+
   const features = useMemo(() => {
     return routes ? routesToGeoJSON(routes, intl) : EMPTY_GEOJSON;
   }, [routes, intl]);
@@ -660,6 +683,14 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
             color={'#fcd34d' /* tailwind amber-300 */}
             style={{ opacity: '70%' }}
           />
+        )}
+        {viewingStepCoords && viewingStepIcon && (
+          <Marker
+            longitude={viewingStepCoords[0]}
+            latitude={viewingStepCoords[1]}
+          >
+            {viewingStepIcon}
+          </Marker>
         )}
       </MapGL>
       <DropdownMenu.Root
