@@ -21,7 +21,6 @@ export default function useScrollToRef<T extends HTMLElement, K = undefined>(
       return;
     }
 
-    console.log('scrolling to. key=', key);
     const anchor = scrollToRef.current;
     if (anchor) {
       let offsetTop = 0;
@@ -45,7 +44,7 @@ export default function useScrollToRef<T extends HTMLElement, K = undefined>(
       }
       if (container) {
         container.scrollTop =
-          offsetTop + el.clientHeight / 2 - container.clientHeight / 2;
+          offsetTop + anchor.clientHeight / 2 - container.clientHeight / 2;
       }
     }
   }, [key, prevKey]);
