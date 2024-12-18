@@ -1,3 +1,4 @@
+import classnames from 'classnames';
 import type {
   ExpressionFilterSpecification,
   ExpressionSpecification,
@@ -64,6 +65,9 @@ import {
   DEFAULT_INACTIVE_COLOR,
 } from '../lib/colors';
 import { RouteResponsePath } from '../lib/BikeHopperClient';
+
+import LogInIcon from 'iconoir/icons/log-in.svg?react';
+import LogOutIcon from 'iconoir/icons/log-out.svg?react';
 
 const _isTouch = 'ontouchstart' in window;
 
@@ -553,24 +557,47 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
     props.overlayRef,
   ]);
 
-  let viewingStepCoords: GeoJSON.Position | undefined;
-  let viewingStepIcon: React.ReactNode | undefined;
+  let viewingStepMarker: React.ReactNode | undefined;
   if (routes && activePath && viewingStep) {
     const viewingLeg = routes[activePath].legs[viewingStep[0]];
+    const iconClasses = 'bg-slate-100 text-slate-900 rounded-md shadow-md';
+
+    let coords: GeoJSON.Position | undefined;
+    let icon: React.ReactNode | undefined;
+
     if (viewingLeg.type === 'pt') {
-      viewingStepCoords = viewingLeg.stops[viewingStep[1]].geometry.coordinates;
-      // TODO: board/alight icon?
-    } else {
+      const stopIdx = viewingStep[1];
+      coords = viewingLeg.stops[stopIdx].geometry.coordinates;
+      const isBoard = stopIdx === 0;
+      const isAlight = stopIdx + 1 === viewingLeg.stops.length;
+      const IconComponent = isBoard ? LogInIcon : isAlight ? LogOutIcon : null;
+      if (IconComponent) {
+        icon = (
+          <IconComponent
+            width={32}
+            height={32}
+            className={classnames(iconClasses, 'p-1')}
+          />
+        );
+      }
+    } else if (viewingLeg.type === 'bike2') {
       const instruction = viewingLeg.instructions[viewingStep[1]];
-      viewingStepCoords =
-        viewingLeg.geometry.coordinates[instruction.interval[0]];
-      viewingStepIcon = (
+      coords = viewingLeg.geometry.coordinates[instruction.interval[0]];
+      icon = (
         <InstructionIcon
           sign={instruction.sign}
           width="32px"
           height="32px"
-          className="bg-slate-100 text-slate-900 rounded-md shadow-md"
+          className={iconClasses}
         />
+      );
+    }
+
+    if (coords && icon) {
+      viewingStepMarker = (
+        <Marker longitude={coords[0]} latitude={coords[1]}>
+          {icon}
+        </Marker>
       );
     }
   }
@@ -683,14 +710,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
             style={{ opacity: '70%' }}
           />
         )}
-        {viewingStepCoords && viewingStepIcon && (
-          <Marker
-            longitude={viewingStepCoords[0]}
-            latitude={viewingStepCoords[1]}
-          >
-            {viewingStepIcon}
-          </Marker>
-        )}
+        {viewingStepMarker}
       </MapGL>
       <DropdownMenu.Root
         open={Boolean(contextMenuAt)}
