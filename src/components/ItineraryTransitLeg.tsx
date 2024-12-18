@@ -54,7 +54,7 @@ export default function ItineraryTransitLeg({
 
   const spacerWithMiddot = ' \u00B7 ';
 
-  const scrollToRef = useScrollToRef<HTMLDivElement, undefined>();
+  const scrollToRef = useScrollToRef<HTMLDivElement>();
 
   const alertsForHeader = selectAlertsToDisplay(leg);
 

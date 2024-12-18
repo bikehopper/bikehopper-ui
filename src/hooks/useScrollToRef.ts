@@ -9,7 +9,7 @@ import usePrevious from './usePrevious';
 export type ScrollToRef<T extends HTMLElement> =
   React.MutableRefObject<T | null>;
 
-export default function useScrollToRef<T extends HTMLElement, K>(
+export default function useScrollToRef<T extends HTMLElement, K = undefined>(
   key?: K,
 ): ScrollToRef<T> {
   const scrollToRef = useRef<T>(null);
