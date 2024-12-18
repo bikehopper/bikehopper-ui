@@ -8,7 +8,9 @@
   width: 36px;
   box-sizing: border-box;
   flex-shrink: 0;
+}
 
+.ItineraryRow_timeline__hasLine {
   /* Draws the literal time*line* ... a dark gray line going down the middle. */
   background: linear-gradient(
     to right,

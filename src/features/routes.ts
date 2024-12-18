@@ -1,6 +1,7 @@
 import produce from 'immer';
 import type { Action } from 'redux';
 import * as BikeHopperClient from '../lib/BikeHopperClient';
+import InstructionSigns from '../lib/InstructionSigns';
 import type { BikeHopperAction, BikeHopperThunkAction } from '../store';
 import type { Mode } from '../lib/TransitModes';
 
@@ -145,6 +146,74 @@ export function routesReducer(
       return { ...state, viewingStep: [action.leg, action.step] };
     case 'itinerary_step_back_clicked':
       return { ...state, viewingStep: null };
+    case 'itinerary_prev_step_clicked':
+      return produce(state, (draft) => {
+        if (!draft.viewingStep || !state.routes || state.activeRoute == null)
+          return;
+        if (draft.viewingStep[1] > 0) {
+          const viewingLeg =
+            state.routes[state.activeRoute].legs[draft.viewingStep[0]];
+          if (viewingLeg.type === 'pt') {
+            // Skip intermediate transit stops
+            draft.viewingStep[1] = 0;
+          } else {
+            draft.viewingStep[1]--;
+          }
+        } else if (draft.viewingStep[0] > 0) {
+          const newViewingLeg =
+            state.routes[state.activeRoute].legs[--draft.viewingStep[0]];
+          let newStep =
+            newViewingLeg.type === 'bike2'
+              ? newViewingLeg.instructions.length - 1
+              : newViewingLeg.stops.length - 1;
+          if (
+            newViewingLeg.type === 'bike2' &&
+            newViewingLeg.instructions[newStep].sign ===
+              InstructionSigns.FINISH &&
+            newStep > 0
+          ) {
+            // Skip "arrive at destination"
+            newStep--;
+          }
+          draft.viewingStep[1] = newStep;
+        }
+      });
+    case 'itinerary_next_step_clicked':
+      return produce(state, (draft) => {
+        if (!draft.viewingStep || !state.routes || state.activeRoute == null)
+          return;
+        const viewingRoute = state.routes[state.activeRoute];
+        const viewingLeg = viewingRoute.legs[draft.viewingStep[0]];
+        const stepsInLeg =
+          viewingLeg.type === 'bike2'
+            ? viewingLeg.instructions.length
+            : viewingLeg.stops.length;
+        if (draft.viewingStep[1] + 1 < stepsInLeg) {
+          if (viewingLeg.type === 'pt') {
+            // Skip intermediate transit stops
+            draft.viewingStep[1] = viewingLeg.stops.length - 1;
+          } else {
+            draft.viewingStep[1]++;
+            // Skip "arrive at destination"
+            if (
+              viewingLeg.type === 'bike2' &&
+              viewingLeg.instructions[draft.viewingStep[1]].sign ===
+                InstructionSigns.FINISH
+            ) {
+              if (draft.viewingStep[0] + 1 === viewingRoute.legs.length) {
+                console.error('next step: would go past end');
+                draft.viewingStep[1]--;
+              } else {
+                draft.viewingStep[0]++;
+                draft.viewingStep[1] = 0;
+              }
+            }
+          }
+        } else if (draft.viewingStep[0] + 1 < viewingRoute.legs.length) {
+          draft.viewingStep[0]++;
+          draft.viewingStep[1] = 0;
+        }
+      });
     default:
       return state;
   }
@@ -302,6 +371,16 @@ export function itineraryStepBackClicked() {
   return { type: 'itinerary_step_back_clicked' };
 }
 
+type ItineraryPrevStepClickedAction = Action<'itinerary_prev_step_clicked'>;
+export function itineraryPrevStepClicked() {
+  return { type: 'itinerary_prev_step_clicked' };
+}
+
+type ItineraryNextStepClickedAction = Action<'itinerary_next_step_clicked'>;
+export function itineraryNextStepClicked() {
+  return { type: 'itinerary_next_step_clicked' };
+}
+
 export type RoutesAction =
   | RouteClearedAction
   | RouteFetchAttemptedAction
@@ -310,4 +389,6 @@ export type RoutesAction =
   | RouteClickedAction
   | ItineraryBackClickedAction
   | ItineraryStepClickedAction
-  | ItineraryStepBackClickedAction;
+  | ItineraryStepBackClickedAction
+  | ItineraryPrevStepClickedAction
+  | ItineraryNextStepClickedAction;

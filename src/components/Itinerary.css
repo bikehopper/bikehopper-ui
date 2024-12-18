@@ -1,7 +1,3 @@
-.Itinerary {
-  padding: 32px 20px;
-}
-
 .Itinerary_overallTimeHeading {
   font-size: 20px;
   font-weight: bold;
@@ -54,8 +50,4 @@
 
 .Itinerary_backIcon path {
   stroke-width: 3px;
-}
-
-.Itinerary_timeline {
-  margin: 0;
 }
