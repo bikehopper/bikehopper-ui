@@ -193,8 +193,10 @@ export const STEP_ANNOTATIONS = {
   sharedRoad: 8,
   shoulder: 9,
   mainRoad: 10,
-  steepHill: 11,
-  verySteepHill: 12,
+  steepHillUp: 11,
+  verySteepHillUp: 12,
+  steepHillDown: 13,
+  verySteepHillDown: 14,
 };
 export type StepAnnotation =
   (typeof STEP_ANNOTATIONS)[keyof typeof STEP_ANNOTATIONS];
@@ -265,12 +267,14 @@ export function describeStepAnnotation(
           'annotation for a step in a series of biking directions.' +
           ' A main road which might have lots of fast traffic.',
       });
-    case STEP_ANNOTATIONS.steepHill:
+    case STEP_ANNOTATIONS.steepHillUp:
+    case STEP_ANNOTATIONS.steepHillDown:
       return intl.formatMessage({
         defaultMessage: 'steep hill',
         description: 'annotation for a step in a series of biking directions.',
       });
-    case STEP_ANNOTATIONS.verySteepHill:
+    case STEP_ANNOTATIONS.verySteepHillUp:
+    case STEP_ANNOTATIONS.verySteepHillDown:
       return intl.formatMessage({
         defaultMessage: 'very steep hill',
         description: 'annotation for a step in a series of biking directions.',
@@ -331,6 +335,7 @@ export function describeBikeInfra(
   const distanceByInfraType = new Map();
   let gradesScratchpad = []; // array of [percent grade, length in km] tuples
   let maxGrade = 0;
+  let minGrade = 0;
 
   segmentEach(stepLineString, (cur, _f, _mf, _g, segmentIndex) => {
     // This cannot ever happen but the types are wrongly given as nullable:
@@ -377,8 +382,9 @@ export function describeBikeInfra(
 
     if (lengthLeftToConsider > 0) return; // not enough distance for grade computation
 
-    const windowedAverageGrade = Math.abs(summedGrades / MIN_STEEP_HILL_LENGTH);
+    const windowedAverageGrade = summedGrades / MIN_STEEP_HILL_LENGTH;
     maxGrade = Math.max(maxGrade, windowedAverageGrade);
+    minGrade = Math.min(minGrade, windowedAverageGrade);
   });
 
   // Don't describe steps less than 150 feet long...
@@ -403,9 +409,13 @@ export function describeBikeInfra(
     .map(([infraType, percent]) => infraType);
 
   if (maxGrade > 14) {
-    descriptors.unshift(STEP_ANNOTATIONS.verySteepHill);
+    descriptors.unshift(STEP_ANNOTATIONS.verySteepHillUp);
   } else if (maxGrade > 8) {
-    descriptors.unshift(STEP_ANNOTATIONS.steepHill);
+    descriptors.unshift(STEP_ANNOTATIONS.steepHillUp);
+  } else if (minGrade < -14) {
+    descriptors.unshift(STEP_ANNOTATIONS.verySteepHillDown);
+  } else if (minGrade < -8) {
+    descriptors.unshift(STEP_ANNOTATIONS.steepHillDown);
   }
 
   return descriptors;
