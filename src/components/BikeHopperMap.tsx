@@ -558,7 +558,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
   ]);
 
   let viewingStepMarker: React.ReactNode | undefined;
-  if (routes && activePath && viewingStep) {
+  if (routes && activePath != null && viewingStep) {
     const viewingLeg = routes[activePath].legs[viewingStep[0]];
     const iconClasses = 'bg-slate-100 text-slate-900 rounded-md shadow-md';
 
