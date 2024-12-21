@@ -281,6 +281,17 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
       );
   };
 
+  const handleOpenInOSMClick = (evt: MouseEvent) => {
+    const map = mapRef.current;
+    if (!contextMenuAt || !map) return;
+    const zoom = map.getZoom() + 2; // OSM's zoom numbers are about 2 greater
+    const lng = contextMenuAt[2];
+    const lat = contextMenuAt[3];
+    window.open(
+      `https://www.openstreetmap.org/#map=${zoom}/${lat}/${lng}&layers=P`,
+    );
+  };
+
   const [isDragging, setIsDragging] = useState(false);
   const handleMarkerDragStart = (evt: MarkerDragEvent) => {
     resetLongPressTimer();
@@ -769,6 +780,25 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
                     'menu item. ' +
                     'Appears in context menu under a location you have selected on the map. ' +
                     'When clicked, computes directions to that location.'
+                  }
+                />
+              </span>
+            </DropdownMenu.Item>
+            <DropdownMenu.Separator className="my-1 h-px bg-gray-200 dark:bg-gray-700" />
+            <DropdownMenu.Item
+              key="open-in-osm"
+              className="flex select-none items-center rounded-md px-2 py-2
+                text-sm outline-none
+                text-gray-400 focus:bg-gray-50 dark:text-gray-500 dark:focus:bg-gray-900"
+              onClick={handleOpenInOSMClick}
+            >
+              <span className="flex-grow text-gray-700 dark:text-gray-300">
+                <FormattedMessage
+                  defaultMessage="Open in OSM"
+                  description={
+                    'menu item. ' +
+                    'Appears in context menu under a location you have selected on the map. ' +
+                    'Opens OpenStreetMap (abbreviated OSM) to that location.'
                   }
                 />
               </span>
