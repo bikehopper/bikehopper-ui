@@ -70,6 +70,7 @@
     "@eslint/compat": "^1.2.3",
     "@eslint/js": "^9.15.0",
     "@formatjs/cli": "^6.2.9",
+    "@maplibre/maplibre-gl-style-spec": "^19.3.3",
     "@tailwindcss/typography": "^0.5.9",
     "@types/color": "^4.2.0",
     "@types/lodash": "^4.17.4",
