@@ -3,6 +3,7 @@ import type {
   ExpressionSpecification,
   LineLayerSpecification,
   SymbolLayerSpecification,
+  CircleLayerSpecification,
 } from '@maplibre/maplibre-gl-style-spec';
 import { Point as MapLibrePoint } from 'maplibre-gl';
 import { forwardRef, useEffect, useRef, useState } from 'react';
@@ -58,6 +59,7 @@ import {
   DEFAULT_INACTIVE_COLOR,
 } from '../lib/colors';
 import { RouteResponsePath } from '../lib/BikeHopperClient';
+import { activeRouteIds } from '../lib/activeRouteIds';
 
 const _isTouch = 'ontouchstart' in window;
 
@@ -503,6 +505,11 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
     return routes ? routesToGeoJSON(routes, intl) : EMPTY_GEOJSON;
   }, [routes, intl]);
 
+  const activeRoutes =
+    routes != null && activePath != null
+      ? activeRouteIds(routes, activePath)
+      : [];
+
   const navigationControlVisibility =
     mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden';
 
@@ -578,6 +585,26 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
           <Layer beforeId="road-label" {...getTransitionStyle(activePath)} />
           <Layer {...getTransitLabelStyle(activePath)} />
           <Layer {...getBikeLabelStyle(activePath)} />
+        </Source>
+        <Source
+          id="routeTilesSource"
+          type="vector"
+          tiles={['https://localhost:3000/api/v1/route-tiles/{z}/{x}/{y}.mvt']}
+          minzoom={7}
+          maxzoom={14}
+        >
+          <Layer
+            beforeId="routeOutline"
+            {...getTransitTilesLineStyle(activeRoutes)}
+          />
+          <Layer
+            beforeId="transitLabelLayer"
+            {...getTransitTilesStopStyle(activeRoutes)}
+          />
+          <Layer
+            beforeId="routeStops"
+            {...getTransitTilesStopOutlineStyle(activeRoutes)}
+          />
         </Source>
         {startCoords && (
           <Marker
@@ -710,6 +737,73 @@ function getTransitionStyle(
       'line-color': 'darkgray',
       'line-dasharray': [1, 1],
     },
+  };
+}
+
+function getTransitTilesLineStyle(
+  activeRoutes: string[],
+): Omit<LineLayerSpecification, 'source'> {
+  return {
+    id: 'route-lines',
+    'source-layer': 'layer0',
+    type: 'line',
+    filter: [
+      'all',
+      ['==', ['geometry-type'], 'LineString'],
+      activeRouteFilter(activeRoutes, 'route_id'),
+    ],
+    paint: {
+      'line-width': 3,
+      'line-color': [
+        'interpolate',
+        ['linear'],
+        0.3,
+        0.0,
+        ['get', 'route_color'],
+        1.0,
+        ['rgb', 255, 255, 255],
+      ],
+    },
+  };
+}
+
+function getTransitTilesStopStyle(
+  activeRoutes: string[],
+): Omit<CircleLayerSpecification, 'source'> {
+  return {
+    id: 'routeStops',
+    'source-layer': 'layer0',
+    type: 'circle',
+    filter: [
+      'all',
+      ['==', ['geometry-type'], 'Point'],
+      activeRouteFilter(activeRoutes, 'route_ids'),
+    ],
+    paint: {
+      'circle-radius': 4,
+      'circle-color': 'white',
+    },
+    minzoom: 13,
+  };
+}
+
+function getTransitTilesStopOutlineStyle(
+  activeRoutes: string[],
+): Omit<CircleLayerSpecification, 'source'> {
+  return {
+    id: 'routeStopsOutline',
+    'source-layer': 'layer0',
+    type: 'circle',
+    filter: [
+      'all',
+      ['==', ['geometry-type'], 'Point'],
+      activeRouteFilter(activeRoutes, 'route_ids'),
+    ],
+    paint: {
+      'circle-radius': 6,
+      'circle-color': 'black',
+    },
+    minzoom: 13,
   };
 }
 
@@ -904,6 +998,19 @@ function propIs(key: string, ...values: string[]): ExpressionSpecification {
 
 function pathIndexIs(index: number | null): ExpressionFilterSpecification {
   return index == null ? false : ['==', ['get', 'path_index'], index];
+}
+
+function activeRouteFilter(
+  activeRoutes: string[],
+  routeIdKey: 'route_id' | 'route_ids',
+): ExpressionFilterSpecification {
+  if (activeRoutes.length === 0) {
+    return false;
+  }
+  const matchers: ExpressionSpecification[] = activeRoutes.map(
+    (routeId: string) => ['==', routeId, ['get', routeIdKey]],
+  );
+  return ['any', ...matchers];
 }
 
 export default BikeHopperMap;
