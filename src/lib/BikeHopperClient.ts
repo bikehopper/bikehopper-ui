@@ -120,7 +120,7 @@ export type InstructionDetails = Record<string, [number, number, string][]>;
 
 type BikeLegBase = {
   type: 'bike2';
-  departure_location: string; // always 'bike2'
+  departure_location: string;
   geometry: GeoJSON.LineString;
   distance: number;
   weight: number;

@@ -1,9 +1,10 @@
+import { useState, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { selectAlertsToDisplay } from '../lib/alerts';
 import type { TransitLeg } from '../lib/BikeHopperClient';
 import { DEFAULT_PT_COLOR } from '../lib/colors';
 import { getModeLabel } from '../lib/TransitModes';
 import { formatTime, formatDurationBetween } from '../lib/time';
-import classnames from 'classnames';
 import { getAgencyDisplayName } from '../lib/region';
 import useScrollToRef from '../hooks/useScrollToRef';
 import BorderlessButton from './BorderlessButton';
@@ -16,7 +17,6 @@ import ModeIcon from './ModeIcon';
 import Circle from 'iconoir/icons/circle.svg?react';
 
 import './ItineraryTransitLeg.css';
-import { useState, useCallback } from 'react';
 
 export default function ItineraryTransitLeg({
   leg,
@@ -56,18 +56,7 @@ export default function ItineraryTransitLeg({
 
   const scrollToRef = useScrollToRef<HTMLDivElement>();
 
-  // TODO: Select the alert translation based on locale, instead of always
-  // using the first one.
-  //
-  // Unfortunately, for the Bay Area, no agency seems to actually translate
-  // its alerts so it has no impact which is why I've (Scott, April 2023)
-  // de-prioritized doing this.
-  const alertsForHeader: [string, string][] | undefined = leg.alerts?.map(
-    (rawAlert) => [
-      rawAlert.header_text?.translation[0]?.text,
-      rawAlert.description_text?.translation[0]?.text,
-    ],
-  );
+  const alertsForHeader = selectAlertsToDisplay(leg);
 
   return (
     <div className="ItineraryTransitLeg" ref={scrollTo ? scrollToRef : null}>
@@ -112,12 +101,11 @@ export default function ItineraryTransitLeg({
           {formatDurationBetween(leg.departure_time, leg.arrival_time, intl)}
         </span>
       </ItineraryHeader>
-      <ItineraryStep
-        IconSVGComponent={Circle}
-        iconSize="small"
-        highMargin={true}
-      >
-        <BorderlessButton onClick={onStopClick.bind(null, 0)}>
+      <ItineraryStep IconSVGComponent={Circle} iconSize="small">
+        <BorderlessButton
+          className="pt-[5px]"
+          onClick={onStopClick.bind(null, 0)}
+        >
           <FormattedMessage
             defaultMessage="Board at {stop}"
             description="instruction to board (a public transit vehicle) at the named stop"
@@ -127,11 +115,7 @@ export default function ItineraryTransitLeg({
           />
           {spacerWithMiddot}
           {departure}
-          <div
-            className={classnames({
-              ItineraryDivider_headsign: true,
-            })}
-          >
+          <div className="ItineraryTransitLeg_headsign">
             <FormattedMessage
               defaultMessage="Towards {headsign}"
               description={
@@ -154,10 +138,12 @@ export default function ItineraryTransitLeg({
             <ItineraryStep
               IconSVGComponent={Circle}
               iconSize="tiny"
-              highMargin={true}
               key={stopIdx}
             >
-              <BorderlessButton onClick={onStopClick.bind(null, stopIdx + 1)}>
+              <BorderlessButton
+                className="pt-[5px]"
+                onClick={onStopClick.bind(null, stopIdx + 1)}
+              >
                 {stop.stop_name}
               </BorderlessButton>
             </ItineraryStep>
@@ -181,12 +167,11 @@ export default function ItineraryTransitLeg({
           />
         </div>
       ) : null}
-      <ItineraryStep
-        IconSVGComponent={Circle}
-        iconSize="small"
-        highMargin={true}
-      >
-        <BorderlessButton onClick={onStopClick.bind(null, stops.length - 1)}>
+      <ItineraryStep IconSVGComponent={Circle} iconSize="small">
+        <BorderlessButton
+          onClick={onStopClick.bind(null, stops.length - 1)}
+          className="pt-[5px]"
+        >
           <FormattedMessage
             defaultMessage="Get off at {stop}"
             description="instruction to exit (a public transit vehicle) at the named stop"

@@ -71,7 +71,7 @@ export default function ModalDialog({
                 <button
                   onClick={onCancel}
                   className="absolute top-6 right-3 border-0 bg-transparent
-                    cursor-pointer dark:text-gray-400"
+                    cursor-pointer text-gray-900 dark:text-gray-400"
                 >
                   <Icon
                     label={intl.formatMessage({
@@ -80,7 +80,7 @@ export default function ModalDialog({
                         'button to cancel making changes in a dialog',
                     })}
                   >
-                    <CancelIcon className="w-5 h-5 text-gray-900" />
+                    <CancelIcon className="w-5 h-5" />
                   </Icon>
                 </button>
               )}

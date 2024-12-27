@@ -1,3 +1,4 @@
+import classnames from 'classnames';
 import type {
   ExpressionFilterSpecification,
   ExpressionSpecification,
@@ -20,6 +21,7 @@ import MapGL, {
 } from 'react-map-gl/maplibre';
 import type {
   GeolocateResultEvent,
+  LngLatBoundsLike,
   LngLatLike,
   MapLayerMouseEvent,
   MapLayerTouchEvent,
@@ -28,6 +30,11 @@ import type {
   ViewStateChangeEvent,
 } from 'react-map-gl/maplibre';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import turfBbox from '@turf/bbox';
+import turfLength from '@turf/length';
+import lineSliceAlong from '@turf/line-slice-along';
+import { lineString } from '@turf/helpers';
+import InstructionIcon from './InstructionIcon';
 import {
   routesToGeoJSON,
   EMPTY_GEOJSON,
@@ -60,6 +67,9 @@ import {
 } from '../lib/colors';
 import { RouteResponsePath } from '../lib/BikeHopperClient';
 import { activeRouteIds } from '../lib/activeRouteIds';
+
+import LogInIcon from 'iconoir/icons/log-in.svg?react';
+import LogOutIcon from 'iconoir/icons/log-out.svg?react';
 
 const _isTouch = 'ontouchstart' in window;
 
@@ -365,6 +375,8 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
     ),
   );
 
+  const prevViewingStep = usePrevious(viewingStep);
+
   // Center viewport on points or routes
   useLayoutEffect(() => {
     const map = mapRef.current?.getMap();
@@ -377,7 +389,8 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
       routes && routeStatus === 'succeeded' && prevRouteStatus !== 'succeeded';
     const newlyFetching =
       routeStatus === 'fetching' && prevRouteStatus !== 'fetching';
-    if (!(haveNewRoutes || newlyFetching)) return;
+    const exitedSingleStep = Boolean(prevViewingStep && !viewingStep);
+    if (!(haveNewRoutes || newlyFetching || exitedSingleStep)) return;
 
     // Start with the points themselves
     let bbox: Bbox = [
@@ -388,7 +401,17 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
     ];
 
     // If we have routes, merge all route bounding boxes
-    const routeBboxes = (routes || []).map(
+    let routesToCenter: typeof routes = [];
+    if (routes) {
+      if (exitedSingleStep && activePath != null) {
+        // Center only the route you were just viewing in single-step mode.
+        routesToCenter = [routes[activePath]];
+      } else {
+        routesToCenter = routes;
+      }
+    }
+
+    const routeBboxes = routesToCenter.map(
       (path: RouteResponsePath) => path.bbox,
     );
     bbox = routeBboxes.reduce(
@@ -401,22 +424,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
       bbox,
     );
 
-    const padding = {
-      top: 40,
-      left: 40,
-      right: 40,
-      bottom: 40,
-    };
-    const clientRect = overlayEl.getBoundingClientRect();
-    padding.top += clientRect.top;
-    // When the bottom drawer first appears, it should be adjusted to this
-    // height. (That scroll can happen either before or after this code is
-    // executed.) Note that this sometimes leaves more space than needed
-    // because the bottom drawer's actual height may be less than the
-    // default height if there are only 1 or 2 routes. We might ideally
-    // prefer to make sure the scroll happened first, and then measure the
-    // bottom drawer.
-    padding.bottom += BOTTOM_DRAWER_DEFAULT_SCROLL + BOTTOM_DRAWER_MIN_HEIGHT;
+    const padding = getPaddingForMap(overlayEl);
 
     // If we only have points, no route yet, then don't zoom if the current
     // view already reasonably shows those points.
@@ -467,6 +475,9 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
     routeStatus,
     prevRouteStatus,
     isDragging,
+    activePath,
+    viewingStep,
+    prevViewingStep,
   ]);
 
   // When viewing a specific step of a route, zoom to where it starts.
@@ -476,30 +487,122 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
       activePath == null ||
       !viewingDetails ||
       !viewingStep ||
-      !mapRef.current
+      !mapRef.current ||
+      !props.overlayRef.current
     )
       return;
+
+    const MAX_ZOOM = 18;
+    const map = mapRef.current.getMap();
+    const padding = getPaddingForMap(props.overlayRef.current);
 
     const [legIdx, stepIdx] = viewingStep;
 
     const leg = routes[activePath].legs[legIdx];
-    let stepLngLat;
     if (leg.type === 'pt') {
       // Leg is a transit leg; zoom to a transit stop
-      stepLngLat = leg.stops[stepIdx].geometry.coordinates;
+      const stepLngLat = leg.stops[stepIdx].geometry.coordinates;
+      map.easeTo({
+        center: stepLngLat as LngLatLike,
+        zoom: MAX_ZOOM,
+      });
     } else {
-      // Leg is a bike leg (maybe we'll support walk in the future?);
-      // zoom to the start point of the given instruction
-      const stepStartPointIdx = leg.instructions[stepIdx].interval[0];
-      stepLngLat = leg.geometry.coordinates[stepStartPointIdx];
+      // Leg is a bike leg (maybe we'll support walk in the future?).
+
+      // Zoom to fit the start of this instruction step, as well as the first
+      // bit of the step:
+      const DISTANCE_TO_FIT = 0.1; // show up to 100m of the step.
+
+      const stepGeometry = lineString(
+        leg.geometry.coordinates.slice(
+          leg.instructions[stepIdx].interval[0],
+          leg.instructions[stepIdx].interval[1] + 1,
+        ),
+      );
+
+      let legSegment = stepGeometry;
+      if (turfLength(stepGeometry) > DISTANCE_TO_FIT) {
+        legSegment = lineSliceAlong(stepGeometry, 0, DISTANCE_TO_FIT);
+      }
+
+      // We still want to center the first point on the leg, so mirror the
+      // leg around the first point.
+      const firstPointOnLeg = stepGeometry.geometry.coordinates[0];
+      const mirroredLegSegment = lineString(
+        legSegment.geometry.coordinates.map((point) => {
+          const xDiff = point[0] - firstPointOnLeg[0];
+          const yDiff = point[1] - firstPointOnLeg[1];
+          return [firstPointOnLeg[0] - xDiff, firstPointOnLeg[1] - yDiff];
+        }),
+      );
+
+      const camera = map.cameraForBounds(
+        turfBbox({
+          type: 'FeatureCollection',
+          features: [legSegment, mirroredLegSegment],
+        }) as LngLatBoundsLike,
+        { padding },
+      );
+      if (!camera) return; // shouldn't happen in practice
+
+      map.easeTo({
+        center: camera.center,
+        zoom: Math.min(camera.zoom || MAX_ZOOM, MAX_ZOOM),
+      });
+    }
+  }, [
+    routes,
+    activePath,
+    viewingDetails,
+    viewingStep,
+    mapRef,
+    props.overlayRef,
+  ]);
+
+  let viewingStepMarker: React.ReactNode | undefined;
+  if (routes && activePath != null && viewingStep) {
+    const viewingLeg = routes[activePath].legs[viewingStep[0]];
+    const iconClasses = 'bg-slate-100 text-slate-900 rounded-md shadow-md';
+
+    let coords: GeoJSON.Position | undefined;
+    let icon: React.ReactNode | undefined;
+
+    if (viewingLeg.type === 'pt') {
+      const stopIdx = viewingStep[1];
+      coords = viewingLeg.stops[stopIdx].geometry.coordinates;
+      const isBoard = stopIdx === 0;
+      const isAlight = stopIdx + 1 === viewingLeg.stops.length;
+      const IconComponent = isBoard ? LogInIcon : isAlight ? LogOutIcon : null;
+      if (IconComponent) {
+        icon = (
+          <IconComponent
+            width={32}
+            height={32}
+            className={classnames(iconClasses, 'p-1')}
+          />
+        );
+      }
+    } else if (viewingLeg.type === 'bike2') {
+      const instruction = viewingLeg.instructions[viewingStep[1]];
+      coords = viewingLeg.geometry.coordinates[instruction.interval[0]];
+      icon = (
+        <InstructionIcon
+          sign={instruction.sign}
+          width="32px"
+          height="32px"
+          className={iconClasses}
+        />
+      );
     }
 
-    const map = mapRef.current.getMap();
-    map.easeTo({
-      center: stepLngLat as LngLatLike,
-      zoom: 18,
-    });
-  }, [routes, activePath, viewingDetails, viewingStep, mapRef]);
+    if (coords && icon) {
+      viewingStepMarker = (
+        <Marker longitude={coords[0]} latitude={coords[1]}>
+          {icon}
+        </Marker>
+      );
+    }
+  }
 
   const features = useMemo(() => {
     return routes ? routesToGeoJSON(routes, intl) : EMPTY_GEOJSON;
@@ -634,6 +737,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
             style={{ opacity: '70%' }}
           />
         )}
+        {viewingStepMarker}
       </MapGL>
       <DropdownMenu.Root
         open={Boolean(contextMenuAt)}
@@ -745,7 +849,7 @@ function getTransitTilesLineStyle(
 ): Omit<LineLayerSpecification, 'source'> {
   return {
     id: 'route-lines',
-    'source-layer': 'layer0',
+    'source-layer': 'route-lines',
     type: 'line',
     filter: [
       'all',
@@ -772,7 +876,7 @@ function getTransitTilesStopStyle(
 ): Omit<CircleLayerSpecification, 'source'> {
   return {
     id: 'routeStops',
-    'source-layer': 'layer0',
+    'source-layer': 'route-lines',
     type: 'circle',
     filter: [
       'all',
@@ -1011,6 +1115,27 @@ function activeRouteFilter(
     (routeId: string) => ['==', routeId, ['get', routeIdKey]],
   );
   return ['any', ...matchers];
+}
+
+function getPaddingForMap(overlayEl: HTMLElement) {
+  const padding = {
+    top: 40,
+    left: 40,
+    right: 40,
+    bottom: 40,
+  };
+  const clientRect = overlayEl.getBoundingClientRect();
+  padding.top += clientRect.top;
+  // When the bottom drawer first appears, it should be adjusted to this
+  // height. (That scroll can happen either before or after this code is
+  // executed.) Note that this sometimes leaves more space than needed
+  // because the bottom drawer's actual height may be less than the
+  // default height if there are only 1 or 2 routes. We might ideally
+  // prefer to make sure the scroll happened first, and then measure the
+  // bottom drawer.
+  padding.bottom += BOTTOM_DRAWER_DEFAULT_SCROLL + BOTTOM_DRAWER_MIN_HEIGHT;
+
+  return padding;
 }
 
 export default BikeHopperMap;
