@@ -93,7 +93,6 @@ export async function fetchRoute({
     graphHopperPath = import.meta.env.VITE_USE_LOCAL_GRAPHHOPPER;
 
   const url = `${graphHopperPath}/route-pt?${params}`;
-
   const route = await fetch(url, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
