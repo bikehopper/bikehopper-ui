@@ -6,6 +6,10 @@ import type {
   SymbolLayerSpecification,
 } from '@maplibre/maplibre-gl-style-spec';
 import { Point as MapLibrePoint } from 'maplibre-gl';
+import {
+  isMapboxURL,
+  transformMapboxUrl,
+} from 'maplibregl-mapbox-request-transformer';
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import type { MouseEvent, Ref, RefObject } from 'react';
 import { useCallback, useLayoutEffect, useMemo } from 'react';
@@ -552,7 +556,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
         }) as LngLatBoundsLike,
         { padding },
       );
-      if (!camera) return; // shouldn't happen in practice
+      if (!camera || camera.zoom == null) return; // shouldn't happen in practice
 
       map.easeTo({
         center: camera.center,
@@ -640,6 +644,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
         onLoad={handleMapLoad}
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
+        transformRequest={transformRequest}
         interactiveLayerIds={INTERACTIVE_LAYER_IDS}
         onMouseMove={!_isTouch ? handleMapMouseMove : undefined}
         onMouseDown={handleMouseDown}
@@ -1059,6 +1064,17 @@ function getPaddingForMap(overlayEl: HTMLElement) {
   padding.bottom += BOTTOM_DRAWER_DEFAULT_SCROLL + BOTTOM_DRAWER_MIN_HEIGHT;
 
   return padding;
+}
+
+function transformRequest(url: string, resourceType: string | undefined) {
+  if (isMapboxURL(url) && resourceType != null) {
+    return transformMapboxUrl(
+      url,
+      resourceType,
+      import.meta.env.VITE_MAPBOX_TOKEN,
+    );
+  }
+  return { url };
 }
 
 export default BikeHopperMap;
