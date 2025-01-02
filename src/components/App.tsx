@@ -49,6 +49,12 @@ function App(props: Props) {
     );
   const isEditingLocations = editingLocation != null;
 
+  const loading = useSelector<RootState, boolean>(
+    (state) =>
+      state.routes.routeStatus === 'fetching' ||
+      state.geolocation.geolocationInProgress,
+  );
+
   const dispatch = useDispatch();
 
   const handleBottomInputFocus = (evt: FocusEvent) => {
@@ -128,6 +134,7 @@ function App(props: Props) {
               header={header}
               hideMap={isEditingLocations}
               infoBox={infoBox}
+              loading={loading}
             />
           ) : (
             <DesktopMapLayout
@@ -135,6 +142,7 @@ function App(props: Props) {
               header={header}
               infoBox={infoBox}
               mapRefs={mapRefs}
+              loading={loading}
             />
           )}
 

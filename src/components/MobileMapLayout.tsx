@@ -60,6 +60,7 @@ type Props = {
   hideMap: boolean;
   header: React.ReactNode;
   infoBox?: React.ReactNode;
+  loading: boolean;
 };
 
 type TouchEventOptions = {
@@ -67,14 +68,14 @@ type TouchEventOptions = {
   touches?: Touch[];
 };
 
-function MobileMapLayout(props: Props) {
-  const { mapPortal, infoBox, header, hideMap, mapRefs } = props;
-  const loading = useSelector<RootState, boolean>(
-    (state) =>
-      state.routes.routeStatus === 'fetching' ||
-      state.geolocation.geolocationInProgress,
-  );
-
+function MobileMapLayout({
+  mapPortal,
+  infoBox,
+  header,
+  hideMap,
+  mapRefs,
+  loading,
+}: Props) {
   const {
     mapRef,
     mapControlBottomLeftRef,

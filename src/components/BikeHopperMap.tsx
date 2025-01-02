@@ -1,4 +1,3 @@
-import classnames from 'classnames';
 import type {
   ExpressionFilterSpecification,
   ExpressionSpecification,
@@ -393,7 +392,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
   useLayoutEffect(() => {
     const map = mapRef.current?.getMap();
     const overlayEl = props.overlayRef.current;
-    if (!map || !overlayEl || !startCoords || !endCoords) return;
+    if (!map || !startCoords || !endCoords) return;
     if (isDragging) return;
 
     // We only want to center in specific situations
@@ -499,8 +498,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
       activePath == null ||
       !viewingDetails ||
       !viewingStep ||
-      !mapRef.current ||
-      !props.overlayRef.current
+      !mapRef.current
     )
       return;
 
@@ -1052,25 +1050,34 @@ function pathIndexIs(index: number | null): ExpressionFilterSpecification {
   return index == null ? false : ['==', ['get', 'path_index'], index];
 }
 
-function getPaddingForMap(overlayEl: HTMLElement) {
-  const padding = {
-    top: 40,
-    left: 40,
-    right: 40,
-    bottom: 40,
-  };
-  const clientRect = overlayEl.getBoundingClientRect();
-  padding.top += clientRect.top;
-  // When the bottom drawer first appears, it should be adjusted to this
-  // height. (That scroll can happen either before or after this code is
-  // executed.) Note that this sometimes leaves more space than needed
-  // because the bottom drawer's actual height may be less than the
-  // default height if there are only 1 or 2 routes. We might ideally
-  // prefer to make sure the scroll happened first, and then measure the
-  // bottom drawer.
-  padding.bottom += BOTTOM_DRAWER_DEFAULT_SCROLL + BOTTOM_DRAWER_MIN_HEIGHT;
-
-  return padding;
+function getPaddingForMap(overlayEl: HTMLElement | null) {
+  // we only have an overlay on mobile
+  if (overlayEl) {
+    const padding = {
+      top: 40,
+      left: 40,
+      right: 40,
+      bottom: 40,
+    };
+    const clientRect = overlayEl.getBoundingClientRect();
+    padding.top += clientRect.top;
+    // When the bottom drawer first appears, it should be adjusted to this
+    // height. (That scroll can happen either before or after this code is
+    // executed.) Note that this sometimes leaves more space than needed
+    // because the bottom drawer's actual height may be less than the
+    // default height if there are only 1 or 2 routes. We might ideally
+    // prefer to make sure the scroll happened first, and then measure the
+    // bottom drawer.
+    padding.bottom += BOTTOM_DRAWER_DEFAULT_SCROLL + BOTTOM_DRAWER_MIN_HEIGHT;
+    return padding;
+  } else {
+    return {
+      top: 100,
+      left: 100,
+      right: 100,
+      bottom: 100,
+    };
+  }
 }
 
 function transformRequest(url: string, resourceType: string | undefined) {
