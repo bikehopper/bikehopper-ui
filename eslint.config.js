@@ -50,10 +50,7 @@ export default [
       'formatjs/no-id': 'error',
       'formatjs/no-literal-string-in-jsx': 'warn',
       'react-refresh/only-export-components': 'warn',
-      'no-unused-vars': [
-        'warn',
-        { args: 'none', caughtErrors: 'none', varsIgnorePattern: '^_.*' },
-      ],
+      'no-unused-vars': ['warn', { args: 'none', caughtErrors: 'none' }],
       'react/prop-types': 'off',
       'react/jsx-key': 'warn',
       'no-empty': ['warn', { allowEmptyCatch: true }],

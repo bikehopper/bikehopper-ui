@@ -37,7 +37,7 @@ export default defineConfig(({ mode }) => {
           ],
         },
       }),
-      eslint2({ cache: false }),
+      eslint2(),
       basicSsl(),
     ],
     server: {

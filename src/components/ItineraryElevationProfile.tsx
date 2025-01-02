@@ -259,7 +259,7 @@ export default function ItineraryElevationProfile({
   };
 
   const { isMobile, innerWidth } = useScreenDims();
-  const totalWidth = isMobile ? innerWidth - 50 : 370;
+  const totalWidth = isMobile ? innerWidth - 50 : 400 - 30;
 
   const chartHeight = 150;
   const ptWidthFrac = 0.15;
