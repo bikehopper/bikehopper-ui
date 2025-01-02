@@ -88,7 +88,7 @@ export function routesToGeoJSON(paths: RouteResponsePath[], intl: IntlShape) {
         // Add detail features
         const detailFeatures = detailsToLines(
           leg.details,
-          leg.geometry.coordinates,
+          leg.geometry,
           leg.type,
           pathIdx,
           intl,
@@ -101,13 +101,44 @@ export function routesToGeoJSON(paths: RouteResponsePath[], intl: IntlShape) {
   return turf.featureCollection(features);
 }
 
+const INFRA_STEP_ANNOTATIONS = {
+  path: 1,
+  bikePath: 2,
+  footPath: 3,
+  promenade: 4,
+  steps: 5,
+  protectedBikeLane: 6,
+  bikeLane: 7,
+  sharedRoad: 8,
+  shoulder: 9,
+  mainRoad: 10,
+};
+const INFRA_STEP_ANNOTATION_VALUES = new Set(
+  Object.values(INFRA_STEP_ANNOTATIONS),
+);
+const STEEPNESS_STEP_ANNOTATIONS = {
+  steepHillUp: 11,
+  verySteepHillUp: 12,
+  steepHillDown: 13,
+  verySteepHillDown: 14,
+};
+const STEEPNESS_STEP_ANNOTATION_VALUES = new Set(
+  Object.values(STEEPNESS_STEP_ANNOTATIONS),
+);
+export const STEP_ANNOTATIONS = {
+  ...INFRA_STEP_ANNOTATIONS,
+  ...STEEPNESS_STEP_ANNOTATIONS,
+};
+export type StepAnnotation =
+  (typeof STEP_ANNOTATIONS)[keyof typeof STEP_ANNOTATIONS];
+
 /**
  * From a details object, generates a coherent set of lines such that no lines
  * overlap.
  */
 function detailsToLines(
   details: InstructionDetails,
-  coordinates: GeoJSON.LineString['coordinates'],
+  geometry: GeoJSON.LineString,
   type: BikeLeg['type'],
   pathIdx: number,
   intl: IntlShape,
@@ -119,6 +150,8 @@ function detailsToLines(
   let indexes: { [key: string]: number } = {};
   for (const k of keys) indexes[k] = 0;
 
+  const { coordinates } = geometry;
+
   while (currentStart < coordinates.length - 1) {
     let ends: { [key: string]: number } = {};
     for (const k of keys) ends[k] = details[k][indexes[k]][1];
@@ -127,22 +160,32 @@ function detailsToLines(
     let lineDetails: { [key: string]: string } = {};
     for (const k of keys) lineDetails[k] = details[k][indexes[k]][2];
 
-    const line = coordinates?.slice(currentStart, currentEnd + 1);
+    const line = coordinates.slice(currentStart, currentEnd + 1);
     if (line.length > 1) {
-      lines.push(
-        turf.lineString(line, {
-          path_index: pathIdx,
-          type,
-          ...lineDetails,
-          bike_infra: describeStepAnnotation(
-            _describeBikeInfraFromCyclewayAndRoadClass(
-              lineDetails['cycleway'],
-              lineDetails['road_class'],
-            ),
-            intl,
-          ),
-        }),
+      const generatedLine = turf.lineString(line);
+      const annos: StepAnnotation[] = describeBikeInfra(
+        geometry,
+        details.cycleway,
+        details.road_class,
+        currentStart,
+        currentEnd,
       );
+      const steepnessAnno: StepAnnotation | undefined = annos.filter((anno) =>
+        STEEPNESS_STEP_ANNOTATION_VALUES.has(anno),
+      )[0];
+      const infraAnno: StepAnnotation | undefined = annos.filter((anno) =>
+        INFRA_STEP_ANNOTATION_VALUES.has(anno),
+      )[0];
+      generatedLine.properties = {
+        path_index: pathIdx,
+        type,
+        ...lineDetails,
+        bike_infra: describeStepAnnotation(infraAnno, intl),
+      };
+      if (steepnessAnno) {
+        generatedLine.properties.steepness = steepnessAnno;
+      }
+      lines.push(generatedLine);
     }
 
     currentStart = currentEnd;
@@ -182,27 +225,8 @@ export function curveBetween(
   );
 }
 
-export const STEP_ANNOTATIONS = {
-  path: 1,
-  bikePath: 2,
-  footPath: 3,
-  promenade: 4,
-  steps: 5,
-  protectedBikeLane: 6,
-  bikeLane: 7,
-  sharedRoad: 8,
-  shoulder: 9,
-  mainRoad: 10,
-  steepHillUp: 11,
-  verySteepHillUp: 12,
-  steepHillDown: 13,
-  verySteepHillDown: 14,
-};
-export type StepAnnotation =
-  (typeof STEP_ANNOTATIONS)[keyof typeof STEP_ANNOTATIONS];
-
 export function describeStepAnnotation(
-  sa: StepAnnotation | null,
+  sa: StepAnnotation | null | undefined,
   intl: IntlShape,
 ) {
   switch (sa) {
@@ -287,7 +311,7 @@ export function describeStepAnnotation(
 function _describeBikeInfraFromCyclewayAndRoadClass(
   cycleway: string,
   roadClass: string,
-) {
+): StepAnnotation | null {
   if (roadClass === 'path') return STEP_ANNOTATIONS.path;
   if (roadClass === 'cycleway') return STEP_ANNOTATIONS.bikePath;
   if (roadClass === 'footway') return STEP_ANNOTATIONS.footPath;
@@ -315,7 +339,7 @@ export function describeBikeInfra(
   roadClasses: [number, number, string][],
   start: number,
   end: number,
-) {
+): StepAnnotation[] {
   if (end <= start) return []; // Ignore instruction steps that travel zero distance.
 
   const stepLineString = turf.lineString(
