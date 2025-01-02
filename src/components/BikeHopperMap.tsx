@@ -993,10 +993,9 @@ function getHillStyle(
     layout: {
       'icon-image': [
         'case',
-        ['get', 'steepness'],
-        STEP_ANNOTATIONS.verySteepHillUp,
+        ['==', ['get', 'steepness'], STEP_ANNOTATIONS.verySteepHillUp],
         'upslope',
-        STEP_ANNOTATIONS.steepHillUp,
+        ['==', ['get', 'steepness'], STEP_ANNOTATIONS.steepHillUp],
         'upslope',
         'downslope',
       ],
