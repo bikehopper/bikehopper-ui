@@ -270,7 +270,7 @@ export default function SearchBar(props: {
             description: 'button to go back out of entering locations',
           })}
         >
-          <NavLeftArrow className="stroke-[3px]" />
+          <NavLeftArrow className="stroke-[3px] cursor-pointer" />
         </Icon>
       </button>
       <div className="grow">
@@ -356,7 +356,7 @@ export default function SearchBar(props: {
               description: 'button to change options related to route query',
             })}
           >
-            <SettingsIcon className="stroke-2" />
+            <SettingsIcon className="stroke-2 cursor-pointer" />
           </Icon>
         </button>
         <span className="block h-4" />
@@ -372,7 +372,7 @@ export default function SearchBar(props: {
               description: 'button to swap start and end point',
             })}
           >
-            <SwapArrows className="stroke-2" />
+            <SwapArrows className="stroke-2 cursor-pointer" />
           </Icon>
         </button>
       </div>
