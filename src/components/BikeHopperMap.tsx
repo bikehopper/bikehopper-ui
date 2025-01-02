@@ -69,7 +69,6 @@ import {
   DEFAULT_INACTIVE_COLOR,
 } from '../lib/colors';
 import { RouteResponsePath } from '../lib/BikeHopperClient';
-import useIsMobile from '../hooks/useIsMobile';
 import classnames from 'classnames';
 
 import LogInIcon from 'iconoir/icons/log-in.svg?react';
@@ -79,7 +78,7 @@ const _isTouch = 'ontouchstart' in window;
 
 type Props = {
   onMapLoad?: () => void;
-  overlayRef: RefObject<HTMLElement>;
+  overlayRef: RefObject<HTMLDivElement | null>;
   hidden: boolean;
   isMobile: boolean;
 };

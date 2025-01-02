@@ -1,5 +1,5 @@
 import Bowser from 'bowser';
-import {
+import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -19,7 +19,7 @@ import * as VisualViewportTracker from '../lib/VisualViewportTracker';
 import './MobileMapLayout.css';
 import { MapRefs } from '../hooks/useMapRefs';
 import { RootState } from '../store';
-import useIsMobile from '../hooks/useIsMobile';
+import useIsMobile from '../hooks/useScreenWidth';
 
 /*
  * This component renders the map, plus the top bar and bottom drawer.
@@ -58,8 +58,8 @@ type Props = {
   mapRefs: MapRefs;
   mapPortal: HtmlPortalNode;
   hideMap: boolean;
-  header: JSX.Element;
-  infoBox?: JSX.Element;
+  header: React.ReactNode;
+  infoBox?: React.ReactNode;
 };
 
 type TouchEventOptions = {

@@ -24,7 +24,7 @@ import BikeHopperMap from './BikeHopperMap';
 import useMapRefs from '../hooks/useMapRefs';
 import DesktopMapLayout from './DesktopMapLayout';
 import MobileMapLayout from './MobileMapLayout';
-import useIsMobile from '../hooks/useIsMobile';
+import useScreenWidth from '../hooks/useScreenWidth';
 
 type Props = {
   locale: string;
@@ -59,7 +59,7 @@ function App(props: Props) {
     dispatch(enterDestinationFocused());
   };
 
-  const isMobile = useIsMobile();
+  const { isMobile } = useScreenWidth();
 
   const infoBox = isEditingLocations ? (
     <SearchDropdown startOrEnd={editingLocation} />
@@ -72,7 +72,14 @@ function App(props: Props) {
   const shouldDisplayTopBar = !viewingDetails;
   const [_, setHaveTopBarIncludingFade] = useState(shouldDisplayTopBar);
 
-  const header = (
+  const topBar = (
+    <TopBar
+      showSearchBar={isEditingLocations || hasLocations || hasRoutes}
+      initiallyFocusDestination={isEditingLocations}
+    />
+  );
+
+  const header = isMobile ? (
     <Transition
       as="div"
       show={shouldDisplayTopBar}
@@ -84,13 +91,10 @@ function App(props: Props) {
       leaveTo="opacity-0"
       beforeEnter={() => setHaveTopBarIncludingFade(true)}
       afterLeave={() => setHaveTopBarIncludingFade(false)}
-    >
-      <TopBar
-        showSearchBar={isEditingLocations || hasLocations || hasRoutes}
-        initiallyFocusDestination={isEditingLocations}
-      />
-    </Transition>
-  );
+    ></Transition>
+  ) : shouldDisplayTopBar ? (
+    topBar
+  ) : null;
 
   const mapRefs = useMapRefs();
 

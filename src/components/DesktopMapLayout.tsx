@@ -2,15 +2,14 @@ import { MapRefs } from '../hooks/useMapRefs';
 import { HtmlPortalNode, OutPortal } from 'react-reverse-portal';
 
 type Props = {
-  header: JSX.Element;
-  infoBox?: JSX.Element;
+  header: React.ReactNode;
+  infoBox?: React.ReactNode;
   mapRefs: MapRefs;
   mapPortal: HtmlPortalNode;
 };
 
-import './DesktopMapLayout.css';
-import useIsMobile from '../hooks/useIsMobile';
-import { useEffect } from 'react';
+import useIsMobile from '../hooks/useScreenWidth';
+import React, { useEffect } from 'react';
 
 export default function DesktopMapLayout({
   header,
@@ -22,13 +21,7 @@ export default function DesktopMapLayout({
 
   const isMobile = useIsMobile();
 
-  const {
-    mapRef,
-    mapControlBottomLeftRef,
-    mapControlBottomRightRef,
-    mapControlTopLeftRef,
-    mapControlTopRightRef,
-  } = mapRefs;
+  const { mapRef, mapControlTopLeftRef, mapControlTopRightRef } = mapRefs;
 
   const updateMapTopControls = () => {
     if (
@@ -45,19 +38,17 @@ export default function DesktopMapLayout({
 
   useEffect(() => {
     if (!isMobile) {
-      console.log('now Desktop');
       updateMapTopControls();
     }
-    return () => console.log('no longer Desktop');
   }, [isMobile]);
 
   return (
-    <div className="DesktopMapLayout">
-      <div className="DesktopMapLayout_sidebar">
+    <div className="overflow-hidden flex w-full h-full flex-row flex-nowrap">
+      <div className="flex h-full flex-col overflow-y-auto basis-[400px]">
         {header}
         {infoBox}
       </div>
-      <div className="DesktopMapLayout_map">
+      <div className="flex grow h-full overflow-hidden">
         <OutPortal node={mapPortal} isMobile={false} />
       </div>
     </div>

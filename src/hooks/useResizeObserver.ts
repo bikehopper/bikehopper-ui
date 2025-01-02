@@ -19,7 +19,9 @@ export default function useResizeObserver(
   callback: (dimensions: [number, number] | null) => void,
   throttleWait = 200,
 ) {
-  const [dimensionString, setDimensionString] = useState<string | null>(null);
+  const [dimensionString, setDimensionString] = useState<
+    `${number}x${number}` | null
+  >(null);
   const observerRef = useRef<ResizeObserver | null>(null);
   const nodeRef = useRef<Element | null>(null);
 
@@ -42,7 +44,7 @@ export default function useResizeObserver(
 
       const { inlineSize: width, blockSize: height } =
         entries[0].contentBoxSize[0];
-      setDimensionString(width + 'x' + height);
+      setDimensionString(`${width}x${height}`);
     });
 
     if (nodeRef.current) {
@@ -66,8 +68,11 @@ export default function useResizeObserver(
     if (observerRef.current)
       callback(
         throttledDimensionString
-          ? (throttledDimensionString.split('x') as any)
-          : [null, null],
+          ? (throttledDimensionString.split('x').map(Number) as [
+              number,
+              number,
+            ])
+          : null,
       );
   }, [callback, throttledDimensionString]);
 

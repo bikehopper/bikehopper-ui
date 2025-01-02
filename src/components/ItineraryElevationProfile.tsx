@@ -1,7 +1,5 @@
 import { useIntl } from 'react-intl';
 
-import './ItineraryElevationProfile.css';
-
 import { BIKEHOPPER_THEME_COLOR, DEFAULT_PT_COLOR } from '../lib/colors';
 
 import distance from '@turf/distance';
@@ -10,9 +8,7 @@ import { LineCanvas, Serie } from '@nivo/line';
 import type { AxisProps } from '@nivo/axes';
 import type { ScaleSpec } from '@nivo/scales';
 import { RouteResponsePath } from '../lib/BikeHopperClient';
-import useResizeObserver from '../hooks/useResizeObserver';
-import { useCallback, useState } from 'react';
-import useIsMobile from '../hooks/useIsMobile';
+import useScreenWidth from '../hooks/useScreenWidth';
 
 const METERS_PER_FOOT = 0.3048;
 
@@ -262,14 +258,13 @@ export default function ItineraryElevationProfile({
     bottom: 50,
   };
 
-  const isMobile = useIsMobile();
-  const width = isMobile ? window.innerWidth - 64 : 350;
+  const { isMobile, innerWidth } = useScreenWidth();
+  const totalWidth = isMobile ? innerWidth - 50 : 370;
 
   const chartHeight = 150;
   const ptWidthFrac = 0.15;
   const leftMargin = 50;
   const rightMargin = 30;
-  const totalWidth = width;
 
   const bikeWidth =
     (totalWidth - leftMargin - rightMargin) * (1 - ptLegs.length * ptWidthFrac);
@@ -278,7 +273,7 @@ export default function ItineraryElevationProfile({
   const bikePixelsPerDist = bikeWidth / bikeDist;
 
   return (
-    <div className="ItineraryElevation__chart">
+    <div className="flex overflow-hidden">
       {legs.map((leg, legIdx) => {
         const startX = leg.data[0].x;
         const endX = leg.data[leg.data.length - 1].x;
