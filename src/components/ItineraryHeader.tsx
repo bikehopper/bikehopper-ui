@@ -10,12 +10,6 @@ import NavUpArrow from 'iconoir/icons/nav-arrow-up.svg?react';
 
 import './ItineraryHeader.css';
 
-const ALERT_SUMMARY_LENGTH = 50;
-
-function alertSummary(alertBody: string) {
-  return alertBody.slice(0, ALERT_SUMMARY_LENGTH) + '...';
-}
-
 type Props = {
   alerts?: [string, string][];
   children: React.ReactNode | React.ReactNode[];
@@ -47,6 +41,19 @@ export default function ItineraryHeader({
     header = children[0];
     subheading = children.slice(1);
   } else header = children;
+
+  const alertIcon = (
+    <Icon
+      className="ItineraryHeader_alertIcon"
+      label={intl.formatMessage({
+        defaultMessage: 'Alert',
+        description:
+          'labels a transit trip as having a service alert apply to it.',
+      })}
+    >
+      <WarningTriangle />
+    </Icon>
+  );
 
   return (
     <ItineraryRow>
@@ -94,34 +101,34 @@ export default function ItineraryHeader({
         <ul className="ItineraryHeader_alerts" onClick={onAlertClick}>
           {alerts.map(([alertHeader, alertBody], idx) => (
             <li className="ItineraryHeader_alert" key={idx}>
-              <Icon
-                className="ItineraryHeader_alertIcon"
-                label={intl.formatMessage({
-                  defaultMessage: 'Alert',
-                  description:
-                    'labels a transit trip as having a service alert apply to it.',
-                })}
-              >
-                <WarningTriangle />
-              </Icon>
               {alertHeader && (
                 <>
                   <span
                     className={classnames({
                       ItineraryHeader_alertHeader: true,
                       ItineraryHeader_alertHeader__hasBody: !!alertBody,
+                      'break-words hyphen-auto': true,
+                      'line-clamp-1': !alertsExpanded,
                     })}
                   >
+                    {alertIcon}
                     {alertHeader}
                   </span>
                   <div />
                 </>
               )}
               {alertBody && (
-                <span className="break-words whitespace-pre-wrap hyphens-auto">
-                  {alertsExpanded || alertBody.length <= ALERT_SUMMARY_LENGTH
-                    ? alertBody
-                    : alertSummary(alertBody)}
+                <span
+                  className={classnames({
+                    'break-words whitespace-pre-wrap hyphens-auto': true,
+                    'line-clamp-1': !alertsExpanded,
+                  })}
+                >
+                  {
+                    /* if no header, display icon next to body */
+                    !alertHeader && alertIcon
+                  }
+                  {alertBody}
                 </span>
               )}
             </li>
