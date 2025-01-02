@@ -6,7 +6,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useSelector } from 'react-redux';
 import { OutPortal, HtmlPortalNode } from 'react-reverse-portal';
 import classnames from 'classnames';
 import MoonLoader from 'react-spinners/MoonLoader';
@@ -18,8 +17,7 @@ import * as VisualViewportTracker from '../lib/VisualViewportTracker';
 
 import './MobileMapLayout.css';
 import { MapRefs } from '../hooks/useMapRefs';
-import { RootState } from '../store';
-import useIsMobile from '../hooks/useScreenWidth';
+import useScreenDims from '../hooks/useScreenDims';
 
 /*
  * This component renders the map, plus the top bar and bottom drawer.
@@ -102,11 +100,10 @@ function MobileMapLayout({
       'translate3d(0,' + topContentHeight + 'px,0)';
   };
 
-  const isMobile = useIsMobile();
+  const { isMobile } = useScreenDims();
 
   useEffect(() => {
     if (isMobile) {
-      console.log('now Mobile');
       window.requestAnimationFrame(updateMapBottomControls);
       updateMapTopControls();
     }

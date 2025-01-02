@@ -1,7 +1,7 @@
 import { MapRefs } from '../hooks/useMapRefs';
 import { HtmlPortalNode, OutPortal } from 'react-reverse-portal';
 
-import useIsMobile from '../hooks/useScreenWidth';
+import useIsMobile from '../hooks/useScreenDims';
 import React, { useEffect } from 'react';
 import MoonLoader from 'react-spinners/MoonLoader';
 
@@ -20,7 +20,7 @@ export default function DesktopMapLayout({
   mapPortal,
   loading,
 }: Props) {
-  const isMobile = useIsMobile();
+  const { isMobile } = useIsMobile();
 
   const { mapRef, mapControlTopLeftRef, mapControlTopRightRef } = mapRefs;
 

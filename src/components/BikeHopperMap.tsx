@@ -72,6 +72,7 @@ import classnames from 'classnames';
 
 import LogInIcon from 'iconoir/icons/log-in.svg?react';
 import LogOutIcon from 'iconoir/icons/log-out.svg?react';
+import useScreenDims from '../hooks/useScreenDims';
 
 const _isTouch = 'ontouchstart' in window;
 
@@ -386,6 +387,8 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
     }, [mapRef]),
   );
 
+  const { innerHeight, innerWidth } = useScreenDims();
+
   const prevViewingStep = usePrevious(viewingStep);
 
   // Center viewport on points or routes
@@ -444,8 +447,8 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
         startCoords as [number, number],
       );
       const { x: endX, y: endY } = map.project(endCoords as [number, number]);
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      const w = innerWidth;
+      const h = innerHeight;
 
       const startVisible =
         startX > padding.left &&
@@ -489,6 +492,8 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
     activePath,
     viewingStep,
     prevViewingStep,
+    innerHeight,
+    innerWidth,
   ]);
 
   // When viewing a specific step of a route, zoom to where it starts.

@@ -8,7 +8,7 @@ import { LineCanvas, Serie } from '@nivo/line';
 import type { AxisProps } from '@nivo/axes';
 import type { ScaleSpec } from '@nivo/scales';
 import { RouteResponsePath } from '../lib/BikeHopperClient';
-import useScreenWidth from '../hooks/useScreenWidth';
+import useScreenDims from '../hooks/useScreenDims';
 
 const METERS_PER_FOOT = 0.3048;
 
@@ -258,7 +258,7 @@ export default function ItineraryElevationProfile({
     bottom: 50,
   };
 
-  const { isMobile, innerWidth } = useScreenWidth();
+  const { isMobile, innerWidth } = useScreenDims();
   const totalWidth = isMobile ? innerWidth - 50 : 370;
 
   const chartHeight = 150;

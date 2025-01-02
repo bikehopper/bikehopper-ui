@@ -24,7 +24,7 @@ import BikeHopperMap from './BikeHopperMap';
 import useMapRefs from '../hooks/useMapRefs';
 import DesktopMapLayout from './DesktopMapLayout';
 import MobileMapLayout from './MobileMapLayout';
-import useScreenWidth from '../hooks/useScreenWidth';
+import useScreenDims from '../hooks/useScreenDims';
 
 type Props = {
   locale: string;
@@ -65,7 +65,7 @@ function App(props: Props) {
     dispatch(enterDestinationFocused());
   };
 
-  const { isMobile } = useScreenWidth();
+  const { isMobile } = useScreenDims();
 
   const infoBox = isEditingLocations ? (
     <SearchDropdown startOrEnd={editingLocation} />
