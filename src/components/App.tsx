@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { useMemo } from 'react';
 import type { FocusEvent } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { IntlProvider } from 'react-intl';
@@ -76,7 +76,6 @@ function App(props: Props) {
   );
 
   const shouldDisplayTopBar = !viewingDetails;
-  const [_, setHaveTopBarIncludingFade] = useState(shouldDisplayTopBar);
 
   const topBar = (
     <TopBar
@@ -95,9 +94,9 @@ function App(props: Props) {
       leave="transition-opacity ease-in duration-200"
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
-      beforeEnter={() => setHaveTopBarIncludingFade(true)}
-      afterLeave={() => setHaveTopBarIncludingFade(false)}
-    ></Transition>
+    >
+      {topBar}
+    </Transition>
   ) : shouldDisplayTopBar ? (
     topBar
   ) : null;

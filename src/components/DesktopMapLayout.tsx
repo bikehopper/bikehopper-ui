@@ -2,7 +2,7 @@ import { MapRefs } from '../hooks/useMapRefs';
 import { HtmlPortalNode, OutPortal } from 'react-reverse-portal';
 
 import useIsMobile from '../hooks/useScreenDims';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import MoonLoader from 'react-spinners/MoonLoader';
 
 type Props = {
@@ -24,7 +24,7 @@ export default function DesktopMapLayout({
 
   const { mapRef, mapControlTopLeftRef, mapControlTopRightRef } = mapRefs;
 
-  const updateMapTopControls = () => {
+  const updateMapTopControls = useCallback(() => {
     if (
       !mapRef.current ||
       !mapControlTopLeftRef.current ||
@@ -35,13 +35,13 @@ export default function DesktopMapLayout({
 
     mapControlTopLeftRef.current.style.transform = 'translate3d(0,0,0)';
     mapControlTopRightRef.current.style.transform = 'translate3d(0,0,0)';
-  };
+  }, [mapRef, mapControlTopLeftRef, mapControlTopRightRef]);
 
   useEffect(() => {
     if (!isMobile) {
       updateMapTopControls();
     }
-  }, [isMobile]);
+  }, [isMobile, updateMapTopControls]);
 
   return (
     <div className="overflow-hidden flex w-full h-full flex-row flex-nowrap">

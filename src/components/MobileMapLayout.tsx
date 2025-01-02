@@ -83,45 +83,7 @@ function MobileMapLayout({
     mapOverlayRef,
   } = mapRefs;
 
-  const updateMapTopControls = () => {
-    if (
-      !mapRef.current ||
-      !mapControlTopLeftRef.current ||
-      !topContentRef.current ||
-      !mapControlTopRightRef.current
-    ) {
-      return;
-    }
-    const topContentHeight =
-      topContentRef.current.getBoundingClientRect().height;
-    mapControlTopLeftRef.current.style.transform =
-      'translate3d(0,' + topContentHeight + 'px,0)';
-    mapControlTopRightRef.current.style.transform =
-      'translate3d(0,' + topContentHeight + 'px,0)';
-  };
-
   const { isMobile } = useScreenDims();
-
-  useEffect(() => {
-    if (isMobile) {
-      window.requestAnimationFrame(updateMapBottomControls);
-      updateMapTopControls();
-    }
-    return () => {
-      if (mapControlTopLeftRef.current) {
-        mapControlTopLeftRef.current.style.transform = '';
-      }
-      if (mapControlTopLeftRef.current) {
-        mapControlTopLeftRef.current.style.transform = '';
-      }
-      if (mapControlBottomLeftRef.current) {
-        mapControlBottomLeftRef.current.style.transform = '';
-      }
-      if (mapControlBottomRightRef.current) {
-        mapControlBottomRightRef.current.style.transform = '';
-      }
-    };
-  }, [isMobile]);
 
   const columnRef = useRef<HTMLDivElement | null>(null);
 
@@ -129,112 +91,115 @@ function MobileMapLayout({
   // touchmove -> touchcancel or touchend).
   const mapTouchStateRef = useRef<MapTouchState | null>(null);
 
-  const handleMapTouchEvent = (eventName: TouchEventName, evt: TouchEvent) => {
-    // On mobile, when you think you're touching the map, you are actually touching a
-    // transparent <div/> placed in front of the map. This function creates synthetic
-    // touch events (and in some cases, click events) and forwards them to the map, or
-    // to markers, controls and other things on the map.
+  const handleMapTouchEvent = useCallback(
+    (eventName: TouchEventName, evt: TouchEvent) => {
+      // On mobile, when you think you're touching the map, you are actually touching a
+      // transparent <div/> placed in front of the map. This function creates synthetic
+      // touch events (and in some cases, click events) and forwards them to the map, or
+      // to markers, controls and other things on the map.
 
-    if (!mapRef.current) return;
-    mapRef.current.getContainer().focus();
-    evt.preventDefault();
+      if (!mapRef.current) return;
+      mapRef.current.getContainer().focus();
+      evt.preventDefault();
 
-    const options: TouchEventOptions = { bubbles: true };
+      const options: TouchEventOptions = { bubbles: true };
 
-    if (eventName === 'touchstart') {
-      const mapCanvas = mapRef.current.getCanvas();
+      if (eventName === 'touchstart') {
+        const mapCanvas = mapRef.current.getCanvas();
 
-      // You may not want to touch the map itself, but a marker or control on
-      // the map. Here, we figure out what element would have been touched, if
-      // there hadn't been a transparent <div/> in the way.
-      if (columnRef.current) {
-        columnRef.current.style.pointerEvents = 'none';
+        // You may not want to touch the map itself, but a marker or control on
+        // the map. Here, we figure out what element would have been touched, if
+        // there hadn't been a transparent <div/> in the way.
+        if (columnRef.current) {
+          columnRef.current.style.pointerEvents = 'none';
+        }
+
+        mapTouchStateRef.current = {
+          startClientX: evt.touches[0].clientX,
+          startClientY: evt.touches[0].clientY,
+          lastScreenX: evt.touches[0].screenX,
+          lastScreenY: evt.touches[0].screenY,
+          lastClientX: evt.touches[0].clientX,
+          lastClientY: evt.touches[0].clientY,
+          numTouches: evt.touches.length,
+          target:
+            (document.elementFromPoint(
+              evt.touches[0].clientX,
+              evt.touches[0].clientY,
+            ) as HTMLElement) || mapCanvas,
+        };
+
+        if (columnRef.current) {
+          columnRef.current.style.pointerEvents = '';
+        }
+      } else if (!mapTouchStateRef.current) {
+        console.error('unexpected touch'); // XXX remove if not happening
+        return;
       }
 
-      mapTouchStateRef.current = {
-        startClientX: evt.touches[0].clientX,
-        startClientY: evt.touches[0].clientY,
-        lastScreenX: evt.touches[0].screenX,
-        lastScreenY: evt.touches[0].screenY,
-        lastClientX: evt.touches[0].clientX,
-        lastClientY: evt.touches[0].clientY,
-        numTouches: evt.touches.length,
-        target:
-          (document.elementFromPoint(
-            evt.touches[0].clientX,
-            evt.touches[0].clientY,
-          ) as HTMLElement) || mapCanvas,
-      };
-
-      if (columnRef.current) {
-        columnRef.current.style.pointerEvents = '';
-      }
-    } else if (!mapTouchStateRef.current) {
-      console.error('unexpected touch'); // XXX remove if not happening
-      return;
-    }
-
-    if (eventName === 'touchmove') {
-      mapTouchStateRef.current.lastClientX = evt.touches[0].clientX;
-      mapTouchStateRef.current.lastClientY = evt.touches[0].clientY;
-      mapTouchStateRef.current.lastScreenX = evt.touches[0].screenX;
-      mapTouchStateRef.current.lastScreenY = evt.touches[0].screenY;
-    }
-
-    const mapTouchState = mapTouchStateRef.current;
-
-    const { target } = mapTouchState;
-
-    if (evt.touches?.length > 0) {
-      options.touches = [];
-      for (let i = 0; i < evt.touches.length; i++) {
-        options.touches.push(
-          new Touch({
-            identifier: i,
-            target,
-            clientX: evt.touches[i].clientX,
-            clientY: evt.touches[i].clientY,
-          }),
-        );
-      }
-    }
-
-    target?.dispatchEvent(new TouchEvent(evt.type, options));
-
-    if (eventName === 'touchend') {
-      // Also simulate a click event, because map controls and buttons and stuff might need
-      // "clicks," not raw touch events, to do things.
-      // TODO: We might want to delay to make sure it's not a double-tap-to-zoom?
-
-      if (
-        isTouchMoveSignificant(
-          mapTouchState.startClientX,
-          mapTouchState.startClientY,
-          mapTouchState.lastClientX,
-          mapTouchState.lastClientY,
-        )
-      ) {
-        return; // more of a drag than a click
+      if (eventName === 'touchmove') {
+        mapTouchStateRef.current.lastClientX = evt.touches[0].clientX;
+        mapTouchStateRef.current.lastClientY = evt.touches[0].clientY;
+        mapTouchStateRef.current.lastScreenX = evt.touches[0].screenX;
+        mapTouchStateRef.current.lastScreenY = evt.touches[0].screenY;
       }
 
-      const syntheticEvent = new MouseEvent('click', {
-        bubbles: true, // might click on a <span> inside of a <button>, etc
-        screenX: mapTouchState.lastScreenX,
-        screenY: mapTouchState.lastScreenY,
-        clientX: mapTouchState.lastClientX,
-        clientY: mapTouchState.lastClientY,
-        // Treat as right click if 2 or more touches.
-        // I don't know if this is correct or useful.
-        button: mapTouchState.numTouches > 1 ? 2 : 0,
-        buttons: mapTouchState.numTouches > 1 ? 2 : 1,
-      });
-      target.dispatchEvent(syntheticEvent);
-    }
+      const mapTouchState = mapTouchStateRef.current;
 
-    if (eventName === 'touchend' || eventName === 'touchcancel') {
-      mapTouchStateRef.current = null;
-    }
-  };
+      const { target } = mapTouchState;
+
+      if (evt.touches?.length > 0) {
+        options.touches = [];
+        for (let i = 0; i < evt.touches.length; i++) {
+          options.touches.push(
+            new Touch({
+              identifier: i,
+              target,
+              clientX: evt.touches[i].clientX,
+              clientY: evt.touches[i].clientY,
+            }),
+          );
+        }
+      }
+
+      target?.dispatchEvent(new TouchEvent(evt.type, options));
+
+      if (eventName === 'touchend') {
+        // Also simulate a click event, because map controls and buttons and stuff might need
+        // "clicks," not raw touch events, to do things.
+        // TODO: We might want to delay to make sure it's not a double-tap-to-zoom?
+
+        if (
+          isTouchMoveSignificant(
+            mapTouchState.startClientX,
+            mapTouchState.startClientY,
+            mapTouchState.lastClientX,
+            mapTouchState.lastClientY,
+          )
+        ) {
+          return; // more of a drag than a click
+        }
+
+        const syntheticEvent = new MouseEvent('click', {
+          bubbles: true, // might click on a <span> inside of a <button>, etc
+          screenX: mapTouchState.lastScreenX,
+          screenY: mapTouchState.lastScreenY,
+          clientX: mapTouchState.lastClientX,
+          clientY: mapTouchState.lastClientY,
+          // Treat as right click if 2 or more touches.
+          // I don't know if this is correct or useful.
+          button: mapTouchState.numTouches > 1 ? 2 : 0,
+          buttons: mapTouchState.numTouches > 1 ? 2 : 1,
+        });
+        target.dispatchEvent(syntheticEvent);
+      }
+
+      if (eventName === 'touchend' || eventName === 'touchcancel') {
+        mapTouchStateRef.current = null;
+      }
+    },
+    [mapRef, columnRef, mapTouchStateRef],
+  );
 
   const mapOverlayTransparentRef = useRef<HTMLElement | null>(null);
   const mapOverlayTransparentRefCallback = useCallback(
@@ -249,16 +214,29 @@ function MobileMapLayout({
       }
       mapOverlayTransparentRef.current = node;
     },
-    [],
+    [handleMapTouchEvent],
   );
 
   const topContentRef = useRef<HTMLDivElement | null>(null);
-  useLayoutEffect(() => {
-    if (!mapRef.current) return;
-    updateMapTopControls();
-  });
 
-  const updateMapBottomControls = () => {
+  const updateMapTopControls = useCallback(() => {
+    if (
+      !mapRef.current ||
+      !mapControlTopLeftRef.current ||
+      !topContentRef.current ||
+      !mapControlTopRightRef.current
+    ) {
+      return;
+    }
+    const topContentHeight =
+      topContentRef.current.getBoundingClientRect().height;
+    mapControlTopLeftRef.current.style.transform =
+      'translate3d(0,' + topContentHeight + 'px,0)';
+    mapControlTopRightRef.current.style.transform =
+      'translate3d(0,' + topContentHeight + 'px,0)';
+  }, [mapRef, mapControlTopLeftRef, topContentRef, mapControlTopRightRef]);
+
+  const updateMapBottomControls = useCallback(() => {
     if (!mapRef.current || !mapOverlayTransparentRef.current) return;
 
     const paneTopY =
@@ -276,7 +254,52 @@ function MobileMapLayout({
       mapControlBottomRightRef.current.style.transform =
         'translate3d(0,' + bottomTranslate + 'px,0)';
     }
-  };
+  }, [
+    mapRef,
+    mapOverlayTransparentRef,
+    mapControlBottomLeftRef,
+    mapControlBottomRightRef,
+  ]);
+
+  useEffect(() => {
+    if (isMobile) {
+      window.requestAnimationFrame(updateMapBottomControls);
+      updateMapTopControls();
+    }
+
+    const mapControlTopLeft = mapControlTopLeftRef.current;
+    const mapControlTopRight = mapControlTopRightRef.current;
+    const mapControlBottomLeft = mapControlBottomLeftRef.current;
+    const mapControlBottomRight = mapControlBottomRightRef.current;
+
+    return () => {
+      if (mapControlTopLeft) {
+        mapControlTopLeft.style.transform = '';
+      }
+      if (mapControlTopRight) {
+        mapControlTopRight.style.transform = '';
+      }
+      if (mapControlBottomLeft) {
+        mapControlBottomLeft.style.transform = '';
+      }
+      if (mapControlBottomRight) {
+        mapControlBottomRight.style.transform = '';
+      }
+    };
+  }, [
+    isMobile,
+    mapControlTopLeftRef,
+    mapControlTopRightRef,
+    mapControlBottomLeftRef,
+    mapControlBottomRightRef,
+    updateMapTopControls,
+    updateMapBottomControls,
+  ]);
+
+  useLayoutEffect(() => {
+    if (!mapRef.current) return;
+    updateMapTopControls();
+  });
 
   // Update the positioning of the map's bottom-left and bottom-right controls
   // when the bottom pane resizes under them, scrolls, or when this component
@@ -302,7 +325,7 @@ function MobileMapLayout({
     if (mapOverlayRef.current && hasBottomContentWithMap) {
       mapOverlayRef.current.scrollTop = BOTTOM_DRAWER_DEFAULT_SCROLL;
     }
-  }, [hasBottomContentWithMap]);
+  }, [mapOverlayRef, hasBottomContentWithMap]);
 
   // iOS/Android hack: Shrink body when virtual keyboard is hiding content, so
   // you can't be scrolled down.
