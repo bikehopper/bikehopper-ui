@@ -163,6 +163,15 @@ function detailsToLines(
     const line = coordinates.slice(currentStart, currentEnd + 1);
     if (line.length > 1) {
       const generatedLine = turf.lineString(line);
+      // NOTE: This use of describeBikeInfra is somewhat redundant.
+      // describeBikeInfra has code to handle multiple different cycleway
+      // and road_class values and return multiple annotations, but in *this*
+      // function we've already made sure there's a constant cycleway and
+      // road_class between currentStart and currentEnd. (The reason for the
+      // discrepancy is that describeBikeInfra was intended to be used with an
+      // instruction step, which can encompass multiple cycleway/road_class
+      // combinations.) Also, this geometry might be too fine to properly
+      // capture the grade (steepness) information we want.
       const annos: StepAnnotation[] = describeBikeInfra(
         geometry,
         details.cycleway,
