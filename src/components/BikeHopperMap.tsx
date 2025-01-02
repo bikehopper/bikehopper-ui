@@ -70,6 +70,7 @@ import { activeRouteIds } from '../lib/activeRouteIds';
 
 import LogInIcon from 'iconoir/icons/log-in.svg?react';
 import LogOutIcon from 'iconoir/icons/log-out.svg?react';
+import { activeTripIds } from '../lib/activeTripIds';
 
 const _isTouch = 'ontouchstart' in window;
 
@@ -613,6 +614,11 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
       ? activeRouteIds(routes, activePath)
       : [];
 
+  const activeTrips =
+    routes != null && activePath != null
+      ? activeTripIds(routes, activePath)
+      : [];
+
   const navigationControlVisibility =
     mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden';
 
@@ -692,13 +698,13 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
         <Source
           id="routeTilesSource"
           type="vector"
-          tiles={['https://localhost:3000/api/v1/route-tiles/{z}/{x}/{y}.mvt']}
+          tiles={['https://localhost:3000/api/v1/route-tiles/{z}/{x}/{y}.pbf']}
           minzoom={7}
           maxzoom={14}
         >
           <Layer
             beforeId="routeOutline"
-            {...getTransitTilesLineStyle(activeRoutes)}
+            {...getTransitTilesLineStyle(activeRoutes, activeTrips)}
           />
           <Layer
             beforeId="transitLabelLayer"
@@ -846,6 +852,7 @@ function getTransitionStyle(
 
 function getTransitTilesLineStyle(
   activeRoutes: string[],
+  activeTrips: string[],
 ): Omit<LineLayerSpecification, 'source'> {
   return {
     id: 'route-lines',
@@ -854,16 +861,19 @@ function getTransitTilesLineStyle(
     filter: [
       'all',
       ['==', ['geometry-type'], 'LineString'],
-      activeRouteFilter(activeRoutes, 'route_id'),
+      activeFilter(activeRoutes, 'route_id'),
+      activeFilter(activeTrips, 'trip_ids'),
     ],
     paint: {
       'line-width': 3,
+      // 'line-opacity': 0.3,
+      // 'line-color': ['to-color', ['get', 'route_color']],
       'line-color': [
         'interpolate',
         ['linear'],
-        0.3,
+        0.6,
         0.0,
-        ['get', 'route_color'],
+        ['to-color', ['get', 'route_color']],
         1.0,
         ['rgb', 255, 255, 255],
       ],
@@ -881,7 +891,7 @@ function getTransitTilesStopStyle(
     filter: [
       'all',
       ['==', ['geometry-type'], 'Point'],
-      activeRouteFilter(activeRoutes, 'route_ids'),
+      activeFilter(activeRoutes, 'route_ids'),
     ],
     paint: {
       'circle-radius': 4,
@@ -901,7 +911,7 @@ function getTransitTilesStopOutlineStyle(
     filter: [
       'all',
       ['==', ['geometry-type'], 'Point'],
-      activeRouteFilter(activeRoutes, 'route_ids'),
+      activeFilter(activeRoutes, 'route_ids'),
     ],
     paint: {
       'circle-radius': 6,
@@ -1104,16 +1114,22 @@ function pathIndexIs(index: number | null): ExpressionFilterSpecification {
   return index == null ? false : ['==', ['get', 'path_index'], index];
 }
 
-function activeRouteFilter(
+function activeFilter(
   activeRoutes: string[],
-  routeIdKey: 'route_id' | 'route_ids',
+  routeIdKey: 'route_id' | 'route_ids' | 'trip_ids',
 ): ExpressionFilterSpecification {
   if (activeRoutes.length === 0) {
     return false;
   }
-  const matchers: ExpressionSpecification[] = activeRoutes.map(
-    (routeId: string) => ['==', routeId, ['get', routeIdKey]],
-  );
+  const matchers: ExpressionSpecification[] =
+    routeIdKey == 'route_id'
+      ? activeRoutes.map((routeId: string) => [
+          '==',
+          routeId,
+          ['get', routeIdKey],
+        ])
+      : activeRoutes.map((id: string) => ['in', id, ['get', routeIdKey]]);
+
   return ['any', ...matchers];
 }
 
