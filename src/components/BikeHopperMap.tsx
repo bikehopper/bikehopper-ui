@@ -55,7 +55,7 @@ import {
 } from '../features/routeParams';
 import { routeClicked } from '../features/routes';
 import { mapMoved } from '../features/viewport';
-import svgToImageData from '../lib/svgToImageData';
+import downloadImageData from '../lib/downloadImageData';
 import useResizeObserver from '../hooks/useResizeObserver';
 import {
   BOTTOM_DRAWER_DEFAULT_SCROLL,
@@ -75,8 +75,8 @@ import classnames from 'classnames';
 
 import LogInIcon from 'iconoir/icons/log-in.svg?react';
 import LogOutIcon from 'iconoir/icons/log-out.svg?react';
-import slopeDownhillIconRaw from '../../icons/mdi-svg/slope-downhill.svg?raw';
-import slopeUphillIconRaw from '../../icons/mdi-svg/slope-uphill.svg?raw';
+import slopeDownhillIconUrl from '../../icons/mdi-svg/slope-downhill_sdf.png';
+import slopeUphillIconUrl from '../../icons/mdi-svg/slope-uphill_sdf.png';
 import useScreenDims from '../hooks/useScreenDims';
 
 const _isTouch = 'ontouchstart' in window;
@@ -384,11 +384,11 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
     map.setPaintProperty('road-label', 'text-halo-width', 3);
 
     const [downslopeData, upslopeData] = await Promise.all([
-      svgToImageData(slopeDownhillIconRaw, 64),
-      svgToImageData(slopeUphillIconRaw, 64),
+      downloadImageData(slopeDownhillIconUrl),
+      downloadImageData(slopeUphillIconUrl),
     ]);
-    map.addImage('downslope', downslopeData);
-    map.addImage('upslope', upslopeData);
+    map.addImage('downslope', downslopeData, { sdf: true });
+    map.addImage('upslope', upslopeData, { sdf: true });
   };
 
   const resizeRef = useResizeObserver(
@@ -999,9 +999,15 @@ function getHillStyle(
         'upslope',
         'downslope',
       ],
-      'icon-size': 0.4,
+      'icon-size': 0.15,
       'symbol-placement': 'line-center',
       'icon-rotation-alignment': 'viewport',
+    },
+    paint: {
+      'icon-color': '#fef08a', // yellow-200
+      'icon-halo-color': '#a16207', // yellow-700
+      'icon-halo-width': 0.2,
+      'icon-halo-blur': 0.1,
     },
   };
 }
