@@ -75,8 +75,8 @@ import classnames from 'classnames';
 
 import LogInIcon from 'iconoir/icons/log-in.svg?react';
 import LogOutIcon from 'iconoir/icons/log-out.svg?react';
-import slopeDownhillIconUrl from '../../icons/mdi-svg/slope-downhill_sdf.png';
-import slopeUphillIconUrl from '../../icons/mdi-svg/slope-uphill_sdf.png';
+import slopeDownhillIconUrl from '../../icons/sdf/downhill_sdf.png';
+import slopeUphillIconUrl from '../../icons/sdf/uphill_sdf.png';
 import useScreenDims from '../hooks/useScreenDims';
 import Color from 'color';
 

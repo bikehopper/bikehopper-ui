@@ -13,10 +13,3 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
----
-
-This repo also incorporates the following third-party content:
-
-- Icons licensed under Apache 2.0. See: icons/mdi-svg/COPYING
