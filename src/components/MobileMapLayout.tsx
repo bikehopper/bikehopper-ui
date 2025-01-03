@@ -382,6 +382,7 @@ function MobileMapLayout({
             <div
               className={classnames({
                 MobileMapLayout_bottomPane: true,
+                shadow: true,
                 MobileMapLayout_bottomPane__withMapHidden: hideMap,
               })}
               onMouseEnter={_isTouch ? undefined : handleBottomPaneEnter}
