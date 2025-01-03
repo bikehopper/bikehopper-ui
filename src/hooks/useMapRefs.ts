@@ -12,7 +12,6 @@ export default function useMapRefs() {
   const mapControlTopRightRef = useRef<HTMLElement | null>(null);
 
   const handleMapLoad = () => {
-    console.log('map load');
     mapControlBottomLeftRef.current = document.getElementsByClassName(
       'maplibregl-ctrl-bottom-left',
     )[0] as HTMLElement;

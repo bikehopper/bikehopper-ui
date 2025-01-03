@@ -47,7 +47,7 @@ function range(start: number, stop: number, step: number) {
   return result;
 }
 
-function calcluateXTicks(
+function calculateXTicks(
   startX: number,
   endX: number,
   bikePixelsPerDist: number,
@@ -163,7 +163,7 @@ export default function ItineraryElevationProfile({
               ptLegs[ptLegIdxsWithoutHeight[0]].data[0].y ?? 0;
             const heightDiff = pointHeight - startHeight;
             for (let k = 0; k < ptLegIdxsWithoutHeight.length; k++) {
-              // Cacluate share of height difference that should be assigned to this leg
+              // Calculate share of height difference that should be assigned to this leg
               const frac = (k + 1) / (ptLegIdxsWithoutHeight.length + 1);
               ptLegs[ptLegIdxsWithoutHeight[k]].data[1].y =
                 startHeight + frac * heightDiff;
@@ -287,7 +287,7 @@ export default function ItineraryElevationProfile({
           const xTicks =
             legWidth < 25
               ? []
-              : calcluateXTicks(startX, endX, bikePixelsPerDist);
+              : calculateXTicks(startX, endX, bikePixelsPerDist);
           const axisBottom: AxisProps<number> =
             legIdx === longestBikeIdx
               ? {
