@@ -45,7 +45,10 @@ export default function DesktopMapLayout({
 
   return (
     <div className="overflow-hidden flex w-full h-full flex-row flex-nowrap">
-      <div className="flex h-full flex-col overflow-y-auto basis-[400px]">
+      <div
+        className="flex h-full flex-col overflow-y-auto basis-[400px]
+          shadow z-10"
+      >
         {header}
         <div className="z-10">{infoBox}</div>
         <div className="pointer-events-none flex w-full h-full items-center justify-center z-0">
