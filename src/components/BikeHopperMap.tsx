@@ -1009,6 +1009,7 @@ function getHillStyle(
       'icon-halo-color': 'white',
       'icon-halo-width': 0.5,
       'icon-halo-blur': 0.1,
+      'icon-opacity': 0.7,
     },
   };
 }
