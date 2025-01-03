@@ -78,6 +78,7 @@ import LogOutIcon from 'iconoir/icons/log-out.svg?react';
 import slopeDownhillIconUrl from '../../icons/mdi-svg/slope-downhill_sdf.png';
 import slopeUphillIconUrl from '../../icons/mdi-svg/slope-uphill_sdf.png';
 import useScreenDims from '../hooks/useScreenDims';
+import Color from 'color';
 
 const _isTouch = 'ontouchstart' in window;
 
@@ -1004,10 +1005,10 @@ function getHillStyle(
       'icon-rotation-alignment': 'viewport',
     },
     paint: {
-      'icon-color': '#fef000',
-      'icon-halo-color': '#806e13',
-      'icon-halo-width': 0.4,
-      'icon-halo-blur': 0.15,
+      'icon-color': Color('#ffa25b').darken(0.5).hex(),
+      'icon-halo-color': 'white',
+      'icon-halo-width': 0.5,
+      'icon-halo-blur': 0.1,
     },
   };
 }
