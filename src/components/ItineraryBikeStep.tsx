@@ -348,12 +348,16 @@ export default function ItineraryBikeStep({
                   'font-medium text-white text-xs': true,
                   'bg-red-700': anno === STEP_ANNOTATIONS.mainRoad,
                   'bg-gray-500':
-                    anno === STEP_ANNOTATIONS.steepHill ||
-                    anno === STEP_ANNOTATIONS.verySteepHill,
+                    anno === STEP_ANNOTATIONS.steepHillUp ||
+                    anno === STEP_ANNOTATIONS.verySteepHillUp ||
+                    anno === STEP_ANNOTATIONS.steepHillDown ||
+                    anno === STEP_ANNOTATIONS.verySteepHillDown,
                   'bg-bikeinfragreen': !(
                     anno === STEP_ANNOTATIONS.mainRoad ||
-                    anno === STEP_ANNOTATIONS.steepHill ||
-                    anno === STEP_ANNOTATIONS.verySteepHill
+                    anno === STEP_ANNOTATIONS.steepHillUp ||
+                    anno === STEP_ANNOTATIONS.verySteepHillUp ||
+                    anno === STEP_ANNOTATIONS.steepHillDown ||
+                    anno === STEP_ANNOTATIONS.verySteepHillDown
                   ),
                 })}
               >
