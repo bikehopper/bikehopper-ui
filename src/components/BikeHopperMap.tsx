@@ -1004,10 +1004,10 @@ function getHillStyle(
       'icon-rotation-alignment': 'viewport',
     },
     paint: {
-      'icon-color': '#fef08a', // yellow-200
-      'icon-halo-color': '#a16207', // yellow-700
-      'icon-halo-width': 0.2,
-      'icon-halo-blur': 0.1,
+      'icon-color': '#fef000',
+      'icon-halo-color': '#806e13',
+      'icon-halo-width': 0.4,
+      'icon-halo-blur': 0.15,
     },
   };
 }
