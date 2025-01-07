@@ -53,6 +53,7 @@ export default [
       'no-unused-vars': ['warn', { args: 'none', caughtErrors: 'none' }],
       'react/prop-types': 'off',
       'react/jsx-key': 'warn',
+      'no-debugger': 'warn',
       'no-empty': ['warn', { allowEmptyCatch: true }],
       'no-constant-condition': 'warn',
       'no-unreachable': 'warn',
