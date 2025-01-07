@@ -373,7 +373,8 @@ const _searchDropdownSelector = createSelector(
           ![thisId, otherId].includes(
             feat.properties.osm_type + feat.properties.osm_id,
           ) &&
-          ![thisLocationText, otherLocationText].includes(describePlace(feat)),
+          !(thisLocation && thisLocationText === describePlace(feat)) &&
+          !(otherLocation && otherLocationText === describePlace(feat)),
       )
       .slice(0, 8);
 
