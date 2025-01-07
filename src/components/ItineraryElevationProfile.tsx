@@ -1,16 +1,21 @@
 import { useIntl } from 'react-intl';
 
-import './ItineraryElevationProfile.css';
-
 import { BIKEHOPPER_THEME_COLOR, DEFAULT_PT_COLOR } from '../lib/colors';
 
 import distance from '@turf/distance';
 import * as turf from '@turf/helpers';
-import { LineCanvas } from '@nivo/line';
+import { LineCanvas, Serie } from '@nivo/line';
+import type { AxisProps } from '@nivo/axes';
+import type { ScaleSpec } from '@nivo/scales';
+import { RouteResponsePath } from '../lib/BikeHopperClient';
+import useScreenDims from '../hooks/useScreenDims';
 
 const METERS_PER_FOOT = 0.3048;
 
-function formatBikeLeg(bikeLeg, i) {
+function formatBikeLeg(
+  bikeLeg: BikeLegElevationData,
+  i: number,
+): BikeLegElevationData {
   return {
     id: `bike${i}`,
     color: BIKEHOPPER_THEME_COLOR,
@@ -18,24 +23,18 @@ function formatBikeLeg(bikeLeg, i) {
   };
 }
 
-function formatPTLeg(ptLeg, i) {
+function isBikeLeg(leg: LegElevationData): leg is BikeLegElevationData {
+  return Boolean(leg.id?.startsWith('bike'));
+}
+
+function formatPTLeg(ptLeg: PTLegElevationData, i: number): PTLegElevationData {
   return {
     id: `pt${i}`,
     ...ptLeg,
   };
 }
 
-function range(start, stop, step) {
-  if (typeof stop == 'undefined') {
-    // one param defined
-    stop = start;
-    start = 0;
-  }
-
-  if (typeof step == 'undefined') {
-    step = 1;
-  }
-
+function range(start: number, stop: number, step: number) {
   if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) {
     return [];
   }
@@ -48,7 +47,11 @@ function range(start, stop, step) {
   return result;
 }
 
-function calcluateXTicks(startX, endX, bikePixelsPerDist) {
+function calculateXTicks(
+  startX: number,
+  endX: number,
+  bikePixelsPerDist: number,
+) {
   let tickValues = [];
   const step = bikePixelsPerDist < 7 ? 5 : bikePixelsPerDist < 15 ? 2 : 1;
   tickValues = range(Math.ceil(startX), Math.ceil(endX), step);
@@ -76,12 +79,35 @@ function calcluateXTicks(startX, endX, bikePixelsPerDist) {
   return tickValues;
 }
 
-export default function ItineraryElevationProfile({ route }) {
+type LegElevationData = {
+  data: {
+    x: number;
+    y: number | null;
+    type?: 'start' | 'end';
+  }[];
+  color?: string;
+  id?: string;
+};
+
+type BikeLegElevationData = LegElevationData & {
+  dist?: number;
+};
+
+type PTLegElevationData = LegElevationData & {
+  label?: string;
+  name?: string;
+};
+
+export default function ItineraryElevationProfile({
+  route,
+}: {
+  route: RouteResponsePath;
+}) {
   const intl = useIntl();
 
   const legs = [];
   const ptLegs = [];
-  let ptLegIdxsWithoutHeight = [];
+  let ptLegIdxsWithoutHeight: number[] = [];
   let currentDist = 0;
   let currentPoint = route.legs[0].geometry.coordinates[0];
   let maxHeight = -Infinity;
@@ -89,8 +115,8 @@ export default function ItineraryElevationProfile({ route }) {
   let bikeDist = 0;
   let longestBikeDist = 0;
   let longestBikeIdx = -1;
-  let currPTLeg = { data: [] };
-  let currBikeLeg = { data: [] };
+  let currPTLeg: PTLegElevationData = { data: [] };
+  let currBikeLeg: BikeLegElevationData = { data: [] };
   for (const [legIdx, leg] of route.legs.entries()) {
     for (const [pointIdx, point] of leg.geometry.coordinates.entries()) {
       const dist = distance(turf.point(currentPoint), turf.point(point), {
@@ -133,10 +159,11 @@ export default function ItineraryElevationProfile({ route }) {
           currPTLeg = { data: [] };
           // Check if we have any transit legs without a start/end height
           if (ptLegIdxsWithoutHeight.length) {
-            const startHeight = ptLegs[ptLegIdxsWithoutHeight[0]].data[0].y;
+            const startHeight =
+              ptLegs[ptLegIdxsWithoutHeight[0]].data[0].y ?? 0;
             const heightDiff = pointHeight - startHeight;
             for (let k = 0; k < ptLegIdxsWithoutHeight.length; k++) {
-              // Cacluate share of hieght difference that should be assigned to this leg
+              // Calculate share of height difference that should be assigned to this leg
               const frac = (k + 1) / (ptLegIdxsWithoutHeight.length + 1);
               ptLegs[ptLegIdxsWithoutHeight[k]].data[1].y =
                 startHeight + frac * heightDiff;
@@ -192,7 +219,7 @@ export default function ItineraryElevationProfile({ route }) {
     }
   }
 
-  function round5(x) {
+  function round5(x: number) {
     return Math.ceil(x / 5) * 5;
   }
 
@@ -201,7 +228,7 @@ export default function ItineraryElevationProfile({ route }) {
   const medYElev = round5((minYElev + maxYElev) / 2);
 
   // Chart params
-  const yScale = {
+  const yScale: ScaleSpec = {
     type: 'linear',
     min: minYElev,
     max: maxYElev,
@@ -209,7 +236,7 @@ export default function ItineraryElevationProfile({ route }) {
 
   const yTicks = [minYElev, medYElev, maxYElev];
 
-  const axisLeft = {
+  const axisLeft: AxisProps<number> = {
     legend: intl.formatMessage({
       defaultMessage: 'Feet',
       description: 'legend at the left (y-axis) of elevation graph',
@@ -219,17 +246,25 @@ export default function ItineraryElevationProfile({ route }) {
     tickValues: yTicks,
   };
 
-  const defaultMargin = {
+  type Margin = {
+    top?: number;
+    bottom?: number;
+    left?: number;
+    right?: number;
+  };
+
+  const defaultMargin: Margin = {
     top: 30,
     bottom: 50,
   };
+
+  const { isMobile, innerWidth } = useScreenDims();
+  const totalWidth = isMobile ? innerWidth - 50 : 400 - 30;
 
   const chartHeight = 150;
   const ptWidthFrac = 0.15;
   const leftMargin = 50;
   const rightMargin = 30;
-  const itineraryPadding = 32;
-  const totalWidth = window.innerWidth - itineraryPadding * 2;
 
   const bikeWidth =
     (totalWidth - leftMargin - rightMargin) * (1 - ptLegs.length * ptWidthFrac);
@@ -238,22 +273,22 @@ export default function ItineraryElevationProfile({ route }) {
   const bikePixelsPerDist = bikeWidth / bikeDist;
 
   return (
-    <div style={{ display: 'flex' }}>
+    <div className="flex overflow-hidden">
       {legs.map((leg, legIdx) => {
         const startX = leg.data[0].x;
         const endX = leg.data[leg.data.length - 1].x;
-        const xScale = {
+        const xScale: ScaleSpec = {
           type: 'linear',
           min: startX,
           max: endX,
         };
-        if (leg.id.startsWith('bike')) {
-          const legWidth = leg.dist * bikePixelsPerDist;
+        if (isBikeLeg(leg)) {
+          const legWidth = (leg.dist ?? 0) * bikePixelsPerDist;
           const xTicks =
             legWidth < 25
               ? []
-              : calcluateXTicks(startX, endX, bikePixelsPerDist);
-          const axisBottom =
+              : calculateXTicks(startX, endX, bikePixelsPerDist);
+          const axisBottom: AxisProps<number> =
             legIdx === longestBikeIdx
               ? {
                   tickValues: xTicks,
@@ -284,7 +319,7 @@ export default function ItineraryElevationProfile({ route }) {
           return (
             <LineCanvas
               key={leg.id}
-              data={[leg]}
+              data={[leg as Serie]}
               width={width}
               height={chartHeight}
               xScale={xScale}
@@ -307,18 +342,18 @@ export default function ItineraryElevationProfile({ route }) {
             legendPosition: 'middle',
             legendOffset: 5,
             tickValues: [],
-          };
+          } satisfies AxisProps<number>;
           const roundedDist = Math.ceil((endX - startX) * 10) / 10;
           const axisBottom = {
             legend: `${roundedDist}mi`,
             legendPosition: 'middle',
             legendOffset: 10,
             tickValues: [],
-          };
+          } satisfies AxisProps<number>;
           return (
             <LineCanvas
               key={leg.id}
-              data={[leg]}
+              data={[leg as Serie]}
               width={totalWidth * ptWidthFrac}
               height={chartHeight}
               xScale={xScale}

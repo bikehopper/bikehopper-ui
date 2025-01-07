@@ -1,4 +1,3 @@
-import classnames from 'classnames';
 import type {
   ExpressionFilterSpecification,
   ExpressionSpecification,
@@ -70,18 +69,20 @@ import {
   DEFAULT_INACTIVE_COLOR,
 } from '../lib/colors';
 import { RouteResponsePath } from '../lib/BikeHopperClient';
+import classnames from 'classnames';
 import { activeRouteIds } from '../lib/activeRouteIds';
-
+import { activeTripIds } from '../lib/activeTripIds';
 import LogInIcon from 'iconoir/icons/log-in.svg?react';
 import LogOutIcon from 'iconoir/icons/log-out.svg?react';
-import { activeTripIds } from '../lib/activeTripIds';
+import useScreenDims from '../hooks/useScreenDims';
 
 const _isTouch = 'ontouchstart' in window;
 
 type Props = {
-  onMapLoad: () => void;
-  overlayRef: RefObject<HTMLElement>;
+  onMapLoad?: () => void;
+  overlayRef: RefObject<HTMLDivElement | null>;
   hidden: boolean;
+  isMobile: boolean;
 };
 
 type Bbox = [number, number, number, number];
@@ -383,13 +384,12 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
   };
 
   const resizeRef = useResizeObserver(
-    useCallback(
-      ([width, height]) => {
-        if (mapRef.current) mapRef.current.resize();
-      },
-      [mapRef],
-    ),
+    useCallback(() => {
+      if (mapRef.current) mapRef.current.resize();
+    }, [mapRef]),
   );
+
+  const { innerHeight, innerWidth } = useScreenDims();
 
   const prevViewingStep = usePrevious(viewingStep);
 
@@ -397,7 +397,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
   useLayoutEffect(() => {
     const map = mapRef.current?.getMap();
     const overlayEl = props.overlayRef.current;
-    if (!map || !overlayEl || !startCoords || !endCoords) return;
+    if (!map || !startCoords || !endCoords) return;
     if (isDragging) return;
 
     // We only want to center in specific situations
@@ -449,8 +449,8 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
         startCoords as [number, number],
       );
       const { x: endX, y: endY } = map.project(endCoords as [number, number]);
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      const w = innerWidth;
+      const h = innerHeight;
 
       const startVisible =
         startX > padding.left &&
@@ -494,6 +494,8 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
     activePath,
     viewingStep,
     prevViewingStep,
+    innerHeight,
+    innerWidth,
   ]);
 
   // When viewing a specific step of a route, zoom to where it starts.
@@ -503,8 +505,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
       activePath == null ||
       !viewingDetails ||
       !viewingStep ||
-      !mapRef.current ||
-      !props.overlayRef.current
+      !mapRef.current
     )
       return;
 
@@ -644,7 +645,15 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
   const viewStateOnFirstRender = useRef(viewState);
 
   return (
-    <div className="BikeHopperMap" ref={resizeRef} aria-hidden={props.hidden}>
+    <div
+      className={classnames({
+        BikeHopperMap: true,
+        BikeHopperMap__mobile: props.isMobile,
+        BikeHopperMap__desktop: !props.isMobile,
+      })}
+      ref={resizeRef}
+      aria-hidden={props.hidden}
+    >
       <MapGL
         initialViewState={viewStateOnFirstRender.current}
         ref={mapRef}
@@ -724,11 +733,15 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
           />
           <Layer
             beforeId="transitLabelLayer"
-            {...getTransitTilesStopStyle(activeRoutes)}
+            {...getTransitTilesStopStyle(activeTrips)}
           />
           <Layer
             beforeId="routeStops"
-            {...getTransitTilesStopOutlineStyle(activeRoutes)}
+            {...getTransitTilesStopOutlineStyle(activeTrips)}
+          />
+          <Layer
+            beforeId="transitLabelLayer"
+            {...getTransitTilesStopNamesStyle(activeTrips)}
           />
         </Source>
         {startCoords && (
@@ -901,8 +914,6 @@ function getTransitTilesLineStyle(
     ],
     paint: {
       'line-width': 3,
-      // 'line-opacity': 0.3,
-      // 'line-color': ['to-color', ['get', 'route_color']],
       'line-color': [
         'interpolate',
         ['linear'],
@@ -917,7 +928,7 @@ function getTransitTilesLineStyle(
 }
 
 function getTransitTilesStopStyle(
-  activeRoutes: string[],
+  activeTrips: string[],
 ): Omit<CircleLayerSpecification, 'source'> {
   return {
     id: 'routeStops',
@@ -926,33 +937,59 @@ function getTransitTilesStopStyle(
     filter: [
       'all',
       ['==', ['geometry-type'], 'Point'],
-      activeFilter(activeRoutes, 'route_ids'),
+      activeFilter(activeTrips, 'trip_ids'),
     ],
     paint: {
       'circle-radius': 4,
       'circle-color': 'white',
     },
-    minzoom: 13,
   };
 }
 
 function getTransitTilesStopOutlineStyle(
-  activeRoutes: string[],
+  activeTrips: string[],
 ): Omit<CircleLayerSpecification, 'source'> {
   return {
     id: 'routeStopsOutline',
-    'source-layer': 'layer0',
+    'source-layer': 'route-lines',
     type: 'circle',
     filter: [
       'all',
       ['==', ['geometry-type'], 'Point'],
-      activeFilter(activeRoutes, 'route_ids'),
+      activeFilter(activeTrips, 'trip_ids'),
     ],
     paint: {
       'circle-radius': 6,
       'circle-color': 'black',
     },
-    minzoom: 13,
+  };
+}
+
+function getTransitTilesStopNamesStyle(
+  activeTrips: string[],
+): Omit<SymbolLayerSpecification, 'source'> {
+  return {
+    id: 'routeStopNames',
+    'source-layer': 'route-lines',
+    type: 'symbol',
+    minzoom: 8,
+    filter: [
+      'all',
+      ['==', ['geometry-type'], 'Point'],
+      activeFilter(activeTrips, 'trip_ids'),
+    ],
+    layout: {
+      'text-field': ['to-string', ['get', 'stop_name']],
+      'text-anchor': 'top-left',
+      'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
+      'text-size': 14,
+      'text-justify': 'left',
+      'text-offset': [0.3, 0.3],
+    },
+    paint: {
+      'text-halo-color': 'white',
+      'text-halo-width': 2,
+    },
   };
 }
 
@@ -1168,25 +1205,34 @@ function activeFilter(
   return ['any', ...matchers];
 }
 
-function getPaddingForMap(overlayEl: HTMLElement) {
-  const padding = {
-    top: 40,
-    left: 40,
-    right: 40,
-    bottom: 40,
-  };
-  const clientRect = overlayEl.getBoundingClientRect();
-  padding.top += clientRect.top;
-  // When the bottom drawer first appears, it should be adjusted to this
-  // height. (That scroll can happen either before or after this code is
-  // executed.) Note that this sometimes leaves more space than needed
-  // because the bottom drawer's actual height may be less than the
-  // default height if there are only 1 or 2 routes. We might ideally
-  // prefer to make sure the scroll happened first, and then measure the
-  // bottom drawer.
-  padding.bottom += BOTTOM_DRAWER_DEFAULT_SCROLL + BOTTOM_DRAWER_MIN_HEIGHT;
-
-  return padding;
+function getPaddingForMap(overlayEl: HTMLElement | null) {
+  // we only have an overlay on mobile
+  if (overlayEl) {
+    const padding = {
+      top: 40,
+      left: 40,
+      right: 40,
+      bottom: 40,
+    };
+    const clientRect = overlayEl.getBoundingClientRect();
+    padding.top += clientRect.top;
+    // When the bottom drawer first appears, it should be adjusted to this
+    // height. (That scroll can happen either before or after this code is
+    // executed.) Note that this sometimes leaves more space than needed
+    // because the bottom drawer's actual height may be less than the
+    // default height if there are only 1 or 2 routes. We might ideally
+    // prefer to make sure the scroll happened first, and then measure the
+    // bottom drawer.
+    padding.bottom += BOTTOM_DRAWER_DEFAULT_SCROLL + BOTTOM_DRAWER_MIN_HEIGHT;
+    return padding;
+  } else {
+    return {
+      top: 100,
+      left: 100,
+      right: 100,
+      bottom: 100,
+    };
+  }
 }
 
 function transformRequest(url: string, resourceType: string | undefined) {

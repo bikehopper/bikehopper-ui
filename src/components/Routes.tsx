@@ -187,5 +187,9 @@ export default function Routes(props: {}) {
     }
   }
 
-  return <div ref={rootRef}>{content}</div>;
+  return (
+    <div className="inline w-full" ref={rootRef}>
+      {content}
+    </div>
+  );
 }

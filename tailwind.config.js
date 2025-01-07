@@ -17,6 +17,9 @@ export default {
       scale: {
         '-100': '-1', // allow flipping
       },
+      boxShadow: {
+        DEFAULT: '0 1px 10px #c4c4c4',
+      },
     },
   },
   plugins: [typographyPlugin],

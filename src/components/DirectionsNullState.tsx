@@ -72,16 +72,6 @@ export default function DirectionsNullState(props: Props) {
           />
         </p>
       )}
-      <p className="hidden lg:block">
-        <FormattedMessage
-          defaultMessage={
-            'In this early beta, BikeHopper is <strong>designed for phone screens</strong>,' +
-            ' so it might look strange on your computer.'
-          }
-          description="paragraph in welcome screen"
-          values={{ strong }}
-        />
-      </p>
       <p>
         <FormattedMessage
           defaultMessage={
@@ -112,7 +102,7 @@ export default function DirectionsNullState(props: Props) {
           values={{
             link: (chunks) => (
               <a
-                href="https://github.com/bikehopper/bikehopper-ui"
+                href="https://github.com/bikehopper/"
                 target="_blank"
                 rel="noreferrer"
               >
