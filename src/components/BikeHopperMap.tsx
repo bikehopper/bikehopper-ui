@@ -68,7 +68,7 @@ import {
   DEFAULT_BIKE_COLOR,
   DEFAULT_INACTIVE_COLOR,
 } from '../lib/colors';
-import { RouteResponsePath } from '../lib/BikeHopperClient';
+import { RouteResponsePath, getApiPath } from '../lib/BikeHopperClient';
 import classnames from 'classnames';
 import { activeRouteIds } from '../lib/activeRouteIds';
 import { activeTripIds } from '../lib/activeTripIds';
@@ -723,7 +723,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
         <Source
           id="routeTilesSource"
           type="vector"
-          tiles={['https://localhost:3000/api/v1/route-tiles/{z}/{x}/{y}.pbf']}
+          tiles={[`${getApiPath()}/api/v1/route-tiles/{z}/{x}/{y}.pbf`]}
           minzoom={7}
           maxzoom={14}
         >
