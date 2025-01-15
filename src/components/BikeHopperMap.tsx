@@ -1000,16 +1000,17 @@ function getHillStyle(
         'upslope',
         'downslope',
       ],
-      'icon-size': 0.15,
+      'icon-size': ['interpolate', ['linear'], ['zoom'], 12.5, 0.1, 16.5, 0.15],
       'symbol-placement': 'line-center',
       'icon-rotation-alignment': 'viewport',
     },
+    minzoom: 12.5,
     paint: {
       'icon-color': Color('#ffa25b').darken(0.5).hex(),
       'icon-halo-color': 'white',
       'icon-halo-width': 0.1,
       'icon-halo-blur': 0.1,
-      'icon-opacity': 0.8,
+      'icon-opacity': 0.9,
     },
   };
 }
