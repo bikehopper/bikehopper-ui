@@ -183,7 +183,13 @@ type GeocodeFailedAction = Action<'geocode_failed'> & {
 export function geocodeTypedLocation(
   text: string,
   key: string,
-  { fromTextAutocomplete }: { fromTextAutocomplete?: boolean } = {},
+  {
+    fromTextAutocomplete,
+    isRetry,
+  }: {
+    fromTextAutocomplete?: boolean;
+    isRetry?: boolean; // Initiated by user clicking Retry in dropdown
+  } = {},
 ): BikeHopperThunkAction {
   return async function geocodeTypedLocationThunk(dispatch, getState) {
     text = text.trim();
@@ -191,7 +197,7 @@ export function geocodeTypedLocation(
 
     _LOCATION_TYPED_ACTION_LAST_TEXT_FOR_KEY[key] = text;
 
-    if (fromTextAutocomplete) {
+    if (fromTextAutocomplete && !isRetry) {
       if (import.meta.env.VITE_USE_PUBLIC_NOMINATIM) {
         // Public Nominatim is for development / demo only, and to comply with
         // the API guidelines, we must limit requests to 1/sec and not use it
