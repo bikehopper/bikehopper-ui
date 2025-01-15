@@ -250,7 +250,6 @@ const _searchDropdownSelector = createSelector(
       if (inputText !== '' && (!cache || cache?.status === 'fetching')) {
         loading = true;
       }
-      // TODO: should we distinguish b/t server error & no match?
       if (cache && cache.status === 'failed') {
         noResultsReason = cache.failureType;
       }
