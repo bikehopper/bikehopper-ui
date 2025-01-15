@@ -1007,9 +1007,9 @@ function getHillStyle(
     paint: {
       'icon-color': Color('#ffa25b').darken(0.5).hex(),
       'icon-halo-color': 'white',
-      'icon-halo-width': 0.5,
+      'icon-halo-width': 0.1,
       'icon-halo-blur': 0.1,
-      'icon-opacity': 0.7,
+      'icon-opacity': 0.8,
     },
   };
 }
