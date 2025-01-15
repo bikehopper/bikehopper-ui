@@ -24,6 +24,7 @@ type OsmCacheItemFetching = {
 type OsmCacheItemFailed = {
   status: 'failed';
   time: number;
+  failureType: GeocodeFailureType;
 };
 type OsmCacheItemSucceeded = {
   status: 'succeeded';
@@ -90,6 +91,7 @@ export function geocodingReducer(
         draft.typeaheadCache['@' + action.text] = {
           status: 'failed',
           time: action.time,
+          failureType: action.failureType,
         };
       });
     case 'geocode_succeeded':
@@ -162,10 +164,17 @@ type GeocodeSucceededAction = Action<'geocode_succeeded'> & {
   features: BikeHopperClient.PhotonOsmHash[];
 };
 
+export enum GeocodeFailureType {
+  SERVER_ERROR = 'server error',
+  NETWORK_ERROR = 'network error',
+  UNEXPECTED_FORMAT = 'unexpected format',
+  NO_POINTS_FOUND = 'no points found',
+}
+
 type GeocodeFailedAction = Action<'geocode_failed'> & {
   text: string;
   time: number;
-  failureType: string;
+  failureType: GeocodeFailureType;
 };
 
 // The user has typed some text representing a location (which may be
@@ -217,12 +226,12 @@ export function geocodeTypedLocation(
         limit: GEOCODE_RESULT_LIMIT,
       });
     } catch (e) {
-      let failureType, alertMsg;
+      let failureType: GeocodeFailureType, alertMsg;
       if (e instanceof BikeHopperClient.BikeHopperClientError) {
-        failureType = 'server error';
+        failureType = GeocodeFailureType.SERVER_ERROR;
         alertMsg = 'Server error';
       } else {
-        failureType = 'network error';
+        failureType = GeocodeFailureType.NETWORK_ERROR;
         alertMsg = "Can't connect to server";
       }
       dispatch({
@@ -236,10 +245,11 @@ export function geocodeTypedLocation(
     }
 
     if (result.type !== 'FeatureCollection') {
+      // Shouldn't happen
       dispatch({
         type: 'geocode_failed',
         text,
-        failureType: 'not a FeatureCollection',
+        failureType: GeocodeFailureType.UNEXPECTED_FORMAT,
         time: Date.now(),
         alert: alertOnFailure
           ? { message: `Couldn't find ${text}` }
@@ -256,7 +266,7 @@ export function geocodeTypedLocation(
       dispatch({
         type: 'geocode_failed',
         text,
-        failureType: 'no points found',
+        failureType: GeocodeFailureType.NO_POINTS_FOUND,
         time: Date.now(),
         alert: alertOnFailure
           ? { message: `Couldn't find ${text}` }
