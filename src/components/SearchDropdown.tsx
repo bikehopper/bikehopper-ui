@@ -1,12 +1,15 @@
 import classnames from 'classnames';
-import { cloneElement, useCallback } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { cloneElement } from 'react';
+import { useIntl } from 'react-intl';
 import type { IntlShape } from 'react-intl';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import MoonLoader from 'react-spinners/MoonLoader';
 import { createSelector } from 'reselect';
 import type { PhotonOsmHash } from '../lib/BikeHopperClient';
-import { removeRecentlyUsedLocation } from '../features/geocoding';
+import {
+  GeocodeFailureType,
+  removeRecentlyUsedLocation,
+} from '../features/geocoding';
 import type {
   OsmCacheItem,
   OsmId,
@@ -23,6 +26,7 @@ import describePlace from '../lib/describePlace';
 import { parsePossibleCoordsString, stringifyCoords } from '../lib/geometry';
 import Icon from './primitives/Icon';
 import PlaceIcon from './PlaceIcon';
+import SearchDropdownGeocodeError from './SearchDropdownGeocodeError';
 import SelectionList from './SelectionList';
 import SelectionListItem from './SelectionListItem';
 import type { Dispatch, RootState } from '../store';
@@ -52,18 +56,13 @@ export default function SearchDropdown({
       'option that can be selected (or typed in) to get directions from or ' +
       'to the current location of the user, as determined by GPS',
   });
-  const strong = useCallback(
-    (txt: React.ReactNode) => <strong>{txt}</strong>,
-    [],
-  );
-
   const {
     inputText,
     autocompletedText,
     features,
     showCurrentLocationOption,
     loading,
-    noResults, // we explicitly searched and found no results
+    noResultsReason, // we explicitly searched and found no results
     parsedCoords,
   }: {
     inputText: string;
@@ -71,7 +70,7 @@ export default function SearchDropdown({
     features: DropdownFeature[];
     showCurrentLocationOption: boolean;
     loading: boolean;
-    noResults: boolean;
+    noResultsReason: GeocodeFailureType | undefined;
     parsedCoords: [number, number] | null;
   } = useSelector(
     (state) =>
@@ -160,17 +159,15 @@ export default function SearchDropdown({
           />
         ))}
       </SelectionList>
-      {(loading || noResults) && (
+      {(loading || Boolean(noResultsReason)) && (
         <div className="relative inset-x-0 pt-4 pl-12 pointer-events-none">
           <MoonLoader size={30} loading={loading} />
-          {noResults && !parsedCoords && (
-            <span className="text-sm">
-              <FormattedMessage
-                defaultMessage="Nothing found for ''{inputText}''"
-                description="Message when no search results are found"
-                values={{ inputText, strong }}
-              />
-            </span>
+          {noResultsReason && !parsedCoords && (
+            <SearchDropdownGeocodeError
+              inputText={inputText}
+              failureType={noResultsReason}
+              startOrEnd={startOrEnd}
+            />
           )}
         </div>
       )}
@@ -248,13 +245,14 @@ const _searchDropdownSelector = createSelector(
     let cache = inputText && typeaheadCache['@' + inputText];
     let fallbackToGeocodedLocationSourceText = false;
     let loading = false;
-    let noResults = false;
+    let noResultsReason: GeocodeFailureType | undefined;
     if (!parsedCoords && (!cache || cache.status !== 'succeeded')) {
       if (inputText !== '' && (!cache || cache?.status === 'fetching')) {
         loading = true;
       }
-      // TODO: should we distinguish b/t server error & no match?
-      if (cache && cache.status === 'failed') noResults = true;
+      if (cache && cache.status === 'failed') {
+        noResultsReason = cache.failureType;
+      }
 
       // If the location we're editing has a geocoded location already selected, display the
       // other options from the input text that was used to pick that.
@@ -384,7 +382,7 @@ const _searchDropdownSelector = createSelector(
       features: shownFeatures,
       showCurrentLocationOption,
       loading,
-      noResults,
+      noResultsReason,
       parsedCoords,
     };
   },

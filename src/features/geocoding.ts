@@ -24,6 +24,7 @@ type OsmCacheItemFetching = {
 type OsmCacheItemFailed = {
   status: 'failed';
   time: number;
+  failureType: GeocodeFailureType;
 };
 type OsmCacheItemSucceeded = {
   status: 'succeeded';
@@ -90,6 +91,7 @@ export function geocodingReducer(
         draft.typeaheadCache['@' + action.text] = {
           status: 'failed',
           time: action.time,
+          failureType: action.failureType,
         };
       });
     case 'geocode_succeeded':
@@ -162,10 +164,17 @@ type GeocodeSucceededAction = Action<'geocode_succeeded'> & {
   features: BikeHopperClient.PhotonOsmHash[];
 };
 
+export enum GeocodeFailureType {
+  SERVER_ERROR = 'server error',
+  NETWORK_ERROR = 'network error',
+  UNEXPECTED_FORMAT = 'unexpected format',
+  NO_POINTS_FOUND = 'no points found',
+}
+
 type GeocodeFailedAction = Action<'geocode_failed'> & {
   text: string;
   time: number;
-  failureType: string;
+  failureType: GeocodeFailureType;
 };
 
 // The user has typed some text representing a location (which may be
@@ -174,7 +183,13 @@ type GeocodeFailedAction = Action<'geocode_failed'> & {
 export function geocodeTypedLocation(
   text: string,
   key: string,
-  { fromTextAutocomplete }: { fromTextAutocomplete?: boolean } = {},
+  {
+    fromTextAutocomplete,
+    isRetry,
+  }: {
+    fromTextAutocomplete?: boolean;
+    isRetry?: boolean; // Initiated by user clicking Retry in dropdown
+  } = {},
 ): BikeHopperThunkAction {
   return async function geocodeTypedLocationThunk(dispatch, getState) {
     text = text.trim();
@@ -182,7 +197,7 @@ export function geocodeTypedLocation(
 
     _LOCATION_TYPED_ACTION_LAST_TEXT_FOR_KEY[key] = text;
 
-    if (fromTextAutocomplete) {
+    if (fromTextAutocomplete && !isRetry) {
       if (import.meta.env.VITE_USE_PUBLIC_NOMINATIM) {
         // Public Nominatim is for development / demo only, and to comply with
         // the API guidelines, we must limit requests to 1/sec and not use it
@@ -217,12 +232,12 @@ export function geocodeTypedLocation(
         limit: GEOCODE_RESULT_LIMIT,
       });
     } catch (e) {
-      let failureType, alertMsg;
+      let failureType: GeocodeFailureType, alertMsg;
       if (e instanceof BikeHopperClient.BikeHopperClientError) {
-        failureType = 'server error';
+        failureType = GeocodeFailureType.SERVER_ERROR;
         alertMsg = 'Server error';
       } else {
-        failureType = 'network error';
+        failureType = GeocodeFailureType.NETWORK_ERROR;
         alertMsg = "Can't connect to server";
       }
       dispatch({
@@ -236,10 +251,11 @@ export function geocodeTypedLocation(
     }
 
     if (result.type !== 'FeatureCollection') {
+      // Shouldn't happen
       dispatch({
         type: 'geocode_failed',
         text,
-        failureType: 'not a FeatureCollection',
+        failureType: GeocodeFailureType.UNEXPECTED_FORMAT,
         time: Date.now(),
         alert: alertOnFailure
           ? { message: `Couldn't find ${text}` }
@@ -256,7 +272,7 @@ export function geocodeTypedLocation(
       dispatch({
         type: 'geocode_failed',
         text,
-        failureType: 'no points found',
+        failureType: GeocodeFailureType.NO_POINTS_FOUND,
         time: Date.now(),
         alert: alertOnFailure
           ? { message: `Couldn't find ${text}` }
