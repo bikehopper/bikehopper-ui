@@ -87,16 +87,6 @@
       "value": "very steep hill"
     }
   ],
-  "3uzNHk": [
-    {
-      "type": 0,
-      "value": "Get off at "
-    },
-    {
-      "type": 1,
-      "value": "stop"
-    }
-  ],
   "4cy0Qt": [
     {
       "type": 0,
@@ -503,26 +493,6 @@
       "value": "Funicular"
     }
   ],
-  "HQjcNO": [
-    {
-      "type": 0,
-      "value": "In this early beta, BikeHopper is "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "designed for phone screens"
-        }
-      ],
-      "type": 8,
-      "value": "strong"
-    },
-    {
-      "type": 0,
-      "value": ", so it might look strange on your computer."
-    }
-  ],
   "HQldX2": [
     {
       "type": 0,
@@ -829,6 +799,12 @@
       "value": "haveStreet"
     }
   ],
+  "T2gsdZ": [
+    {
+      "type": 0,
+      "value": "Previous step"
+    }
+  ],
   "T6l6cE": [
     {
       "type": 0,
@@ -1087,6 +1063,12 @@
       },
       "type": 5,
       "value": "haveStreet"
+    }
+  ],
+  "gffd+Z": [
+    {
+      "type": 0,
+      "value": "Next step"
     }
   ],
   "hFkXoB": [
@@ -1357,20 +1339,16 @@
       "value": "Elevation gain"
     }
   ],
-  "y9hwj+": [
-    {
-      "type": 0,
-      "value": "Board at "
-    },
-    {
-      "type": 1,
-      "value": "stop"
-    }
-  ],
   "yfE0fS": [
     {
       "type": 0,
       "value": "protected bike lane"
+    }
+  ],
+  "zBEo8L": [
+    {
+      "type": 0,
+      "value": "Open in OSM"
     }
   ],
   "zOmTEh": [

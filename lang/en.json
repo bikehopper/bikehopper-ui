@@ -23,10 +23,6 @@
     "defaultMessage": "very steep hill",
     "description": "annotation for a step in a series of biking directions."
   },
-  "3uzNHk": {
-    "defaultMessage": "Get off at {stop}",
-    "description": "instruction to exit a transit vehicle at the named stop"
-  },
   "4cy0Qt": {
     "defaultMessage": "Bus",
     "description": "labels a transit line as being operated by a bus. Appears next to the name or number of the bus line."
@@ -143,10 +139,6 @@
     "defaultMessage": "Funicular",
     "description": "labels a transit line as being operated by a funicular. Appears next to the name or number of the bus line."
   },
-  "HQjcNO": {
-    "defaultMessage": "In this early beta, BikeHopper is <strong>designed for phone screens</strong>, so it might look strange on your computer.",
-    "description": "paragraph in welcome screen"
-  },
   "HQldX2": {
     "defaultMessage": "shoulder",
     "description": "annotation for a step in a series of biking directions. A road where bikes are recommended to ride on the shoulder."
@@ -247,6 +239,10 @@
     "defaultMessage": "Turn <dir>left</dir>{haveStreet, select, name { onto <name>{street}</name>} other {}}",
     "description": "instruction"
   },
+  "T2gsdZ": {
+    "defaultMessage": "Previous step",
+    "description": "button. Goes to previous step in a list of directions."
+  },
   "T6l6cE": {
     "defaultMessage": "Monorail",
     "description": "labels a transit line as being operated by a tram, streetcar or light rail. Appears next to the name or number of the line."
@@ -326,6 +322,10 @@
   "get++U": {
     "defaultMessage": "At roundabout, take exit {num}{haveStreet, select, name { onto <name>{street}</name>} other {}}",
     "description": "instruction"
+  },
+  "gffd+Z": {
+    "defaultMessage": "Next step",
+    "description": "button. Goes to next step in a list of directions."
   },
   "hFkXoB": {
     "defaultMessage": "Bike routes from {from} to {to}",
@@ -435,13 +435,13 @@
     "defaultMessage": "Elevation gain",
     "description": "Accessible alt text for an up-arrow icon that appears next to a measurement of the elevation gain on a route, such as (in English) 200 ft or 50 m."
   },
-  "y9hwj+": {
-    "defaultMessage": "Board at {stop}",
-    "description": "instruction to board a transit vehicle at the named stop"
-  },
   "yfE0fS": {
     "defaultMessage": "protected bike lane",
     "description": "annotation for a step in a series of biking directions."
+  },
+  "zBEo8L": {
+    "defaultMessage": "Open in OSM",
+    "description": "menu item. Appears in context menu under a location you have selected on the map. Opens OpenStreetMap (abbreviated OSM) to that location."
   },
   "zOmTEh": {
     "defaultMessage": "Dismiss",
