@@ -57,12 +57,29 @@ export default function Toasts() {
     }
   }, [dispatch, alerts]);
 
+  // The default hotkey. Explicitly defining so we can use it as a parameter
+  // for internationalization.
+  const hotkeyProp = ['F8'];
+  const hotkeyDisplay = 'F8';
+
   return (
     <>
       <ToastPrimitive.Viewport
         className="bg-transparent pointer-events-none z-30
           list-none px-0 pt-0 pb-8 flex flex-col
           fixed bottom-0 inset-x-0 box-content content-end items-center"
+        hotkey={hotkeyProp}
+        label={intl.formatMessage(
+          {
+            defaultMessage: 'Notifications ({hotkey})',
+            description:
+              'label for notifications area. The hotkey is a key such as ' +
+              'F8 that can be pressed on a keyboard to jump to this area.',
+          },
+          {
+            hotkey: hotkeyDisplay,
+          },
+        )}
       />
       {alerts.map(({ severity, message, id }) => (
         <Transition
