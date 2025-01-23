@@ -55,6 +55,10 @@
     "defaultMessage": "{num}ft",
     "description": "compact version of a distance in feet"
   },
+  "9rTQtP": {
+    "defaultMessage": "Unable to connect to server. {retryLink}",
+    "description": "Error message with a link to retry. The link text is \"Retry\"."
+  },
   "9yOLYg": {
     "defaultMessage": "Departing {datetime}",
     "description": "description of trip departing at the given date and time. The datetime is localized but an example for an American English locale would be \"May 21, 2023, 2:30PM\"."
@@ -359,6 +363,10 @@
     "defaultMessage": "Leaving now",
     "description": "description of departure time for a trip leaving now."
   },
+  "mkvvP4": {
+    "defaultMessage": "Retry",
+    "description": "Button. Retries a failed action"
+  },
   "nSPIt1": {
     "defaultMessage": "Press here to download the FIT file.",
     "description": "Link to download the FIT file."
@@ -370,6 +378,10 @@
   "p04B0A": {
     "defaultMessage": "west",
     "description": "cardinal direction, used in a sentence like \"Head west\""
+  },
+  "pn7Wd7": {
+    "defaultMessage": "Server error. {retryLink}",
+    "description": "Error message with a link to retry. The link text is \"Retry\". The error means there is probably a problem on the server."
   },
   "qyWb6X": {
     "defaultMessage": "Connecting modes",
@@ -414,6 +426,10 @@
   "wOrcKy": {
     "defaultMessage": "Now",
     "description": "option in a dropdown list for departure time"
+  },
+  "woEF2c": {
+    "defaultMessage": "Notifications ({hotkey})",
+    "description": "label for notifications area. The hotkey is a key such as F8 that can be pressed on a keyboard to jump to this area."
   },
   "xCyANw": {
     "defaultMessage": "Remove",

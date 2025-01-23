@@ -161,6 +161,16 @@
       "value": "ft"
     }
   ],
+  "9rTQtP": [
+    {
+      "type": 0,
+      "value": "Unable to connect to server. "
+    },
+    {
+      "type": 1,
+      "value": "retryLink"
+    }
+  ],
   "9yOLYg": [
     {
       "type": 0,
@@ -1135,6 +1145,12 @@
       "value": "Leaving now"
     }
   ],
+  "mkvvP4": [
+    {
+      "type": 0,
+      "value": "Retry"
+    }
+  ],
   "nSPIt1": [
     {
       "type": 0,
@@ -1151,6 +1167,16 @@
     {
       "type": 0,
       "value": "west"
+    }
+  ],
+  "pn7Wd7": [
+    {
+      "type": 0,
+      "value": "Server error. "
+    },
+    {
+      "type": 1,
+      "value": "retryLink"
     }
   ],
   "qyWb6X": [
@@ -1255,6 +1281,20 @@
     {
       "type": 0,
       "value": "Now"
+    }
+  ],
+  "woEF2c": [
+    {
+      "type": 0,
+      "value": "Notifications ("
+    },
+    {
+      "type": 1,
+      "value": "hotkey"
+    },
+    {
+      "type": 0,
+      "value": ")"
     }
   ],
   "xCyANw": [
