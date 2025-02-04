@@ -664,7 +664,6 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
         }}
         onLoad={handleMapLoad}
         mapStyle="mapbox://styles/mapbox/streets-v11"
-        mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
         transformRequest={transformRequest}
         interactiveLayerIds={INTERACTIVE_LAYER_IDS}
         onMouseMove={!_isTouch ? handleMapMouseMove : undefined}
