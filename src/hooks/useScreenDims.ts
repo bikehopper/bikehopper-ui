@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const MAX_MOBILE_WIDTH_PX = 750;
+const DESKTOP_MIN_WIDTH_PX = 900;
 
 export default function useScreenDims() {
   const [width, setWidth] = useState(window.innerWidth);
@@ -19,7 +19,7 @@ export default function useScreenDims() {
   });
 
   return {
-    isMobile: width < MAX_MOBILE_WIDTH_PX,
+    isMobile: width < DESKTOP_MIN_WIDTH_PX,
     innerWidth: width,
     innerHeight: height,
   };

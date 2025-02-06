@@ -26,6 +26,7 @@ import type {
   GeolocateResultEvent,
   LngLatBoundsLike,
   LngLatLike,
+  MapEvent,
   MapLayerMouseEvent,
   MapLayerTouchEvent,
   MapRef,
@@ -42,6 +43,7 @@ import {
   routesToGeoJSON,
   EMPTY_GEOJSON,
   BIKEABLE_HIGHWAYS,
+  STEP_ANNOTATIONS,
 } from '../lib/geometry';
 import lngLatToCoords from '../lib/lngLatToCoords';
 import { isTouchMoveSignificant } from '../lib/touch';
@@ -54,6 +56,7 @@ import {
 } from '../features/routeParams';
 import { routeClicked } from '../features/routes';
 import { mapMoved } from '../features/viewport';
+import downloadImageData from '../lib/downloadImageData';
 import useResizeObserver from '../hooks/useResizeObserver';
 import {
   BOTTOM_DRAWER_DEFAULT_SCROLL,
@@ -74,7 +77,10 @@ import { activeRouteIds } from '../lib/activeRouteIds';
 import { activeTripIds } from '../lib/activeTripIds';
 import LogInIcon from 'iconoir/icons/log-in.svg?react';
 import LogOutIcon from 'iconoir/icons/log-out.svg?react';
+import slopeDownhillIconUrl from '../../icons/sdf/downhill_sdf.png';
+import slopeUphillIconUrl from '../../icons/sdf/uphill_sdf.png';
 import useScreenDims from '../hooks/useScreenDims';
+import Color from 'color';
 
 const _isTouch = 'ontouchstart' in window;
 
@@ -325,13 +331,13 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
     // TODO handle errors as well
   };
 
-  const handleMapLoad = () => {
+  const handleMapLoad = async (event: MapEvent) => {
     if (props.onMapLoad) props.onMapLoad();
     dispatch(mapLoaded());
+    const map = event.target;
 
     // Make road labels larger
-    mapRef.current
-      ?.getMap()
+    map
       // This expression is copied over from mapbox-streets-v11 style,
       // but with all the size values increated by 2
       .setLayoutProperty('road-label', 'text-size', [
@@ -378,9 +384,14 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
         ],
       ]);
 
-    mapRef.current
-      ?.getMap()
-      .setPaintProperty('road-label', 'text-halo-width', 3);
+    map.setPaintProperty('road-label', 'text-halo-width', 3);
+
+    const [downslopeData, upslopeData] = await Promise.all([
+      downloadImageData(slopeDownhillIconUrl),
+      downloadImageData(slopeUphillIconUrl),
+    ]);
+    map.addImage('downslope', downslopeData, { sdf: true });
+    map.addImage('upslope', upslopeData, { sdf: true });
   };
 
   const resizeRef = useResizeObserver(
@@ -719,6 +730,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
           <Layer beforeId="road-label" {...getTransitionStyle(activePath)} />
           <Layer {...getTransitLabelStyle(activePath)} />
           <Layer {...getBikeLabelStyle(activePath)} />
+          <Layer {...getHillStyle(activePath)} />
         </Source>
         <Source
           id="routeTilesSource"
@@ -1099,6 +1111,37 @@ function getBikeLabelStyle(
       'text-color': 'white',
       'text-halo-color': bikeColorStyle,
       'text-halo-width': 2,
+    },
+  };
+}
+
+function getHillStyle(
+  activePath: number | null,
+): Omit<SymbolLayerSpecification, 'source'> {
+  return {
+    id: 'hillLayer',
+    type: 'symbol',
+    filter: ['all', pathIndexIs(activePath), ['has', 'steepness']],
+    layout: {
+      'icon-image': [
+        'case',
+        ['==', ['get', 'steepness'], STEP_ANNOTATIONS.verySteepHillUp],
+        'upslope',
+        ['==', ['get', 'steepness'], STEP_ANNOTATIONS.steepHillUp],
+        'upslope',
+        'downslope',
+      ],
+      'icon-size': ['interpolate', ['linear'], ['zoom'], 12.5, 0.1, 16.5, 0.15],
+      'symbol-placement': 'line-center',
+      'icon-rotation-alignment': 'viewport',
+    },
+    minzoom: 12.5,
+    paint: {
+      'icon-color': Color('#ffa25b').darken(0.5).hex(),
+      'icon-halo-color': 'white',
+      'icon-halo-width': 0.1,
+      'icon-halo-blur': 0.1,
+      'icon-opacity': 0.9,
     },
   };
 }

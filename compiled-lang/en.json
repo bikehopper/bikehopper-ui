@@ -87,16 +87,6 @@
       "value": "very steep hill"
     }
   ],
-  "3uzNHk": [
-    {
-      "type": 0,
-      "value": "Get off at "
-    },
-    {
-      "type": 1,
-      "value": "stop"
-    }
-  ],
   "4cy0Qt": [
     {
       "type": 0,
@@ -169,6 +159,16 @@
     {
       "type": 0,
       "value": "ft"
+    }
+  ],
+  "9rTQtP": [
+    {
+      "type": 0,
+      "value": "Unable to connect to server. "
+    },
+    {
+      "type": 1,
+      "value": "retryLink"
     }
   ],
   "9yOLYg": [
@@ -503,26 +503,6 @@
       "value": "Funicular"
     }
   ],
-  "HQjcNO": [
-    {
-      "type": 0,
-      "value": "In this early beta, BikeHopper is "
-    },
-    {
-      "children": [
-        {
-          "type": 0,
-          "value": "designed for phone screens"
-        }
-      ],
-      "type": 8,
-      "value": "strong"
-    },
-    {
-      "type": 0,
-      "value": ", so it might look strange on your computer."
-    }
-  ],
   "HQldX2": [
     {
       "type": 0,
@@ -829,6 +809,12 @@
       "value": "haveStreet"
     }
   ],
+  "T2gsdZ": [
+    {
+      "type": 0,
+      "value": "Previous step"
+    }
+  ],
   "T6l6cE": [
     {
       "type": 0,
@@ -1089,6 +1075,12 @@
       "value": "haveStreet"
     }
   ],
+  "gffd+Z": [
+    {
+      "type": 0,
+      "value": "Next step"
+    }
+  ],
   "hFkXoB": [
     {
       "type": 0,
@@ -1153,6 +1145,12 @@
       "value": "Leaving now"
     }
   ],
+  "mkvvP4": [
+    {
+      "type": 0,
+      "value": "Retry"
+    }
+  ],
   "nSPIt1": [
     {
       "type": 0,
@@ -1169,6 +1167,16 @@
     {
       "type": 0,
       "value": "west"
+    }
+  ],
+  "pn7Wd7": [
+    {
+      "type": 0,
+      "value": "Server error. "
+    },
+    {
+      "type": 1,
+      "value": "retryLink"
     }
   ],
   "qyWb6X": [
@@ -1275,6 +1283,20 @@
       "value": "Now"
     }
   ],
+  "woEF2c": [
+    {
+      "type": 0,
+      "value": "Notifications ("
+    },
+    {
+      "type": 1,
+      "value": "hotkey"
+    },
+    {
+      "type": 0,
+      "value": ")"
+    }
+  ],
   "xCyANw": [
     {
       "type": 0,
@@ -1357,20 +1379,16 @@
       "value": "Elevation gain"
     }
   ],
-  "y9hwj+": [
-    {
-      "type": 0,
-      "value": "Board at "
-    },
-    {
-      "type": 1,
-      "value": "stop"
-    }
-  ],
   "yfE0fS": [
     {
       "type": 0,
       "value": "protected bike lane"
+    }
+  ],
+  "zBEo8L": [
+    {
+      "type": 0,
+      "value": "Open in OSM"
     }
   ],
   "zOmTEh": [

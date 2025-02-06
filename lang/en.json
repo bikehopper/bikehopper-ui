@@ -23,10 +23,6 @@
     "defaultMessage": "very steep hill",
     "description": "annotation for a step in a series of biking directions."
   },
-  "3uzNHk": {
-    "defaultMessage": "Get off at {stop}",
-    "description": "instruction to exit a transit vehicle at the named stop"
-  },
   "4cy0Qt": {
     "defaultMessage": "Bus",
     "description": "labels a transit line as being operated by a bus. Appears next to the name or number of the bus line."
@@ -58,6 +54,10 @@
   "9dKjNm": {
     "defaultMessage": "{num}ft",
     "description": "compact version of a distance in feet"
+  },
+  "9rTQtP": {
+    "defaultMessage": "Unable to connect to server. {retryLink}",
+    "description": "Error message with a link to retry. The link text is \"Retry\"."
   },
   "9yOLYg": {
     "defaultMessage": "Departing {datetime}",
@@ -142,10 +142,6 @@
   "GvWCFj": {
     "defaultMessage": "Funicular",
     "description": "labels a transit line as being operated by a funicular. Appears next to the name or number of the bus line."
-  },
-  "HQjcNO": {
-    "defaultMessage": "In this early beta, BikeHopper is <strong>designed for phone screens</strong>, so it might look strange on your computer.",
-    "description": "paragraph in welcome screen"
   },
   "HQldX2": {
     "defaultMessage": "shoulder",
@@ -247,6 +243,10 @@
     "defaultMessage": "Turn <dir>left</dir>{haveStreet, select, name { onto <name>{street}</name>} other {}}",
     "description": "instruction"
   },
+  "T2gsdZ": {
+    "defaultMessage": "Previous step",
+    "description": "button. Goes to previous step in a list of directions."
+  },
   "T6l6cE": {
     "defaultMessage": "Monorail",
     "description": "labels a transit line as being operated by a tram, streetcar or light rail. Appears next to the name or number of the line."
@@ -327,6 +327,10 @@
     "defaultMessage": "At roundabout, take exit {num}{haveStreet, select, name { onto <name>{street}</name>} other {}}",
     "description": "instruction"
   },
+  "gffd+Z": {
+    "defaultMessage": "Next step",
+    "description": "button. Goes to next step in a list of directions."
+  },
   "hFkXoB": {
     "defaultMessage": "Bike routes from {from} to {to}",
     "description": "description of shared link to routing info"
@@ -359,6 +363,10 @@
     "defaultMessage": "Leaving now",
     "description": "description of departure time for a trip leaving now."
   },
+  "mkvvP4": {
+    "defaultMessage": "Retry",
+    "description": "Button. Retries a failed action"
+  },
   "nSPIt1": {
     "defaultMessage": "Press here to download the FIT file.",
     "description": "Link to download the FIT file."
@@ -370,6 +378,10 @@
   "p04B0A": {
     "defaultMessage": "west",
     "description": "cardinal direction, used in a sentence like \"Head west\""
+  },
+  "pn7Wd7": {
+    "defaultMessage": "Server error. {retryLink}",
+    "description": "Error message with a link to retry. The link text is \"Retry\". The error means there is probably a problem on the server."
   },
   "qyWb6X": {
     "defaultMessage": "Connecting modes",
@@ -415,6 +427,10 @@
     "defaultMessage": "Now",
     "description": "option in a dropdown list for departure time"
   },
+  "woEF2c": {
+    "defaultMessage": "Notifications ({hotkey})",
+    "description": "label for notifications area. The hotkey is a key such as F8 that can be pressed on a keyboard to jump to this area."
+  },
   "xCyANw": {
     "defaultMessage": "Remove",
     "description": "button to remove something from a list"
@@ -435,13 +451,13 @@
     "defaultMessage": "Elevation gain",
     "description": "Accessible alt text for an up-arrow icon that appears next to a measurement of the elevation gain on a route, such as (in English) 200 ft or 50 m."
   },
-  "y9hwj+": {
-    "defaultMessage": "Board at {stop}",
-    "description": "instruction to board a transit vehicle at the named stop"
-  },
   "yfE0fS": {
     "defaultMessage": "protected bike lane",
     "description": "annotation for a step in a series of biking directions."
+  },
+  "zBEo8L": {
+    "defaultMessage": "Open in OSM",
+    "description": "menu item. Appears in context menu under a location you have selected on the map. Opens OpenStreetMap (abbreviated OSM) to that location."
   },
   "zOmTEh": {
     "defaultMessage": "Dismiss",
