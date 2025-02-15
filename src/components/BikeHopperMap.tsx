@@ -81,6 +81,7 @@ import slopeDownhillIconUrl from '../../icons/sdf/downhill_sdf.png';
 import slopeUphillIconUrl from '../../icons/sdf/uphill_sdf.png';
 import useScreenDims from '../hooks/useScreenDims';
 import Color from 'color';
+import { activeStopIds } from '../lib/activeStopIds';
 
 const _isTouch = 'ontouchstart' in window;
 
@@ -385,6 +386,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
       ]);
 
     map.setPaintProperty('road-label', 'text-halo-width', 3);
+    map.removeLayer('transit-label');
 
     const [downslopeData, upslopeData] = await Promise.all([
       downloadImageData(slopeDownhillIconUrl),
@@ -645,6 +647,10 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
     routes != null && activePath != null
       ? activeTripIds(routes, activePath)
       : [];
+  const activeStops =
+    routes != null && activePath != null
+      ? activeStopIds(routes, activePath)
+      : [];
 
   const navigationControlVisibility =
     mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden';
@@ -743,17 +749,25 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
             beforeId="routeOutline"
             {...getTransitTilesLineStyle(activeRoutes, activeTrips)}
           />
+        </Source>
+        <Source
+          id="stopTilesSource"
+          type="vector"
+          tiles={[`${getApiPath()}/api/v1/stop-tiles/{z}/{x}/{y}.pbf`]}
+          minzoom={9}
+          maxzoom={14}
+        >
           <Layer
             beforeId="transitLabelLayer"
-            {...getTransitTilesStopStyle(activeTrips)}
-          />
-          <Layer
-            beforeId="routeStops"
-            {...getTransitTilesStopOutlineStyle(activeTrips)}
+            {...getTransitTilesStopOutlineStyle(activeStops)}
           />
           <Layer
             beforeId="transitLabelLayer"
-            {...getTransitTilesStopNamesStyle(activeTrips)}
+            {...getTransitTilesStopStyle(activeStops)}
+          />
+          <Layer
+            beforeId="transitLabelLayer"
+            {...getTransitTilesStopNamesStyle(activeStops)}
           />
         </Source>
         {startCoords && (
@@ -940,56 +954,68 @@ function getTransitTilesLineStyle(
 }
 
 function getTransitTilesStopStyle(
-  activeTrips: string[],
+  activeStops: string[],
 ): Omit<CircleLayerSpecification, 'source'> {
   return {
     id: 'routeStops',
-    'source-layer': 'route-lines',
+    'source-layer': 'stops',
     type: 'circle',
-    filter: [
-      'all',
-      ['==', ['geometry-type'], 'Point'],
-      activeFilter(activeTrips, 'trip_ids'),
-    ],
+    filter: ['in', ['get', 'stop_id'], ['literal', activeStops]],
     paint: {
-      'circle-radius': 4,
+      'circle-radius': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        0,
+        2,
+        10,
+        2,
+        12,
+        4,
+        14,
+        4,
+      ],
       'circle-color': 'white',
     },
   };
 }
 
 function getTransitTilesStopOutlineStyle(
-  activeTrips: string[],
+  activeStops: string[],
 ): Omit<CircleLayerSpecification, 'source'> {
   return {
     id: 'routeStopsOutline',
-    'source-layer': 'route-lines',
+    'source-layer': 'stops',
     type: 'circle',
-    filter: [
-      'all',
-      ['==', ['geometry-type'], 'Point'],
-      activeFilter(activeTrips, 'trip_ids'),
-    ],
+    filter: ['in', ['get', 'stop_id'], ['literal', activeStops]],
     paint: {
-      'circle-radius': 6,
+      'circle-radius': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        0,
+        3,
+        10,
+        3,
+        12,
+        6,
+        14,
+        6,
+      ],
       'circle-color': 'black',
     },
   };
 }
 
 function getTransitTilesStopNamesStyle(
-  activeTrips: string[],
+  activeStops: string[],
 ): Omit<SymbolLayerSpecification, 'source'> {
   return {
     id: 'routeStopNames',
-    'source-layer': 'route-lines',
+    'source-layer': 'stops',
     type: 'symbol',
-    minzoom: 8,
-    filter: [
-      'all',
-      ['==', ['geometry-type'], 'Point'],
-      activeFilter(activeTrips, 'trip_ids'),
-    ],
+    minzoom: 12,
+    filter: ['in', ['get', 'stop_id'], ['literal', activeStops]],
     layout: {
       'text-field': ['to-string', ['get', 'stop_name']],
       'text-anchor': 'top-left',
@@ -1231,13 +1257,13 @@ function pathIndexIs(index: number | null): ExpressionFilterSpecification {
 
 function activeFilter(
   activeRoutes: string[],
-  routeIdKey: 'route_id' | 'route_ids' | 'trip_ids',
+  routeIdKey: 'route_id' | 'route_ids' | 'trip_ids' | 'stop_id',
 ): ExpressionFilterSpecification {
   if (activeRoutes.length === 0) {
     return false;
   }
   const matchers: ExpressionSpecification[] =
-    routeIdKey == 'route_id'
+    routeIdKey == 'route_id' || routeIdKey == 'stop_id'
       ? activeRoutes.map((routeId: string) => [
           '==',
           routeId,

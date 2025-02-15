@@ -159,6 +159,7 @@ type TransitLegBase = {
   stops: TransitStop[];
   trip_id: string;
   route_id: string;
+  all_stop_ids: string[];
   alerts?: TransitAlert[];
 };
 type TransitLegRaw = TransitLegBase & {
