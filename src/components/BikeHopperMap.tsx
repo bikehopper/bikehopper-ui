@@ -71,6 +71,7 @@ import {
   CYCLE_TRACK_COLOR,
   DEFAULT_BIKE_COLOR,
   DEFAULT_INACTIVE_COLOR,
+  DEFAULT_PT_COLOR,
 } from '../lib/colors';
 import { RouteResponsePath, getApiPath } from '../lib/BikeHopperClient';
 import classnames from 'classnames';
@@ -918,7 +919,7 @@ function getTransitTilesLineStyle(
         ['linear'],
         0.3,
         0.0,
-        ['to-color', ['get', 'route_color']],
+        ['to-color', ['get', 'route_color'], DEFAULT_PT_COLOR],
         1.0,
         ['rgb', 255, 255, 255],
       ],
@@ -1037,6 +1038,26 @@ function getTransitTilesStopOutlineStyle(
 function getTransitTilesStopNamesStyle(
   activeStops: ActiveStops,
 ): Omit<SymbolLayerSpecification, 'source'> {
+  const isBus: ExpressionSpecification = ['to-boolean', ['get', 'bus']];
+
+  const notOnRouteAndIsBus: ExpressionSpecification = [
+    'all',
+    isBus,
+    ['!', getIsActiveStopExpression(activeStops, ActiveStopTypes.onRoute)],
+  ];
+
+  const textSizeExpr = (
+    onRouteSize: number,
+    offRouteSize: number,
+  ): ExpressionSpecification => {
+    return [
+      'case',
+      getIsActiveStopExpression(activeStops, ActiveStopTypes.onRoute),
+      onRouteSize,
+      offRouteSize,
+    ];
+  };
+
   return {
     id: 'routeStopNames',
     'source-layer': 'stops',
@@ -1044,15 +1065,10 @@ function getTransitTilesStopNamesStyle(
     minzoom: 12,
     filter: getIsActiveStopExpression(activeStops),
     layout: {
-      'text-field': ['to-string', ['get', 'stop_name']],
+      'text-field': ['get', 'stop_name'],
       'text-anchor': 'top-left',
       'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
-      'text-size': [
-        'case',
-        getIsActiveStopExpression(activeStops, ActiveStopTypes.onRoute),
-        14,
-        12,
-      ],
+      'text-size': ['case', isBus, textSizeExpr(12, 10), textSizeExpr(14, 12)],
       'text-justify': 'left',
       'text-offset': [0.3, 0.3],
     },
@@ -1064,6 +1080,19 @@ function getTransitTilesStopNamesStyle(
         getIsActiveStopExpression(activeStops, ActiveStopTypes.onRoute),
         'black',
         'gray',
+      ],
+      'text-opacity': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        0,
+        ['case', notOnRouteAndIsBus, 0, 1],
+        13.5,
+        ['case', notOnRouteAndIsBus, 0, 1],
+        13.8,
+        ['case', notOnRouteAndIsBus, 1, 1],
+        14,
+        ['case', notOnRouteAndIsBus, 1, 1],
       ],
     },
   };
