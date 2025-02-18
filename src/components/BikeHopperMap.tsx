@@ -636,7 +636,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
           height: '100%',
         }}
         onLoad={handleMapLoad}
-        mapStyle="mapbox://styles/arindam1993/cm77a1cee01lj01sd6x37gfre"
+        mapStyle="mapbox://styles/arindam1993/cm7agbvz0003c01s86shbcfhg"
         transformRequest={transformRequest}
         interactiveLayerIds={INTERACTIVE_LAYER_IDS}
         onMouseMove={!_isTouch ? handleMapMouseMove : undefined}
@@ -722,6 +722,25 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
           <Layer
             beforeId="transitLabelLayer"
             {...getTransitTilesStopNamesStyle(activeStops)}
+          />
+        </Source>
+        <Source
+          id="hillshadeSource"
+          type="raster-dem"
+          tiles={[
+            `https://api.mapbox.com/v4/mapbox.terrain-rgb/{z}/{x}/{y}.png?access_token=${import.meta.env.VITE_MAPBOX_TOKEN}
+        `,
+          ]}
+          tileSize={256}
+          minzoom={0}
+          maxzoom={14}
+        >
+          <Layer
+            type="hillshade"
+            paint={{
+              'hillshade-exaggeration': 0.2,
+              'hillshade-shadow-color': 'rgba(0,0,0,0.2)',
+            }}
           />
         </Source>
         {startCoords && (
