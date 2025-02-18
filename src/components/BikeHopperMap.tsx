@@ -84,6 +84,7 @@ import slopeUphillIconUrl from '../../icons/sdf/uphill_sdf.png';
 import useScreenDims from '../hooks/useScreenDims';
 import Color from 'color';
 import {
+  ActiveStopTypes,
   ActiveStops,
   EMPTY_ACTIVE_STOPS,
   activeStopIds,
@@ -909,9 +910,21 @@ function getTransitTilesLineStyle(
 
 function getIsActiveStopExpression(
   activeStops: ActiveStops,
-  onlyOnRoute: boolean = false,
+  stopType: ActiveStopTypes = ActiveStopTypes.all,
 ): ExpressionSpecification {
-  const stopList = onlyOnRoute ? activeStops.onRoute : activeStops.all;
+  let stopList = activeStops.all;
+
+  switch (stopType) {
+    case ActiveStopTypes.onRoute:
+      stopList = activeStops.onRoute;
+      break;
+    case ActiveStopTypes.entry:
+      stopList = activeStops.entry;
+      break;
+    case ActiveStopTypes.exit:
+      stopList = activeStops.exit;
+      break;
+  }
   return ['in', ['get', 'stop_id'], ['literal', stopList]];
 }
 
@@ -919,18 +932,28 @@ function getStopCircleRadiusExpression(
   minRadius: number,
   maxRadius: number,
   activeStops: ActiveStops,
+  entryExitAddedThickness: number = 0,
 ): DataDrivenPropertyValueSpecification<number> {
   const isBus: ExpressionSpecification = ['to-boolean', ['get', 'bus']];
+
   const minRadiusExpr: ExpressionSpecification = [
     'case',
-    getIsActiveStopExpression(activeStops, true),
+    getIsActiveStopExpression(activeStops, ActiveStopTypes.entry),
+    (minRadius + entryExitAddedThickness) * 1.2,
+    getIsActiveStopExpression(activeStops, ActiveStopTypes.exit),
+    (minRadius + entryExitAddedThickness) * 1.2,
+    getIsActiveStopExpression(activeStops, ActiveStopTypes.onRoute),
     minRadius,
     minRadius * 0.5,
   ];
 
   const maxRadiusExpr: ExpressionSpecification = [
     'case',
-    getIsActiveStopExpression(activeStops, true),
+    getIsActiveStopExpression(activeStops, ActiveStopTypes.entry),
+    (maxRadius + entryExitAddedThickness) * 1.2,
+    getIsActiveStopExpression(activeStops, ActiveStopTypes.exit),
+    (maxRadius + entryExitAddedThickness) * 1.2,
+    getIsActiveStopExpression(activeStops, ActiveStopTypes.onRoute),
     maxRadius,
     maxRadius * 0.5,
   ];
@@ -963,7 +986,7 @@ function getTransitTilesStopStyle(
     type: 'circle',
     filter: getIsActiveStopExpression(activeStops),
     paint: {
-      'circle-radius': getStopCircleRadiusExpression(2, 4, activeStops),
+      'circle-radius': getStopCircleRadiusExpression(4, 6, activeStops),
       'circle-color': 'white',
     },
   };
@@ -978,10 +1001,14 @@ function getTransitTilesStopOutlineStyle(
     type: 'circle',
     filter: getIsActiveStopExpression(activeStops),
     paint: {
-      'circle-radius': getStopCircleRadiusExpression(3, 6, activeStops),
+      'circle-radius': getStopCircleRadiusExpression(6, 8, activeStops, 1),
       'circle-color': [
         'case',
-        getIsActiveStopExpression(activeStops, true),
+        getIsActiveStopExpression(activeStops, ActiveStopTypes.entry),
+        'darkgreen',
+        getIsActiveStopExpression(activeStops, ActiveStopTypes.exit),
+        'darkred',
+        getIsActiveStopExpression(activeStops, ActiveStopTypes.onRoute),
         'black',
         'gray',
       ],
@@ -1004,7 +1031,7 @@ function getTransitTilesStopNamesStyle(
       'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
       'text-size': [
         'case',
-        getIsActiveStopExpression(activeStops, true),
+        getIsActiveStopExpression(activeStops, ActiveStopTypes.onRoute),
         14,
         12,
       ],
@@ -1016,7 +1043,7 @@ function getTransitTilesStopNamesStyle(
       'text-halo-width': 2,
       'text-color': [
         'case',
-        getIsActiveStopExpression(activeStops, true),
+        getIsActiveStopExpression(activeStops, ActiveStopTypes.onRoute),
         'black',
         'gray',
       ],

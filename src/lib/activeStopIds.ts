@@ -14,6 +14,13 @@ export const EMPTY_ACTIVE_STOPS: ActiveStops = {
   exit: [],
 };
 
+export enum ActiveStopTypes {
+  all = 'all',
+  onRoute = 'onRoute',
+  entry = 'entry',
+  exit = 'exit',
+}
+
 export function activeStopIds(
   paths: RouteResponsePath[],
   activePathIdx: number,
