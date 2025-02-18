@@ -5,7 +5,6 @@ import type {
   SymbolLayerSpecification,
   CircleLayerSpecification,
   DataDrivenPropertyValueSpecification,
-  FilterSpecification,
 } from '@maplibre/maplibre-gl-style-spec';
 import { Point as MapLibrePoint } from 'maplibre-gl';
 import {
