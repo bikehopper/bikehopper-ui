@@ -4,6 +4,8 @@ import type {
   LineLayerSpecification,
   SymbolLayerSpecification,
   CircleLayerSpecification,
+  DataDrivenPropertyValueSpecification,
+  FilterSpecification,
 } from '@maplibre/maplibre-gl-style-spec';
 import { Point as MapLibrePoint } from 'maplibre-gl';
 import {
@@ -337,57 +339,6 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
     dispatch(mapLoaded());
     const map = event.target;
 
-    // Make road labels larger
-    map
-      // This expression is copied over from mapbox-streets-v11 style,
-      // but with all the size values increated by 2
-      .setLayoutProperty('road-label', 'text-size', [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        10,
-        [
-          'match',
-          ['get', 'class'],
-          ['motorway', 'trunk', 'primary', 'secondary', 'tertiary'],
-          12,
-          [
-            'motorway_link',
-            'trunk_link',
-            'primary_link',
-            'secondary_link',
-            'tertiary_link',
-            'pedestrian',
-            'street',
-            'street_limited',
-          ],
-          11,
-          8.5,
-        ],
-        18,
-        [
-          'match',
-          ['get', 'class'],
-          ['motorway', 'trunk', 'primary', 'secondary', 'tertiary'],
-          18,
-          [
-            'motorway_link',
-            'trunk_link',
-            'primary_link',
-            'secondary_link',
-            'tertiary_link',
-            'pedestrian',
-            'street',
-            'street_limited',
-          ],
-          18,
-          15,
-        ],
-      ]);
-
-    map.setPaintProperty('road-label', 'text-halo-width', 3);
-    map.removeLayer('transit-label');
-
     const [downslopeData, upslopeData] = await Promise.all([
       downloadImageData(slopeDownhillIconUrl),
       downloadImageData(slopeUphillIconUrl),
@@ -650,7 +601,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
   const activeStops =
     routes != null && activePath != null
       ? activeStopIds(routes, activePath)
-      : [];
+      : { allActiveStops: [], activeStopsOnRoute: [] };
 
   const navigationControlVisibility =
     mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden';
@@ -681,7 +632,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
           height: '100%',
         }}
         onLoad={handleMapLoad}
-        mapStyle="mapbox://styles/mapbox/streets-v11"
+        mapStyle="mapbox://styles/arindam1993/cm77a1cee01lj01sd6x37gfre"
         transformRequest={transformRequest}
         interactiveLayerIds={INTERACTIVE_LAYER_IDS}
         onMouseMove={!_isTouch ? handleMapMouseMove : undefined}
@@ -942,7 +893,7 @@ function getTransitTilesLineStyle(
       'line-color': [
         'interpolate',
         ['linear'],
-        0.6,
+        0.3,
         0.0,
         ['to-color', ['get', 'route_color']],
         1.0,
@@ -952,80 +903,108 @@ function getTransitTilesLineStyle(
   };
 }
 
-function getTransitTilesStopStyle(
-  activeStops: string[],
-): Omit<CircleLayerSpecification, 'source'> {
+function getIsActiveStopExpression(
+  activeStops: { allActiveStops: string[]; activeStopsOnRoute: string[] },
+  onlyOnRoute: boolean = false,
+): ExpressionSpecification {
+  const stopList = onlyOnRoute
+    ? activeStops.activeStopsOnRoute
+    : activeStops.allActiveStops;
+  return ['in', ['get', 'stop_id'], ['literal', stopList]];
+}
+
+function getStopCircleRadiusExpression(
+  minRadius: number,
+  maxRadius: number,
+): DataDrivenPropertyValueSpecification<number> {
+  return [
+    'interpolate',
+    ['linear'],
+    ['zoom'],
+    0,
+    0,
+    8,
+    ['case', ['to-boolean', ['get', 'bus']], 0, minRadius],
+    10,
+    ['case', ['to-boolean', ['get', 'bus']], 0, minRadius],
+    11.99,
+    ['case', ['to-boolean', ['get', 'bus']], 0, minRadius],
+    12,
+    ['case', ['to-boolean', ['get', 'bus']], minRadius, maxRadius],
+    14,
+    ['case', ['to-boolean', ['get', 'bus']], maxRadius, maxRadius],
+  ];
+}
+
+function getTransitTilesStopStyle(activeStops: {
+  allActiveStops: string[];
+  activeStopsOnRoute: string[];
+}): Omit<CircleLayerSpecification, 'source'> {
   return {
     id: 'routeStops',
     'source-layer': 'stops',
     type: 'circle',
-    filter: ['in', ['get', 'stop_id'], ['literal', activeStops]],
+    filter: getIsActiveStopExpression(activeStops),
     paint: {
-      'circle-radius': [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        0,
-        2,
-        10,
-        2,
-        12,
-        4,
-        14,
-        4,
-      ],
+      'circle-radius': getStopCircleRadiusExpression(2, 4),
       'circle-color': 'white',
     },
   };
 }
 
-function getTransitTilesStopOutlineStyle(
-  activeStops: string[],
-): Omit<CircleLayerSpecification, 'source'> {
+function getTransitTilesStopOutlineStyle(activeStops: {
+  allActiveStops: string[];
+  activeStopsOnRoute: string[];
+}): Omit<CircleLayerSpecification, 'source'> {
   return {
     id: 'routeStopsOutline',
     'source-layer': 'stops',
     type: 'circle',
-    filter: ['in', ['get', 'stop_id'], ['literal', activeStops]],
+    filter: getIsActiveStopExpression(activeStops),
     paint: {
-      'circle-radius': [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        0,
-        3,
-        10,
-        3,
-        12,
-        6,
-        14,
-        6,
+      'circle-radius': getStopCircleRadiusExpression(3, 6),
+      'circle-color': [
+        'case',
+        getIsActiveStopExpression(activeStops, true),
+        'black',
+        'gray',
       ],
-      'circle-color': 'black',
     },
   };
 }
 
-function getTransitTilesStopNamesStyle(
-  activeStops: string[],
-): Omit<SymbolLayerSpecification, 'source'> {
+function getTransitTilesStopNamesStyle(activeStops: {
+  allActiveStops: string[];
+  activeStopsOnRoute: string[];
+}): Omit<SymbolLayerSpecification, 'source'> {
   return {
     id: 'routeStopNames',
     'source-layer': 'stops',
     type: 'symbol',
     minzoom: 12,
-    filter: ['in', ['get', 'stop_id'], ['literal', activeStops]],
+    filter: getIsActiveStopExpression(activeStops),
     layout: {
       'text-field': ['to-string', ['get', 'stop_name']],
       'text-anchor': 'top-left',
       'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
-      'text-size': 14,
+      'text-size': [
+        'case',
+        getIsActiveStopExpression(activeStops, true),
+        14,
+        12,
+      ],
       'text-justify': 'left',
       'text-offset': [0.3, 0.3],
     },
     paint: {
       'text-halo-color': 'white',
       'text-halo-width': 2,
+      'text-color': [
+        'case',
+        getIsActiveStopExpression(activeStops, true),
+        'black',
+        'gray',
+      ],
     },
   };
 }
