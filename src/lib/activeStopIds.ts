@@ -1,11 +1,27 @@
 import { RouteResponsePath } from './BikeHopperClient';
 
+export type ActiveStops = {
+  all: string[];
+  onRoute: string[];
+  entry: string[];
+  exit: string[];
+};
+
+export const EMPTY_ACTIVE_STOPS: ActiveStops = {
+  all: [],
+  onRoute: [],
+  entry: [],
+  exit: [],
+};
+
 export function activeStopIds(
   paths: RouteResponsePath[],
   activePathIdx: number,
-): { allActiveStops: string[]; activeStopsOnRoute: string[] } {
+): ActiveStops {
   const allStops: Set<string> = new Set();
   const stopsOnRoute: Set<string> = new Set();
+  const entryStops: Set<string> = new Set();
+  const exitStops: Set<string> = new Set();
 
   const activePath = paths[activePathIdx];
   if (activePath != null) {
@@ -18,12 +34,16 @@ export function activeStopIds(
         for (const stop of leg.stops) {
           stopsOnRoute.add(stop.stop_id);
         }
+        entryStops.add(leg.stops[0].stop_id);
+        exitStops.add(leg.stops[leg.stops.length - 1].stop_id);
       }
     }
   }
 
   return {
-    allActiveStops: Array.from(allStops.values()),
-    activeStopsOnRoute: Array.from(stopsOnRoute.values()),
+    all: Array.from(allStops.values()),
+    onRoute: Array.from(stopsOnRoute.values()),
+    entry: Array.from(entryStops.values()),
+    exit: Array.from(exitStops.values()),
   };
 }

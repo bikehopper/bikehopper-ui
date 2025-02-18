@@ -83,7 +83,11 @@ import slopeDownhillIconUrl from '../../icons/sdf/downhill_sdf.png';
 import slopeUphillIconUrl from '../../icons/sdf/uphill_sdf.png';
 import useScreenDims from '../hooks/useScreenDims';
 import Color from 'color';
-import { activeStopIds } from '../lib/activeStopIds';
+import {
+  ActiveStops,
+  EMPTY_ACTIVE_STOPS,
+  activeStopIds,
+} from '../lib/activeStopIds';
 
 const _isTouch = 'ontouchstart' in window;
 
@@ -601,7 +605,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
   const activeStops =
     routes != null && activePath != null
       ? activeStopIds(routes, activePath)
-      : { allActiveStops: [], activeStopsOnRoute: [] };
+      : EMPTY_ACTIVE_STOPS;
 
   const navigationControlVisibility =
     mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden';
@@ -904,19 +908,33 @@ function getTransitTilesLineStyle(
 }
 
 function getIsActiveStopExpression(
-  activeStops: { allActiveStops: string[]; activeStopsOnRoute: string[] },
+  activeStops: ActiveStops,
   onlyOnRoute: boolean = false,
 ): ExpressionSpecification {
-  const stopList = onlyOnRoute
-    ? activeStops.activeStopsOnRoute
-    : activeStops.allActiveStops;
+  const stopList = onlyOnRoute ? activeStops.onRoute : activeStops.all;
   return ['in', ['get', 'stop_id'], ['literal', stopList]];
 }
 
 function getStopCircleRadiusExpression(
   minRadius: number,
   maxRadius: number,
+  activeStops: ActiveStops,
 ): DataDrivenPropertyValueSpecification<number> {
+  const isBus: ExpressionSpecification = ['to-boolean', ['get', 'bus']];
+  const minRadiusExpr: ExpressionSpecification = [
+    'case',
+    getIsActiveStopExpression(activeStops, true),
+    minRadius,
+    minRadius * 0.5,
+  ];
+
+  const maxRadiusExpr: ExpressionSpecification = [
+    'case',
+    getIsActiveStopExpression(activeStops, true),
+    maxRadius,
+    maxRadius * 0.5,
+  ];
+
   return [
     'interpolate',
     ['linear'],
@@ -924,45 +942,43 @@ function getStopCircleRadiusExpression(
     0,
     0,
     8,
-    ['case', ['to-boolean', ['get', 'bus']], 0, minRadius],
+    ['case', isBus, 0, minRadiusExpr],
     10,
-    ['case', ['to-boolean', ['get', 'bus']], 0, minRadius],
+    ['case', isBus, 0, minRadiusExpr],
     11.99,
-    ['case', ['to-boolean', ['get', 'bus']], 0, minRadius],
+    ['case', isBus, 0, minRadiusExpr],
     12,
-    ['case', ['to-boolean', ['get', 'bus']], minRadius, maxRadius],
+    ['case', isBus, minRadiusExpr, maxRadiusExpr],
     14,
-    ['case', ['to-boolean', ['get', 'bus']], maxRadius, maxRadius],
+    ['case', isBus, maxRadiusExpr, maxRadiusExpr],
   ];
 }
 
-function getTransitTilesStopStyle(activeStops: {
-  allActiveStops: string[];
-  activeStopsOnRoute: string[];
-}): Omit<CircleLayerSpecification, 'source'> {
+function getTransitTilesStopStyle(
+  activeStops: ActiveStops,
+): Omit<CircleLayerSpecification, 'source'> {
   return {
     id: 'routeStops',
     'source-layer': 'stops',
     type: 'circle',
     filter: getIsActiveStopExpression(activeStops),
     paint: {
-      'circle-radius': getStopCircleRadiusExpression(2, 4),
+      'circle-radius': getStopCircleRadiusExpression(2, 4, activeStops),
       'circle-color': 'white',
     },
   };
 }
 
-function getTransitTilesStopOutlineStyle(activeStops: {
-  allActiveStops: string[];
-  activeStopsOnRoute: string[];
-}): Omit<CircleLayerSpecification, 'source'> {
+function getTransitTilesStopOutlineStyle(
+  activeStops: ActiveStops,
+): Omit<CircleLayerSpecification, 'source'> {
   return {
     id: 'routeStopsOutline',
     'source-layer': 'stops',
     type: 'circle',
     filter: getIsActiveStopExpression(activeStops),
     paint: {
-      'circle-radius': getStopCircleRadiusExpression(3, 6),
+      'circle-radius': getStopCircleRadiusExpression(3, 6, activeStops),
       'circle-color': [
         'case',
         getIsActiveStopExpression(activeStops, true),
@@ -973,10 +989,9 @@ function getTransitTilesStopOutlineStyle(activeStops: {
   };
 }
 
-function getTransitTilesStopNamesStyle(activeStops: {
-  allActiveStops: string[];
-  activeStopsOnRoute: string[];
-}): Omit<SymbolLayerSpecification, 'source'> {
+function getTransitTilesStopNamesStyle(
+  activeStops: ActiveStops,
+): Omit<SymbolLayerSpecification, 'source'> {
   return {
     id: 'routeStopNames',
     'source-layer': 'stops',
