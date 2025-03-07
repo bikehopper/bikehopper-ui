@@ -17,7 +17,6 @@ import * as VisualViewportTracker from '../lib/VisualViewportTracker';
 
 import './MobileMapLayout.css';
 import { MapRefs } from '../hooks/useMapRefs';
-import useScreenDims from '../hooks/useScreenDims';
 
 /*
  * This component renders the map, plus the top bar and bottom drawer.
@@ -58,6 +57,7 @@ type Props = {
   hideMap: boolean;
   header: React.ReactNode;
   infoBox?: React.ReactNode;
+  isMapLoaded: boolean;
   loading: boolean;
 };
 
@@ -69,6 +69,7 @@ type TouchEventOptions = {
 function MobileMapLayout({
   mapPortal,
   infoBox,
+  isMapLoaded,
   header,
   hideMap,
   mapRefs,
@@ -82,8 +83,6 @@ function MobileMapLayout({
     mapControlTopRightRef,
     mapOverlayRef,
   } = mapRefs;
-
-  const { isMobile } = useScreenDims();
 
   const columnRef = useRef<HTMLDivElement | null>(null);
 
@@ -262,10 +261,9 @@ function MobileMapLayout({
   ]);
 
   useEffect(() => {
-    if (isMobile) {
-      window.requestAnimationFrame(updateMapBottomControls);
-      updateMapTopControls();
-    }
+    if (!isMapLoaded) return;
+    window.requestAnimationFrame(updateMapBottomControls);
+    updateMapTopControls();
 
     const mapControlTopLeft = mapControlTopLeftRef.current;
     const mapControlTopRight = mapControlTopRightRef.current;
@@ -287,7 +285,7 @@ function MobileMapLayout({
       }
     };
   }, [
-    isMobile,
+    isMapLoaded,
     mapControlTopLeftRef,
     mapControlTopRightRef,
     mapControlBottomLeftRef,

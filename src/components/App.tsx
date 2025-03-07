@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import type { FocusEvent } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { IntlProvider } from 'react-intl';
 import type { MessageFormatElement } from 'react-intl';
+import type { MapEvent } from 'react-map-gl/maplibre';
 import type { OnErrorFn } from '@formatjs/intl';
 import { Transition } from '@headlessui/react';
 import { Provider as ToastProvider } from '@radix-ui/react-toast';
@@ -108,6 +109,12 @@ function App(props: Props) {
     [],
   );
 
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const handleMapLoad = useCallback((evt: MapEvent) => {
+    setIsMapLoaded(true);
+    mapRefs.handleMapLoad();
+  }, []);
+
   return (
     <IntlProvider
       messages={props.messages}
@@ -118,7 +125,7 @@ function App(props: Props) {
       <InPortal node={mapPortal}>
         <BikeHopperMap
           ref={mapRefs.mapRef}
-          onMapLoad={mapRefs.handleMapLoad}
+          onMapLoad={handleMapLoad}
           overlayRef={mapRefs.mapOverlayRef}
           hidden={isMobile && isEditingLocations}
           isMobile={isMobile}
@@ -134,6 +141,7 @@ function App(props: Props) {
               hideMap={isEditingLocations}
               infoBox={infoBox}
               loading={loading}
+              isMapLoaded={isMapLoaded}
             />
           ) : (
             <DesktopMapLayout
