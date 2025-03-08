@@ -110,10 +110,13 @@ function App(props: Props) {
   );
 
   const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const handleMapLoad = useCallback((evt: MapEvent) => {
-    setIsMapLoaded(true);
-    mapRefs.handleMapLoad();
-  }, []);
+  const handleMapLoad = useCallback(
+    (evt: MapEvent) => {
+      setIsMapLoaded(true);
+      mapRefs.handleMapLoad();
+    },
+    [mapRefs],
+  );
 
   return (
     <IntlProvider
