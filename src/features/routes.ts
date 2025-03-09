@@ -4,6 +4,7 @@ import * as BikeHopperClient from '../lib/BikeHopperClient';
 import InstructionSigns from '../lib/InstructionSigns';
 import type { BikeHopperAction, BikeHopperThunkAction } from '../store';
 import type { Mode } from '../lib/TransitModes';
+import { AlertMessageCode } from './alerts';
 
 type RoutesState = {
   routes: BikeHopperClient.RouteResponsePath[] | null;
@@ -292,15 +293,16 @@ export function fetchRoute(
       });
     } catch (e) {
       console.error('route fetch failed:', e);
-      let alertMessage = "Can't connect to server";
+      let alertMessageCode: AlertMessageCode =
+        AlertMessageCode.CANT_CONNECT_TO_SERVER;
       let failureType = 'network error';
       if (e instanceof BikeHopperClient.BikeHopperClientError) {
         // GraphHopper sometimes 400s if it doesn't like the coordinates
         if (e.message === 'Bad Request') {
-          alertMessage = "Can't find a route";
+          alertMessageCode = AlertMessageCode.CANT_FIND_ROUTE;
           failureType = 'no route found';
         } else {
-          alertMessage = 'Server error';
+          alertMessageCode = AlertMessageCode.SERVER_ERROR;
           failureType = 'server error';
         }
       }
@@ -309,7 +311,7 @@ export function fetchRoute(
         startCoords,
         endCoords,
         failureType,
-        alert: { message: alertMessage },
+        alert: { message: { code: alertMessageCode } },
       });
       return;
     }
@@ -321,7 +323,7 @@ export function fetchRoute(
         startCoords,
         endCoords,
         failureType: 'no route found',
-        alert: { message: "Can't find a route" },
+        alert: { message: { code: AlertMessageCode.CANT_FIND_ROUTE } },
       });
       return;
     }

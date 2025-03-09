@@ -1,6 +1,6 @@
 import { IntlShape } from 'react-intl';
 import type { Action } from 'redux';
-import { ActionAlertMixin, AlertSeverity } from './alerts';
+import { ActionAlertMixin, AlertMessageCode, AlertSeverity } from './alerts';
 import { BikeHopperThunkAction } from '../store';
 import describePlace from '../lib/describePlace';
 
@@ -12,13 +12,12 @@ export function mapLoaded() {
 export type FitFileGenerationFailedAction =
   Action<'fit_file_generation_failed'>;
 /** This just exists to generate an alert, for now. */
-export function fitFileGenerationFailed(
-  message: string,
-): FitFileGenerationFailedAction & ActionAlertMixin {
+export function fitFileGenerationFailed(): FitFileGenerationFailedAction &
+  ActionAlertMixin {
   return {
     type: 'fit_file_generation_failed',
     alert: {
-      message,
+      message: { code: AlertMessageCode.CANT_GENERATE_FIT_FILE },
       severity: AlertSeverity.ERROR,
     },
   };
@@ -26,7 +25,6 @@ export function fitFileGenerationFailed(
 
 export function shareRoutes(intl: IntlShape): BikeHopperThunkAction {
   return async (dispatch, getState) => {
-    let errorFromShare: any;
     // open OS-level share dialog if it exists
     if ('share' in navigator) {
       const { start, end } = getState().routeParams;
@@ -87,26 +85,15 @@ export function shareRoutes(intl: IntlShape): BikeHopperThunkAction {
       dispatch({
         type: 'url_copied',
         alert: {
-          message: intl.formatMessage({
-            defaultMessage: 'Copied URL to clipboard!',
-            description: 'toast displayed when copying a URL to clipboard.',
-          }),
+          message: { code: AlertMessageCode.COPIED_URL_TO_CLIPBOARD },
           severity: AlertSeverity.SUCCESS,
         },
       });
     } catch (error) {
       dispatch({
         type: 'url_copy_failed',
-        alert: {
-          message: errorFromShare
-            ? errorFromShare.name + ' ' + errorFromShare.message
-            : intl.formatMessage({
-                defaultMessage: 'Unable to copy URL to clipboard',
-                description:
-                  'error alert when copying a URL to clipboard fails.',
-              }),
-          severity: AlertSeverity.ERROR,
-        },
+        alert: { message: { code: AlertMessageCode.COPY_URL_FAILED } },
+        severity: AlertSeverity.ERROR,
       });
     }
   };
