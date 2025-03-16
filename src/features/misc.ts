@@ -68,7 +68,7 @@ export function shareRoutes(intl: IntlShape): BikeHopperThunkAction {
       try {
         await navigator.share({
           title: 'BikeHopper',
-          text: shareText + ' ' + String(document.location),
+          text: shareText,
           url: String(document.location),
         });
         return;
