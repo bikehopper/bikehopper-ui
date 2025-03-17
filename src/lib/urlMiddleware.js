@@ -5,6 +5,7 @@ import {
   LocationSourceType,
   hydrateParamsFromUrl,
 } from '../features/routeParams';
+import { POINT_PRECISION } from './geometry';
 
 /*
  * Middleware for maintaining the URL in the browser location bar.
@@ -40,8 +41,13 @@ export default function routesUrlMiddleware(store) {
       const params = stateAfter.routeParams;
       const queryString = history.location.search; // preserve any query params
 
-      let from = routeStateAfter.routeStartCoords.join(',');
-      let to = routeStateAfter.routeEndCoords.join(',');
+      let [from, to] = [
+        routeStateAfter.routeStartCoords,
+        routeStateAfter.routeEndCoords,
+      ].map(
+        ([lng, lat]) =>
+          `${lng.toFixed(POINT_PRECISION)},${lat.toFixed(POINT_PRECISION)}`,
+      );
       // Add the string description of the start and end point if applicable.
       // If there is a description, we use '@' as the separator character
       // between the description and the coordinates.
