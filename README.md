@@ -23,7 +23,7 @@ Then setup the environment variables so that the basemap style can be loaded fro
 This will require you to
 
 1. Create a Mapbox Account (Free one is fine)
-2. Copy the `bikehopper-nouveau` style to your account by grabbing the link from the `#web-app` channel in Discord.
+2. Copy the `bikehopper-nouveau` style by contacting us via a GitHub issue.
 3. Set the variables in the `.env.development.local` file as per the instructions in the file.
 
 If you're unable to copy the style, then you can use the public `mapbox://styles/mapbox/streets-v11` for the map style. It will look different, but will have the same functionality.
