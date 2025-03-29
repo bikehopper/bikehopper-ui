@@ -33,7 +33,7 @@ export function activeStopIds(
   const activePath = paths[activePathIdx];
   if (activePath != null) {
     for (const leg of activePath.legs) {
-      if (leg.type === 'pt') {
+      if (leg.type === 'pt' && leg.all_stop_ids) {
         for (const stopId of leg.all_stop_ids) {
           allStops.add(stopId);
         }
