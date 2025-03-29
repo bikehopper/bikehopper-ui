@@ -696,38 +696,42 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
           <Layer {...getBikeLabelStyle(activePath)} />
           <Layer {...getHillStyle(activePath)} />
         </Source>
-        <Source
-          id="routeTilesSource"
-          type="vector"
-          tiles={[`${getApiPath()}/api/v1/route-tiles/{z}/{x}/{y}.pbf`]}
-          minzoom={7}
-          maxzoom={14}
-        >
-          <Layer
-            beforeId="routeOutline"
-            {...getTransitTilesLineStyle(activeRoutes, activeTrips)}
-          />
-        </Source>
-        <Source
-          id="stopTilesSource"
-          type="vector"
-          tiles={[`${getApiPath()}/api/v1/stop-tiles/{z}/{x}/{y}.pbf`]}
-          minzoom={9}
-          maxzoom={14}
-        >
-          <Layer
-            beforeId="transitLabelLayer"
-            {...getTransitTilesStopOutlineStyle(activeStops)}
-          />
-          <Layer
-            beforeId="transitLabelLayer"
-            {...getTransitTilesStopStyle(activeStops)}
-          />
-          <Layer
-            beforeId="transitLabelLayer"
-            {...getTransitTilesStopNamesStyle(activeStops)}
-          />
-        </Source>
+        {import.meta.env.VITE_LOAD_TRANSIT_TILES && (
+          <Source
+            id="routeTilesSource"
+            type="vector"
+            tiles={[`${getApiPath()}/api/v1/route-tiles/{z}/{x}/{y}.pbf`]}
+            minzoom={7}
+            maxzoom={14}
+          >
+            <Layer
+              beforeId="routeOutline"
+              {...getTransitTilesLineStyle(activeRoutes, activeTrips)}
+            />
+          </Source>
+        )}
+        {import.meta.env.VITE_LOAD_TRANSIT_TILES && (
+          <Source
+            id="stopTilesSource"
+            type="vector"
+            tiles={[`${getApiPath()}/api/v1/stop-tiles/{z}/{x}/{y}.pbf`]}
+            minzoom={9}
+            maxzoom={14}
+          >
+            <Layer
+              beforeId="transitLabelLayer"
+              {...getTransitTilesStopOutlineStyle(activeStops)}
+            />
+            <Layer
+              beforeId="transitLabelLayer"
+              {...getTransitTilesStopStyle(activeStops)}
+            />
+            <Layer
+              beforeId="transitLabelLayer"
+              {...getTransitTilesStopNamesStyle(activeStops)}
+            />
+          </Source>
+        )}
         <Source
           id="hillshadeSource"
           type="raster-dem"
