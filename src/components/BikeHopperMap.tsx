@@ -73,7 +73,11 @@ import {
   DEFAULT_INACTIVE_COLOR,
   DEFAULT_PT_COLOR,
 } from '../lib/colors';
-import { RouteResponsePath, getApiPath } from '../lib/BikeHopperClient';
+import {
+  HILLSHADE_BASE_URL,
+  RouteResponsePath,
+  getApiPath,
+} from '../lib/BikeHopperClient';
 import classnames from 'classnames';
 import {
   activeRouteIds,
@@ -736,7 +740,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
           id="hillshadeSource"
           type="raster-dem"
           tiles={[
-            `https://api.mapbox.com/v4/mapbox.terrain-rgb/{z}/{x}/{y}.png?access_token=${import.meta.env.VITE_MAPBOX_TOKEN}
+            `${HILLSHADE_BASE_URL}?access_token=${import.meta.env.VITE_MAPBOX_TOKEN}
         `,
           ]}
           tileSize={256}
