@@ -75,20 +75,20 @@ import {
 } from '../lib/colors';
 import { RouteResponsePath, getApiPath } from '../lib/BikeHopperClient';
 import classnames from 'classnames';
-import { activeRouteIds } from '../lib/activeRouteIds';
-import { activeTripIds } from '../lib/activeTripIds';
+import {
+  activeRouteIds,
+  activeTripIds,
+  ActiveStopTypes,
+  ActiveStops,
+  EMPTY_ACTIVE_STOPS,
+  activeStopIds,
+} from '../lib/activeIds';
 import LogInIcon from 'iconoir/icons/log-in.svg?react';
 import LogOutIcon from 'iconoir/icons/log-out.svg?react';
 import slopeDownhillIconUrl from '../../icons/sdf/downhill_sdf.png';
 import slopeUphillIconUrl from '../../icons/sdf/uphill_sdf.png';
 import useScreenDims from '../hooks/useScreenDims';
 import Color from 'color';
-import {
-  ActiveStopTypes,
-  ActiveStops,
-  EMPTY_ACTIVE_STOPS,
-  activeStopIds,
-} from '../lib/activeStopIds';
 
 const _isTouch = 'ontouchstart' in window;
 
