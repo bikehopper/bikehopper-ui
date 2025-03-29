@@ -93,7 +93,7 @@ import Color from 'color';
 const _isTouch = 'ontouchstart' in window;
 
 type Props = {
-  onMapLoad?: () => void;
+  onMapLoad?: (evt: MapEvent) => void;
   overlayRef: RefObject<HTMLDivElement | null>;
   hidden: boolean;
   isMobile: boolean;
@@ -340,7 +340,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
   };
 
   const handleMapLoad = async (event: MapEvent) => {
-    if (props.onMapLoad) props.onMapLoad();
+    if (props.onMapLoad) props.onMapLoad(event);
     dispatch(mapLoaded());
     const map = event.target;
 
