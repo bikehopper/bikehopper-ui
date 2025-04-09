@@ -3,6 +3,8 @@ import type {
   ExpressionSpecification,
   LineLayerSpecification,
   SymbolLayerSpecification,
+  CircleLayerSpecification,
+  DataDrivenPropertyValueSpecification,
 } from '@maplibre/maplibre-gl-style-spec';
 import { Point as MapLibrePoint } from 'maplibre-gl';
 import {
@@ -69,10 +71,18 @@ import {
   CYCLE_TRACK_COLOR,
   DEFAULT_BIKE_COLOR,
   DEFAULT_INACTIVE_COLOR,
+  DEFAULT_PT_COLOR,
 } from '../lib/colors';
-import { RouteResponsePath } from '../lib/BikeHopperClient';
+import { RouteResponsePath, getApiPath } from '../lib/BikeHopperClient';
 import classnames from 'classnames';
-
+import {
+  activeRouteIds,
+  activeTripIds,
+  ActiveStopTypes,
+  ActiveStops,
+  EMPTY_ACTIVE_STOPS,
+  activeStopIds,
+} from '../lib/activeIds';
 import LogInIcon from 'iconoir/icons/log-in.svg?react';
 import LogOutIcon from 'iconoir/icons/log-out.svg?react';
 import slopeDownhillIconUrl from '../../icons/sdf/downhill_sdf.png';
@@ -105,6 +115,8 @@ const MAP_CLICK_FUDGE_VEC = new MapLibrePoint(
   MAP_CLICK_FUDGE_PX,
   MAP_CLICK_FUDGE_PX,
 );
+const HILLSHADE_BASE_URL =
+  'https://api.mapbox.com/v4/mapbox.terrain-rgb/{z}/{x}/{y}.png';
 
 const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
   props: Props,
@@ -333,56 +345,6 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
     if (props.onMapLoad) props.onMapLoad(event);
     dispatch(mapLoaded());
     const map = event.target;
-
-    // Make road labels larger
-    map
-      // This expression is copied over from mapbox-streets-v11 style,
-      // but with all the size values increated by 2
-      .setLayoutProperty('road-label', 'text-size', [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        10,
-        [
-          'match',
-          ['get', 'class'],
-          ['motorway', 'trunk', 'primary', 'secondary', 'tertiary'],
-          12,
-          [
-            'motorway_link',
-            'trunk_link',
-            'primary_link',
-            'secondary_link',
-            'tertiary_link',
-            'pedestrian',
-            'street',
-            'street_limited',
-          ],
-          11,
-          8.5,
-        ],
-        18,
-        [
-          'match',
-          ['get', 'class'],
-          ['motorway', 'trunk', 'primary', 'secondary', 'tertiary'],
-          18,
-          [
-            'motorway_link',
-            'trunk_link',
-            'primary_link',
-            'secondary_link',
-            'tertiary_link',
-            'pedestrian',
-            'street',
-            'street_limited',
-          ],
-          18,
-          15,
-        ],
-      ]);
-
-    map.setPaintProperty('road-label', 'text-halo-width', 3);
 
     const [downslopeData, upslopeData] = await Promise.all([
       downloadImageData(slopeDownhillIconUrl),
@@ -634,6 +596,20 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
     return routes ? routesToGeoJSON(routes, intl) : EMPTY_GEOJSON;
   }, [routes, intl]);
 
+  const activeRoutes =
+    routes != null && activePath != null
+      ? activeRouteIds(routes, activePath)
+      : [];
+
+  const activeTrips =
+    routes != null && activePath != null
+      ? activeTripIds(routes, activePath)
+      : [];
+  const activeStops =
+    routes != null && activePath != null
+      ? activeStopIds(routes, activePath)
+      : EMPTY_ACTIVE_STOPS;
+
   const navigationControlVisibility =
     mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden';
 
@@ -663,7 +639,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
           height: '100%',
         }}
         onLoad={handleMapLoad}
-        mapStyle="mapbox://styles/mapbox/streets-v11"
+        mapStyle={import.meta.env.VITE_MAPBOX_STYLE_URL}
         transformRequest={transformRequest}
         interactiveLayerIds={INTERACTIVE_LAYER_IDS}
         onMouseMove={!_isTouch ? handleMapMouseMove : undefined}
@@ -718,6 +694,61 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
           <Layer {...getTransitLabelStyle(activePath)} />
           <Layer {...getBikeLabelStyle(activePath)} />
           <Layer {...getHillStyle(activePath)} />
+        </Source>
+        {import.meta.env.VITE_LOAD_TRANSIT_TILES && (
+          <Source
+            id="routeTilesSource"
+            type="vector"
+            tiles={[`${getApiPath()}/api/v1/route-tiles/{z}/{x}/{y}.pbf`]}
+            minzoom={7}
+            maxzoom={14}
+          >
+            <Layer
+              beforeId="routeOutline"
+              {...getTransitTilesLineStyle(activeRoutes, activeTrips)}
+            />
+          </Source>
+        )}
+        {import.meta.env.VITE_LOAD_TRANSIT_TILES && (
+          <Source
+            id="stopTilesSource"
+            type="vector"
+            tiles={[`${getApiPath()}/api/v1/stop-tiles/{z}/{x}/{y}.pbf`]}
+            minzoom={9}
+            maxzoom={14}
+          >
+            <Layer
+              beforeId="transitLabelLayer"
+              {...getTransitTilesStopOutlineStyle(activeStops)}
+            />
+            <Layer
+              beforeId="transitLabelLayer"
+              {...getTransitTilesStopStyle(activeStops)}
+            />
+            <Layer
+              beforeId="transitLabelLayer"
+              {...getTransitTilesStopNamesStyle(activeStops)}
+            />
+          </Source>
+        )}
+        <Source
+          id="hillshadeSource"
+          type="raster-dem"
+          tiles={[
+            `${HILLSHADE_BASE_URL}?access_token=${import.meta.env.VITE_MAPBOX_TOKEN}
+        `,
+          ]}
+          tileSize={256}
+          minzoom={0}
+          maxzoom={14}
+        >
+          <Layer
+            type="hillshade"
+            paint={{
+              'hillshade-exaggeration': 0.2,
+              'hillshade-shadow-color': 'rgba(0,0,0,0.2)',
+            }}
+          />
         </Source>
         {startCoords && (
           <Marker
@@ -869,6 +900,210 @@ function getTransitionStyle(
       'line-width': 3,
       'line-color': 'darkgray',
       'line-dasharray': [1, 1],
+    },
+  };
+}
+
+function getTransitTilesLineStyle(
+  activeRoutes: string[],
+  activeTrips: string[],
+): Omit<LineLayerSpecification, 'source'> {
+  return {
+    id: 'route-lines',
+    'source-layer': 'route-lines',
+    type: 'line',
+    filter: [
+      'all',
+      ['==', ['geometry-type'], 'LineString'],
+      activeFilter(activeRoutes, 'route_id'),
+      activeFilter(activeTrips, 'trip_ids'),
+    ],
+    paint: {
+      'line-width': 3,
+      'line-color': [
+        'interpolate',
+        ['linear'],
+        0.3,
+        0.0,
+        ['to-color', ['get', 'route_color'], DEFAULT_PT_COLOR],
+        1.0,
+        ['rgb', 255, 255, 255],
+      ],
+    },
+  };
+}
+
+function getIsActiveStopExpression(
+  activeStops: ActiveStops,
+  stopType: ActiveStopTypes = ActiveStopTypes.all,
+): ExpressionSpecification {
+  let stopList = activeStops.all;
+
+  switch (stopType) {
+    case ActiveStopTypes.onRoute:
+      stopList = activeStops.onRoute;
+      break;
+    case ActiveStopTypes.entry:
+      stopList = activeStops.entry;
+      break;
+    case ActiveStopTypes.exit:
+      stopList = activeStops.exit;
+      break;
+  }
+  return ['in', ['get', 'stop_id'], ['literal', stopList]];
+}
+
+function getStopCircleRadiusExpression(
+  minRadius: number,
+  maxRadius: number,
+  activeStops: ActiveStops,
+  entryExitAddedThickness: number = 0,
+): DataDrivenPropertyValueSpecification<number> {
+  const isBus: ExpressionSpecification = [
+    'any',
+    ['to-boolean', ['get', 'bus']],
+    ['to-boolean', ['get', 'trolleybus']],
+  ];
+
+  const minRadiusExpr: ExpressionSpecification = [
+    'case',
+    getIsActiveStopExpression(activeStops, ActiveStopTypes.entry),
+    (minRadius + entryExitAddedThickness) * 1.2,
+    getIsActiveStopExpression(activeStops, ActiveStopTypes.exit),
+    (minRadius + entryExitAddedThickness) * 1.2,
+    getIsActiveStopExpression(activeStops, ActiveStopTypes.onRoute),
+    minRadius,
+    minRadius * 0.5,
+  ];
+
+  const maxRadiusExpr: ExpressionSpecification = [
+    'case',
+    getIsActiveStopExpression(activeStops, ActiveStopTypes.entry),
+    (maxRadius + entryExitAddedThickness) * 1.2,
+    getIsActiveStopExpression(activeStops, ActiveStopTypes.exit),
+    (maxRadius + entryExitAddedThickness) * 1.2,
+    getIsActiveStopExpression(activeStops, ActiveStopTypes.onRoute),
+    maxRadius,
+    maxRadius * 0.5,
+  ];
+
+  return [
+    'interpolate',
+    ['linear'],
+    ['zoom'],
+    0,
+    0,
+    8,
+    ['case', isBus, 0, minRadiusExpr],
+    10,
+    ['case', isBus, 0, minRadiusExpr],
+    11.99,
+    ['case', isBus, 0, minRadiusExpr],
+    12,
+    ['case', isBus, minRadiusExpr, maxRadiusExpr],
+    14,
+    ['case', isBus, maxRadiusExpr, maxRadiusExpr],
+  ];
+}
+
+function getTransitTilesStopStyle(
+  activeStops: ActiveStops,
+): Omit<CircleLayerSpecification, 'source'> {
+  return {
+    id: 'routeStops',
+    'source-layer': 'stops',
+    type: 'circle',
+    filter: getIsActiveStopExpression(activeStops),
+    paint: {
+      'circle-radius': getStopCircleRadiusExpression(4, 6, activeStops),
+      'circle-color': 'white',
+    },
+  };
+}
+
+function getTransitTilesStopOutlineStyle(
+  activeStops: ActiveStops,
+): Omit<CircleLayerSpecification, 'source'> {
+  return {
+    id: 'routeStopsOutline',
+    'source-layer': 'stops',
+    type: 'circle',
+    filter: getIsActiveStopExpression(activeStops),
+    paint: {
+      'circle-radius': getStopCircleRadiusExpression(6, 8, activeStops, 1),
+      'circle-color': [
+        'case',
+        getIsActiveStopExpression(activeStops, ActiveStopTypes.entry),
+        'darkgreen',
+        getIsActiveStopExpression(activeStops, ActiveStopTypes.exit),
+        'darkred',
+        getIsActiveStopExpression(activeStops, ActiveStopTypes.onRoute),
+        'black',
+        'gray',
+      ],
+    },
+  };
+}
+
+function getTransitTilesStopNamesStyle(
+  activeStops: ActiveStops,
+): Omit<SymbolLayerSpecification, 'source'> {
+  const isBus: ExpressionSpecification = ['to-boolean', ['get', 'bus']];
+
+  const notOnRouteAndIsBus: ExpressionSpecification = [
+    'all',
+    isBus,
+    ['!', getIsActiveStopExpression(activeStops, ActiveStopTypes.onRoute)],
+  ];
+
+  const textSizeExpr = (
+    onRouteSize: number,
+    offRouteSize: number,
+  ): ExpressionSpecification => {
+    return [
+      'case',
+      getIsActiveStopExpression(activeStops, ActiveStopTypes.onRoute),
+      onRouteSize,
+      offRouteSize,
+    ];
+  };
+
+  return {
+    id: 'routeStopNames',
+    'source-layer': 'stops',
+    type: 'symbol',
+    minzoom: 12,
+    filter: getIsActiveStopExpression(activeStops),
+    layout: {
+      'text-field': ['get', 'stop_name'],
+      'text-anchor': 'top-left',
+      'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
+      'text-size': ['case', isBus, textSizeExpr(12, 10), textSizeExpr(14, 12)],
+      'text-justify': 'left',
+      'text-offset': [0.3, 0.3],
+    },
+    paint: {
+      'text-halo-color': 'white',
+      'text-halo-width': 2,
+      'text-color': [
+        'case',
+        getIsActiveStopExpression(activeStops, ActiveStopTypes.onRoute),
+        'black',
+        'gray',
+      ],
+      'text-opacity': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        0,
+        ['case', notOnRouteAndIsBus, 0, 1],
+        13.5,
+        ['case', notOnRouteAndIsBus, 0, 1],
+        13.8,
+        ['case', notOnRouteAndIsBus, 1, 1],
+        14,
+        ['case', notOnRouteAndIsBus, 1, 1],
+      ],
     },
   };
 }
@@ -1095,6 +1330,25 @@ function propIs(key: string, ...values: string[]): ExpressionSpecification {
 
 function pathIndexIs(index: number | null): ExpressionFilterSpecification {
   return index == null ? false : ['==', ['get', 'path_index'], index];
+}
+
+function activeFilter(
+  activeRoutes: string[],
+  routeIdKey: 'route_id' | 'route_ids' | 'trip_ids' | 'stop_id',
+): ExpressionFilterSpecification {
+  if (activeRoutes.length === 0) {
+    return false;
+  }
+  const matchers: ExpressionSpecification[] =
+    routeIdKey == 'route_id' || routeIdKey == 'stop_id'
+      ? activeRoutes.map((routeId: string) => [
+          '==',
+          routeId,
+          ['get', routeIdKey],
+        ])
+      : activeRoutes.map((id: string) => ['in', id, ['get', routeIdKey]]);
+
+  return ['any', ...matchers];
 }
 
 function getPaddingForMap(overlayEl: HTMLElement | null) {

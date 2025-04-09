@@ -9,12 +9,12 @@ import { InstructionSign } from './InstructionSigns';
 import { Mode } from './TransitModes';
 import { POINT_PRECISION } from './geometry';
 
-function getApiPath(): string {
+export function getApiPath(): string {
   const apiDomain = import.meta.env.VITE_API_DOMAIN;
   // If the env var is not defined, default to making API requests
   // to same domain, which is what we generally want for development
   // (Vite will proxy to staging).
-  return apiDomain || '';
+  return apiDomain || window.location.origin;
 }
 
 export class BikeHopperClientError extends Error {
@@ -159,6 +159,7 @@ type TransitLegBase = {
   stops: TransitStop[];
   trip_id: string;
   route_id: string;
+  all_stop_ids?: string[];
   alerts?: TransitAlert[];
 };
 type TransitLegRaw = TransitLegBase & {

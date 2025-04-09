@@ -17,9 +17,30 @@ This is the frontend! Here's how to get started. For setting up the whole projec
 ## Getting Started With the BikeHopper UI
 
 This project uses [Vite](https://vitejs.dev/) as its build system and
-for running a dev server. To get started clone this repo,
-copy the `.env.development.template` to `.env.development.local` and put in a
-Mapbox token you create (free plan is fine), run `npm install`, then run `npm start`.
+for running a dev server.
+To get started clone this repo, copy the `.env.development.template` to `.env.development.local`.
+Then setup the environment variables so that the basemap style can be loaded from Mapbox.
+This will require you to
+
+1. Create a Mapbox Account (Free one is fine)
+2. Copy the `bikehopper-nouveau` style by contacting us via a GitHub issue.
+3. Set the variables in the `.env.development.local` file as per the instructions in the file.
+
+If you're unable to copy the style, then you can use the public `mapbox://styles/mapbox/streets-v11` for the map style. It will look different, but will have the same functionality.
+
+Then run:
+
+```
+npm install
+```
+
+to install all dependencies, and
+
+```
+npm start
+```
+
+to start the Vite Dev Server.
 
 Requests to `localhost` are proxied to
 `https://api-staging.bikehopper.org`. This is configured by a "proxy"
