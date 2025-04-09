@@ -9,9 +9,6 @@ import { InstructionSign } from './InstructionSigns';
 import { Mode } from './TransitModes';
 import { POINT_PRECISION } from './geometry';
 
-export const HILLSHADE_BASE_URL =
-  'https://api.mapbox.com/v4/mapbox.terrain-rgb/{z}/{x}/{y}.png';
-
 export function getApiPath(): string {
   const apiDomain = import.meta.env.VITE_API_DOMAIN;
   // If the env var is not defined, default to making API requests

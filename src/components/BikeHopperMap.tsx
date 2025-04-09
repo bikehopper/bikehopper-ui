@@ -73,11 +73,7 @@ import {
   DEFAULT_INACTIVE_COLOR,
   DEFAULT_PT_COLOR,
 } from '../lib/colors';
-import {
-  HILLSHADE_BASE_URL,
-  RouteResponsePath,
-  getApiPath,
-} from '../lib/BikeHopperClient';
+import { RouteResponsePath, getApiPath } from '../lib/BikeHopperClient';
 import classnames from 'classnames';
 import {
   activeRouteIds,
@@ -119,6 +115,8 @@ const MAP_CLICK_FUDGE_VEC = new MapLibrePoint(
   MAP_CLICK_FUDGE_PX,
   MAP_CLICK_FUDGE_PX,
 );
+const HILLSHADE_BASE_URL =
+  'https://api.mapbox.com/v4/mapbox.terrain-rgb/{z}/{x}/{y}.png';
 
 const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
   props: Props,
@@ -537,7 +535,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
 
       map.easeTo({
         center: camera.center,
-        zoom: Math.min(camera.zoom || MAX_ZOOM, MAX_ZOOM),
+        zoom: Math.min(camera.zoom, MAX_ZOOM),
       });
     }
   }, [
@@ -961,7 +959,11 @@ function getStopCircleRadiusExpression(
   activeStops: ActiveStops,
   entryExitAddedThickness: number = 0,
 ): DataDrivenPropertyValueSpecification<number> {
-  const isBus: ExpressionSpecification = ['to-boolean', ['get', 'bus']];
+  const isBus: ExpressionSpecification = [
+    'any',
+    ['to-boolean', ['get', 'bus']],
+    ['to-boolean', ['get', 'trolleybus']],
+  ];
 
   const minRadiusExpr: ExpressionSpecification = [
     'case',
