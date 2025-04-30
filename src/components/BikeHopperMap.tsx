@@ -89,6 +89,7 @@ import slopeDownhillIconUrl from '../../icons/sdf/downhill_sdf.png';
 import slopeUphillIconUrl from '../../icons/sdf/uphill_sdf.png';
 import useScreenDims from '../hooks/useScreenDims';
 import Color from 'color';
+import { getMapboxStyleParams } from '../lib/region';
 
 const _isTouch = 'ontouchstart' in window;
 
@@ -118,6 +119,8 @@ const MAP_CLICK_FUDGE_VEC = new MapLibrePoint(
 const HILLSHADE_BASE_URL =
   'https://api.mapbox.com/v4/mapbox.terrain-rgb/{z}/{x}/{y}.png';
 
+const transitLayersEnabled = !import.meta.env.VITE_DISABLE_TRANSIT_LAYER;
+
 const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
   props: Props,
   mapRef_: Ref<MapRef>,
@@ -126,6 +129,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
   const intl = useIntl();
   const mapRef = mapRef_ as RefObject<MapRef>;
   const mouseOverClickableLayerRef = useRef(false);
+  const { mapboxAccessToken, mapboxStyleUrl } = getMapboxStyleParams();
   const {
     routeStatus,
     startCoords,
@@ -639,7 +643,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
           height: '100%',
         }}
         onLoad={handleMapLoad}
-        mapStyle={import.meta.env.VITE_MAPBOX_STYLE_URL}
+        mapStyle={mapboxStyleUrl}
         transformRequest={transformRequest}
         interactiveLayerIds={INTERACTIVE_LAYER_IDS}
         onMouseMove={!_isTouch ? handleMapMouseMove : undefined}
@@ -695,7 +699,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
           <Layer {...getBikeLabelStyle(activePath)} />
           <Layer {...getHillStyle(activePath)} />
         </Source>
-        {import.meta.env.VITE_LOAD_TRANSIT_TILES && (
+        {transitLayersEnabled && (
           <Source
             id="routeTilesSource"
             type="vector"
@@ -709,7 +713,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
             />
           </Source>
         )}
-        {import.meta.env.VITE_LOAD_TRANSIT_TILES && (
+        {transitLayersEnabled && (
           <Source
             id="stopTilesSource"
             type="vector"
@@ -735,7 +739,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
           id="hillshadeSource"
           type="raster-dem"
           tiles={[
-            `${HILLSHADE_BASE_URL}?access_token=${import.meta.env.VITE_MAPBOX_TOKEN}
+            `${HILLSHADE_BASE_URL}?access_token=${mapboxAccessToken}
         `,
           ]}
           tileSize={256}
@@ -1386,7 +1390,7 @@ function transformRequest(url: string, resourceType: string | undefined) {
     return transformMapboxUrl(
       url,
       resourceType,
-      import.meta.env.VITE_MAPBOX_TOKEN,
+      getMapboxStyleParams().mapboxAccessToken,
     );
   }
   return { url };

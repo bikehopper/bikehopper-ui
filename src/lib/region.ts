@@ -46,6 +46,22 @@ export function getTransitDataAcknowledgement():
   return _getConfig().transitDataAcknowledgement;
 }
 
+export function getMapboxStyleParams(): {
+  mapboxAccessToken: string;
+  mapboxStyleUrl: string;
+} {
+  let { mapboxAccessToken, mapboxStyleUrl } = _getConfig();
+  if (import.meta.env.VITE_MAPBOX_STYLE_URL_OVERRIDE) {
+    mapboxStyleUrl = import.meta.env.VITE_MAPBOX_STYLE_URL_OVERRIDE;
+  }
+
+  if (import.meta.env.VITE_MAPBOX_TOKEN_OVERRIDE) {
+    mapboxAccessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+  }
+
+  return { mapboxAccessToken, mapboxStyleUrl };
+}
+
 const Latitude = z.number().lte(90).gte(-90);
 const Longitude = z.number().lte(180).gte(-180);
 
@@ -69,6 +85,8 @@ export const RegionConfigSchema = z.object({
     .tuple([Longitude, Latitude, Longitude, Latitude])
     .optional(),
   supportedRegionDescription: z.string().optional(),
+  mapboxAccessToken: z.string(),
+  mapboxStyleUrl: z.string(),
 });
 export type RegionConfig = z.infer<typeof RegionConfigSchema>;
 
