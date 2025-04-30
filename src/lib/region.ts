@@ -51,11 +51,11 @@ export function getMapboxStyleParams(): {
   mapboxStyleUrl: string;
 } {
   let { mapboxAccessToken, mapboxStyleUrl } = _getConfig();
-  if (import.meta.env.VITE_MAPBOX_STYLE_URL_OVERRIDE) {
-    mapboxStyleUrl = import.meta.env.VITE_MAPBOX_STYLE_URL_OVERRIDE;
+  if (import.meta.env.VITE_MAPBOX_STYLE_URL) {
+    mapboxStyleUrl = import.meta.env.VITE_MAPBOX_STYLE_URL;
   }
 
-  if (import.meta.env.VITE_MAPBOX_TOKEN_OVERRIDE) {
+  if (import.meta.env.VITE_MAPBOX_TOKEN) {
     mapboxAccessToken = import.meta.env.VITE_MAPBOX_TOKEN;
   }
 
