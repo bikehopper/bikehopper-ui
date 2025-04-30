@@ -14,7 +14,6 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  VITE_MAPBOX_TOKEN: ${{ secrets.MAPBOX_PRODUCTION }}
 
 jobs:
   call-workflow-build-publish-docker-image:
