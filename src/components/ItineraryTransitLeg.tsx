@@ -4,7 +4,6 @@ import { selectAlertsToDisplay } from '../lib/alerts';
 import type { TransitLeg } from '../lib/BikeHopperClient';
 import { DEFAULT_PT_COLOR } from '../lib/colors';
 import { stationElevators } from '../lib/elevators';
-import type { ElevatorInfo } from '../lib/elevators';
 import { getModeLabel } from '../lib/TransitModes';
 import { formatTime, formatDurationBetween } from '../lib/time';
 import { getAgencyDisplayName } from '../lib/region';
