@@ -130,7 +130,7 @@ function ModeToggleGroupItem({
         focus:relative focus:outline-hidden focus-visible:z-20 focus-visible:ring-3
         focus-visible:ring-blue-500 focus-visible:ring-opacity-75"
     >
-      <div className="flex flex-col">
+      <div className="flex flex-col items-center">
         <Icon>{icon}</Icon>
         <span>{label}</span>
       </div>
