@@ -60,7 +60,7 @@ export default function ModalDialog({
             >
               {title && (
                 <Dialog.Title
-                  className="m-0 mb-3 text-lg align-middle
+                  className="m-0 mb-3 text-lg font-bold align-middle
                     flex flex-row justify-start items-center select-none"
                 >
                   {title}

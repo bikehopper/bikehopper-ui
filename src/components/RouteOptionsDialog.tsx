@@ -127,7 +127,7 @@ function ModeToggleGroupItem({
         first:rounded-l-md first:border-x last:rounded-r-md last:border-x
         border-gray-300
         dark:border-gray-500
-        focus:relative focus:outline-none focus-visible:z-20 focus-visible:ring
+        focus:relative focus:outline-hidden focus-visible:z-20 focus-visible:ring-3
         focus-visible:ring-blue-500 focus-visible:ring-opacity-75"
     >
       <div className="flex flex-col">
