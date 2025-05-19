@@ -55,7 +55,7 @@ export default function ItinerarySingleStep({
   return (
     <div className="py-8 px-5 relative">
       <div className="flex flex-row items-start">
-        <div className="flex-grow">
+        <div className="grow">
           <ItineraryBikeStep
             key={stepIdx}
             step={step}
