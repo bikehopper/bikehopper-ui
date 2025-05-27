@@ -39,37 +39,37 @@ export async function fetchRegionConfig(): Promise<RegionConfig> {
   return RegionConfigSchema.parse(await result.json());
 }
 
-function dateToPST(timeStamp?: number | null) {
-  const dateUTC = timeStamp ? new Date(timeStamp) : new Date();
-  const formatter = new Intl.DateTimeFormat('en-US', {
+// in when I say a time -> i ACTUALLY mean a time 3hrs in the FUTURE
+// find the time difference - e.g. 3 hours -> 3 hours of milis
+// take the date.now(), format
+// take date.now() - format to LA time
+// See if there is a difference
+function timeStampToLocalTime(timeStamp: number) {
+  const sysDate = new Date();
+  const sysMinutes = sysDate.getHours() * 60 + sysDate.getMinutes();
+
+  // you need more than hours - you need minutes -> 30/45 minute timezones
+  const pst_formatter = new Intl.DateTimeFormat('en-US', {
     timeZone: 'America/Los_Angeles',
-    timeZoneName: 'short',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
-    second: '2-digit',
     hour12: false,
   });
 
-  const parts = formatter.formatToParts(dateUTC);
+  const parts = pst_formatter.formatToParts(sysDate);
   const getPart = (type: string) => parts.find((p) => p.type === type)?.value;
 
-  const year = getPart('year');
-  const month = getPart('month');
-  const day = getPart('day');
-  const hour = getPart('hour');
-  const minute = getPart('minute');
-  const second = getPart('second');
-  const timezone = getPart('timeZoneName');
+  const pstMinutes =
+    parseInt(getPart('hour')!) * 60 + parseInt(getPart('minute')!);
 
-  const offset = timezone === 'PST' ? `08:00` : `07:00`;
+  if (pstMinutes === sysMinutes) {
+    return timeStamp;
+  }
 
-  // constructed according to DTS format : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#date_time_string_format
-  const isoString = `${year}-${month}-${day}T${hour}:${minute}:${second}.000-${offset}`;
+  // should this be more granular?
+  const timeDiffMS = 60 * 1000 * (sysMinutes - pstMinutes);
 
-  return isoString;
+  return timeStamp + timeDiffMS;
 }
 
 type GtfsRouteType = number;
@@ -95,8 +95,11 @@ export async function fetchRoute({
   signal?: AbortSignal;
   blockRouteTypes?: GtfsRouteType[];
 }) {
-  console.log('HERE');
   const isDebugMode = !!(window as any).debug;
+
+  const earliestDepartureLocal = earliestDepartureTime
+    ? timeStampToLocalTime(earliestDepartureTime)
+    : Date.now();
 
   const params = new URLSearchParams({
     locale: 'en-US',
@@ -107,20 +110,14 @@ export async function fetchRoute({
     profile,
     optimize: String(optimize),
     pointsEncoded: 'false',
-    'pt.earliest_departure_time': dateToPST(earliestDepartureTime),
+    'pt.earliest_departure_time': new Date(
+      earliestDepartureLocal,
+    ).toISOString(),
     'pt.connecting_profile': connectingProfile,
     'pt.arrive_by': String(arriveBy),
   });
 
-  console.log(earliestDepartureTime);
-  console.log(
-    `OLD`,
-    earliestDepartureTime
-      ? new Date(earliestDepartureTime).toISOString()
-      : new Date().toISOString(),
-  );
-
-  console.log(`NEW`, dateToPST(earliestDepartureTime));
+  console.log(new Date(earliestDepartureLocal));
 
   for (const detail of details || []) params.append('details', detail);
   for (const routeType of blockRouteTypes || [])
