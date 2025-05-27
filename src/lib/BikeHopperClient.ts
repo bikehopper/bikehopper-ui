@@ -46,28 +46,28 @@ export async function fetchRegionConfig(): Promise<RegionConfig> {
 // See if there is a difference
 function timeStampToLocalTime(timeStamp: number) {
   const sysDate = new Date();
-  const sysMinutes = sysDate.getHours() * 60 + sysDate.getMinutes();
+  const sysSecs =
+    3600 * sysDate.getHours() +
+    60 * sysDate.getMinutes() +
+    sysDate.getSeconds();
 
   // you need more than hours - you need minutes -> 30/45 minute timezones
   const pst_formatter = new Intl.DateTimeFormat('en-US', {
     timeZone: 'America/Los_Angeles',
     hour: '2-digit',
     minute: '2-digit',
+    second: '2-digit',
     hour12: false,
   });
 
   const parts = pst_formatter.formatToParts(sysDate);
-  const getPart = (type: string) => parts.find((p) => p.type === type)?.value;
+  const getPart = (type: string) =>
+    parseInt(parts.find((p) => p.type === type)!.value);
 
-  const pstMinutes =
-    parseInt(getPart('hour')!) * 60 + parseInt(getPart('minute')!);
+  const localSecs =
+    3600 * getPart('hour') + 60 * getPart('minute') + getPart('second');
 
-  if (pstMinutes === sysMinutes) {
-    return timeStamp;
-  }
-
-  // should this be more granular?
-  const timeDiffMS = 60 * 1000 * (sysMinutes - pstMinutes);
+  const timeDiffMS = 1000 * (sysSecs - localSecs);
 
   return timeStamp + timeDiffMS;
 }
