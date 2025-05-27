@@ -13,10 +13,16 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           manualChunks: {
+            react: [
+              'react',
+              'react/jsx-runtime',
+              'react-dom/client',
+              'react-redux',
+              'react-intl',
+            ],
             'maplibre-gl': ['maplibre-gl'],
             'react-map-gl': ['react-map-gl/maplibre'],
-            react: ['react', 'react-dom/client', 'react-redux', 'react-intl'],
-            '@nivo': ['@nivo/line'],
+            '@nivo': ['@nivo/line', '@nivo/axes', '@nivo/scales'],
           },
         },
       },
