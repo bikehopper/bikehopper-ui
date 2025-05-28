@@ -105,8 +105,6 @@ export async function fetchRoute({
     'pt.arrive_by': String(arriveBy),
   });
 
-  console.log(new Date(earliestDepartureLocal));
-
   for (const detail of details || []) params.append('details', detail);
   for (const routeType of blockRouteTypes || [])
     params.append('pt.block_route_types', String(routeType));
