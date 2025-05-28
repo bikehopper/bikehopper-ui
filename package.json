@@ -70,7 +70,6 @@
     ]
   },
   "devDependencies": {
-    "@eslint/compat": "^1.2.3",
     "@eslint/js": "^9.15.0",
     "@formatjs/cli": "^6.2.9",
     "@maplibre/maplibre-gl-style-spec": "^19.3.3",
@@ -90,7 +89,7 @@
     "eslint": "^9.15.0",
     "eslint-plugin-formatjs": "^5.2.5",
     "eslint-plugin-react": "^7.34.1",
-    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.6",
     "globals": "^16.0.0",
     "husky": "^9.0.11",
