@@ -40,24 +40,12 @@ export async function fetchRegionConfig(): Promise<RegionConfig> {
 }
 
 function timeStampToLocalTime(timeStamp: number) {
-  const sysDate = new Date();
-  const sysOffset = sysDate.getTimezoneOffset();
-
-  const pst_formatter = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/Los_Angeles',
-    timeZoneName: 'short',
-    hour12: false,
-  });
-
-  const parts = pst_formatter.formatToParts(sysDate);
-  const getPart = (type: string) => parts.find((p) => p.type === type)!.value;
-
-  const timezone = getPart('timeZoneName');
-  const localOffset = timezone === 'PST' ? 8 * 60 : 7 * 60;
-
-  const timeDiffMS = 60 * 1000 * (localOffset - sysOffset);
-
-  return timeStamp + timeDiffMS;
+  const serverTime = DateTime.fromMillis(timeStamp).setZone(
+    'America/Los_Angeles',
+    { keepLocalTime: true },
+  );
+  const clientTime = serverTime.toLocal().toMillis();
+  return clientTime;
 }
 
 type GtfsRouteType = number;
