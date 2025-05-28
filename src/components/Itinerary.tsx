@@ -144,10 +144,12 @@ export default function Itinerary({
               description="start and end time for a trip"
               values={{
                 startTime: intl.formatTime(startTime, {
+                  timeZone: 'America/Los_Angeles',
                   hour: 'numeric',
                   minute: 'numeric',
                 }),
                 endTime: intl.formatTime(endTime, {
+                  timeZone: 'America/Los_Angeles',
                   hour: 'numeric',
                   minute: 'numeric',
                 }),

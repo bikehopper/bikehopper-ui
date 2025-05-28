@@ -148,12 +148,17 @@ export default function RoutesOverview({
                 description="compact departure and arrival time"
                 values={{
                   depart: intl.formatTime(route.legs[0].departure_time, {
+                    timeZone: 'America/Los_Angeles',
                     hour: 'numeric',
                     minute: 'numeric',
                   }),
                   arrive: intl.formatTime(
                     route.legs[route.legs.length - 1].arrival_time,
-                    { hour: 'numeric', minute: 'numeric' },
+                    {
+                      timeZone: 'America/Los_Angeles',
+                      hour: 'numeric',
+                      minute: 'numeric',
+                    },
                   ),
                 }}
               />
