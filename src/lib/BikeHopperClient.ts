@@ -39,35 +39,23 @@ export async function fetchRegionConfig(): Promise<RegionConfig> {
   return RegionConfigSchema.parse(await result.json());
 }
 
-// in when I say a time -> i ACTUALLY mean a time 3hrs in the FUTURE
-// find the time difference - e.g. 3 hours -> 3 hours of milis
-// take the date.now(), format
-// take date.now() - format to LA time
-// See if there is a difference
 function timeStampToLocalTime(timeStamp: number) {
   const sysDate = new Date();
-  const sysSecs =
-    3600 * sysDate.getHours() +
-    60 * sysDate.getMinutes() +
-    sysDate.getSeconds();
+  const sysOffset = sysDate.getTimezoneOffset();
 
-  // you need more than hours - you need minutes -> 30/45 minute timezones
   const pst_formatter = new Intl.DateTimeFormat('en-US', {
     timeZone: 'America/Los_Angeles',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
+    timeZoneName: 'short',
     hour12: false,
   });
 
   const parts = pst_formatter.formatToParts(sysDate);
-  const getPart = (type: string) =>
-    parseInt(parts.find((p) => p.type === type)!.value);
+  const getPart = (type: string) => parts.find((p) => p.type === type)!.value;
 
-  const localSecs =
-    3600 * getPart('hour') + 60 * getPart('minute') + getPart('second');
+  const timezone = getPart('timeZoneName');
+  const localOffset = timezone === 'PST' ? 8 * 60 : 7 * 60;
 
-  const timeDiffMS = 1000 * (sysSecs - localSecs);
+  const timeDiffMS = 60 * 1000 * (localOffset - sysOffset);
 
   return timeStamp + timeDiffMS;
 }
