@@ -1,4 +1,3 @@
-import { fixupPluginRules } from '@eslint/compat';
 import formatjsPlugin from 'eslint-plugin-formatjs';
 import globals from 'globals';
 import js from '@eslint/js';
@@ -12,6 +11,7 @@ export default [
   js.configs.recommended,
   reactPlugin.configs.flat.recommended,
   reactPlugin.configs.flat['jsx-runtime'],
+  reactHooksPlugin.configs['recommended-latest'],
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
@@ -31,13 +31,9 @@ export default [
     plugins: {
       formatjs: formatjsPlugin,
       react: reactPlugin,
-      // Workaround til react-hooks plugin supports ESLint 9:
-      // https://github.com/facebook/react/issues/28313
-      'react-hooks': fixupPluginRules(reactHooksPlugin),
       'react-refresh': reactRefreshPlugin,
     },
     rules: {
-      ...reactHooksPlugin.configs.recommended.rules,
       'react/jsx-no-target-blank': 'off',
       'formatjs/enforce-default-message': 'error',
       'formatjs/enforce-description': 'error',
