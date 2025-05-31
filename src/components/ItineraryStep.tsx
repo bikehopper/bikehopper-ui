@@ -24,7 +24,7 @@ export default function ItineraryStep({
   return (
     <div className="ItineraryStep">
       <ItineraryRow rootRef={rootRef} hideLine={hideLine}>
-        <span className="ItineraryStep_iconContainer">
+        <span className="justify-center flex w-full">
           <Icon
             className={classnames({
               ItineraryStep_icon: true,

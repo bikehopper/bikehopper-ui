@@ -1,7 +1,5 @@
-import classNames from 'classnames';
+import classnames from 'classnames';
 import type { ScrollToRef } from '../hooks/useScrollToRef';
-
-import './ItineraryRow.css';
 
 export default function ItineraryRow({
   children,
@@ -13,16 +11,19 @@ export default function ItineraryRow({
   rootRef?: ScrollToRef<HTMLDivElement> | undefined;
 }) {
   return (
-    <div className="ItineraryRow" ref={rootRef}>
+    <div className="m-0 flex flex-row" ref={rootRef}>
       <div
-        className={classNames({
-          ItineraryRow_timeline: true,
-          ItineraryRow_timeline__hasLine: !hideLine,
+        className={classnames({
+          'w-9 box-border shrink-0': true,
+          'bg-[linear-gradient(to_right,rgba(0,0,0,0)_17px,rgba(187,187,187,1)_17px_19px,rgba(0,0,0,0)_17px_100%)]':
+            !hideLine,
         })}
       >
         {children[0]}
       </div>
-      <div className="ItineraryRow_content">{children.slice(1)}</div>
+      <div className="grow flex flex-col justify-evenly pb-2">
+        {children.slice(1)}
+      </div>
     </div>
   );
 }
