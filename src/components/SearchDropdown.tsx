@@ -113,10 +113,7 @@ export default function SearchDropdown({
 
   return (
     <div className="flex flex-col m-0">
-      <SelectionList
-        className="flex-grow pointer-events-auto"
-        id="SearchDropdown"
-      >
+      <SelectionList className="grow pointer-events-auto" id="SearchDropdown">
         {parsedCoords && (
           <AutocompleteItem
             onClick={handleCoordsClick}
