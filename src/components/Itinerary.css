@@ -29,6 +29,8 @@
   cursor: pointer;
   padding: 0;
   margin-left: -12px;
+  display: flex;
+  align-items: end;
 }
 
 .Itinerary_bottomBackBtnText {
