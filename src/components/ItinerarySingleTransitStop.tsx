@@ -71,7 +71,7 @@ export default function ItinerarySingleTransitStop({
   return (
     <div className="py-8 px-5 relative">
       <div className="flex flex-row items-start">
-        <div className="flex-grow">
+        <div className="grow">
           {isBoardingStop && (
             <ItineraryHeader
               icon={<ModeIcon mode={leg.route_type} />}

@@ -1,9 +1,7 @@
-/* .ItineraryStep {
-  margin-left: 20px;
-} */
-
 .ItineraryStep_iconContainer {
-  margin-left: 7px;
+  justify-content: center;
+  display: flex;
+  width: 100%;
 }
 
 .ItineraryStep_iconLarge path {
@@ -11,9 +9,12 @@
 }
 
 .ItineraryStep_iconSmall {
-  position: relative;
+  /* 
+  position: relative; 
   margin-left: 3.5px;
-  top: 6px;
+  top: -1em;
+  left: 0.65em;
+  */
 }
 
 .ItineraryStep_iconSmall path {
@@ -21,9 +22,11 @@
 }
 
 .ItineraryStep_iconTiny {
+  /*
   position: relative;
-  margin-left: 5px;
-  top: 4px;
+  top: -0.6em;
+  left: 0.75em;
+  */
 }
 
 .ItineraryStep_iconTiny path {
