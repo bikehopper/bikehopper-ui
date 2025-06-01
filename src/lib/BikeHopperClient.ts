@@ -39,6 +39,15 @@ export async function fetchRegionConfig(): Promise<RegionConfig> {
   return RegionConfigSchema.parse(await result.json());
 }
 
+function timeStampToLocalTime(timeStamp: number) {
+  const serverTime = DateTime.fromMillis(timeStamp).setZone(
+    'America/Los_Angeles',
+    { keepLocalTime: true },
+  );
+  const clientTime = serverTime.toLocal().toMillis();
+  return clientTime;
+}
+
 type GtfsRouteType = number;
 
 export async function fetchRoute({
@@ -64,6 +73,10 @@ export async function fetchRoute({
 }) {
   const isDebugMode = !!(window as any).debug;
 
+  const earliestDepartureLocal = earliestDepartureTime
+    ? timeStampToLocalTime(earliestDepartureTime)
+    : Date.now();
+
   const params = new URLSearchParams({
     locale: 'en-US',
     elevation: 'true',
@@ -73,12 +86,13 @@ export async function fetchRoute({
     profile,
     optimize: String(optimize),
     pointsEncoded: 'false',
-    'pt.earliest_departure_time': earliestDepartureTime
-      ? new Date(earliestDepartureTime).toISOString()
-      : new Date().toISOString(),
+    'pt.earliest_departure_time': new Date(
+      earliestDepartureLocal,
+    ).toISOString(),
     'pt.connecting_profile': connectingProfile,
     'pt.arrive_by': String(arriveBy),
   });
+
   for (const detail of details || []) params.append('details', detail);
   for (const routeType of blockRouteTypes || [])
     params.append('pt.block_route_types', String(routeType));
