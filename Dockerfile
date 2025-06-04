@@ -4,8 +4,7 @@ ARG API_DOMAIN
 
 ENV VITE_API_DOMAIN=$API_DOMAIN
 
-COPY package.json package.json
-COPY package-lock.json package-lock.json
+COPY package-lock.json package.json .
 RUN npm ci
 COPY . .
 RUN npm run lint
