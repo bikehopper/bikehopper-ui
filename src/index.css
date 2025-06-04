@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import 'tailwindcss' source('../src');
 
 /* MapLibre CSS has to be loaded here
  * so it takes precedence over Tailwind's base reset CSS.
