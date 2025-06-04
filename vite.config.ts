@@ -49,5 +49,8 @@ export default defineConfig(({ mode }) => {
         '/api/v1': 'https://api-staging.bikehopper.org',
       },
     },
+    css: {
+      transformer: 'lightningcss',
+    },
   };
 });
