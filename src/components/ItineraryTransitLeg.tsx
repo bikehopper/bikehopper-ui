@@ -1,9 +1,8 @@
 import { useState, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { selectAlertsToDisplay } from '../lib/alerts';
-import type { TransitLeg } from '../lib/BikeHopperClient';
+import type { TransitLeg, TransitStop } from '../lib/BikeHopperClient';
 import { DEFAULT_PT_COLOR } from '../lib/colors';
-import { stationElevators } from '../lib/elevators';
 import { getModeLabel } from '../lib/TransitModes';
 import { formatTime, formatDurationBetween } from '../lib/time';
 import { getAgencyDisplayName } from '../lib/region';
@@ -132,7 +131,7 @@ export default function ItineraryTransitLeg({
               }}
             />
           </div>
-          {describeElevators(stops[0].stop_id)}
+          {describeElevators(stops[0])}
         </BorderlessButton>
       </ItineraryStep>
 
@@ -185,7 +184,7 @@ export default function ItineraryTransitLeg({
           />
           {spacerWithMiddot}
           {arrival}
-          {describeElevators(stops[stops.length - 1].stop_id)}
+          {describeElevators(stops[stops.length - 1])}
         </BorderlessButton>
       </ItineraryStep>
       <ItinerarySpacer />
@@ -193,11 +192,20 @@ export default function ItineraryTransitLeg({
   );
 }
 
-function describeElevators(stopId: string) {
-  const elevatorInfos = stationElevators.get(stopId);
-  console.log('elevators for', stopId, elevatorInfos);
-  if (!elevatorInfos || elevatorInfos.length === 0) return null;
-  const diagonals = elevatorInfos.map((elev) => elev.diagonal);
+function describeElevators(stop: TransitStop) {
+  const { elevators } = stop;
+  if (!elevators || elevators.length === 0) return null;
+
+  // all measurements are assumed to be in inches
+  const numberInInchesRegex = /^(\d+(\.\d*)?)"$/;
+
+  const diagonals = elevators.map((elev) =>
+    Number(elev.diagonal.match(numberInInchesRegex)?.[1]),
+  );
+  if (diagonals.some((diag) => diag == null)) {
+    console.warn(`bad elevator diagonal for stop ${stop.stop_id}`);
+    return null;
+  }
   const minDiag = Math.min.apply(Math, diagonals);
   const maxDiag = Math.max.apply(Math, diagonals);
 
