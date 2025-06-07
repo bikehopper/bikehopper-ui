@@ -168,7 +168,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
   // MapLibre doesn't natively support long press, so we use a timer to detect it,
   // along with the clientX and clientY of the initial touch.
   type LongPressState = {
-    timer: ReturnType<typeof setTimeout>;
+    timer: number;
     clientX: number;
     clientY: number;
   };

@@ -35,9 +35,7 @@ export default function Toasts() {
 
   // for some reason, radix's toast isn't automatically dismissing after the
   // passed duration like it should. so do it ourselves:
-  const dismissTimersRef = useRef<Map<number, ReturnType<typeof setTimeout>>>(
-    new Map(),
-  );
+  const dismissTimersRef = useRef<Map<number, number>>(new Map());
   useEffect(() => {
     const dismissTimers = dismissTimersRef.current;
     const alertIdsDisplayed = new Set();
