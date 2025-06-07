@@ -194,6 +194,16 @@ export type TransitStop = {
   departure_time: string; // ISO-8601
   planned_departure_time: string; // ISO-8601
   departure_cancelled: boolean;
+  elevators?: ElevatorInfo[];
+};
+type ElevatorInfo = {
+  agency: string;
+  station: string;
+  elevator_stops: string;
+  door: string;
+  width: string;
+  length: string;
+  diagonal: string;
 };
 type TransitAlert = {
   entities: {
