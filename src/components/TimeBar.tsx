@@ -264,6 +264,7 @@ function TimeBarDateTimePicker({
     <fieldset className="border-0 m-0 p-1.5 flex flex-wrap flex-row">
       <input
         className="mr-3 font-sans text-sm lg:text-base
+          px-0.5 py-px
           text-gray-800 dark:text-gray-300
           bg-white dark:bg-gray-800
           border border-solid border-gray-300 dark:border-gray-600 rounded-md
@@ -277,6 +278,7 @@ function TimeBarDateTimePicker({
       />
       <input
         className="font-sans text-sm lg:text-base
+          px-0.5 py-px
           text-gray-800 dark:text-gray-300
           bg-white dark:bg-gray-800
           border border-solid border-gray-300 dark:border-gray-600 rounded-md
