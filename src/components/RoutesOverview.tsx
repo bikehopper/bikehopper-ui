@@ -27,8 +27,6 @@ import ListIcon from 'iconoir/icons/list.svg?react';
 import ShareAndroidIcon from 'iconoir/icons/share-android.svg?react';
 import ShareIosIcon from 'iconoir/icons/share-ios.svg?react';
 
-import './RoutesOverview.css';
-
 export default function RoutesOverview({
   routes,
   activeRoute,
@@ -64,32 +62,30 @@ export default function RoutesOverview({
   };
 
   return (
-    <div className="RoutesOverview">
-      {outOfAreaMsg && (
-        <div className="RoutesOverview_outOfAreaWarning">{outOfAreaMsg}</div>
-      )}
-      <SelectionList className="RoutesOverview_list">
+    <div className="flex flex-col">
+      {outOfAreaMsg && <div className="border-gray-300">{outOfAreaMsg}</div>}
+      <SelectionList className="rounded-t-large">
         {routes.map((route, index) => (
           <SelectionListItem
             active={activeRoute === index}
             onClick={onRouteClick.bind(null, index)}
             key={route.nonce}
             className={classnames({
-              RoutesOverview_firstItem: index === 0,
+              'rounded-t-large': index === 0,
             })}
           >
-            <div className="RoutesOverview_row">
-              <ul className="RoutesOverview_routeLegs">
+            <div className="flex flex-row justify-between">
+              <ul className="pl-0 flex flex-row flex-wrap">
                 {route.legs.filter(_isSignificantLeg).map((leg, index) => (
                   <Fragment key={route.nonce + ':' + index}>
                     {index > 0 && (
-                      <li className="RoutesOverview_legSeparator">
+                      <li className="inline-block mr-1 mb-3 self-center">
                         <Icon>
                           <NavArrowRight />
                         </Icon>
                       </li>
                     )}
-                    <li className="RoutesOverview_leg">
+                    <li className="inline-block mr-1">
                       {
                         (leg.type === 'pt' ? (containsTransitLeg = true) : null,
                         null)
@@ -125,7 +121,7 @@ export default function RoutesOverview({
                   </Fragment>
                 ))}
               </ul>
-              <p className="RoutesOverview_timeEstimate">
+              <p className="m-0 content-center text-nowrap text-base">
                 {formatInterval(
                   route.legs[route.legs.length - 1].arrival_time.getTime() -
                     route.legs[0].departure_time.getTime(),
@@ -134,12 +130,11 @@ export default function RoutesOverview({
             </div>
             <p
               className={classnames({
-                RoutesOverview_departArriveTime: true,
-                nothing: activeRoute === index,
+                'mt-2 flex flex-row text-sm': true,
               })}
             >
               {activeRoute === index && (
-                <Icon className="relative top-0.5 pr-0.5">
+                <Icon className="relative pr-0.5">
                   <ListIcon height="16" width="16" />
                 </Icon>
               )}
@@ -165,7 +160,7 @@ export default function RoutesOverview({
               {route.ascend != null &&
                 route.descend != null &&
                 Math.min(route.ascend, route.descend) > 10 && (
-                  <span className="ml-3">
+                  <span className="ml-3 flex flex-row">
                     <Icon
                       label={
                         intl.formatMessage({
@@ -176,7 +171,7 @@ export default function RoutesOverview({
                             'route, such as (in English) 200 ft or 50 m.',
                         }) + SPACE
                       }
-                      className="relative top-0.5"
+                      className="relative -top-0.5"
                     >
                       <ArrowUp
                         width="16"
@@ -195,7 +190,7 @@ export default function RoutesOverview({
                             'route, such as (in English) 200 ft or 50 m.',
                         }) + SPACE
                       }
-                      className="relative top-0.5 ml-1"
+                      className="relative -top-0.5 ml-1"
                     >
                       <ArrowDown
                         width="16"
@@ -224,7 +219,7 @@ export default function RoutesOverview({
           <a
             target="_blank"
             href={transitDataAck.url}
-            className="RoutesOverview_acknowledgementLink"
+            className="underline ml-auto text-sky-700 active:text-sky-600"
           >
             {transitDataAck.text}
           </a>

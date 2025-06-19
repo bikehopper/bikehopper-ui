@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react';
 import svgr from 'vite-plugin-svgr';
 import basicSsl from '@vitejs/plugin-basic-ssl';
 import babelPluginFormatjs from 'babel-plugin-formatjs';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
@@ -29,6 +30,7 @@ export default defineConfig(({ mode }) => {
       outDir: 'build',
     },
     plugins: [
+      tailwindcss(),
       svgr(),
       react({
         babel: {
@@ -52,6 +54,9 @@ export default defineConfig(({ mode }) => {
       proxy: {
         '/api/v1': 'https://api-staging.bikehopper.org',
       },
+    },
+    css: {
+      transformer: 'lightningcss',
     },
   };
 });

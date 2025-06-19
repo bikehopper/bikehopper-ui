@@ -33,3 +33,9 @@
    * The big bike icon has empty space under it for some reason. */
   margin-top: -3px;
 }
+
+.RouteLeg_bikeIcon,
+.RouteLeg_alertIcon,
+.RouteLeg_transitModeIcon {
+  margin-top: -2px;
+}

@@ -112,11 +112,11 @@ export default function TimeBar(props: {}) {
     <div>
       <button
         onClick={handleTrigger}
-        className="outline-none select-none cursor-pointer
+        className="outline-hidden select-none cursor-pointer
           text-[13px] rounded-md p-1.5
           border-2 border-solid border-transparent
-          focus:outline-none focus:ring-0 focus:ring-offset-0
-          bg-bikehoppergreenlight text-[inherit]
+          focus:outline-hidden focus:ring-0 focus:ring-offset-0
+          bg-bikehoppergreenlight text-inherit
           hover:bg-[#d0e1c0]
           focus-visible:border-bikehopperyellow focus-visible:bg-white"
       >
@@ -225,8 +225,8 @@ function TimeBarRadioGroupItem({
           bg-gray-200 dark:bg-gray-700
           aria-checked:bg-blue-500
           cursor-pointer
-          focus:outline-none focus:ring-0 focus:ring-offset-0
-          focus-visible:ring focus-visible:ring-blue-400
+          focus:outline-hidden focus:ring-0 focus:ring-offset-0
+          focus-visible:ring-3 focus-visible:ring-blue-400
           focus-visible:ring-opacity-75 focus-visible:ring-offset-2 mr-1"
       >
         <RadioGroup.Indicator className="absolute inset-0 flex items-center justify-center leading-0">
@@ -264,11 +264,12 @@ function TimeBarDateTimePicker({
     <fieldset className="border-0 m-0 p-1.5 flex flex-wrap flex-row">
       <input
         className="mr-3 font-sans text-sm lg:text-base
+          px-0.5 py-px
           text-gray-800 dark:text-gray-300
           bg-white dark:bg-gray-800
           border border-solid border-gray-300 dark:border-gray-600 rounded-md
-          outline-none focus:outline-none focus:ring-0 focus:ring-offset-0
-          focus-visible:ring focus-visible:ring-blue-400 dark:focus-visible:ring-blue-600
+          outline-hidden focus:outline-hidden focus:ring-0 focus:ring-offset-0
+          focus-visible:ring-3 focus-visible:ring-blue-400 dark:focus-visible:ring-blue-600
           dark:focus-visible:ring-offset-gray-800
           focus-visible:ring-opacity-75 focus-visible:ring-offset-2"
         type="date"
@@ -277,11 +278,12 @@ function TimeBarDateTimePicker({
       />
       <input
         className="font-sans text-sm lg:text-base
+          px-0.5 py-px
           text-gray-800 dark:text-gray-300
           bg-white dark:bg-gray-800
           border border-solid border-gray-300 dark:border-gray-600 rounded-md
-          outline-none focus:outline-none focus:ring-0 focus:ring-offset-0
-          focus-visible:ring focus-visible:ring-blue-400 dark:focus-visible:ring-blue-600
+          outline-hidden focus:outline-hidden focus:ring-0 focus:ring-offset-0
+          focus-visible:ring-3 focus-visible:ring-blue-400 dark:focus-visible:ring-blue-600
           dark:focus-visible:ring-offset-gray-800
           focus-visible:ring-opacity-75 focus-visible:ring-offset-2"
         type="time"

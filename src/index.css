@@ -1,14 +1,62 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
+@import 'tailwindcss' source('../src');
 
 /* MapLibre CSS has to be loaded here
  * so it takes precedence over Tailwind's base reset CSS.
  */
-@import 'maplibre-gl/dist/maplibre-gl.css';
+@import 'maplibre-gl/dist/maplibre-gl.css' layer(components);
 
 /* Import statements have to be at the top of the CSS file above all other
  * statements, so app-wide styles are now in the following file instead of here.
  */
-@import './body.css';
+@import './body.css' layer(components);
 
-@import 'tailwindcss/utilities';
+@plugin '@tailwindcss/typography';
+
+@theme {
+  --color-bikehoppergreen: #5aaa0a;
+  --color-bikehoppergreenlight: #def0cc;
+  --color-bikehopperyellow: #ffd18e;
+  --color-bikeinfragreen: #438601;
+
+  --scale--100: -1;
+
+  --shadow: 0 1px 10px #c4c4c4;
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@layer base {
+  /*
+  * V4 of tailwind seemingly defaults line-height to 1.5em.
+  * This changes behavior back to letting the client browser figure it out.
+  */
+  html {
+    line-height: normal;
+  }
+
+  /* Need this for good icon positioning! */
+  svg {
+    display: inline;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-gray-500);
+  }
+}

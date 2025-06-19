@@ -60,7 +60,7 @@ export default function RouteOptionsDialog({
         />
       }
     >
-      <form>
+      <form className="text-[13px]">
         <ToggleGroup.Root
           type="multiple"
           value={connectingModes}
@@ -123,16 +123,16 @@ function ModeToggleGroupItem({
         text-gray-400 dark:text-gray-500
         aria-pressed:bg-white dark:aria-pressed:bg-gray-700
         aria-pressed:text-slate-950 dark:aria-pressed:text-slate-50
-        border-y border-solid px-2.5 py-2 border-x-0
+        border-y border-solid px-3 py-2 border-x-0
         first:rounded-l-md first:border-x last:rounded-r-md last:border-x
         border-gray-300
         dark:border-gray-500
-        focus:relative focus:outline-none focus-visible:z-20 focus-visible:ring
+        focus:relative focus:outline-hidden focus-visible:z-20 focus-visible:ring-3
         focus-visible:ring-blue-500 focus-visible:ring-opacity-75"
     >
-      <div className="flex flex-col">
-        <Icon>{icon}</Icon>
-        <span>{label}</span>
+      <div className="flex flex-col items-center">
+        <Icon className="mb-1">{icon}</Icon>
+        <span className="inline">{label}</span>
       </div>
     </ToggleGroup.Item>
   );

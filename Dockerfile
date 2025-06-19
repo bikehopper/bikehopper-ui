@@ -1,11 +1,11 @@
-FROM node:20 as build
+FROM node:22 AS build
 
 ARG API_DOMAIN
 
 ENV VITE_API_DOMAIN=$API_DOMAIN
 
-COPY package.json package.json
-RUN npm install
+COPY package-lock.json package.json ./
+RUN npm ci
 COPY . .
 RUN npm run lint
 RUN npm run build
