@@ -76,8 +76,6 @@ import classnames from 'classnames';
 import {
   activeRouteIds,
   activeTripIds,
-  ActiveStopTypes,
-  ActiveStops,
   EMPTY_ACTIVE_STOPS,
   activeStopIds,
 } from '../../lib/activeIds';

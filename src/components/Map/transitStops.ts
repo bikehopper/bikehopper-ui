@@ -1,6 +1,5 @@
 import {
   CircleLayerSpecification,
-  DataDrivenPropertyValueSpecification,
   ExpressionSpecification,
   FilterSpecification,
   SymbolLayerSpecification,

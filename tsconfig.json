@@ -8,7 +8,7 @@
     "jsx": "preserve",
     "moduleResolution": "Bundler",
     "noImplicitAny": true,
-    "noUnusedLocals": false,
+    "noUnusedLocals": true,
     "noUnusedParameters": false,
     "strict": true,
     "skipLibCheck": true,
