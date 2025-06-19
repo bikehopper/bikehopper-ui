@@ -41,12 +41,17 @@
   }
 }
 
-/*
- * V4 of tailwind seemingly defaults line-height to 1.5em.
- * This changes behavior back to letting the client browser figure it out.
- */
 @layer base {
+  /*
+  * V4 of tailwind seemingly defaults line-height to 1.5em.
+  * This changes behavior back to letting the client browser figure it out.
+  */
   html {
     line-height: normal;
+  }
+
+  /* Need this for good icon positioning! */
+  svg {
+    display: inline;
   }
 }
