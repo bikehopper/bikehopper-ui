@@ -57,7 +57,7 @@ export const boardAlightStopNames = (activeStops: ActiveStops) =>
     },
     filter: buildFilter({
       activeStops,
-      stopTypes: [ActiveStopTypes.entry, ActiveStopTypes.exit],
+      stopTypes: ['entry', 'exit'],
     }),
   }) as const satisfies Omit<SymbolLayerSpecification, 'source'>;
 
@@ -77,7 +77,7 @@ export const intermediateStopNames = (activeStops: ActiveStops) =>
     },
     filter: buildFilter({
       activeStops,
-      stopTypes: [ActiveStopTypes.intermediate],
+      stopTypes: ['intermediate'],
     }),
   }) as const satisfies Omit<SymbolLayerSpecification, 'source'>;
 
@@ -97,7 +97,7 @@ export const offRouteStopNames = (activeStops: ActiveStops) =>
     },
     filter: buildFilter({
       activeStops,
-      stopTypes: [ActiveStopTypes.offRoute],
+      stopTypes: ['offRoute'],
     }),
   }) as const satisfies Omit<SymbolLayerSpecification, 'source'>;
 
@@ -111,14 +111,14 @@ export const boardAlightStopOutlines = (activeStops: ActiveStops) =>
       'circle-radius': 7,
       'circle-color': [
         'case',
-        getIsActiveStopExpression(activeStops, ActiveStopTypes.entry),
+        getIsActiveStopExpression(activeStops, 'entry'),
         'darkgreen',
         'darkred',
       ],
     },
     filter: buildFilter({
       activeStops,
-      stopTypes: [ActiveStopTypes.entry, ActiveStopTypes.exit],
+      stopTypes: ['entry', 'exit'],
     }),
   }) as const satisfies Omit<CircleLayerSpecification, 'source'>;
 
@@ -134,7 +134,7 @@ export const intermediateStopOutlines = (activeStops: ActiveStops) =>
     },
     filter: buildFilter({
       activeStops,
-      stopTypes: [ActiveStopTypes.intermediate],
+      stopTypes: ['intermediate'],
     }),
   }) as const satisfies Omit<CircleLayerSpecification, 'source'>;
 
@@ -150,7 +150,7 @@ export const offRouteStopOutlines = (activeStops: ActiveStops) =>
     },
     filter: buildFilter({
       activeStops,
-      stopTypes: [ActiveStopTypes.offRoute],
+      stopTypes: ['offRoute'],
     }),
   }) as const satisfies Omit<CircleLayerSpecification, 'source'>;
 
@@ -166,7 +166,7 @@ export const boardAlightStops = (activeStops: ActiveStops) =>
     },
     filter: buildFilter({
       activeStops,
-      stopTypes: [ActiveStopTypes.entry, ActiveStopTypes.exit],
+      stopTypes: ['entry', 'exit'],
     }),
   }) as const satisfies Omit<CircleLayerSpecification, 'source'>;
 
@@ -182,7 +182,7 @@ export const intermediateStops = (activeStops: ActiveStops) =>
     },
     filter: buildFilter({
       activeStops,
-      stopTypes: [ActiveStopTypes.intermediate],
+      stopTypes: ['intermediate'],
     }),
   }) as const satisfies Omit<CircleLayerSpecification, 'source'>;
 
@@ -198,6 +198,6 @@ export const offRouteStops = (activeStops: ActiveStops) =>
     },
     filter: buildFilter({
       activeStops,
-      stopTypes: [ActiveStopTypes.offRoute],
+      stopTypes: ['offRoute'],
     }),
   }) as const satisfies Omit<CircleLayerSpecification, 'source'>;

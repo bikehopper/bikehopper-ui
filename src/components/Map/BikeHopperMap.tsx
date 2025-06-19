@@ -621,8 +621,6 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
       ? activeStopIds(routes, activePath)
       : EMPTY_ACTIVE_STOPS;
 
-  console.log({ activeStops });
-
   const navigationControlVisibility =
     mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden';
 

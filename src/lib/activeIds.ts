@@ -35,23 +35,20 @@ export function activeRouteIds(
 
   return routeIds;
 }
-export enum ActiveStopTypes {
-  offRoute = 'offRoute',
-  intermediate = 'intermediate',
-  entry = 'entry',
-  exit = 'exit',
-}
+
+const ActiveStopTypes = ['entry', 'exit', 'intermediate', 'offRoute'] as const;
+export type ActiveStopTypes = (typeof ActiveStopTypes)[number];
 
 export type ActiveStops = {
   [T in ActiveStopTypes]: string[];
 };
 
-export const EMPTY_ACTIVE_STOPS: ActiveStops = {
+export const EMPTY_ACTIVE_STOPS = {
   offRoute: [],
   intermediate: [],
   entry: [],
   exit: [],
-};
+} satisfies ActiveStops;
 
 export function activeStopIds(
   paths: RouteResponsePath[],
