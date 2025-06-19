@@ -130,8 +130,7 @@ export default function RoutesOverview({
             </div>
             <p
               className={classnames({
-                'mt-1 mb-1 flex flex-row text-sm': true,
-                nothing: activeRoute === index,
+                'mt-2 flex flex-row text-sm': true,
               })}
             >
               {activeRoute === index && (
