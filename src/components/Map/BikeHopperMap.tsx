@@ -3,8 +3,6 @@ import type {
   ExpressionSpecification,
   LineLayerSpecification,
   SymbolLayerSpecification,
-  CircleLayerSpecification,
-  DataDrivenPropertyValueSpecification,
 } from '@maplibre/maplibre-gl-style-spec';
 import { Point as MapLibrePoint } from 'maplibre-gl';
 import {
@@ -39,31 +37,31 @@ import turfBbox from '@turf/bbox';
 import turfLength from '@turf/length';
 import lineSliceAlong from '@turf/line-slice-along';
 import { lineString } from '@turf/helpers';
-import InstructionIcon from './InstructionIcon';
+import InstructionIcon from '../InstructionIcon';
 import {
   routesToGeoJSON,
   EMPTY_GEOJSON,
   BIKEABLE_HIGHWAYS,
   STEP_ANNOTATIONS,
-} from '../lib/geometry';
-import lngLatToCoords from '../lib/lngLatToCoords';
-import { isTouchMoveSignificant } from '../lib/touch';
-import usePrevious from '../hooks/usePrevious';
-import { geolocated } from '../features/geolocation';
-import { mapLoaded } from '../features/misc';
+} from '../../lib/geometry';
+import lngLatToCoords from '../../lib/lngLatToCoords';
+import { isTouchMoveSignificant } from '../../lib/touch';
+import usePrevious from '../../hooks/usePrevious';
+import { geolocated } from '../../features/geolocation';
+import { mapLoaded } from '../../features/misc';
 import {
   locationDragged,
   locationSelectedOnMap,
-} from '../features/routeParams';
-import { routeClicked } from '../features/routes';
-import { mapMoved } from '../features/viewport';
-import downloadImageData from '../lib/downloadImageData';
-import useResizeObserver from '../hooks/useResizeObserver';
+} from '../../features/routeParams';
+import { routeClicked } from '../../features/routes';
+import { mapMoved } from '../../features/viewport';
+import downloadImageData from '../../lib/downloadImageData';
+import useResizeObserver from '../../hooks/useResizeObserver';
 import {
   BOTTOM_DRAWER_DEFAULT_SCROLL,
   BOTTOM_DRAWER_MIN_HEIGHT,
-} from '../lib/layout';
-import type { Dispatch, RootState } from '../store';
+} from '../../lib/layout';
+import type { Dispatch, RootState } from '../../store';
 
 import './BikeHopperMap.css';
 import {
@@ -72,24 +70,33 @@ import {
   DEFAULT_BIKE_COLOR,
   DEFAULT_INACTIVE_COLOR,
   DEFAULT_PT_COLOR,
-} from '../lib/colors';
-import { RouteResponsePath, getApiPath } from '../lib/BikeHopperClient';
+} from '../../lib/colors';
+import { RouteResponsePath, getApiPath } from '../../lib/BikeHopperClient';
 import classnames from 'classnames';
 import {
   activeRouteIds,
   activeTripIds,
-  ActiveStopTypes,
-  ActiveStops,
   EMPTY_ACTIVE_STOPS,
   activeStopIds,
-} from '../lib/activeIds';
+} from '../../lib/activeIds';
 import LogInIcon from 'iconoir/icons/log-in.svg?react';
 import LogOutIcon from 'iconoir/icons/log-out.svg?react';
-import slopeDownhillIconUrl from '../../icons/sdf/downhill_sdf.png';
-import slopeUphillIconUrl from '../../icons/sdf/uphill_sdf.png';
-import useScreenDims from '../hooks/useScreenDims';
+import slopeDownhillIconUrl from '../../../icons/sdf/downhill_sdf.png';
+import slopeUphillIconUrl from '../../../icons/sdf/uphill_sdf.png';
+import useScreenDims from '../../hooks/useScreenDims';
 import Color from 'color';
-import { getMapboxStyleParams } from '../lib/region';
+import { getMapboxStyleParams } from '../../lib/region';
+import {
+  boardAlightStopNames,
+  boardAlightStopOutlines,
+  boardAlightStops,
+  intermediateStopNames,
+  intermediateStopOutlines,
+  intermediateStops,
+  offRouteStopNames,
+  offRouteStopOutlines,
+  offRouteStops,
+} from './transitStops';
 
 const _isTouch = 'ontouchstart' in window;
 
@@ -718,20 +725,44 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
             id="stopTilesSource"
             type="vector"
             tiles={[`${getApiPath()}/api/v1/stop-tiles/{z}/{x}/{y}.pbf`]}
-            minzoom={9}
+            minzoom={7}
             maxzoom={14}
           >
             <Layer
               beforeId="transitLabelLayer"
-              {...getTransitTilesStopOutlineStyle(activeStops)}
+              {...offRouteStopNames(activeStops)}
             />
             <Layer
               beforeId="transitLabelLayer"
-              {...getTransitTilesStopStyle(activeStops)}
+              {...intermediateStopNames(activeStops)}
             />
             <Layer
               beforeId="transitLabelLayer"
-              {...getTransitTilesStopNamesStyle(activeStops)}
+              {...boardAlightStopNames(activeStops)}
+            />
+            <Layer
+              beforeId="transitLabelLayer"
+              {...offRouteStopOutlines(activeStops)}
+            />
+            <Layer
+              beforeId="transitLabelLayer"
+              {...intermediateStopOutlines(activeStops)}
+            />
+            <Layer
+              beforeId="transitLabelLayer"
+              {...boardAlightStopOutlines(activeStops)}
+            />
+            <Layer
+              beforeId="transitLabelLayer"
+              {...offRouteStops(activeStops)}
+            />
+            <Layer
+              beforeId="transitLabelLayer"
+              {...intermediateStops(activeStops)}
+            />
+            <Layer
+              beforeId="transitLabelLayer"
+              {...boardAlightStops(activeStops)}
             />
           </Source>
         )}
@@ -932,181 +963,6 @@ function getTransitTilesLineStyle(
         ['to-color', ['get', 'route_color'], DEFAULT_PT_COLOR],
         1.0,
         ['rgb', 255, 255, 255],
-      ],
-    },
-  };
-}
-
-function getIsActiveStopExpression(
-  activeStops: ActiveStops,
-  stopType: ActiveStopTypes = ActiveStopTypes.all,
-): ExpressionSpecification {
-  let stopList = activeStops.all;
-
-  switch (stopType) {
-    case ActiveStopTypes.onRoute:
-      stopList = activeStops.onRoute;
-      break;
-    case ActiveStopTypes.entry:
-      stopList = activeStops.entry;
-      break;
-    case ActiveStopTypes.exit:
-      stopList = activeStops.exit;
-      break;
-  }
-  return ['in', ['get', 'stop_id'], ['literal', stopList]];
-}
-
-function getStopCircleRadiusExpression(
-  minRadius: number,
-  maxRadius: number,
-  activeStops: ActiveStops,
-  entryExitAddedThickness: number = 0,
-): DataDrivenPropertyValueSpecification<number> {
-  const isBus: ExpressionSpecification = [
-    'any',
-    ['to-boolean', ['get', 'bus']],
-    ['to-boolean', ['get', 'trolleybus']],
-  ];
-
-  const minRadiusExpr: ExpressionSpecification = [
-    'case',
-    getIsActiveStopExpression(activeStops, ActiveStopTypes.entry),
-    (minRadius + entryExitAddedThickness) * 1.2,
-    getIsActiveStopExpression(activeStops, ActiveStopTypes.exit),
-    (minRadius + entryExitAddedThickness) * 1.2,
-    getIsActiveStopExpression(activeStops, ActiveStopTypes.onRoute),
-    minRadius,
-    minRadius * 0.5,
-  ];
-
-  const maxRadiusExpr: ExpressionSpecification = [
-    'case',
-    getIsActiveStopExpression(activeStops, ActiveStopTypes.entry),
-    (maxRadius + entryExitAddedThickness) * 1.2,
-    getIsActiveStopExpression(activeStops, ActiveStopTypes.exit),
-    (maxRadius + entryExitAddedThickness) * 1.2,
-    getIsActiveStopExpression(activeStops, ActiveStopTypes.onRoute),
-    maxRadius,
-    maxRadius * 0.5,
-  ];
-
-  return [
-    'interpolate',
-    ['linear'],
-    ['zoom'],
-    0,
-    0,
-    8,
-    ['case', isBus, 0, minRadiusExpr],
-    10,
-    ['case', isBus, 0, minRadiusExpr],
-    11.99,
-    ['case', isBus, 0, minRadiusExpr],
-    12,
-    ['case', isBus, minRadiusExpr, maxRadiusExpr],
-    14,
-    ['case', isBus, maxRadiusExpr, maxRadiusExpr],
-  ];
-}
-
-function getTransitTilesStopStyle(
-  activeStops: ActiveStops,
-): Omit<CircleLayerSpecification, 'source'> {
-  return {
-    id: 'routeStops',
-    'source-layer': 'stops',
-    type: 'circle',
-    filter: getIsActiveStopExpression(activeStops),
-    paint: {
-      'circle-radius': getStopCircleRadiusExpression(4, 6, activeStops),
-      'circle-color': 'white',
-    },
-  };
-}
-
-function getTransitTilesStopOutlineStyle(
-  activeStops: ActiveStops,
-): Omit<CircleLayerSpecification, 'source'> {
-  return {
-    id: 'routeStopsOutline',
-    'source-layer': 'stops',
-    type: 'circle',
-    filter: getIsActiveStopExpression(activeStops),
-    paint: {
-      'circle-radius': getStopCircleRadiusExpression(6, 8, activeStops, 1),
-      'circle-color': [
-        'case',
-        getIsActiveStopExpression(activeStops, ActiveStopTypes.entry),
-        'darkgreen',
-        getIsActiveStopExpression(activeStops, ActiveStopTypes.exit),
-        'darkred',
-        getIsActiveStopExpression(activeStops, ActiveStopTypes.onRoute),
-        'black',
-        'gray',
-      ],
-    },
-  };
-}
-
-function getTransitTilesStopNamesStyle(
-  activeStops: ActiveStops,
-): Omit<SymbolLayerSpecification, 'source'> {
-  const isBus: ExpressionSpecification = ['to-boolean', ['get', 'bus']];
-
-  const notOnRouteAndIsBus: ExpressionSpecification = [
-    'all',
-    isBus,
-    ['!', getIsActiveStopExpression(activeStops, ActiveStopTypes.onRoute)],
-  ];
-
-  const textSizeExpr = (
-    onRouteSize: number,
-    offRouteSize: number,
-  ): ExpressionSpecification => {
-    return [
-      'case',
-      getIsActiveStopExpression(activeStops, ActiveStopTypes.onRoute),
-      onRouteSize,
-      offRouteSize,
-    ];
-  };
-
-  return {
-    id: 'routeStopNames',
-    'source-layer': 'stops',
-    type: 'symbol',
-    minzoom: 12,
-    filter: getIsActiveStopExpression(activeStops),
-    layout: {
-      'text-field': ['get', 'stop_name'],
-      'text-anchor': 'top-left',
-      'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
-      'text-size': ['case', isBus, textSizeExpr(12, 10), textSizeExpr(14, 12)],
-      'text-justify': 'left',
-      'text-offset': [0.3, 0.3],
-    },
-    paint: {
-      'text-halo-color': 'white',
-      'text-halo-width': 2,
-      'text-color': [
-        'case',
-        getIsActiveStopExpression(activeStops, ActiveStopTypes.onRoute),
-        'black',
-        'gray',
-      ],
-      'text-opacity': [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        0,
-        ['case', notOnRouteAndIsBus, 0, 1],
-        13.5,
-        ['case', notOnRouteAndIsBus, 0, 1],
-        13.8,
-        ['case', notOnRouteAndIsBus, 1, 1],
-        14,
-        ['case', notOnRouteAndIsBus, 1, 1],
       ],
     },
   };
