@@ -1,6 +1,4 @@
-@layer theme, base, components, utilities;
-@import 'tailwindcss/theme.css' layer(theme) source('../src');
-@import 'tailwindcss/utilities.css' layer(utilities) source('../src');
+@import 'tailwindcss' source('../src');
 
 /* MapLibre CSS has to be loaded here
  * so it takes precedence over Tailwind's base reset CSS.
