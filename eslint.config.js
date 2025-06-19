@@ -72,6 +72,10 @@ export default [
     rules: {
       'no-undef': 'off', // handled by TypeScript
       'no-unused-vars': 'off',
+      'typescript/no-unused-vars': [
+        'warn',
+        { args: 'none', caughtErrors: 'none' },
+      ],
     },
   },
 ];
