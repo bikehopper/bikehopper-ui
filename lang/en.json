@@ -43,6 +43,10 @@
     "defaultMessage": "Directions from",
     "description": "menu item. Appears in context menu under a location you have selected on the map. When clicked, computes directions from that location."
   },
+  "8+w6jS": {
+    "defaultMessage": "Elevator diagonals: {min}\"-{max}\"",
+    "description": "describes the minimum and maximum diagonal width of an elevator. The widths are given in inches, as indicated in the English-language string by a \" symbol."
+  },
   "8OXHea": {
     "defaultMessage": "BikeHopper is <link>open source</link> under the GNU Affero General Public License.",
     "description": "paragraph in welcome screen, with link to project source code"

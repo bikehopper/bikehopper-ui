@@ -117,6 +117,28 @@
       "value": "Directions from"
     }
   ],
+  "8+w6jS": [
+    {
+      "type": 0,
+      "value": "Elevator diagonals: "
+    },
+    {
+      "type": 1,
+      "value": "min"
+    },
+    {
+      "type": 0,
+      "value": "\"-"
+    },
+    {
+      "type": 1,
+      "value": "max"
+    },
+    {
+      "type": 0,
+      "value": "\""
+    }
+  ],
   "8OXHea": [
     {
       "type": 0,
