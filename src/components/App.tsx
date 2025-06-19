@@ -21,7 +21,7 @@ import {
 import { RootState } from '../store';
 
 import './App.css';
-import BikeHopperMap from './BikeHopperMap';
+import BikeHopperMap from './Map/BikeHopperMap';
 import useMapRefs from '../hooks/useMapRefs';
 import DesktopMapLayout from './DesktopMapLayout';
 import MobileMapLayout from './MobileMapLayout';

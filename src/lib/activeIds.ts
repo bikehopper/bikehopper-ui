@@ -35,34 +35,30 @@ export function activeRouteIds(
 
   return routeIds;
 }
-
-export type ActiveStops = {
-  all: string[];
-  onRoute: string[];
-  entry: string[];
-  exit: string[];
-};
-
-export const EMPTY_ACTIVE_STOPS: ActiveStops = {
-  all: [],
-  onRoute: [],
-  entry: [],
-  exit: [],
-};
-
 export enum ActiveStopTypes {
-  all = 'all',
-  onRoute = 'onRoute',
+  offRoute = 'offRoute',
+  intermediate = 'intermediate',
   entry = 'entry',
   exit = 'exit',
 }
+
+export type ActiveStops = {
+  [T in ActiveStopTypes]: string[];
+};
+
+export const EMPTY_ACTIVE_STOPS: ActiveStops = {
+  offRoute: [],
+  intermediate: [],
+  entry: [],
+  exit: [],
+};
 
 export function activeStopIds(
   paths: RouteResponsePath[],
   activePathIdx: number,
 ): ActiveStops {
   const allStops: Set<string> = new Set();
-  const stopsOnRoute: Set<string> = new Set();
+  const intermediateStops: Set<string> = new Set();
   const entryStops: Set<string> = new Set();
   const exitStops: Set<string> = new Set();
 
@@ -74,8 +70,8 @@ export function activeStopIds(
           allStops.add(stopId);
         }
 
-        for (const stop of leg.stops) {
-          stopsOnRoute.add(stop.stop_id);
+        for (const stop of leg.stops.slice(1, -1)) {
+          intermediateStops.add(stop.stop_id);
         }
         entryStops.add(leg.stops[0].stop_id);
         exitStops.add(leg.stops[leg.stops.length - 1].stop_id);
@@ -83,9 +79,14 @@ export function activeStopIds(
     }
   }
 
+  const offRouteStops = allStops
+    .difference(intermediateStops)
+    .difference(entryStops)
+    .difference(exitStops);
+
   return {
-    all: Array.from(allStops.values()),
-    onRoute: Array.from(stopsOnRoute.values()),
+    offRoute: Array.from(offRouteStops.values()),
+    intermediate: Array.from(intermediateStops.values()),
     entry: Array.from(entryStops.values()),
     exit: Array.from(exitStops.values()),
   };
