@@ -1,5 +1,6 @@
 import {
   CircleLayerSpecification,
+  DataDrivenPropertyValueSpecification,
   ExpressionSpecification,
   FilterSpecification,
   SymbolLayerSpecification,
@@ -19,14 +20,34 @@ const buildFilter = ({
   ),
 ];
 
-const IS_BUS: ExpressionSpecification = ['to-boolean', ['get', 'bus']];
+const IS_BUS: ExpressionSpecification = ['to-boolean', ['get', 'bus']] as const;
 
-function getIsActiveStopExpression(
+const getIsActiveStopExpression = (
   activeStops: ActiveStops,
   stopType: ActiveStopTypes,
-): ExpressionSpecification {
-  return ['in', ['get', 'stop_id'], ['literal', activeStops[stopType]]];
-}
+) =>
+  [
+    'in',
+    ['get', 'stop_id'],
+    ['literal', activeStops[stopType]],
+  ] as const satisfies ExpressionSpecification;
+
+const stepExpression = ({
+  trainMin,
+  busMin,
+}: {
+  trainMin: number;
+  busMin: number;
+}) =>
+  [
+    'step',
+    ['zoom'],
+    0,
+    trainMin,
+    ['case', IS_BUS, 0, 1],
+    busMin,
+    1,
+  ] as const satisfies DataDrivenPropertyValueSpecification<number>;
 
 const COMMON_STOP_NAME_LAYOUT = {
   'text-field': ['get', 'stop_name'],
@@ -46,7 +67,7 @@ export const boardAlightStopNames = (activeStops: ActiveStops) =>
     id: 'boardAlightStopNames',
     'source-layer': 'stops',
     type: 'symbol',
-    minzoom: 10,
+    minzoom: 9,
     layout: {
       ...COMMON_STOP_NAME_LAYOUT,
       'text-size': ['case', IS_BUS, 12, 14],
@@ -54,6 +75,7 @@ export const boardAlightStopNames = (activeStops: ActiveStops) =>
     paint: {
       ...COMMON_STOP_NAME_PAINT,
       'text-color': 'black',
+      'text-opacity': stepExpression({ trainMin: 9, busMin: 10 }),
     },
     filter: buildFilter({
       activeStops,
@@ -66,7 +88,7 @@ export const intermediateStopNames = (activeStops: ActiveStops) =>
     id: 'intermediateStopNames',
     'source-layer': 'stops',
     type: 'symbol',
-    minzoom: 13,
+    minzoom: 11,
     layout: {
       ...COMMON_STOP_NAME_LAYOUT,
       'text-size': ['case', IS_BUS, 10, 12],
@@ -74,6 +96,7 @@ export const intermediateStopNames = (activeStops: ActiveStops) =>
     paint: {
       ...COMMON_STOP_NAME_PAINT,
       'text-color': 'black',
+      'text-opacity': stepExpression({ trainMin: 11, busMin: 13 }),
     },
     filter: buildFilter({
       activeStops,
@@ -86,7 +109,7 @@ export const offRouteStopNames = (activeStops: ActiveStops) =>
     id: 'offRouteStopNames',
     'source-layer': 'stops',
     type: 'symbol',
-    minzoom: 14,
+    minzoom: 12,
     layout: {
       ...COMMON_STOP_NAME_LAYOUT,
       'text-size': ['case', IS_BUS, 10, 12],
@@ -94,6 +117,7 @@ export const offRouteStopNames = (activeStops: ActiveStops) =>
     paint: {
       ...COMMON_STOP_NAME_PAINT,
       'text-color': 'grey',
+      'text-opacity': stepExpression({ trainMin: 12, busMin: 14 }),
     },
     filter: buildFilter({
       activeStops,
@@ -106,7 +130,7 @@ export const boardAlightStopOutlines = (activeStops: ActiveStops) =>
     id: 'boardAlightStopOutlines',
     'source-layer': 'stops',
     type: 'circle',
-    minzoom: 8,
+    minzoom: 7,
     paint: {
       'circle-radius': 7,
       'circle-color': [
@@ -115,6 +139,7 @@ export const boardAlightStopOutlines = (activeStops: ActiveStops) =>
         'darkgreen',
         'darkred',
       ],
+      'circle-opacity': stepExpression({ trainMin: 7, busMin: 8 }),
     },
     filter: buildFilter({
       activeStops,
@@ -127,10 +152,11 @@ export const intermediateStopOutlines = (activeStops: ActiveStops) =>
     id: 'intermediateStopOutlines',
     'source-layer': 'stops',
     type: 'circle',
-    minzoom: 12,
+    minzoom: 10,
     paint: {
       'circle-radius': 4,
       'circle-color': 'black',
+      'circle-opacity': stepExpression({ trainMin: 10, busMin: 12 }),
     },
     filter: buildFilter({
       activeStops,
@@ -143,10 +169,11 @@ export const offRouteStopOutlines = (activeStops: ActiveStops) =>
     id: 'offRouteStopOutlines',
     'source-layer': 'stops',
     type: 'circle',
-    minzoom: 13.5,
+    minzoom: 11,
     paint: {
       'circle-radius': 3,
       'circle-color': 'grey',
+      'circle-opacity': stepExpression({ trainMin: 11, busMin: 13 }),
     },
     filter: buildFilter({
       activeStops,
@@ -159,10 +186,11 @@ export const boardAlightStops = (activeStops: ActiveStops) =>
     id: 'boardAlightStops',
     'source-layer': 'stops',
     type: 'circle',
-    minzoom: 8,
+    minzoom: 7,
     paint: {
       'circle-radius': 4,
       'circle-color': 'white',
+      'circle-opacity': stepExpression({ trainMin: 7, busMin: 8 }),
     },
     filter: buildFilter({
       activeStops,
@@ -175,10 +203,11 @@ export const intermediateStops = (activeStops: ActiveStops) =>
     id: 'intermediateStops',
     'source-layer': 'stops',
     type: 'circle',
-    minzoom: 12,
+    minzoom: 10,
     paint: {
       'circle-radius': 2,
       'circle-color': 'white',
+      'circle-opacity': stepExpression({ trainMin: 10, busMin: 12 }),
     },
     filter: buildFilter({
       activeStops,
@@ -191,10 +220,11 @@ export const offRouteStops = (activeStops: ActiveStops) =>
     id: 'offRouteStops',
     'source-layer': 'stops',
     type: 'circle',
-    minzoom: 13.5,
+    minzoom: 11,
     paint: {
       'circle-radius': 1,
       'circle-color': 'white',
+      'circle-opacity': stepExpression({ trainMin: 11, busMin: 13 }),
     },
     filter: buildFilter({
       activeStops,

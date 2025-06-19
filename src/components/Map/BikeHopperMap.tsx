@@ -725,7 +725,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
             id="stopTilesSource"
             type="vector"
             tiles={[`${getApiPath()}/api/v1/stop-tiles/{z}/{x}/{y}.pbf`]}
-            minzoom={9}
+            minzoom={7}
             maxzoom={14}
           >
             <Layer
