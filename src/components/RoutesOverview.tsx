@@ -134,7 +134,7 @@ export default function RoutesOverview({
               })}
             >
               {activeRoute === index && (
-                <Icon className="relative top-0.5 pr-0.5">
+                <Icon className="relative pr-0.5">
                   <ListIcon height="16" width="16" />
                 </Icon>
               )}
