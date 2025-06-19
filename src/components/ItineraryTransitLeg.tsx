@@ -211,8 +211,8 @@ function describeElevators(stop: TransitStop) {
 
   return (
     <div className="ItineraryTransitLeg_elevators">
-      <Icon>
-        <ElevatorIcon />
+      <Icon className="ItineraryTransitLeg_icon">
+        <ElevatorIcon width="16" height="16" />
       </Icon>
       <FormattedMessage
         defaultMessage={'Elevator diagonals: {min}"-{max}"'}
