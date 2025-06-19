@@ -12,6 +12,7 @@
 .SelectionListItem_button {
   padding: 8px 24px;
   flex-grow: 1;
+  text-align: left;
 }
 
 .SelectionListItem_button__removable {
