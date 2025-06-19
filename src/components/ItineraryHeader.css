@@ -29,9 +29,9 @@
 }
 
 .ItineraryHeader_icon {
-  top: 0;
   width: 20px;
   height: 20px;
+  margin-top: -2px;
 }
 
 .ItineraryHeader_headerRow {

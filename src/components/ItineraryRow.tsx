@@ -21,7 +21,7 @@ export default function ItineraryRow({
       >
         {children[0]}
       </div>
-      <div className="grow flex flex-col justify-evenly pb-2">
+      <div className="grow flex flex-col justify-evenly pb-1">
         {children.slice(1)}
       </div>
     </div>

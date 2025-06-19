@@ -1,13 +1,6 @@
 .BorderlessButton {
-  border: none;
-  background: none;
-  color: inherit;
-  font-size: inherit;
-  font-weight: inherit;
-  padding: 0;
-  cursor: pointer;
+  /* With Tailwind V4's preflight CSS, most of the reset isn't needed. */
   text-align: left;
-  -webkit-tap-highlight-color: transparent;
 }
 
 .BorderlessButton_flex {
