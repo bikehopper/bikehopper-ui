@@ -29,8 +29,6 @@
   cursor: pointer;
   padding: 0;
   margin-left: -12px;
-  display: flex;
-  align-items: end;
 }
 
 .Itinerary_bottomBackBtnText {
@@ -38,7 +36,8 @@
   margin-left: 8px;
 }
 
-.Itinerary_bottomBackBtnContainer {
+.Itinerary_bottomBackBtnContainer,
+.Itinerary_bottomBackBtn {
   flex-direction: row;
   display: flex;
   align-items: center;
@@ -47,7 +46,7 @@
 .Itinerary_backIcon {
   vertical-align: middle;
   position: relative;
-  top: 4px;
+  top: 2px;
 }
 
 .Itinerary_backIcon path {
