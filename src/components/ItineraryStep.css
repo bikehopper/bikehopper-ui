@@ -8,6 +8,11 @@
   stroke-width: 2px;
 }
 
+.ItineraryStep_iconSmall,
+.ItineraryStep_iconTiny {
+  margin-top: 2px;
+}
+
 .ItineraryStep_iconSmall path {
   stroke-width: 3px;
 }
