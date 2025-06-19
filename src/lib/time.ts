@@ -4,7 +4,9 @@ import type { IntlShape } from 'react-intl';
 // TODO localize all of these
 
 export function formatTime(jsDate: Date) {
-  return DateTime.fromJSDate(jsDate).toLocaleString(DateTime.TIME_SIMPLE);
+  return DateTime.fromJSDate(jsDate)
+    .setZone('America/Los_Angeles')
+    .toLocaleString(DateTime.TIME_SIMPLE);
 }
 
 export function formatInterval(milliseconds: number) {
