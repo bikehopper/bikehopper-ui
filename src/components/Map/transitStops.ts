@@ -66,7 +66,7 @@ export const intermediateStopNames = (activeStops: ActiveStops) =>
     id: 'intermediateStopNames',
     'source-layer': 'stops',
     type: 'symbol',
-    minzoom: 12,
+    minzoom: 13,
     layout: {
       ...COMMON_STOP_NAME_LAYOUT,
       'text-size': ['case', IS_BUS, 10, 12],
@@ -89,7 +89,7 @@ export const offRouteStopNames = (activeStops: ActiveStops) =>
     minzoom: 14,
     layout: {
       ...COMMON_STOP_NAME_LAYOUT,
-      'text-size': ['case', IS_BUS, 9, 10],
+      'text-size': ['case', IS_BUS, 10, 12],
     },
     paint: {
       ...COMMON_STOP_NAME_PAINT,
@@ -143,7 +143,7 @@ export const offRouteStopOutlines = (activeStops: ActiveStops) =>
     id: 'offRouteStopOutlines',
     'source-layer': 'stops',
     type: 'circle',
-    minzoom: 12,
+    minzoom: 13.5,
     paint: {
       'circle-radius': 3,
       'circle-color': 'grey',
@@ -191,7 +191,7 @@ export const offRouteStops = (activeStops: ActiveStops) =>
     id: 'offRouteStops',
     'source-layer': 'stops',
     type: 'circle',
-    minzoom: 12,
+    minzoom: 13.5,
     paint: {
       'circle-radius': 1,
       'circle-color': 'white',
