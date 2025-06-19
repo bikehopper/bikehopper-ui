@@ -54,4 +54,9 @@
   svg {
     display: inline;
   }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-gray-500);
+  }
 }

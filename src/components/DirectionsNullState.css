@@ -10,7 +10,7 @@
 
 .DirectionsNullState_input {
   border: 1px solid #c4c4c4;
-  padding: 12px 12px 12px 40px;
+  padding: 8px 12px 8px 40px;
   border-radius: 12px;
   width: 100%;
   font-size: 13px;
@@ -23,7 +23,7 @@
 
 .DirectionsNullState_inputIcon {
   position: absolute;
-  top: -2px;
+  top: -4px;
   left: 8px;
 }
 
