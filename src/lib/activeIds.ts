@@ -36,8 +36,7 @@ export function activeRouteIds(
   return routeIds;
 }
 
-const ActiveStopTypes = ['entry', 'exit', 'intermediate', 'offRoute'] as const;
-export type ActiveStopTypes = (typeof ActiveStopTypes)[number];
+export type ActiveStopTypes = 'entry' | 'exit' | 'intermediate' | 'offRoute';
 
 export type ActiveStops = {
   [T in ActiveStopTypes]: string[];
