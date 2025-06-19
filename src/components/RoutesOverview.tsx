@@ -171,7 +171,7 @@ export default function RoutesOverview({
                             'route, such as (in English) 200 ft or 50 m.',
                         }) + SPACE
                       }
-                      className="relative top-0.5"
+                      className="relative -top-0.5"
                     >
                       <ArrowUp
                         width="16"
@@ -190,7 +190,7 @@ export default function RoutesOverview({
                             'route, such as (in English) 200 ft or 50 m.',
                         }) + SPACE
                       }
-                      className="relative top-0.5 ml-1"
+                      className="relative -top-0.5 ml-1"
                     >
                       <ArrowDown
                         width="16"
