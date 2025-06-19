@@ -10,3 +10,21 @@
   font-size: 14px;
   color: #626262;
 }
+
+.ItineraryTransitLeg_elevators {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+  margin: 0 2px;
+  font-size: 12px;
+  line-height: 15px;
+  color: #404040;
+}
+
+.ItineraryTransitLeg_icon {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-right: 1px;
+}

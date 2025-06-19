@@ -1,13 +1,14 @@
 import { useState, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { selectAlertsToDisplay } from '../lib/alerts';
-import type { TransitLeg } from '../lib/BikeHopperClient';
+import type { TransitLeg, TransitStop } from '../lib/BikeHopperClient';
 import { DEFAULT_PT_COLOR } from '../lib/colors';
 import { getModeLabel } from '../lib/TransitModes';
 import { formatTime, formatDurationBetween } from '../lib/time';
 import { getAgencyDisplayName } from '../lib/region';
 import useScrollToRef from '../hooks/useScrollToRef';
 import BorderlessButton from './BorderlessButton';
+import Icon from './primitives/Icon';
 import ItineraryHeader from './ItineraryHeader';
 import ItineraryDivider from './ItineraryDivider';
 import ItinerarySpacer from './ItinerarySpacer';
@@ -15,6 +16,7 @@ import ItineraryStep from './ItineraryStep';
 import ModeIcon from './ModeIcon';
 
 import Circle from 'iconoir/icons/circle.svg?react';
+import ElevatorIcon from 'iconoir/icons/elevator.svg?react';
 
 import './ItineraryTransitLeg.css';
 
@@ -129,6 +131,7 @@ export default function ItineraryTransitLeg({
               }}
             />
           </div>
+          {describeElevators(stops[0])}
         </BorderlessButton>
       </ItineraryStep>
 
@@ -181,9 +184,48 @@ export default function ItineraryTransitLeg({
           />
           {spacerWithMiddot}
           {arrival}
+          {describeElevators(stops[stops.length - 1])}
         </BorderlessButton>
       </ItineraryStep>
       <ItinerarySpacer />
+    </div>
+  );
+}
+
+function describeElevators(stop: TransitStop) {
+  const { elevators } = stop;
+  if (!elevators || elevators.length === 0) return null;
+
+  // all measurements are assumed to be in inches
+  const numberInInchesRegex = /^(\d+(\.\d*)?)"$/;
+
+  const diagonals = elevators.map((elev) =>
+    Number(elev.diagonal.match(numberInInchesRegex)?.[1]),
+  );
+  if (diagonals.some((diag) => diag == null)) {
+    console.warn(`bad elevator diagonal for stop ${stop.stop_id}`);
+    return null;
+  }
+  const minDiag = Math.min.apply(Math, diagonals);
+  const maxDiag = Math.max.apply(Math, diagonals);
+
+  return (
+    <div className="ItineraryTransitLeg_elevators">
+      <Icon className="ItineraryTransitLeg_icon">
+        <ElevatorIcon width="16" height="16" />
+      </Icon>
+      <FormattedMessage
+        defaultMessage={'Elevator diagonals: {min}"-{max}"'}
+        description={
+          'describes the minimum and maximum diagonal width of an elevator.' +
+          ' The widths are given in inches, as indicated in the English-language' +
+          ' string by a " symbol.'
+        }
+        values={{
+          min: minDiag,
+          max: maxDiag,
+        }}
+      />
     </div>
   );
 }
