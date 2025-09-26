@@ -59,6 +59,22 @@ export function getMapboxStyleParams(): {
     mapboxAccessToken = import.meta.env.VITE_MAPBOX_TOKEN;
   }
 
+  if (!mapboxAccessToken) {
+    throw new Error(
+      'mapboxAccessToken must be defined either in env var or config',
+    );
+  }
+
+  if (!mapboxStyleUrl) {
+    if (import.meta.env.DEV) {
+      mapboxStyleUrl = 'mapbox://styles/mapbox/streets-v11';
+    } else {
+      throw new Error(
+        'in production, mapboxStyleUrl must be defined either in env var or config',
+      );
+    }
+  }
+
   return { mapboxAccessToken, mapboxStyleUrl };
 }
 
@@ -85,8 +101,8 @@ export const RegionConfigSchema = z.object({
     .tuple([Longitude, Latitude, Longitude, Latitude])
     .optional(),
   supportedRegionDescription: z.string().optional(),
-  mapboxAccessToken: z.string(),
-  mapboxStyleUrl: z.string(),
+  mapboxAccessToken: z.string().optional(),
+  mapboxStyleUrl: z.string().optional(),
 });
 export type RegionConfig = z.infer<typeof RegionConfigSchema>;
 
