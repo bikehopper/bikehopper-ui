@@ -1,11 +1,11 @@
-import {
+import type {
   CircleLayerSpecification,
   DataDrivenPropertyValueSpecification,
   ExpressionSpecification,
   FilterSpecification,
   SymbolLayerSpecification,
-} from '@maplibre/maplibre-gl-style-spec';
-import { ActiveStops, ActiveStopTypes } from '../../lib/activeIds';
+} from 'maplibre-gl';
+import type { ActiveStops, ActiveStopTypes } from '../../lib/activeIds';
 
 const buildFilter = ({
   activeStops,
