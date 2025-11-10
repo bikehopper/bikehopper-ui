@@ -3,7 +3,7 @@ import type {
   ExpressionSpecification,
   LineLayerSpecification,
   SymbolLayerSpecification,
-} from '@maplibre/maplibre-gl-style-spec';
+} from 'maplibre-gl';
 import { Point as MapLibrePoint } from 'maplibre-gl';
 import {
   isMapboxURL,
