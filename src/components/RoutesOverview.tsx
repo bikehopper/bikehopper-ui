@@ -11,7 +11,7 @@ import type {
   TransitLeg,
 } from '../lib/BikeHopperClient';
 import formatDistance from '../lib/formatDistance';
-import { getTransitDataAcknowledgement } from '../lib/region';
+import { getTimezone, getTransitDataAcknowledgement } from '../lib/region';
 import { formatInterval } from '../lib/time';
 import BorderlessButton from './BorderlessButton';
 import Icon from './primitives/Icon';
@@ -60,6 +60,8 @@ export default function RoutesOverview({
   const handleShareClick = (evt: React.MouseEvent) => {
     dispatch(shareRoutes(intl));
   };
+
+  const timezone = getTimezone();
 
   return (
     <div className="flex flex-col">
@@ -143,14 +145,14 @@ export default function RoutesOverview({
                 description="compact departure and arrival time"
                 values={{
                   depart: intl.formatTime(route.legs[0].departure_time, {
-                    timeZone: 'America/Los_Angeles',
+                    timeZone: timezone,
                     hour: 'numeric',
                     minute: 'numeric',
                   }),
                   arrive: intl.formatTime(
                     route.legs[route.legs.length - 1].arrival_time,
                     {
-                      timeZone: 'America/Los_Angeles',
+                      timeZone: timezone,
                       hour: 'numeric',
                       minute: 'numeric',
                     },

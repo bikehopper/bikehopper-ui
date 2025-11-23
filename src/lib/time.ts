@@ -1,11 +1,12 @@
 import { DateTime, Duration } from 'luxon';
 import type { IntlShape } from 'react-intl';
+import { getTimezone } from './region';
 
 // TODO localize all of these
 
 export function formatTime(jsDate: Date) {
   return DateTime.fromJSDate(jsDate)
-    .setZone('America/Los_Angeles')
+    .setZone(getTimezone())
     .toLocaleString(DateTime.TIME_SIMPLE);
 }
 
