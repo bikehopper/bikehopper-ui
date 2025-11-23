@@ -31,6 +31,10 @@ export function getDefaultViewportBounds(): [number, number, number, number] {
   }
 }
 
+export function getTimezone(): string | undefined {
+  return _getConfig().timezone;
+}
+
 export function getTransitServiceArea():
   | GeoJSON.Feature<GeoJSON.Polygon>
   | undefined {
@@ -103,6 +107,7 @@ export const RegionConfigSchema = z.object({
   supportedRegionDescription: z.string().optional(),
   mapboxAccessToken: z.string().optional(),
   mapboxStyleUrl: z.string().optional(),
+  timezone: z.string().optional(),
 });
 export type RegionConfig = z.infer<typeof RegionConfigSchema>;
 

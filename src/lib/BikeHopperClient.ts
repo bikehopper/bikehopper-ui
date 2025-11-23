@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import delay from './delay';
 import {
   getDefaultViewportBounds,
+  getTimezone,
   RegionConfig,
   RegionConfigSchema,
 } from './region';
@@ -40,10 +41,9 @@ export async function fetchRegionConfig(): Promise<RegionConfig> {
 }
 
 function timeStampToLocalTime(timeStamp: number) {
-  const serverTime = DateTime.fromMillis(timeStamp).setZone(
-    'America/Los_Angeles',
-    { keepLocalTime: true },
-  );
+  const serverTime = DateTime.fromMillis(timeStamp).setZone(getTimezone(), {
+    keepLocalTime: true,
+  });
   const clientTime = serverTime.toLocal().toMillis();
   return clientTime;
 }
