@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { formatDurationBetween } from '../lib/time';
-import { getAgencyDisplayName } from '../lib/region';
+import { getAgencyDisplayName, getTimezone } from '../lib/region';
 import Icon from './primitives/Icon';
 import ItineraryBikeLeg from './ItineraryBikeLeg';
 import ItineraryHeader from './ItineraryHeader';
@@ -129,6 +129,8 @@ export default function Itinerary({
       ? route.legs[0]
       : null;
 
+  const timezone = getTimezone();
+
   return (
     <div className="py-8 px-5">
       <div className="Itinerary_backBtnAndHeadings">
@@ -144,12 +146,12 @@ export default function Itinerary({
               description="start and end time for a trip"
               values={{
                 startTime: intl.formatTime(startTime, {
-                  timeZone: 'America/Los_Angeles',
+                  timeZone: timezone,
                   hour: 'numeric',
                   minute: 'numeric',
                 }),
                 endTime: intl.formatTime(endTime, {
-                  timeZone: 'America/Los_Angeles',
+                  timeZone: timezone,
                   hour: 'numeric',
                   minute: 'numeric',
                 }),
