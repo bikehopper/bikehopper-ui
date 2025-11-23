@@ -43,7 +43,7 @@ npm start
 to start the Vite Dev Server.
 
 Requests to `localhost` are proxied to
-`https://api-staging.bikehopper.org`. This is configured by a "proxy"
+`https://api.bikehopper.org`. This is configured by a "proxy"
 property within `vite.config.json`. Presently there is a thin client
 library at `src/lib/BikeHopperClient.ts`. More methods should be added
 as needed. This library calls the BikeHopper
