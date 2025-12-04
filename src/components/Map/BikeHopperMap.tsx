@@ -2,6 +2,7 @@ import type {
   ExpressionFilterSpecification,
   ExpressionSpecification,
   LineLayerSpecification,
+  ResourceType,
   SymbolLayerSpecification,
 } from 'maplibre-gl';
 import { Point as MapLibrePoint } from 'maplibre-gl';
@@ -1241,7 +1242,7 @@ function getPaddingForMap(overlayEl: HTMLElement | null) {
   }
 }
 
-function transformRequest(url: string, resourceType: string | undefined) {
+function transformRequest(url: string, resourceType: ResourceType | undefined) {
   if (isMapboxURL(url) && resourceType != null) {
     return transformMapboxUrl(
       url,
