@@ -60,7 +60,7 @@ export type BikeHopperThunkAction = ThunkAction<
   void,
   RootState,
   void,
-  AnyAction
+  BikeHopperAction
 >;
 
 export type BikeHopperAction = (
