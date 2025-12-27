@@ -93,8 +93,7 @@ export default function Toasts() {
         >
           <ToastPrimitive.Root
             className={classnames({
-              'pointer-events-auto p-2 mx-2 sm:mx-4 lg:mx-12 rounded-lg shadow-md':
-                true,
+              'pointer-events-auto p-2 mx-2 sm:mx-4 lg:mx-12 rounded-lg shadow-md': true,
               'border border-slate-300 border-solid': true,
               'flex flex-row justify-between': true,
               'items-center text-sm md:text-base mt-2': true,
@@ -106,7 +105,7 @@ export default function Toasts() {
             onOpenChange={handleOpenChange.bind(null, id)}
             duration={DISMISS_TIME}
           >
-            <div className="relative top-0.5">
+            <div>
               <Icon className="">
                 {severity === AlertSeverity.ERROR ? (
                   <WarningCircle width="16" height="16" />
@@ -126,7 +125,6 @@ export default function Toasts() {
                   defaultMessage: 'Dismiss',
                   description: 'button to dismiss alert',
                 })}
-                className="relative top-0.5"
               >
                 <Icon>
                   <CancelIcon width="16" height="16" />
