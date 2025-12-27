@@ -144,11 +144,7 @@ export default function Toasts() {
   );
 }
 
-function describeMessage(
-  message: string | AlertMessage,
-  intl: IntlShape,
-): string {
-  if (typeof message === 'string') return message;
+function describeMessage(message: AlertMessage, intl: IntlShape): string {
   switch (message.code) {
     case AlertMessageCode.CANT_CONNECT_TO_SERVER:
       return intl.formatMessage({
@@ -222,6 +218,6 @@ function describeMessage(
         description: 'error alert when copying a URL to clipboard fails.',
       });
   }
-  console.warn('unhandled message type', message);
-  return `#${message}`;
+  console.warn('unhandled message type', message.code);
+  return `#${message.code}` + JSON.stringify(message.params);
 }
