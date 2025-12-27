@@ -3,7 +3,7 @@ import type { BikeHopperAction, BikeHopperThunkAction } from '../store';
 
 import produce from 'immer';
 import getCurrentPosition from '../lib/getCurrentPosition';
-import { AlertSeverity } from './alerts';
+import { AlertMessageCode, AlertSeverity } from './alerts';
 
 type GeolocationState = {
   lat: number | null;
@@ -105,22 +105,18 @@ export function geolocate(): BikeHopperThunkAction {
     } catch (e) {
       const errorCode =
         e instanceof window.GeolocationPositionError ? e.code : null;
-      let errorMsg = "Can't find your current location";
+      let alertMsgCode: AlertMessageCode =
+        AlertMessageCode.GEOLOCATE_FAIL_UNKNOWN;
       if (errorCode && 'GeolocationPositionError' in window) {
         switch (errorCode) {
           case window.GeolocationPositionError.PERMISSION_DENIED:
-            errorMsg =
-              "Your browser isn't letting BikeHopper detect your current location." +
-              ' Check your browser settings for this website.';
+            alertMsgCode = AlertMessageCode.GEOLOCATE_FAIL_NO_PERM;
             break;
           case window.GeolocationPositionError.POSITION_UNAVAILABLE:
-            errorMsg += ': position unavailable';
+            alertMsgCode = AlertMessageCode.GEOLOCATE_FAIL_NO_POS;
             break;
           case window.GeolocationPositionError.TIMEOUT:
-            errorMsg += ': timed out';
-            break;
-          default:
-            errorMsg += ': unknown error';
+            alertMsgCode = AlertMessageCode.GEOLOCATE_FAIL_TIMEOUT;
             break;
         }
       }
@@ -129,7 +125,7 @@ export function geolocate(): BikeHopperThunkAction {
         code: errorCode,
         alert: {
           severity: AlertSeverity.WARNING,
-          message: errorMsg,
+          message: { code: alertMsgCode },
         },
       });
       return;

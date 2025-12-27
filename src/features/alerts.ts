@@ -7,14 +7,37 @@ export enum AlertSeverity {
   SUCCESS = 'success',
 }
 
+export type AlertMessage = {
+  code: AlertMessageCode;
+  params?: { [key: string]: string };
+};
+
+export enum AlertMessageCode {
+  CANT_CONNECT_TO_SERVER = 1,
+  SERVER_ERROR = 2,
+
+  SEARCH_NO_RESULTS = 10,
+
+  GEOLOCATE_FAIL_NO_PERM = 20,
+  GEOLOCATE_FAIL_NO_POS = 21,
+  GEOLOCATE_FAIL_TIMEOUT = 22,
+  GEOLOCATE_FAIL_UNKNOWN = 23,
+
+  CANT_FIND_ROUTE = 30,
+
+  CANT_GENERATE_FIT_FILE = 40,
+  COPIED_URL_TO_CLIPBOARD = 41,
+  COPY_URL_FAILED = 42,
+}
+
 type Alert = {
-  message: string;
+  message: AlertMessage;
   severity: AlertSeverity;
   id: number;
 };
 
 type AlertParams = {
-  message: string;
+  message: AlertMessage;
   severity?: AlertSeverity;
 };
 
@@ -55,7 +78,7 @@ export function alertsReducer(state = DEFAULT_STATE, action: BikeHopperAction) {
 function _addAlert(
   state: AlertState,
   severity = AlertSeverity.ERROR,
-  message: string,
+  message: AlertMessage,
 ) {
   return {
     ...state,
@@ -65,7 +88,7 @@ function _addAlert(
 
 let _alertNonce = 90000; // For assigning a unique ID to each alert in a session
 
-function _createAlert(severity: AlertSeverity, message: string) {
+function _createAlert(severity: AlertSeverity, message: AlertMessage) {
   return {
     severity,
     message,

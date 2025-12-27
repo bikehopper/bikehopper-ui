@@ -1,11 +1,17 @@
 import * as ToastPrimitive from '@radix-ui/react-toast';
 import { Fragment, useCallback, useEffect, useRef } from 'react';
 import { useIntl } from 'react-intl';
+import type { IntlShape } from 'react-intl';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import classnames from 'classnames';
 import { Transition } from '@headlessui/react';
 
-import { AlertSeverity, dismissAlert } from '../features/alerts';
+import {
+  AlertMessageCode,
+  AlertSeverity,
+  dismissAlert,
+} from '../features/alerts';
+import type { AlertMessage } from '../features/alerts';
 import type { RootState } from '../store';
 import BorderlessButton from './BorderlessButton';
 import Icon from './primitives/Icon';
@@ -93,8 +99,7 @@ export default function Toasts() {
         >
           <ToastPrimitive.Root
             className={classnames({
-              'pointer-events-auto p-2 mx-2 sm:mx-4 lg:mx-12 rounded-lg shadow-md':
-                true,
+              'pointer-events-auto p-2 mx-2 sm:mx-4 lg:mx-12 rounded-lg shadow-md': true,
               'border border-slate-300 border-solid': true,
               'flex flex-row justify-between': true,
               'items-center text-sm md:text-base mt-2': true,
@@ -106,7 +111,7 @@ export default function Toasts() {
             onOpenChange={handleOpenChange.bind(null, id)}
             duration={DISMISS_TIME}
           >
-            <div className="relative top-0.5">
+            <div>
               <Icon className="">
                 {severity === AlertSeverity.ERROR ? (
                   <WarningCircle width="16" height="16" />
@@ -118,7 +123,7 @@ export default function Toasts() {
               </Icon>
             </div>
             <ToastPrimitive.Description className="mx-2">
-              {message}
+              {describeMessage(message, intl)}
             </ToastPrimitive.Description>
             <ToastPrimitive.Close asChild>
               <BorderlessButton
@@ -126,7 +131,6 @@ export default function Toasts() {
                   defaultMessage: 'Dismiss',
                   description: 'button to dismiss alert',
                 })}
-                className="relative top-0.5"
               >
                 <Icon>
                   <CancelIcon width="16" height="16" />
@@ -138,4 +142,82 @@ export default function Toasts() {
       ))}
     </>
   );
+}
+
+function describeMessage(message: AlertMessage, intl: IntlShape): string {
+  switch (message.code) {
+    case AlertMessageCode.CANT_CONNECT_TO_SERVER:
+      return intl.formatMessage({
+        defaultMessage: "Can't connect to server",
+        description: 'error message',
+      });
+    case AlertMessageCode.SERVER_ERROR:
+      return intl.formatMessage({
+        defaultMessage: 'Server error',
+        description:
+          'error message when something unexpectedly went wrong' +
+          ' on the server',
+      });
+    case AlertMessageCode.SEARCH_NO_RESULTS: {
+      let text = message.params?.text;
+      if (text == null) {
+        console.warn('missing text parameter for SEARCH_NO_RESULTS');
+        text = '---';
+      }
+      return intl.formatMessage(
+        {
+          defaultMessage: "Couldn't find {text}",
+          description:
+            'Error message. There was no result for ' +
+            'the text you searched for',
+        },
+        { text: message.params?.text || '---' },
+      );
+    }
+    case AlertMessageCode.GEOLOCATE_FAIL_NO_PERM:
+      return intl.formatMessage({
+        defaultMessage:
+          "Your browser isn't letting BikeHopper detect" +
+          ' your current location.' +
+          ' Check your browser settings for this website.',
+        description:
+          'Error message. Detecting location fails due to lack' +
+          ' of user permission',
+      });
+    case AlertMessageCode.GEOLOCATE_FAIL_NO_POS:
+      return intl.formatMessage({
+        defaultMessage:
+          "Can't find your current location: position unavailable",
+        description: 'Error message when detecting user location',
+      });
+    case AlertMessageCode.GEOLOCATE_FAIL_TIMEOUT:
+      return intl.formatMessage({
+        defaultMessage: "Can't find your current location: timed out",
+        description: 'Error message when detecting user location',
+      });
+    case AlertMessageCode.GEOLOCATE_FAIL_UNKNOWN:
+      return intl.formatMessage({
+        defaultMessage: "Can't find your current location: unknown error",
+        description: 'Error message when detecting user location',
+      });
+    case AlertMessageCode.CANT_GENERATE_FIT_FILE:
+      return intl.formatMessage({
+        defaultMessage: 'Unable to generate FIT file',
+        description:
+          "error when we can't generate a FIT file " +
+          '(a file format used in a cycling computer).',
+      });
+    case AlertMessageCode.COPIED_URL_TO_CLIPBOARD:
+      return intl.formatMessage({
+        defaultMessage: 'Copied URL to clipboard!',
+        description: 'toast displayed when copying a URL to clipboard.',
+      });
+    case AlertMessageCode.COPY_URL_FAILED:
+      return intl.formatMessage({
+        defaultMessage: 'Unable to copy URL to clipboard',
+        description: 'error alert when copying a URL to clipboard fails.',
+      });
+  }
+  console.warn('unhandled message type', message.code);
+  return `#${message.code}` + JSON.stringify(message.params);
 }

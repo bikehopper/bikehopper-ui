@@ -31,22 +31,13 @@ export default function ShareFit({ leg }: Props) {
         setFitURL(URL.createObjectURL(getFitBlob(leg)));
       } catch (err) {
         console.error('fit file generation error:', err);
-        dispatch(
-          fitFileGenerationFailed(
-            intl.formatMessage({
-              defaultMessage: 'Unable to generate FIT file',
-              description:
-                "error when we can't generate a FIT file " +
-                '(a file format used in a cycling computer).',
-            }),
-          ),
-        );
+        dispatch(fitFileGenerationFailed());
       } finally {
         setIsDownloading(false);
       }
     };
     downloadFitAsync();
-  }, [leg, dispatch, intl]);
+  }, [leg, dispatch]);
 
   return (
     <>

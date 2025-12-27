@@ -4,6 +4,8 @@ import type { Action } from 'redux';
 import * as BikeHopperClient from '../lib/BikeHopperClient';
 import delay from '../lib/delay';
 import type { BikeHopperAction, BikeHopperThunkAction } from '../store';
+import { AlertMessageCode } from './alerts';
+import type { AlertMessage } from './alerts';
 
 const GEOCODE_RESULT_LIMIT = 8;
 
@@ -232,13 +234,13 @@ export function geocodeTypedLocation(
         limit: GEOCODE_RESULT_LIMIT,
       });
     } catch (e) {
-      let failureType: GeocodeFailureType, alertMsg;
+      let failureType: GeocodeFailureType, alertMsg: AlertMessage;
       if (e instanceof BikeHopperClient.BikeHopperClientError) {
         failureType = GeocodeFailureType.SERVER_ERROR;
-        alertMsg = 'Server error';
+        alertMsg = { code: AlertMessageCode.SERVER_ERROR };
       } else {
         failureType = GeocodeFailureType.NETWORK_ERROR;
-        alertMsg = "Can't connect to server";
+        alertMsg = { code: AlertMessageCode.CANT_CONNECT_TO_SERVER };
       }
       dispatch({
         type: 'geocode_failed',
@@ -250,6 +252,11 @@ export function geocodeTypedLocation(
       return;
     }
 
+    const NO_RESULT_MSG: AlertMessage = {
+      code: AlertMessageCode.SEARCH_NO_RESULTS,
+      params: { text },
+    };
+
     if (result.type !== 'FeatureCollection') {
       // Shouldn't happen
       dispatch({
@@ -257,9 +264,7 @@ export function geocodeTypedLocation(
         text,
         failureType: GeocodeFailureType.UNEXPECTED_FORMAT,
         time: Date.now(),
-        alert: alertOnFailure
-          ? { message: `Couldn't find ${text}` }
-          : undefined,
+        alert: alertOnFailure ? { message: NO_RESULT_MSG } : undefined,
       });
       return;
     }
@@ -274,9 +279,7 @@ export function geocodeTypedLocation(
         text,
         failureType: GeocodeFailureType.NO_POINTS_FOUND,
         time: Date.now(),
-        alert: alertOnFailure
-          ? { message: `Couldn't find ${text}` }
-          : undefined,
+        alert: alertOnFailure ? { message: NO_RESULT_MSG } : undefined,
       });
       return;
     }
