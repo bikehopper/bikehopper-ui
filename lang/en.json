@@ -67,6 +67,10 @@
     "defaultMessage": "Departing {datetime}",
     "description": "description of trip departing at the given date and time. The datetime is localized but an example for an American English locale would be \"May 21, 2023, 2:30PM\"."
   },
+  "A6Ffr4": {
+    "defaultMessage": "Can't find your current location: position unavailable",
+    "description": "Error message when detecting user location"
+  },
   "A7+u0L": {
     "defaultMessage": "Transit line",
     "description": "label for transit line when the mode (bus, train, etc) is unknown. Appears next to the name or number of the line."
@@ -319,6 +323,10 @@
     "defaultMessage": "via {streets}",
     "description": "list of major streets taken on bike leg"
   },
+  "eqgYh/": {
+    "defaultMessage": "Can't find your current location: unknown error",
+    "description": "Error message when detecting user location"
+  },
   "f1xi7R": {
     "defaultMessage": "Train",
     "description": "labels a transit line as being operated by a train; specifically a subway or metro train but the label need not be that specific. Appears next to the name or number of the line."
@@ -371,6 +379,10 @@
     "defaultMessage": "Retry",
     "description": "Button. Retries a failed action"
   },
+  "n2GDRj": {
+    "defaultMessage": "Couldn't find {text}",
+    "description": "Error message. There was no result for the text you searched for"
+  },
   "nSPIt1": {
     "defaultMessage": "Press here to download the FIT file.",
     "description": "Link to download the FIT file."
@@ -391,6 +403,10 @@
     "defaultMessage": "Connecting modes",
     "description": "dialog header. In this dialog you can toggle which modes of transit, such as bus, train, or ferry, can be used in giving directions."
   },
+  "rHpOmv": {
+    "defaultMessage": "Server error",
+    "description": "error message when something unexpectedly went wrong on the server"
+  },
   "rWgPzR": {
     "defaultMessage": "steps",
     "description": "annotation for a step in a series of biking directions. Steps or a staircase."
@@ -402,6 +418,14 @@
   "tEH6rL": {
     "defaultMessage": "Copied URL to clipboard!",
     "description": "toast displayed when copying a URL to clipboard."
+  },
+  "tPTEhp": {
+    "defaultMessage": "Can't find your current location: timed out",
+    "description": "Error message when detecting user location"
+  },
+  "uC6pQv": {
+    "defaultMessage": "Your browser isn't letting BikeHopper detect your current location. Check your browser settings for this website.",
+    "description": "Error message. Detecting location fails due to lack of user permission"
   },
   "uCLsXP": {
     "defaultMessage": "Arrive by",
@@ -430,6 +454,10 @@
   "wOrcKy": {
     "defaultMessage": "Now",
     "description": "option in a dropdown list for departure time"
+  },
+  "waYrv+": {
+    "defaultMessage": "Can't connect to server",
+    "description": "error message"
   },
   "woEF2c": {
     "defaultMessage": "Notifications ({hotkey})",

@@ -203,6 +203,12 @@
       "value": "datetime"
     }
   ],
+  "A6Ffr4": [
+    {
+      "type": 0,
+      "value": "Can't find your current location: position unavailable"
+    }
+  ],
   "A7+u0L": [
     {
       "type": 0,
@@ -1047,6 +1053,12 @@
       "value": "streets"
     }
   ],
+  "eqgYh/": [
+    {
+      "type": 0,
+      "value": "Can't find your current location: unknown error"
+    }
+  ],
   "f1xi7R": [
     {
       "type": 0,
@@ -1173,6 +1185,16 @@
       "value": "Retry"
     }
   ],
+  "n2GDRj": [
+    {
+      "type": 0,
+      "value": "Couldn't find "
+    },
+    {
+      "type": 1,
+      "value": "text"
+    }
+  ],
   "nSPIt1": [
     {
       "type": 0,
@@ -1207,6 +1229,12 @@
       "value": "Connecting modes"
     }
   ],
+  "rHpOmv": [
+    {
+      "type": 0,
+      "value": "Server error"
+    }
+  ],
   "rWgPzR": [
     {
       "type": 0,
@@ -1223,6 +1251,18 @@
     {
       "type": 0,
       "value": "Copied URL to clipboard!"
+    }
+  ],
+  "tPTEhp": [
+    {
+      "type": 0,
+      "value": "Can't find your current location: timed out"
+    }
+  ],
+  "uC6pQv": [
+    {
+      "type": 0,
+      "value": "Your browser isn't letting BikeHopper detect your current location. Check your browser settings for this website."
     }
   ],
   "uCLsXP": [
@@ -1303,6 +1343,12 @@
     {
       "type": 0,
       "value": "Now"
+    }
+  ],
+  "waYrv+": [
+    {
+      "type": 0,
+      "value": "Can't connect to server"
     }
   ],
   "woEF2c": [
