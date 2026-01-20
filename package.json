@@ -84,6 +84,7 @@
     "@vitejs/plugin-basic-ssl": "^2.0.0",
     "@vitejs/plugin-react": "^4.0.0",
     "babel-plugin-formatjs": "^10.3.35",
+    "baseline-browser-mapping": "^2.9.15",
     "csv": "^6.3.11",
     "eslint": "^9.15.0",
     "eslint-plugin-formatjs": "^5.2.5",
