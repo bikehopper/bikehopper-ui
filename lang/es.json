@@ -505,5 +505,50 @@
     },
     "y5QXGG": {
         "defaultMessage": "Región soportada: <strong>{region}</strong>. Comienza introduciendo un destino."
+    },
+    "8+w6jS": {
+        "defaultMessage": "Diagonales de elevador {min}\"-{max}\""
+    },
+    "9rTQtP": {
+        "defaultMessage": "No es capaz de conectar al servidor. {retryLink}"
+    },
+    "A6Ffr4": {
+        "defaultMessage": "No puede encontrar su lugar actual: posición no disponible"
+    },
+    "T2gsdZ": {
+        "defaultMessage": "Paso anterior"
+    },
+    "eqgYh/": {
+        "defaultMessage": "No encuentra su lugar actual: error desconocido"
+    },
+    "gffd+Z": {
+        "defaultMessage": "Siguiente paso"
+    },
+    "mkvvP4": {
+        "defaultMessage": "Reintentar"
+    },
+    "n2GDRj": {
+        "defaultMessage": "No pudo encontrar {text}"
+    },
+    "pn7Wd7": {
+        "defaultMessage": "Error de servidor. {retryLink}"
+    },
+    "rHpOmv": {
+        "defaultMessage": "Error de servidor"
+    },
+    "tPTEhp": {
+        "defaultMessage": "No puedo encontrar su lugar actual: tiempo agotado"
+    },
+    "uC6pQv": {
+        "defaultMessage": "Su explorador no está permitiendo detectar su lugar actual de BikeHopper. Compruebe sus ajustes del explorador para este web."
+    },
+    "waYrv+": {
+        "defaultMessage": "No puede conectar al servidor"
+    },
+    "woEF2c": {
+        "defaultMessage": "Notificación ({hotkey})"
+    },
+    "zBEo8L": {
+        "defaultMessage": "Abre en OSM"
     }
 }
