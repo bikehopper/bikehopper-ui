@@ -12,6 +12,7 @@ Vincent Martin
 Yulia Kluev
 
 Translations by:
+Francisco Serrador
 @gallegonovato
 @JnBenites
 @ywarnier
