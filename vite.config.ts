@@ -58,5 +58,11 @@ export default defineConfig(({ mode }) => {
     css: {
       transformer: 'lightningcss',
     },
+    optimizeDeps: {
+      include: ['maplibre-gl'],
+      esbuildOptions: {
+        target: 'es2022',
+      },
+    },
   };
 });
