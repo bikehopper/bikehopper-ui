@@ -171,6 +171,28 @@
       "value": "Cómo llegar desde"
     }
   ],
+  "8+w6jS": [
+    {
+      "type": 0,
+      "value": "Diagonales de elevador "
+    },
+    {
+      "type": 1,
+      "value": "min"
+    },
+    {
+      "type": 0,
+      "value": "\"-"
+    },
+    {
+      "type": 1,
+      "value": "max"
+    },
+    {
+      "type": 0,
+      "value": "\""
+    }
+  ],
   "8OXHea": [
     {
       "type": 0,
@@ -215,6 +237,16 @@
       "value": "pies"
     }
   ],
+  "9rTQtP": [
+    {
+      "type": 0,
+      "value": "No es capaz de conectar al servidor. "
+    },
+    {
+      "type": 1,
+      "value": "retryLink"
+    }
+  ],
   "9yOLYg": [
     {
       "type": 0,
@@ -223,6 +255,12 @@
     {
       "type": 1,
       "value": "datetime"
+    }
+  ],
+  "A6Ffr4": [
+    {
+      "type": 0,
+      "value": "No puede encontrar su lugar actual: posición no disponible"
     }
   ],
   "A7+u0L": [
@@ -953,6 +991,12 @@
       "value": "haveStreet"
     }
   ],
+  "T2gsdZ": [
+    {
+      "type": 0,
+      "value": "Paso anterior"
+    }
+  ],
   "T6l6cE": [
     {
       "type": 0,
@@ -1175,6 +1219,12 @@
       "value": "streets"
     }
   ],
+  "eqgYh/": [
+    {
+      "type": 0,
+      "value": "No encuentra su lugar actual: error desconocido"
+    }
+  ],
   "f1xi7R": [
     {
       "type": 0,
@@ -1223,6 +1273,12 @@
       },
       "type": 5,
       "value": "haveStreet"
+    }
+  ],
+  "gffd+Z": [
+    {
+      "type": 0,
+      "value": "Siguiente paso"
     }
   ],
   "hFkXoB": [
@@ -1289,6 +1345,12 @@
       "value": "Saliendo ahora"
     }
   ],
+  "mkvvP4": [
+    {
+      "type": 0,
+      "value": "Reintentar"
+    }
+  ],
   "mrDIsv": [
     {
       "type": 0,
@@ -1309,6 +1371,16 @@
     {
       "type": 0,
       "value": ")"
+    }
+  ],
+  "n2GDRj": [
+    {
+      "type": 0,
+      "value": "No pudo encontrar "
+    },
+    {
+      "type": 1,
+      "value": "text"
     }
   ],
   "nSPIt1": [
@@ -1407,10 +1479,26 @@
       "value": ")"
     }
   ],
+  "pn7Wd7": [
+    {
+      "type": 0,
+      "value": "Error de servidor. "
+    },
+    {
+      "type": 1,
+      "value": "retryLink"
+    }
+  ],
   "qyWb6X": [
     {
       "type": 0,
       "value": "Modos de conexión"
+    }
+  ],
+  "rHpOmv": [
+    {
+      "type": 0,
+      "value": "Error de servidor"
     }
   ],
   "rWgPzR": [
@@ -1451,6 +1539,18 @@
     {
       "type": 0,
       "value": "¡URL copiada al portapapeles!"
+    }
+  ],
+  "tPTEhp": [
+    {
+      "type": 0,
+      "value": "No puedo encontrar su lugar actual: tiempo agotado"
+    }
+  ],
+  "uC6pQv": [
+    {
+      "type": 0,
+      "value": "Su explorador no está permitiendo detectar su lugar actual de BikeHopper. Compruebe sus ajustes del explorador para este web."
     }
   ],
   "uCLsXP": [
@@ -1531,6 +1631,26 @@
     {
       "type": 0,
       "value": "Ahora"
+    }
+  ],
+  "waYrv+": [
+    {
+      "type": 0,
+      "value": "No puede conectar al servidor"
+    }
+  ],
+  "woEF2c": [
+    {
+      "type": 0,
+      "value": "Notificación ("
+    },
+    {
+      "type": 1,
+      "value": "hotkey"
+    },
+    {
+      "type": 0,
+      "value": ")"
     }
   ],
   "xCyANw": [
@@ -1629,6 +1749,12 @@
     {
       "type": 0,
       "value": "carril bici"
+    }
+  ],
+  "zBEo8L": [
+    {
+      "type": 0,
+      "value": "Abre en OSM"
     }
   ],
   "zOmTEh": [
