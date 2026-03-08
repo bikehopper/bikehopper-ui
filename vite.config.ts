@@ -11,6 +11,7 @@ export default defineConfig(({ mode }) => {
   const open = env.OPEN_BROWSER === 'false' ? false : true;
   return {
     build: {
+      target: 'es2022',
       rollupOptions: {
         output: {
           manualChunks: {
