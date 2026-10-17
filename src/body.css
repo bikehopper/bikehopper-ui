@@ -2,17 +2,35 @@ body {
   margin: 0;
   display: flex;
   flex-flow: column nowrap;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   height: 100vh;
   overflow: hidden;
+  /* when launched from the iOS home screen the page extends behind the
+   * status bar (see viewport-fit=cover in index.html). keep the app below it
+   * letting the green html background show through behind the status bar
+   */
+  padding-top: env(safe-area-inset-top);
 }
 
 html {
   overflow: hidden;
+}
+
+/* only when running as an installed web app, in the Safari browser, iOS 26+
+ * fills the area around its bottom toolbar with the page background color
+ */
+@media all and (display-mode: standalone) {
+  html {
+    background-color: var(--color-bikehoppergreen);
+    background-image: linear-gradient(white, white);
+    background-position: 0 env(safe-area-inset-top);
+    background-size: 100% 100vh;
+    background-repeat: no-repeat;
+  }
 }
 
 * {
