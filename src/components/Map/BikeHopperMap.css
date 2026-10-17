@@ -1,8 +1,9 @@
 .BikeHopperMap {
   position: fixed;
-  top: 0;
+  /* start below the iOS status bar */
+  top: env(safe-area-inset-top);
   bottom: 0;
-  height: 100vh;
+  height: calc(100vh - env(safe-area-inset-top));
   z-index: 1;
 }
 
