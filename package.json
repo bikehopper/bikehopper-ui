@@ -63,6 +63,7 @@
     "lint": "eslint --max-warnings 0 src/**/*.{js,jsx,ts,tsx} && tsc",
     "extract": "formatjs extract 'src/**/*.{ts,tsx,js,jsx}' --ignore 'src/**/*.d.ts' --out-file lang/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
     "compile": "formatjs compile",
+    "generate-icons": "pwa-assets-generator",
     "prepare": "husky"
   },
   "babel": {
@@ -81,6 +82,7 @@
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^8.15.0",
     "@typescript-eslint/parser": "^8.15.0",
+    "@vite-pwa/assets-generator": "^1.0.4",
     "@vitejs/plugin-basic-ssl": "^2.0.0",
     "@vitejs/plugin-react": "^4.0.0",
     "babel-plugin-formatjs": "^10.3.35",
