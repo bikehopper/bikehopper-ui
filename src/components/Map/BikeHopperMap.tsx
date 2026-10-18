@@ -637,6 +637,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
         BikeHopperMap: true,
         BikeHopperMap__mobile: props.isMobile,
         BikeHopperMap__desktop: !props.isMobile,
+        BikeHopperMap__hidden: props.hidden,
       })}
       ref={resizeRef}
       aria-hidden={props.hidden}

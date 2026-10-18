@@ -353,7 +353,12 @@ function MobileMapLayout({
   }, [adjustHeightBasedOnVisualViewport]);
 
   return (
-    <div className="MobileMapLayout">
+    <div
+      className={classnames({
+        MobileMapLayout: true,
+        MobileMapLayout__mapHidden: hideMap,
+      })}
+    >
       <OutPortal node={mapPortal} isMobile={true} />
       <div
         className={classnames({
