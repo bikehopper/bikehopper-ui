@@ -15,6 +15,11 @@
   width: calc(100vw - 400px);
 }
 
+.BikeHopperMap__hidden,
+.BikeHopperMap__hidden * {
+  visibility: hidden !important;
+}
+
 /* render draggable marker over user location circle*/
 .maplibregl-marker {
   z-index: 3;

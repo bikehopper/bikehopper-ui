@@ -6,6 +6,14 @@
   overflow: hidden;
 }
 
+.MobileMapLayout__mapHidden {
+  touch-action: none;
+}
+
+.MobileMapLayout__mapHidden .MobileMapLayout_overlay {
+  overscroll-behavior: contain;
+}
+
 .MobileMapLayout_column {
   display: flex;
   flex-direction: column;
@@ -64,6 +72,12 @@ body.isIOSChromeOrSafari .MobileMapLayout_bottomPane {
 .MobileMapLayout_bottomPane__withMapHidden {
   flex-grow: 1;
   border-radius: 0;
+}
+
+@media (pointer: coarse) {
+  .MobileMapLayout_bottomPane__withMapHidden {
+    min-height: calc(100% + 1px);
+  }
 }
 
 /* The transparent section of the overlay, through which the map can
