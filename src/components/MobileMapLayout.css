@@ -6,6 +6,13 @@
   overflow: hidden;
 }
 
+/* Keep the map's top controls below the top bar, which is drawn over the map.
+ * --top-content-height is set from the top bar's measured height. */
+.MobileMapLayout .maplibregl-ctrl-top-left,
+.MobileMapLayout .maplibregl-ctrl-top-right {
+  top: var(--top-content-height, 0px);
+}
+
 .MobileMapLayout__mapHidden {
   touch-action: none;
 }
