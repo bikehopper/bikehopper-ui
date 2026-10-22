@@ -79,8 +79,6 @@ function MobileMapLayout({
     mapRef,
     mapControlBottomLeftRef,
     mapControlBottomRightRef,
-    mapControlTopLeftRef,
-    mapControlTopRightRef,
     mapOverlayRef,
   } = mapRefs;
 
@@ -216,24 +214,28 @@ function MobileMapLayout({
     [handleMapTouchEvent],
   );
 
+  const rootRef = useRef<HTMLDivElement | null>(null);
   const topContentRef = useRef<HTMLDivElement | null>(null);
 
-  const updateMapTopControls = useCallback(() => {
-    if (
-      !mapRef.current ||
-      !mapControlTopLeftRef.current ||
-      !topContentRef.current ||
-      !mapControlTopRightRef.current
-    ) {
-      return;
-    }
-    const topContentHeight =
-      topContentRef.current.getBoundingClientRect().height;
-    mapControlTopLeftRef.current.style.transform =
-      'translate3d(0,' + topContentHeight + 'px,0)';
-    mapControlTopRightRef.current.style.transform =
-      'translate3d(0,' + topContentHeight + 'px,0)';
-  }, [mapRef, mapControlTopLeftRef, topContentRef, mapControlTopRightRef]);
+  // The top bar is drawn over the map. Expose its height as a CSS variable so
+  // MobileMapLayout.css can keep the map's top controls below it. This applies
+  // before the map finishes loading and to controls added later, and follows
+  // the top bar as it grows or shrinks.
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    const topContent = topContentRef.current;
+    if (!root || !topContent) return;
+    const update = () => {
+      root.style.setProperty(
+        '--top-content-height',
+        topContent.getBoundingClientRect().height + 'px',
+      );
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(topContent);
+    return () => observer.disconnect();
+  }, []);
 
   const updateMapBottomControls = useCallback(() => {
     if (!mapRef.current || !mapOverlayTransparentRef.current) return;
@@ -263,20 +265,11 @@ function MobileMapLayout({
   useEffect(() => {
     if (!isMapLoaded) return;
     window.requestAnimationFrame(updateMapBottomControls);
-    updateMapTopControls();
 
-    const mapControlTopLeft = mapControlTopLeftRef.current;
-    const mapControlTopRight = mapControlTopRightRef.current;
     const mapControlBottomLeft = mapControlBottomLeftRef.current;
     const mapControlBottomRight = mapControlBottomRightRef.current;
 
     return () => {
-      if (mapControlTopLeft) {
-        mapControlTopLeft.style.transform = '';
-      }
-      if (mapControlTopRight) {
-        mapControlTopRight.style.transform = '';
-      }
       if (mapControlBottomLeft) {
         mapControlBottomLeft.style.transform = '';
       }
@@ -286,18 +279,10 @@ function MobileMapLayout({
     };
   }, [
     isMapLoaded,
-    mapControlTopLeftRef,
-    mapControlTopRightRef,
     mapControlBottomLeftRef,
     mapControlBottomRightRef,
-    updateMapTopControls,
     updateMapBottomControls,
   ]);
-
-  useLayoutEffect(() => {
-    if (!mapRef.current) return;
-    updateMapTopControls();
-  });
 
   // Update the positioning of the map's bottom-left and bottom-right controls
   // when the bottom pane resizes under them, scrolls, or when this component
@@ -358,6 +343,7 @@ function MobileMapLayout({
         MobileMapLayout: true,
         MobileMapLayout__mapHidden: hideMap,
       })}
+      ref={rootRef}
     >
       <OutPortal node={mapPortal} isMobile={true} />
       <div

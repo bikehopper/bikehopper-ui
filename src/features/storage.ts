@@ -3,6 +3,8 @@ import type { Action, Middleware } from 'redux';
 import type { RootState } from '../store';
 import type { OsmId, RecentlyUsedItem } from './geocoding';
 import type { PhotonOsmHash } from '../lib/BikeHopperClient';
+import { parseSavedViewport } from './viewport';
+import type { SavedViewport } from './viewport';
 
 /*
  * Middleware for syncing stuff to LocalStorage to persist across sessions, and
@@ -10,6 +12,8 @@ import type { PhotonOsmHash } from '../lib/BikeHopperClient';
  */
 
 let _warned = false;
+
+const _DEFAULT_VIEW_KEY = 'defaultView';
 
 export const storageMiddleware: Middleware<{}, RootState> =
   (store) => (next) => (action) => {
@@ -33,11 +37,25 @@ export const storageMiddleware: Middleware<{}, RootState> =
         }
       }
     }
+
+    if (after.viewport.customDefault !== before.viewport.customDefault) {
+      const saved = after.viewport.customDefault;
+      try {
+        if (saved) {
+          localStorage.setItem(_DEFAULT_VIEW_KEY, JSON.stringify(saved));
+        } else {
+          localStorage.removeItem(_DEFAULT_VIEW_KEY);
+        }
+      } catch (e) {
+        if (import.meta.env.DEV) console.warn("Can't save default view:", e);
+      }
+    }
   };
 
 type HydrateFromLocalStorageAction = Action<'hydrate_from_localstorage'> & {
   geocodingOsmCache: Record<OsmId, PhotonOsmHash>;
   geocodingRecentlyUsed: RecentlyUsedItem[];
+  customDefaultViewport: SavedViewport | null;
 };
 export type StorageAction = HydrateFromLocalStorageAction;
 
@@ -49,6 +67,16 @@ export function initFromStorage(): HydrateFromLocalStorageAction {
     if (json) recentlyUsedRaw = JSON.parse(json);
   } catch (e) {
     if (import.meta.env.DEV) console.warn("Can't load from localstorage:", e);
+  }
+
+  // Read separately so a problem with one stored item doesn't lose the other.
+  let customDefaultViewport: SavedViewport | null = null;
+  try {
+    customDefaultViewport = parseSavedViewport(
+      localStorage.getItem(_DEFAULT_VIEW_KEY),
+    );
+  } catch (e) {
+    if (import.meta.env.DEV) console.warn("Can't load default view:", e);
   }
 
   const osmCache: Record<OsmId, PhotonOsmHash> = {};
@@ -80,5 +108,6 @@ export function initFromStorage(): HydrateFromLocalStorageAction {
     type: 'hydrate_from_localstorage',
     geocodingOsmCache: osmCache,
     geocodingRecentlyUsed: recentlyUsedCooked,
+    customDefaultViewport,
   };
 }

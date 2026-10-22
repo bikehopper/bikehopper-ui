@@ -1,9 +1,13 @@
 import { useCallback } from 'react';
 import type { FocusEvent, ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useDispatch, useSelector } from 'react-redux';
 import MagnifyingGlass from 'iconoir/icons/search.svg?react';
+import BorderlessButton from './BorderlessButton';
 import Icon from './primitives/Icon';
+import { defaultViewportReset } from '../features/viewport';
 import { getSupportedRegionText } from '../lib/region';
+import type { Dispatch, RootState } from '../store';
 
 import './DirectionsNullState.css';
 
@@ -13,7 +17,11 @@ type Props = {
 
 export default function DirectionsNullState(props: Props) {
   const intl = useIntl();
+  const dispatch: Dispatch = useDispatch();
   const supportedRegion = getSupportedRegionText();
+  const hasCustomDefault = useSelector(
+    (state: RootState) => state.viewport.customDefault != null,
+  );
 
   // The <input> rendered here is fake: its only function is to get focused and then
   // switch to a different UI that has the real input box.
@@ -72,6 +80,44 @@ export default function DirectionsNullState(props: Props) {
           />
         </p>
       )}
+      <p>
+        {hasCustomDefault ? (
+          <FormattedMessage
+            defaultMessage={
+              'The map starts in your saved default area, and search results' +
+              ' favor places near it. <reset>Reset to default</reset>'
+            }
+            description={
+              'paragraph in welcome screen shown when the user has saved a' +
+              ' default map area. reset is a button that restores the' +
+              ' standard area.'
+            }
+            values={{
+              reset: (chunks) => (
+                <BorderlessButton
+                  className="underline cursor-pointer"
+                  onClick={() => dispatch(defaultViewportReset())}
+                >
+                  {chunks}
+                </BorderlessButton>
+              ),
+            }}
+          />
+        ) : (
+          <FormattedMessage
+            defaultMessage={
+              'Search results favor places near the area shown on the map.' +
+              ' To start somewhere else next time, move the map and choose' +
+              ' <strong>Set as default area</strong>.'
+            }
+            description={
+              'paragraph in welcome screen explaining the Set as default' +
+              ' area map button'
+            }
+            values={{ strong }}
+          />
+        )}
+      </p>
       <p>
         <FormattedMessage
           defaultMessage={

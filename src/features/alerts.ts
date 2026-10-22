@@ -28,6 +28,9 @@ export enum AlertMessageCode {
   CANT_GENERATE_FIT_FILE = 40,
   COPIED_URL_TO_CLIPBOARD = 41,
   COPY_URL_FAILED = 42,
+
+  DEFAULT_AREA_SAVED = 50,
+  DEFAULT_AREA_RESET = 51,
 }
 
 type Alert = {

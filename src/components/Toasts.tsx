@@ -217,6 +217,20 @@ function describeMessage(message: AlertMessage, intl: IntlShape): string {
         defaultMessage: 'Unable to copy URL to clipboard',
         description: 'error alert when copying a URL to clipboard fails.',
       });
+    case AlertMessageCode.DEFAULT_AREA_SAVED:
+      return intl.formatMessage({
+        defaultMessage:
+          'Default area saved. Searches will favor places near here.',
+        description:
+          'toast shown after saving the current map view as the default area',
+      });
+    case AlertMessageCode.DEFAULT_AREA_RESET:
+      return intl.formatMessage({
+        defaultMessage: 'Default area reset',
+        description:
+          'toast shown after resetting the default map area back to the' +
+          ' standard one',
+      });
   }
   console.warn('unhandled message type', message.code);
   return `#${message.code}` + JSON.stringify(message.params);

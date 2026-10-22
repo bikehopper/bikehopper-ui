@@ -55,7 +55,7 @@ import {
   locationSelectedOnMap,
 } from '../../features/routeParams';
 import { routeClicked } from '../../features/routes';
-import { mapMoved } from '../../features/viewport';
+import { getRegionDefaultViewport, mapMoved } from '../../features/viewport';
 import downloadImageData from '../../lib/downloadImageData';
 import useResizeObserver from '../../hooks/useResizeObserver';
 import {
@@ -98,6 +98,7 @@ import {
   offRouteStopOutlines,
   offRouteStops,
 } from './transitStops';
+import SaveDefaultAreaControl from './SaveDefaultAreaControl';
 
 const _isTouch = 'ontouchstart' in window;
 
@@ -146,6 +147,8 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
     activePath,
     viewingDetails,
     viewingStep,
+    userMovedMap,
+    customDefault,
   } = useSelector(
     (state: RootState) => ({
       routes: state.routes.routes,
@@ -162,6 +165,8 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
       activePath: state.routes.activeRoute,
       viewingDetails: state.routes.viewingDetails,
       viewingStep: state.routes.viewingStep,
+      userMovedMap: state.viewport.userMovedMap,
+      customDefault: state.viewport.customDefault,
     }),
     shallowEqual,
   );
@@ -295,7 +300,9 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
   const handleMoveEnd = (evt: ViewStateChangeEvent) => {
     resetLongPressTimer();
     setContextMenuAt(null);
-    dispatch(mapMoved(evt.viewState));
+    // map moves we start in code (fitting routes, geolocating) have no
+    // originalEvent; only user pans/zooms do.
+    dispatch(mapMoved(evt.viewState, evt.originalEvent != null));
   };
 
   const handleMoveStart = (evt: ViewStateChangeEvent) => {
@@ -559,6 +566,21 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
     props.overlayRef,
   ]);
 
+  // When the user resets their saved default area, fly back to the region's
+  // default view so the map (and search bias) match what they asked for.
+  const prevCustomDefault = usePrevious(customDefault);
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || prevCustomDefault == null || customDefault != null) return;
+    const v = getRegionDefaultViewport([innerWidth, innerHeight]);
+    map.flyTo({
+      center: [v.longitude, v.latitude],
+      zoom: v.zoom,
+      bearing: 0,
+      pitch: 0,
+    });
+  }, [mapRef, customDefault, prevCustomDefault, innerWidth, innerHeight]);
+
   let viewingStepMarker: React.ReactNode | undefined;
   if (routes && activePath != null && viewingStep) {
     const viewingLeg = routes[activePath].legs[viewingStep[0]];
@@ -626,7 +648,13 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
     mapRef.current?.getBearing() !== 0 ? 'visible' : 'hidden';
 
   const viewState = useSelector(
-    (state: RootState) => ({ ...state.viewport }),
+    (state: RootState) => ({
+      latitude: state.viewport.latitude,
+      longitude: state.viewport.longitude,
+      zoom: state.viewport.zoom,
+      bearing: state.viewport.bearing,
+      pitch: state.viewport.pitch,
+    }),
     shallowEqual,
   );
   const viewStateOnFirstRender = useRef(viewState);
@@ -674,6 +702,7 @@ const BikeHopperMap = forwardRef(function BikeHopperMapInternal(
           showZoom={false}
           style={{ visibility: navigationControlVisibility }}
         />
+        {userMovedMap && !routes && <SaveDefaultAreaControl />}
 
         <Source id="routeSource" type="geojson" data={features}>
           {/* Order matters: lowest to highest */}
