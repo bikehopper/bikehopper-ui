@@ -16,7 +16,7 @@ export default [
     files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
       ...reactPlugin.configs.flat.recommended.languageOptions,
-      ecmaVersion: 2022,
+      ecmaVersion: 2024,
       sourceType: 'module',
       globals: {
         ...globals.browser,
